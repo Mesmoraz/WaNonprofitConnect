@@ -4,7 +4,10 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using WaNonprofitConnect.Data;
+using WaNonprofitConnect.Data.Exchange;
 using WaNonprofitConnect.Data.Import;
+using WaNonprofitConnect.Api.Controllers;
+using WaNonprofitConnect.Api.Realtime;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +20,10 @@ builder.Services.AddHttpClient<BmfImporter>(c =>
     c.Timeout = TimeSpan.FromMinutes(10);
     c.DefaultRequestHeaders.UserAgent.ParseAdd("WaNonprofitConnect/0.1");
 });
+builder.Services.AddScoped<ExchangeService>();
+builder.Services.AddScoped<IExchangeNotifier, SignalRExchangeNotifier>();
+builder.Services.AddScoped<ExchangeExceptionFilter>();
+builder.Services.AddSignalR().AddJsonProtocol(o => o.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 // --- API surface ----------------------------------------------------------
 // Stateless JSON over HTTPS with a published OpenAPI document: every client
@@ -57,7 +64,7 @@ builder.Services.AddRateLimiter(o =>
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
 builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
 {
-    if (allowedOrigins.Length > 0) p.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod();
+    if (allowedOrigins.Length > 0) p.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
 }));
 
 var app = builder.Build();
@@ -80,6 +87,7 @@ app.UseAuthorization();
 
 app.MapHealthChecks("/health");
 app.MapControllers().RequireRateLimiting("public");
+app.MapHub<ExchangeHub>("/hubs/exchange");
 
 app.Run();
 

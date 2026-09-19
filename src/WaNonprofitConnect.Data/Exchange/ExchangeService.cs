@@ -1,0 +1,347 @@
+using Microsoft.EntityFrameworkCore;
+using WaNonprofitConnect.Data.Entities;
+using WaNonprofitConnect.Data.Import;
+using WaNonprofitConnect.Data.Queries;
+
+namespace WaNonprofitConnect.Data.Exchange;
+
+/// <summary>
+/// The org-to-org exchange: post Needs/Offers, find matches, connect, and message.
+/// Every mutating call takes the acting org's EIN; until real identity exists (roadmap phase 3)
+/// the API trusts an <c>X-Org-Ein</c> header, so authorization rules live here, not in controllers.
+/// </summary>
+public sealed class ExchangeService
+{
+    private const int MaxCandidates = 500;
+
+    private readonly AppDbContext _db;
+    private readonly IExchangeNotifier _notifier;
+
+    public ExchangeService(AppDbContext db, IExchangeNotifier? notifier = null)
+    {
+        _db = db;
+        _notifier = notifier ?? NullExchangeNotifier.Instance;
+    }
+
+    // ---- Listings ----------------------------------------------------------
+
+    public async Task<ListingDto> CreateListingAsync(string actingEin, CreateListingRequest req, CancellationToken ct = default)
+    {
+        var org = await RequireOrgAsync(actingEin, ct);
+        var title = req.Title?.Trim();
+        if (string.IsNullOrWhiteSpace(title)) throw ExchangeException.Invalid("Title is required.");
+        if (title.Length > 200) throw ExchangeException.Invalid("Title must be 200 characters or fewer.");
+        if (req.Quantity is < 0) throw ExchangeException.Invalid("Quantity cannot be negative.");
+        if (!Enum.IsDefined(req.Kind)) throw ExchangeException.Invalid("Kind must be Need or Offer.");
+        if (!Enum.IsDefined(req.Category)) throw ExchangeException.Invalid("Unknown category.");
+
+        var now = DateTime.UtcNow;
+        var listing = new Listing
+        {
+            Kind = req.Kind,
+            OrgEin = org.Ein,
+            Org = org,
+            Category = req.Category,
+            Title = title,
+            Description = BmfRowParser.Clean(req.Description),
+            Quantity = req.Quantity,
+            Unit = BmfRowParser.Clean(req.Unit),
+            Urgency = Enum.IsDefined(req.Urgency) ? req.Urgency : Urgency.Normal,
+            Status = ListingStatus.Open,
+            Tags = BmfRowParser.Clean(req.Tags),
+            SearchText = MatchScorer.BuildSearchText(title, req.Description, req.Tags),
+            City = org.City,
+            Zip5 = org.Zip5,
+            CreatedAt = now,
+            UpdatedAt = now,
+            ExpiresAt = req.ExpiresInDays is { } d and > 0 ? now.AddDays(d) : null,
+        };
+        _db.Listings.Add(listing);
+        await _db.SaveChangesAsync(ct);
+
+        var dto = ListingDto.From(listing);
+        await _notifier.ListingCreatedAsync(dto, ct);
+        return dto;
+    }
+
+    public async Task<ListingDto?> GetListingAsync(int id, CancellationToken ct = default)
+    {
+        var l = await _db.Listings.AsNoTracking().Include(x => x.Org).FirstOrDefaultAsync(x => x.Id == id, ct);
+        return l is null ? null : ListingDto.From(l);
+    }
+
+    public async Task<PagedResult<ListingDto>> SearchListingsAsync(ListingSearchRequest req, CancellationToken ct = default)
+    {
+        var q = _db.Listings.AsNoTracking().Include(l => l.Org).AsQueryable();
+        if (req.Kind is { } kind) q = q.Where(l => l.Kind == kind);
+        if (req.Category is { } cat) q = q.Where(l => l.Category == cat);
+        if (req.Status is { } status) q = q.Where(l => l.Status == status);
+        var city = BmfRowParser.Clean(req.City)?.ToUpperInvariant();
+        if (city is not null) q = q.Where(l => l.City == city);
+        var ein = BmfRowParser.NormalizeEin(req.OrgEin);
+        if (ein is not null) q = q.Where(l => l.OrgEin == ein);
+        if (BmfRowParser.Clean(req.Q) is { } text)
+        {
+            foreach (var term in MatchScorer.Tokens(BmfRowParser.Normalize(text)))
+            {
+                var pattern = $"%{term}%";
+                q = q.Where(l => EF.Functions.Like(l.SearchText, pattern));
+            }
+        }
+
+        var page = Math.Max(1, req.Page);
+        var pageSize = Math.Clamp(req.PageSize, 1, 200);
+        var total = await q.CountAsync(ct);
+        var items = await q.OrderByDescending(l => l.Urgency).ThenByDescending(l => l.CreatedAt)
+            .Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(ct);
+        return new PagedResult<ListingDto>(total, page, pageSize, items.Select(ListingDto.From).ToList());
+    }
+
+    public async Task<ListingDto> CloseListingAsync(int id, string actingEin, CancellationToken ct = default)
+    {
+        var ein = await RequireEinAsync(actingEin, ct);
+        var l = await _db.Listings.Include(x => x.Org).FirstOrDefaultAsync(x => x.Id == id, ct)
+                ?? throw ExchangeException.NotFound("Listing");
+        if (l.OrgEin != ein) throw ExchangeException.Forbidden("Only the posting organization can close a listing.");
+        if (l.Status is ListingStatus.Fulfilled or ListingStatus.Closed) return ListingDto.From(l);
+        l.Status = ListingStatus.Closed;
+        l.UpdatedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync(ct);
+        return ListingDto.From(l);
+    }
+
+    // ---- Matching ----------------------------------------------------------
+
+    /// <summary>Suggest counterpart listings (Offers for a Need, Needs for an Offer), best first.</summary>
+    public async Task<IReadOnlyList<MatchSuggestionDto>> SuggestMatchesAsync(int listingId, int take = 10, CancellationToken ct = default)
+    {
+        var source = await _db.Listings.AsNoTracking().Include(l => l.Org).FirstOrDefaultAsync(l => l.Id == listingId, ct)
+                     ?? throw ExchangeException.NotFound("Listing");
+        var wantKind = source.Kind == ListingKind.Need ? ListingKind.Offer : ListingKind.Need;
+        var now = DateTime.UtcNow;
+        var tokens = MatchScorer.Tokens(source.SearchText);
+
+        // Pull a bounded candidate set from the DB (same category OR any keyword hit), then score in memory.
+        var q = _db.Listings.AsNoTracking().Include(l => l.Org)
+            .Where(l => l.Kind == wantKind && l.Status == ListingStatus.Open && l.OrgEin != source.OrgEin
+                        && (l.ExpiresAt == null || l.ExpiresAt > now));
+        if (tokens.Count > 0)
+        {
+            var patterns = tokens.Take(8).Select(t => $"%{t}%").ToList();
+            q = q.Where(l => l.Category == source.Category || patterns.Any(p => EF.Functions.Like(l.SearchText, p)));
+        }
+        else
+        {
+            q = q.Where(l => l.Category == source.Category);
+        }
+        var candidates = await q.OrderByDescending(l => l.CreatedAt).Take(MaxCandidates).ToListAsync(ct);
+
+        return candidates
+            .Select(c =>
+            {
+                var (need, offer) = source.Kind == ListingKind.Need ? (source, c) : (c, source);
+                var s = MatchScorer.Score(need, offer, now);
+                return new MatchSuggestionDto(ListingDto.From(c), s.Score, s.Reasons);
+            })
+            .Where(s => s.Score >= MatchScorer.MinimumScore)
+            .OrderByDescending(s => s.Score).ThenByDescending(s => s.Listing.CreatedAt)
+            .Take(Math.Clamp(take, 1, 50))
+            .ToList();
+    }
+
+    public async Task<MatchDto> ProposeMatchAsync(string actingEin, ProposeMatchRequest req, CancellationToken ct = default)
+    {
+        var ein = await RequireEinAsync(actingEin, ct);
+        var need = await _db.Listings.Include(l => l.Org).FirstOrDefaultAsync(l => l.Id == req.NeedListingId, ct)
+                   ?? throw ExchangeException.NotFound("Need listing");
+        var offer = await _db.Listings.Include(l => l.Org).FirstOrDefaultAsync(l => l.Id == req.OfferListingId, ct)
+                    ?? throw ExchangeException.NotFound("Offer listing");
+
+        if (need.Kind != ListingKind.Need) throw ExchangeException.Invalid($"Listing {need.Id} is not a Need.");
+        if (offer.Kind != ListingKind.Offer) throw ExchangeException.Invalid($"Listing {offer.Id} is not an Offer.");
+        if (need.OrgEin == offer.OrgEin) throw ExchangeException.Invalid("A need and an offer from the same organization cannot be matched.");
+        if (ein != need.OrgEin && ein != offer.OrgEin) throw ExchangeException.Forbidden("Only one of the two organizations can propose this match.");
+        if (need.Status != ListingStatus.Open) throw ExchangeException.Conflict($"Need listing is {need.Status}.");
+        if (offer.Status != ListingStatus.Open) throw ExchangeException.Conflict($"Offer listing is {offer.Status}.");
+        if (await _db.Matches.AnyAsync(m => m.NeedListingId == need.Id && m.OfferListingId == offer.Id, ct))
+            throw ExchangeException.Conflict("These two listings are already matched.");
+
+        var match = new Match
+        {
+            NeedListing = need,
+            OfferListing = offer,
+            ProposedByEin = ein,
+            Status = MatchStatus.Proposed,
+            Note = BmfRowParser.Clean(req.Note),
+            Score = MatchScorer.Score(need, offer).Score,
+            CreatedAt = DateTime.UtcNow,
+        };
+        _db.Matches.Add(match);
+        await _db.SaveChangesAsync(ct);
+
+        var dto = MatchDto.From(match, ein == need.OrgEin ? need.Org : offer.Org);
+        await _notifier.MatchChangedAsync(dto, "proposed", ct);
+        return dto;
+    }
+
+    public async Task<MatchDto> RespondAsync(int matchId, string actingEin, bool accept, CancellationToken ct = default)
+    {
+        var ein = await RequireEinAsync(actingEin, ct);
+        var match = await LoadMatchAsync(matchId, ct);
+        RequireParty(match, ein);
+        if (match.ProposedByEin == ein) throw ExchangeException.Forbidden("The proposing organization cannot accept its own proposal; the other party must respond.");
+        if (match.Status != MatchStatus.Proposed) throw ExchangeException.Conflict($"Match is already {match.Status}.");
+
+        var now = DateTime.UtcNow;
+        match.Status = accept ? MatchStatus.Accepted : MatchStatus.Declined;
+        match.RespondedAt = now;
+        if (accept)
+        {
+            match.NeedListing!.Status = ListingStatus.Matched;
+            match.OfferListing!.Status = ListingStatus.Matched;
+            match.NeedListing.UpdatedAt = match.OfferListing.UpdatedAt = now;
+        }
+        await _db.SaveChangesAsync(ct);
+
+        var dto = MatchDto.From(match, null, await OrgMapAsync(match, ct));
+        await _notifier.MatchChangedAsync(dto, accept ? "accepted" : "declined", ct);
+        return dto;
+    }
+
+    public async Task<MatchDto> CompleteAsync(int matchId, string actingEin, CancellationToken ct = default)
+    {
+        var ein = await RequireEinAsync(actingEin, ct);
+        var match = await LoadMatchAsync(matchId, ct);
+        RequireParty(match, ein);
+        if (match.Status != MatchStatus.Accepted) throw ExchangeException.Conflict($"Only an Accepted match can be completed (current: {match.Status}).");
+
+        var now = DateTime.UtcNow;
+        match.Status = MatchStatus.Completed;
+        match.CompletedAt = now;
+        match.NeedListing!.Status = ListingStatus.Fulfilled;
+        match.OfferListing!.Status = ListingStatus.Fulfilled;
+        match.NeedListing.UpdatedAt = match.OfferListing.UpdatedAt = now;
+        await _db.SaveChangesAsync(ct);
+
+        var dto = MatchDto.From(match, null, await OrgMapAsync(match, ct));
+        await _notifier.MatchChangedAsync(dto, "completed", ct);
+        return dto;
+    }
+
+    public async Task<MatchDto> CancelAsync(int matchId, string actingEin, CancellationToken ct = default)
+    {
+        var ein = await RequireEinAsync(actingEin, ct);
+        var match = await LoadMatchAsync(matchId, ct);
+        RequireParty(match, ein);
+        if (match.Status is MatchStatus.Completed or MatchStatus.Cancelled or MatchStatus.Declined)
+            throw ExchangeException.Conflict($"Match is already {match.Status}.");
+
+        var now = DateTime.UtcNow;
+        var wasAccepted = match.Status == MatchStatus.Accepted;
+        match.Status = MatchStatus.Cancelled;
+        match.RespondedAt ??= now;
+        if (wasAccepted)
+        {
+            // Re-open both sides so they can be matched elsewhere.
+            match.NeedListing!.Status = ListingStatus.Open;
+            match.OfferListing!.Status = ListingStatus.Open;
+            match.NeedListing.UpdatedAt = match.OfferListing.UpdatedAt = now;
+        }
+        await _db.SaveChangesAsync(ct);
+
+        var dto = MatchDto.From(match, null, await OrgMapAsync(match, ct));
+        await _notifier.MatchChangedAsync(dto, "cancelled", ct);
+        return dto;
+    }
+
+    public async Task<MatchDto> GetMatchAsync(int matchId, string actingEin, CancellationToken ct = default)
+    {
+        var ein = await RequireEinAsync(actingEin, ct);
+        var match = await LoadMatchAsync(matchId, ct, track: false);
+        RequireParty(match, ein);
+        return MatchDto.From(match, null, await OrgMapAsync(match, ct));
+    }
+
+    /// <summary>Every match the org is a party to — its inbox.</summary>
+    public async Task<IReadOnlyList<MatchDto>> ListMatchesForOrgAsync(string actingEin, CancellationToken ct = default)
+    {
+        var ein = await RequireEinAsync(actingEin, ct);
+        var matches = await _db.Matches.AsNoTracking()
+            .Include(m => m.NeedListing!).ThenInclude(l => l.Org)
+            .Include(m => m.OfferListing!).ThenInclude(l => l.Org)
+            .Include(m => m.Messages)
+            .Where(m => m.NeedListing!.OrgEin == ein || m.OfferListing!.OrgEin == ein)
+            .OrderByDescending(m => m.CreatedAt)
+            .ToListAsync(ct);
+        var result = new List<MatchDto>(matches.Count);
+        foreach (var m in matches) result.Add(MatchDto.From(m, null, await OrgMapAsync(m, ct)));
+        return result;
+    }
+
+    // ---- Messaging ---------------------------------------------------------
+
+    public async Task<MessageDto> SendMessageAsync(int matchId, string actingEin, SendMessageRequest req, CancellationToken ct = default)
+    {
+        var ein = await RequireEinAsync(actingEin, ct);
+        var body = BmfRowParser.Clean(req.Body) ?? throw ExchangeException.Invalid("Message body is required.");
+        if (body.Length > 4000) throw ExchangeException.Invalid("Message must be 4000 characters or fewer.");
+        var match = await LoadMatchAsync(matchId, ct);
+        RequireParty(match, ein);
+        if (match.Status is MatchStatus.Declined or MatchStatus.Cancelled)
+            throw ExchangeException.Conflict($"Cannot message on a {match.Status} match.");
+
+        var msg = new Message { Match = match, SenderEin = ein, Body = body, SentAt = DateTime.UtcNow };
+        _db.Messages.Add(msg);
+        await _db.SaveChangesAsync(ct);
+
+        var orgs = await OrgMapAsync(match, ct);
+        var dto = new MessageDto(msg.Id, match.Id, ListingDto.OrgRef(ein, orgs.GetValueOrDefault(ein)), msg.Body, msg.SentAt);
+        await _notifier.MessageSentAsync(MatchDto.From(match, null, orgs), dto, ct);
+        return dto;
+    }
+
+    // ---- helpers -----------------------------------------------------------
+
+    private async Task<Organization> RequireOrgAsync(string actingEin, CancellationToken ct)
+    {
+        var ein = BmfRowParser.NormalizeEin(actingEin) ?? throw ExchangeException.Forbidden("X-Org-Ein header must be a 9-digit EIN.");
+        var org = await _db.Organizations.FirstOrDefaultAsync(o => o.Ein == ein, ct)
+                  ?? throw ExchangeException.Forbidden($"EIN {ein} is not a known exempt organization.");
+        if (!org.Is501c3) throw ExchangeException.Forbidden($"{org.Name} is not a 501(c)(3); only 501(c)(3)s can use the exchange for now.");
+        return org;
+    }
+
+    private async Task<string> RequireEinAsync(string actingEin, CancellationToken ct) => (await RequireOrgAsync(actingEin, ct)).Ein;
+
+    private async Task<Match> LoadMatchAsync(int id, CancellationToken ct, bool track = true)
+    {
+        var q = _db.Matches
+            .Include(m => m.NeedListing!).ThenInclude(l => l.Org)
+            .Include(m => m.OfferListing!).ThenInclude(l => l.Org)
+            .Include(m => m.Messages)
+            .AsQueryable();
+        if (!track) q = q.AsNoTracking();
+        return await q.FirstOrDefaultAsync(m => m.Id == id, ct) ?? throw ExchangeException.NotFound("Match");
+    }
+
+    private static void RequireParty(Match m, string ein)
+    {
+        if (m.NeedListing!.OrgEin != ein && m.OfferListing!.OrgEin != ein)
+            throw ExchangeException.Forbidden("Only the two organizations in this match can access it.");
+    }
+
+    private async Task<IReadOnlyDictionary<string, Organization>> OrgMapAsync(Match m, CancellationToken ct)
+    {
+        var eins = new HashSet<string> { m.NeedListing!.OrgEin, m.OfferListing!.OrgEin, m.ProposedByEin };
+        foreach (var msg in m.Messages) eins.Add(msg.SenderEin);
+        var map = new Dictionary<string, Organization>();
+        if (m.NeedListing.Org is not null) map[m.NeedListing.OrgEin] = m.NeedListing.Org;
+        if (m.OfferListing.Org is not null) map[m.OfferListing.OrgEin] = m.OfferListing.Org;
+        var missing = eins.Where(e => !map.ContainsKey(e)).ToList();
+        if (missing.Count > 0)
+        {
+            foreach (var o in await _db.Organizations.AsNoTracking().Where(o => missing.Contains(o.Ein)).ToListAsync(ct)) map[o.Ein] = o;
+        }
+        return map;
+    }
+}

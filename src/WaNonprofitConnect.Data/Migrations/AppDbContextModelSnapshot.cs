@@ -88,6 +88,176 @@ namespace WaNonprofitConnect.Data.Migrations
                     b.ToTable("ImportRuns");
                 });
 
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Listing", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("OrgEin")
+                        .IsRequired()
+                        .HasMaxLength(9)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(9)");
+
+                    b.Property<decimal?>("Quantity")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("SearchText")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Tags")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Unit")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Urgency")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Zip5")
+                        .HasMaxLength(5)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(5)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("City");
+
+                    b.HasIndex("OrgEin");
+
+                    b.HasIndex("Kind", "Status", "Category");
+
+                    b.ToTable("Listings");
+                });
+
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Match", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("NeedListingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int>("OfferListingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProposedByEin")
+                        .IsRequired()
+                        .HasMaxLength(9)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(9)");
+
+                    b.Property<DateTime?>("RespondedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("Score")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OfferListingId");
+
+                    b.HasIndex("NeedListingId", "OfferListingId")
+                        .IsUnique();
+
+                    b.ToTable("Matches");
+                });
+
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<int>("MatchId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SenderEin")
+                        .IsRequired()
+                        .HasMaxLength(9)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(9)");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MatchId", "SentAt");
+
+                    b.ToTable("Messages");
+                });
+
             modelBuilder.Entity("WaNonprofitConnect.Data.Entities.NteeCategory", b =>
                 {
                     b.Property<string>("Code")
@@ -481,6 +651,47 @@ namespace WaNonprofitConnect.Data.Migrations
                     b.ToTable("Organizations");
                 });
 
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Listing", b =>
+                {
+                    b.HasOne("WaNonprofitConnect.Data.Entities.Organization", "Org")
+                        .WithMany()
+                        .HasForeignKey("OrgEin")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Org");
+                });
+
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Match", b =>
+                {
+                    b.HasOne("WaNonprofitConnect.Data.Entities.Listing", "NeedListing")
+                        .WithMany("MatchesAsNeed")
+                        .HasForeignKey("NeedListingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("WaNonprofitConnect.Data.Entities.Listing", "OfferListing")
+                        .WithMany("MatchesAsOffer")
+                        .HasForeignKey("OfferListingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("NeedListing");
+
+                    b.Navigation("OfferListing");
+                });
+
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Message", b =>
+                {
+                    b.HasOne("WaNonprofitConnect.Data.Entities.Match", "Match")
+                        .WithMany("Messages")
+                        .HasForeignKey("MatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Match");
+                });
+
             modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Organization", b =>
                 {
                     b.HasOne("WaNonprofitConnect.Data.Entities.ImportRun", "FirstSeenImportRun")
@@ -498,6 +709,18 @@ namespace WaNonprofitConnect.Data.Migrations
                     b.Navigation("FirstSeenImportRun");
 
                     b.Navigation("LastSeenImportRun");
+                });
+
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Listing", b =>
+                {
+                    b.Navigation("MatchesAsNeed");
+
+                    b.Navigation("MatchesAsOffer");
+                });
+
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Match", b =>
+                {
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

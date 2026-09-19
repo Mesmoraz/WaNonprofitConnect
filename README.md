@@ -2,7 +2,7 @@
 
 A platform for Washington State 501(c)(3) organizations to be discovered from authoritative public data, claim their profile, post what they need, talk to each other, and receive in-kind offers from businesses — exposed as a clean, versioned REST API so web, iOS, Android, and desktop clients (or third-party tools) can all plug in.
 
-**Status: Prototype 1 — backend data layer.** IRS data for WA is ingested into a database and served through a search API. No auth, no UI yet. See [Roadmap](#roadmap).
+**Status: Prototype 2 — data layer + org-to-org exchange.** IRS data for WA is ingested and searchable, and 501(c)(3)s can post Needs/Offers, get match suggestions, connect, and message — over a REST API with a real-time SignalR feed and a CLI. No auth or UI yet (the acting org is an `X-Org-Ein` header until the identity phase). See [Roadmap](#roadmap).
 
 ## Quick start
 
@@ -22,6 +22,14 @@ dotnet run --project src/WaNonprofitConnect.Cli -- stats
 dotnet run --project src/WaNonprofitConnect.Api --launch-profile http
 ```
 
+```powershell
+# With the API running — the exchange, end to end, using real WA 501(c)(3)s
+dotnet run --project src/WaNonprofitConnect.Cli -- demo
+
+# In a second terminal: live feed (add --as <ein> to also get that org's private match/message events)
+dotnet run --project src/WaNonprofitConnect.Cli -- watch
+```
+
 CLI options: `import bmf [--state WA|all] [--url <csv>] [--file <local.csv>] [--force]`, `stats [--state WA|all]`, `imports`.
 Connection string: `ConnectionStrings:Default` (API appsettings) or `WANC_CONNECTION` env var (CLI); default is LocalDB `WaNonprofitConnect_Dev`.
 
@@ -35,6 +43,25 @@ Connection string: `ConnectionStrings:Default` (API appsettings) or `WANC_CONNEC
 | `GET /api/v1/ntee`, `GET /api/v1/codes` | Lookup tables for building client filters. |
 | `GET /api/v1/imports` | Provenance: every import run with file hash and row counts. |
 | `GET /health`, `GET /swagger` | Health check; OpenAPI document + UI (Development). |
+
+### Exchange (needs ↔ offers)
+
+Mutating calls take an `X-Org-Ein` header naming the acting 501(c)(3). Authorization rules live in `ExchangeService`, not the controllers, so swapping the header for a real login later changes nothing below it.
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/v1/listings?kind=&category=&status=Open&city=&q=&orgEin=` | The board: Needs ("we need 12 laptops") and Offers ("we have 40 sheets of plywood"), most urgent first. |
+| `POST /api/v1/listings` | Post a Need or Offer: category, title, description, quantity/unit, urgency, tags, expiry. Location is snapshotted from the org. |
+| `GET /api/v1/listings/{id}/matches` | Best counterparts, each with a score and plain-English reasons (same category, shared keywords, same city/area, urgency, quantity coverage). |
+| `POST /api/v1/matches` | Propose a connection between a Need and an Offer (must own one side). |
+| `POST /api/v1/matches/{id}/accept|decline|complete|cancel` | The *other* side accepts/declines; either side completes (→ both listings Fulfilled) or cancels (→ reopened). |
+| `GET /api/v1/matches` | The acting org's inbox with message threads. |
+| `POST /api/v1/matches/{id}/messages` | Org-to-org message inside a match. Only the two parties can read or write. |
+| `/hubs/exchange` (SignalR) | `listing.created` / `listing.updated` to everyone; `match.*` and `message.sent` only to the two orgs' groups (`JoinOrg(ein)`). |
+
+CLI: `listing post/list/show/matches/close`, `match propose/accept/decline/complete/cancel/inbox/show`, `msg send`, `watch`, `demo` — run with no args for full usage. The CLI talks HTTP/SignalR to the API exactly as a mobile app would, and shares the DTO types from `WaNonprofitConnect.Data.Exchange`.
+
+Matching is deliberately simple and transparent (`MatchScorer`): +50 same category, +25 first shared keyword (+10 each extra, light stemming so "laptops" = "laptop"), +20 same city or +10 same zip prefix, +5/+10 for High/Critical needs, +10/+5 for full/partial quantity coverage, +5 recent. Weights are one place to tune; the reasons are returned so users can see *why*.
 
 Design choices that keep clients interchangeable: stateless JSON, `/api/v1/` versioned routes, enums as strings, OpenAPI published so typed SDKs can be generated for .NET MAUI / React Native / Flutter / TypeScript, per-IP rate limiting on every public route, CORS allow-list in config.
 
@@ -92,9 +119,10 @@ The **WA Secretary of State Charities Program** (RCW 19.09, [CCFS](https://ccfs.
 
 ```
 src/WaNonprofitConnect.Data/   entities, AppDbContext + migrations, IRS code tables (Codes/BmfCodes.cs),
-                               CSV importer (Import/), shared search + stats queries (Queries/)
-src/WaNonprofitConnect.Api/    ASP.NET Core Web API: controllers, DTOs (Contracts/), Swagger, rate limiting, health
-src/WaNonprofitConnect.Cli/    import / stats / imports commands (shares Data)
+                               CSV importer (Import/), shared search + stats queries (Queries/),
+                               exchange domain: ExchangeService, MatchScorer, shared DTOs (Exchange/)
+src/WaNonprofitConnect.Api/    ASP.NET Core Web API: controllers, DTOs (Contracts/), SignalR hub (Realtime/), Swagger, rate limiting, health
+src/WaNonprofitConnect.Cli/    import / stats (direct DB) and listing / match / msg / watch / demo (HTTP + SignalR client)
 tests/WaNonprofitConnect.Tests xUnit + FluentAssertions; importer and query tests run on in-memory SQLite
 data/raw/                      downloaded snapshots (git-ignored)
 ```
@@ -103,10 +131,10 @@ EF Core is used provider-agnostically (no SQL-Server-only features) so the produ
 
 ## Roadmap
 
-1. **Backend data prototype** — done (this).
+1. **Backend data prototype** — done.
 2. **Data quality + liveness** — merge Pub 78 / revocation / 990-N; `IsActive501c3` flag; NTEE fallback; WA SOS enrichment.
 3. **Identity + claiming** — ASP.NET Identity + Google/Microsoft login; `OrgClaim` flow (email-domain match against 990-N/990 website, admin fallback); editable `OrganizationProfile`.
-4. **Needs + messaging** — `Need` posts (goods / services / volunteers / space / funding), org↔org threads, email notifications, moderation.
+4. **Needs + messaging** — done as a prototype (Needs/Offers, scored matching, propose/accept/complete, threads, real-time feed). Still to do: email notifications, moderation/reporting, expiry job, edit listings, radius search.
 5. **Business side** — `Business` accounts, browse needs by category/radius, `Offer` workflow, delivery confirmation, in-kind acknowledgements (the app never values gifts — IRS rule).
 6. **Connectability** — API keys (hashed, scoped), webhooks (`need.created`, `offer.accepted`, …), CSV export, optional MCP server for AI-agent access.
 7. **Scale-out** — national BMF files, `state` as first-class filter, per-state charity-registry adapters (WA is the template).

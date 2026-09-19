@@ -7,6 +7,7 @@ using WaNonprofitConnect.Data;
 using WaNonprofitConnect.Data.Entities;
 using WaNonprofitConnect.Data.Import;
 using WaNonprofitConnect.Data.Queries;
+using WaNonprofitConnect.Cli;
 
 // Usage:
 //   wanc import bmf [--state WA|all] [--url <csv url>] [--file <local csv>] [--force]
@@ -19,7 +20,15 @@ var argv = new Args(args);
 if (argv.Positional.Count == 0 || argv.Has("--help") || argv.Has("-h"))
 {
     PrintUsage();
+    ExchangeCommands.Usage();
     return 0;
+}
+
+// Exchange commands go over HTTP to the running API (like any client app would) and need no DB access here.
+if (ExchangeCommands.Commands.Contains(argv.Positional[0].ToLowerInvariant()))
+{
+    var apiBase = argv.Value("--api") ?? Environment.GetEnvironmentVariable("WANC_API") ?? "http://localhost:5253";
+    return await ExchangeCommands.RunAsync(argv, apiBase);
 }
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -150,8 +159,10 @@ static string? FindRepoRoot()
     return null;
 }
 
+namespace WaNonprofitConnect.Cli
+{
 /// <summary>Minimal argv reader: positionals, --flag, --key value, --key=value.</summary>
-sealed class Args
+public sealed class Args
 {
     public List<string> Positional { get; } = new();
     private readonly Dictionary<string, string?> _options = new(StringComparer.OrdinalIgnoreCase);
@@ -175,4 +186,12 @@ sealed class Args
 
     public bool Has(string name) => _options.ContainsKey(name);
     public string? Value(string name) => _options.TryGetValue(name, out var v) ? v : null;
+    public string Require(string name) => Value(name) ?? throw new ArgumentException($"{name} is required");
+    public string? Sub(int index) => index < Positional.Count ? Positional[index].ToLowerInvariant() : null;
+    public int IntArg(int index) => index < Positional.Count && int.TryParse(Positional[index], out var v) ? v : throw new ArgumentException($"argument {index} must be a number");
+    public int? Int(string name) => Value(name) is { } s ? int.Parse(s) : null;
+    public decimal? Decimal(string name) => Value(name) is { } s ? decimal.Parse(s, System.Globalization.CultureInfo.InvariantCulture) : null;
+    public T? Enum<T>(string name) where T : struct, System.Enum
+        => Value(name) is { } s ? (System.Enum.TryParse<T>(s, ignoreCase: true, out var e) ? e : throw new ArgumentException($"{name}: unknown value '{s}' (valid: {string.Join(", ", System.Enum.GetNames<T>())})")) : null;
+}
 }
