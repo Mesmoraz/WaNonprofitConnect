@@ -1,0 +1,24 @@
+@host = http://localhost:5253
+
+GET {{host}}/health
+
+###
+GET {{host}}/api/v1/stats
+
+###
+GET {{host}}/api/v1/orgs?q=food bank&city=Seattle
+
+###
+GET {{host}}/api/v1/orgs?ntee=K&excludePrivateFoundations=true&minRevenue=100000&pageSize=10
+
+###
+GET {{host}}/api/v1/orgs/010555614
+
+###
+GET {{host}}/api/v1/ntee
+
+###
+GET {{host}}/api/v1/codes
+
+###
+GET {{host}}/api/v1/imports

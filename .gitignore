@@ -1,0 +1,13 @@
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.idea/
+*.swp
+data/raw/*
+!data/raw/.gitkeep
+TestResults/
+*.db
+*.db-*
+appsettings.*.local.json
