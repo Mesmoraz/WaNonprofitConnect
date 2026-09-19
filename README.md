@@ -33,6 +33,14 @@ dotnet run --project src/WaNonprofitConnect.Cli -- watch
 CLI options: `import bmf [--state WA|all] [--url <csv>] [--file <local.csv>] [--force]`, `stats [--state WA|all]`, `imports`.
 Connection string: `ConnectionStrings:Default` (API appsettings) or `WANC_CONNECTION` env var (CLI); default is LocalDB `WaNonprofitConnect_Dev`.
 
+> **LocalDB troubleshooting.** If startup fails with `Cannot create file '...WaNonprofitConnect_Dev.mdf' because it already exists`, the LocalDB instance restarted without re-attaching the database. Re-attach it (keeps all data):
+>
+> ```powershell
+> sqlcmd -S "(localdb)mssqllocaldb" -Q "CREATE DATABASE [WaNonprofitConnect_Dev] ON (FILENAME=':USERPROFILEWaNonprofitConnect_Dev.mdf'), (FILENAME=':USERPROFILEWaNonprofitConnect_Dev_log.ldf') FOR ATTACH"
+> ```
+>
+> (No `sqlcmd`? Delete both files instead and re-run `import bmf` — it takes ~30 s.)
+
 ## API (v1)
 
 | Endpoint | Purpose |
