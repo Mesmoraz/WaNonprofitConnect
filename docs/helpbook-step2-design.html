@@ -1,0 +1,718 @@
+<title>HelpBook Step 2 Design</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --ground: #F5F7F3;
+    --paper: #FFFFFF;
+    --ink: #1B2430;
+    --ink-2: #4B5563;
+    --ink-3: #7C8794;
+    --line: #D9DED7;
+    --line-2: #EAEDE7;
+    --need: #B8741A;
+    --need-bg: #FBF1E0;
+    --offer: #2E6B4E;
+    --offer-bg: #E4F0E9;
+    --accent: #2E6B4E;
+    --accent-ink: #FFFFFF;
+    --wire: #EEF0EC;
+    --wire-line: #B9C0B8;
+    --code-bg: #EEF1EC;
+    --warn: #A33A2E;
+    --warn-bg: #F9E8E5;
+    --info-bg: #E8EEF6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #131A1E; --paper: #1B2329; --ink: #E7EAE4; --ink-2: #B6BDB6; --ink-3: #8A938C;
+      --line: #2E3A40; --line-2: #26313A; --need: #E0A04B; --need-bg: #3A2C15; --offer: #74B894; --offer-bg: #1E3529;
+      --accent: #74B894; --accent-ink: #0F1A14; --wire: #222B31; --wire-line: #4A5860; --code-bg: #222B31;
+      --warn: #E58C7D; --warn-bg: #3B221E; --info-bg: #21303C;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #131A1E; --paper: #1B2329; --ink: #E7EAE4; --ink-2: #B6BDB6; --ink-3: #8A938C;
+    --line: #2E3A40; --line-2: #26313A; --need: #E0A04B; --need-bg: #3A2C15; --offer: #74B894; --offer-bg: #1E3529;
+    --accent: #74B894; --accent-ink: #0F1A14; --wire: #222B31; --wire-line: #4A5860; --code-bg: #222B31;
+    --warn: #E58C7D; --warn-bg: #3B221E; --info-bg: #21303C;
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--ground); color: var(--ink); font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 16px; line-height: 1.55; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding-block: 32px 96px; padding-inline: 20px; }
+  h1, h2, h3, h4 { font-family: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif; line-height: 1.15; text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(34px, 5vw, 52px); font-weight: 700; letter-spacing: -0.01em; }
+  h2 { font-size: clamp(24px, 3vw, 32px); font-weight: 700; margin-top: 72px; padding-top: 24px; border-top: 2px solid var(--ink); }
+  h3 { font-size: 20px; font-weight: 700; margin-top: 36px; }
+  h4 { font-size: 16px; font-weight: 700; margin-top: 20px; }
+  p, li { max-width: 72ch; }
+  p { margin: 12px 0; }
+  ul, ol { padding-left: 22px; margin: 8px 0; }
+  li { margin: 4px 0; }
+  a { color: var(--accent); }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 0.92em; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; }
+  .eyebrow { font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px; }
+  .lede { font-size: 19px; color: var(--ink-2); max-width: 64ch; }
+  .meta { color: var(--ink-3); font-size: 14px; margin-top: 14px; }
+
+  nav.toc { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 28px; padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); font-size: 14px; }
+  nav.toc a { color: var(--ink-2); text-decoration: none; }
+  nav.toc a:hover, nav.toc a:focus-visible { color: var(--accent); text-decoration: underline; }
+
+  .callout { border-left: 4px solid var(--accent); background: var(--paper); padding: 14px 18px; margin: 20px 0; max-width: 80ch; }
+  .callout.warn { border-color: var(--warn); }
+  .callout p { margin: 6px 0; }
+
+  /* Story beats */
+  .beats { counter-reset: beat; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 20px; }
+  .beat { background: var(--paper); border: 1px solid var(--line); padding: 16px 16px 14px; position: relative; }
+  .beat::before { counter-increment: beat; content: counter(beat); font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 28px; color: var(--accent); line-height: 1; display: block; margin-bottom: 8px; }
+  .beat strong { display: block; margin-bottom: 4px; }
+  .beat span { color: var(--ink-2); font-size: 14px; }
+
+  /* Tables */
+  .tbl { overflow-x: auto; margin: 16px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; background: var(--paper); }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line-2); vertical-align: top; }
+  th { font-weight: 600; background: var(--code-bg); font-size: 13px; }
+  td:first-child { font-weight: 600; white-space: nowrap; }
+
+  /* Pills */
+  .pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; line-height: 1.5; }
+  .pill.need { background: var(--need-bg); color: var(--need); }
+  .pill.offer { background: var(--offer-bg); color: var(--offer); }
+  .pill.neutral { background: var(--code-bg); color: var(--ink-2); }
+  .pill.warn { background: var(--warn-bg); color: var(--warn); }
+
+  /* Wireframes */
+  .wires { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; margin-top: 18px; }
+  .wire { background: var(--paper); border: 1px solid var(--line); }
+  .wire-head { padding: 10px 14px; border-bottom: 1px solid var(--line-2); display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .wire-head b { font-family: "Bricolage Grotesque", sans-serif; font-size: 15px; }
+  .wire-head span { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--ink-3); }
+  .screen { background: var(--wire); margin: 12px; border: 1px solid var(--wire-line); font-size: 12px; color: var(--ink-2); min-height: 300px; display: flex; flex-direction: column; }
+  .bar { background: var(--paper); border-bottom: 1px solid var(--wire-line); padding: 7px 10px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--ink); }
+  .bar .logo { font-family: "Bricolage Grotesque", sans-serif; letter-spacing: -0.01em; }
+  .bar .who { font-weight: 400; color: var(--ink-3); font-size: 11px; }
+  .body { padding: 10px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .blk { border: 1px dashed var(--wire-line); background: var(--paper); padding: 7px 9px; }
+  .blk.h { font-weight: 600; color: var(--ink); }
+  .blk.input { color: var(--ink-3); font-style: italic; }
+  .blk.card { border-style: solid; }
+  .blk.card b { color: var(--ink); display: block; }
+  .btn { border: 1px solid var(--ink); background: var(--paper); color: var(--ink); padding: 6px 9px; text-align: center; font-weight: 600; }
+  .btn.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .btn.offer { background: var(--offer); color: var(--accent-ink); border-color: var(--offer); }
+  .row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .row > * { flex: 1 1 auto; }
+  .chips { display: flex; gap: 4px; flex-wrap: wrap; }
+  .chip { border: 1px solid var(--wire-line); background: var(--paper); padding: 1px 7px; border-radius: 999px; font-size: 11px; }
+  .chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .note { font-size: 13px; color: var(--ink-2); padding: 0 14px 14px; }
+  .note b { color: var(--ink); }
+  .msg { padding: 6px 9px; border: 1px solid var(--wire-line); background: var(--paper); max-width: 85%; }
+  .msg.me { align-self: flex-end; background: var(--offer-bg); border-color: var(--offer); }
+  .msg small { display: block; color: var(--ink-3); font-size: 10px; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; }
+  .kv span:nth-child(odd) { color: var(--ink-3); }
+
+  /* Diagrams */
+  .diagram { background: var(--paper); border: 1px solid var(--line); padding: 12px; margin: 16px 0; overflow-x: auto; }
+  .diagram pre.mermaid { margin: 0; min-width: 640px; }
+  .diagram-cap { font-size: 13px; color: var(--ink-3); margin: 8px 4px 0; }
+
+  /* Phases */
+  .phases { display: grid; gap: 10px; margin-top: 16px; }
+  .phase { display: grid; grid-template-columns: 64px 1fr; gap: 12px; background: var(--paper); border: 1px solid var(--line); padding: 12px 14px; }
+  .phase .id { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 22px; color: var(--accent); }
+  .phase b { display: block; }
+  .phase span { color: var(--ink-2); font-size: 14px; }
+  .decisions li { margin: 8px 0; }
+  .decisions b { display: block; }
+  @media (max-width: 480px) { .phase { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">Design brief · Step 2 · draft for discussion</div>
+  <h1>HelpBook</h1>
+  <p class="lede">Washington's 501(c)(3)s already exist in public data — 35,361 of them. HelpBook lets them claim their place, say what they need and what they have, and get connected to the right group or business. This brief lays out who uses it, the "watch this" story, low-fi wireframes, the data model, and the plan — before we commit to any UX.</p>
+  <p class="meta">Built on the working prototype: IRS data for all 42,510 WA exempt orgs is loaded, and the needs ↔ offers exchange (matching, accept/decline, messaging, live feed) runs end-to-end through the API and a CLI demo. Nothing in this brief is implemented yet.</p>
+
+  <nav class="toc">
+    <a href="#story">The story</a>
+    <a href="#who">Who uses it</a>
+    <a href="#wires">Wireframes</a>
+    <a href="#flow">Flow</a>
+    <a href="#data">Data model</a>
+    <a href="#verify">Verification</a>
+    <a href="#money">Money &amp; ads</a>
+    <a href="#match">Matching &amp; alerts</a>
+    <a href="#decide">Decisions</a>
+    <a href="#plan">Plan</a>
+  </nav>
+
+  <!-- ============================================================ -->
+  <h2 id="story">The "watch this" story</h2>
+  <p>One need, two nonprofits, six beats. Every screen in the wireframes maps to one of these.</p>
+  <div class="beats">
+    <div class="beat"><strong>Casey's intake laptops die</strong><span>Ballard Food Bank (EIN 91-1428805) can't register clients. Casey opens HelpBook and creates an account — email or Google, one screen.</span></div>
+    <div class="beat"><strong>Casey claims the org</strong><span>Types "Ballard Food" → the IRS record is already there. Verifies with a @ballardfoodbank.org email. Done in under a minute; no data entry.</span></div>
+    <div class="beat"><strong>Casey posts a Need</strong><span>"12 laptops for client intake stations" — Technology, Critical, needed by the 30th. Casey can also browse: every WA 501(c)(3), filterable by cause, city, size, tags.</span></div>
+    <div class="beat"><strong>Jordan gets alerted</strong><span>Computers 4 People in Need (Bellingham) has "we often have: laptops" on their profile. HelpBook scores the match and notifies Jordan: in-app, email, push.</span></div>
+    <div class="beat"><strong>"I have this"</strong><span>Jordan opens the need, taps <em>I have this</em>. Their existing offer of 15 refurbished laptops is proposed as the match. Casey accepts.</span></div>
+    <div class="beat"><strong>They talk, then hand off</strong><span>A private thread: shipping address, timing, contact. Either side marks it complete. Both listings close as Fulfilled — and the story is on record for the next time.</span></div>
+  </div>
+
+  <div class="callout">
+    <p><b>What the prototype already proves</b> (beats 3–6 run today via API + CLI): posting, scored match suggestions with plain-English reasons, propose → accept → message → complete, and a real-time feed where private threads stay private. <b>What Step 2 adds:</b> beats 1–2 (accounts and claiming), the alert that makes beat 4 happen without anyone searching, org profiles with tags, business and supporter accounts, and the web UI.</p>
+  </div>
+
+  <!-- ============================================================ -->
+  <h2 id="who">Who uses it</h2>
+  <p>Four account types. A person can hold more than one (a business owner who also volunteers on a nonprofit board), so <em>roles</em> attach to memberships, not to the person.</p>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Nonprofit (501(c)(3))</th><th>Business</th><th>Supporter (general)</th><th>Admin</th></tr></thead>
+    <tbody>
+      <tr><td>Cost</td><td><b>Free, always.</b></td><td>Premium subscription (tiers TBD)</td><td>Pay-what-you-want, <em>or</em> show a donation to a WA 501(c)(3) in the last 12 months</td><td>—</td></tr>
+      <tr><td>Verified how</td><td>Claim an IRS-listed org: email-domain match (instant), or letter / document / admin review</td><td>WA business (UBI) lookup + email domain + payment method</td><td>Email; then payment or donation proof</td><td>Staff-issued</td></tr>
+      <tr><td>Can post</td><td>Needs and Offers</td><td>Offers; sponsored placements (allow-listed types, reviewed)</td><td>v1: nothing. v2: "I can help" personal offers</td><td>Moderates everything</td></tr>
+      <tr><td>Can message</td><td>Any org or business inside a match; "let's collaborate" threads</td><td>Nonprofits inside a match</td><td>v1: no</td><td>Anyone</td></tr>
+      <tr><td>Browse</td><td>Everything</td><td>Everything</td><td>Everything (public view)</td><td>Everything + queues</td></tr>
+      <tr><td>Gets alerted on</td><td>Needs/Offers that match their tags, category, area</td><td>Needs matching what they can give</td><td>Orgs they follow</td><td>Claims, reports, ad reviews</td></tr>
+      <tr><td>Profile</td><td>IRS record + claimed profile (mission, tags, contact, website)</td><td>Business card + what they typically donate</td><td>Name, city, orgs followed</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <p>Unverified nonprofit users can browse and draft, but posts and messages go live only once the claim is verified — otherwise anyone could speak for Ballard Food Bank. (See <a href="#decide">decision 1</a> for the alternative.)</p>
+
+  <!-- ============================================================ -->
+  <h2 id="wires">Wireframes</h2>
+  <p>Deliberately low-fidelity: boxes and real words, no colors or styling decisions. Each frame is labeled with the story beat it serves. Phone-width first; the same screens widen for desktop.</p>
+
+  <div class="wires">
+    <!-- W1 -->
+    <div class="wire">
+      <div class="wire-head"><b>W1 · Create account</b><span>beat 1</span></div>
+      <div class="screen">
+        <div class="bar"><span class="logo">HelpBook</span><span class="who">new</span></div>
+        <div class="body">
+          <div class="blk h">Join HelpBook</div>
+          <div class="btn">Continue with Google</div>
+          <div class="blk input">or email address</div>
+          <div class="btn primary">Continue</div>
+          <div class="blk h" style="margin-top:6px">I'm here as…</div>
+          <div class="blk card"><b>◉ A nonprofit</b>I work or volunteer with a 501(c)(3). Free.</div>
+          <div class="blk card"><b>○ A business</b>We want to donate goods or services.</div>
+          <div class="blk card"><b>○ A supporter</b>I want to follow and help local causes.</div>
+        </div>
+      </div>
+      <div class="note">Two taps to an account. The role choice only decides which screen comes next; it can be changed and a person can add more roles later.</div>
+    </div>
+
+    <!-- W2 -->
+    <div class="wire">
+      <div class="wire-head"><b>W2 · Claim your organization</b><span>beat 2</span></div>
+      <div class="screen">
+        <div class="bar"><span class="logo">HelpBook</span><span class="who">casey@ballardfoodbank.org</span></div>
+        <div class="body">
+          <div class="blk h">Which organization are you with?</div>
+          <div class="blk input">🔍 Ballard Food</div>
+          <div class="blk card"><b>BALLARD FOOD BANK</b>Seattle · EIN 91-1428805 · Human Services<br><span class="pill neutral">IRS-listed 501(c)(3)</span></div>
+          <div class="blk">Not listed? <u>Search by EIN</u> · <u>We're not a 501(c)(3)</u></div>
+          <div class="blk h" style="margin-top:6px">Verify you're with them</div>
+          <div class="blk card"><b>✓ Your email domain matches</b>ballardfoodbank.org is this org's website on file. You're verified.</div>
+          <div class="blk">Other ways: mailed code to the IRS address · upload a determination letter · ask an existing member</div>
+          <div class="btn primary">Go to my organization</div>
+        </div>
+      </div>
+      <div class="note">The org already exists — the person is attaching to it, not creating it. Email-domain match is instant; every other method lands in the admin queue (W10). Method is pluggable so we can add or drop ways later.</div>
+    </div>
+
+    <!-- W3 -->
+    <div class="wire">
+      <div class="wire-head"><b>W3 · Home feed</b><span>beat 3 · browse</span></div>
+      <div class="screen">
+        <div class="bar"><span class="logo">HelpBook</span><span class="who">Ballard Food Bank ▾</span></div>
+        <div class="body">
+          <div class="row"><div class="btn offer">+ Post a need</div><div class="btn">+ Post an offer</div></div>
+          <div class="chips"><span class="chip on">Near Seattle</span><span class="chip">Needs</span><span class="chip">Offers</span><span class="chip">Technology</span><span class="chip">Food</span><span class="chip">Materials</span><span class="chip">More…</span></div>
+          <div class="blk card"><span class="pill need">NEED · Critical</span> <b>Laptops for client intake stations</b>Ballard Food Bank · 12 laptops · by Sep 30</div>
+          <div class="blk card"><span class="pill offer">OFFER</span> <b>40 sheets of ¾" plywood</b>Tacoma-Pierce Habitat · pickup Tacoma</div>
+          <div class="blk card"><span class="pill need">NEED · High</span> <b>Walk-in cooler</b>Ballard Food Bank · 1 unit</div>
+          <div class="blk card"><span class="pill offer">OFFER</span> <b>Used 2-door commercial fridge</b>SE Seattle Tool Library</div>
+          <div class="blk" style="text-align:center">Feed · Organizations · Inbox (2) · Me</div>
+        </div>
+      </div>
+      <div class="note">The board from the prototype, with the org switcher up top and four bottom tabs. Alerts surface as the Inbox badge.</div>
+    </div>
+
+    <!-- W4 -->
+    <div class="wire">
+      <div class="wire-head"><b>W4 · Browse organizations</b><span>beat 3 · filter</span></div>
+      <div class="screen">
+        <div class="bar"><span class="logo">Organizations</span><span class="who">35,361 in WA</span></div>
+        <div class="body">
+          <div class="blk input">🔍 name or EIN</div>
+          <div class="chips"><span class="chip on">Cause: Food ▾</span><span class="chip on">King County ▾</span><span class="chip">Size ▾</span><span class="chip">Tags ▾</span><span class="chip">On HelpBook</span><span class="chip">Has open needs</span></div>
+          <div class="blk">463 results · sorted by activity</div>
+          <div class="blk card"><b>Ballard Food Bank</b>Seattle · Food, Agriculture &amp; Nutrition · $10M+ · <span class="pill offer">verified</span> · 2 open needs</div>
+          <div class="blk card"><b>West Seattle Food Bank</b>Seattle · Food · $5–10M · <span class="pill offer">verified</span></div>
+          <div class="blk card"><b>Food Lifeline</b>Seattle · Food · $50M+</div>
+          <div class="blk card"><b>Rainier Valley Food Bank</b>Seattle · (uncategorized — tell us) · $5–10M</div>
+        </div>
+      </div>
+      <div class="note">Filters come straight from IRS fields (NTEE cause, city/county, income band, foundation type) plus HelpBook's own: verified, self-declared tags, open needs. Every org appears whether or not they've joined — joining just lights it up.</div>
+    </div>
+
+    <!-- W5 -->
+    <div class="wire">
+      <div class="wire-head"><b>W5 · Organization profile</b><span>beat 3 · tags</span></div>
+      <div class="screen">
+        <div class="bar"><span class="logo">← Ballard Food Bank</span><span class="who">Follow · Message</span></div>
+        <div class="body">
+          <div class="blk card"><b>Ballard Food Bank <span class="pill offer">verified</span></b>Seattle, WA · Food, Agriculture &amp; Nutrition · Public charity since 1990 · ballardfoodbank.org</div>
+          <div class="blk">Mission: Food, connection, and hope for our neighbors in Northwest Seattle. <i>(editable by members)</i></div>
+          <div class="blk h">We often need</div>
+          <div class="chips"><span class="chip">laptops</span><span class="chip">refrigeration</span><span class="chip">pallets</span><span class="chip">drivers</span><span class="chip">+ add</span></div>
+          <div class="blk h">We often have</div>
+          <div class="chips"><span class="chip">surplus produce</span><span class="chip">cardboard</span><span class="chip">+ add</span></div>
+          <div class="blk h">Open listings (2)</div>
+          <div class="blk card"><span class="pill need">NEED · Critical</span> Laptops for client intake stations</div>
+          <div class="blk">From the IRS record: EIN 91-1428805 · 990 filer · revenue $17.3M (2025) · <u>ProPublica</u> · <u>IRS TEOS</u></div>
+        </div>
+      </div>
+      <div class="note"><b>Tags are the abstraction users asked for.</b> "We often need / we often have" are org-level capability tags that drive alerts even when there's no listing yet. The IRS block is read-only and always cited.</div>
+    </div>
+
+    <!-- W6 -->
+    <div class="wire">
+      <div class="wire-head"><b>W6 · Post a need</b><span>beat 3</span></div>
+      <div class="screen">
+        <div class="bar"><span class="logo">← New need</span><span class="who">as Ballard Food Bank</span></div>
+        <div class="body">
+          <div class="blk input">What do you need? — "Laptops for client intake stations"</div>
+          <div class="row"><div class="blk">Category: Technology ▾</div><div class="blk">Urgency: Critical ▾</div></div>
+          <div class="row"><div class="blk">Qty: 12</div><div class="blk">Unit: laptops</div><div class="blk">By: Sep 30</div></div>
+          <div class="blk input">Details — Our intake computers died; clients can't register…</div>
+          <div class="chips"><span class="chip on">laptops</span><span class="chip on">computers</span><span class="chip">intake</span><span class="chip">+ tag</span></div>
+          <div class="blk">📷 Add photos · 📍 Pickup/delivery: we can receive shipments</div>
+          <div class="blk card"><b>Likely matches right now</b>Computers 4 People in Need · 15 refurbished laptops · Bellingham</div>
+          <div class="btn primary">Post need</div>
+        </div>
+      </div>
+      <div class="note">Suggested tags come from the title. "Likely matches right now" reuses the prototype's scorer before the post even goes live — a reason to finish the form.</div>
+    </div>
+
+    <!-- W7 -->
+    <div class="wire">
+      <div class="wire-head"><b>W7 · Alert → need detail</b><span>beats 4–5</span></div>
+      <div class="screen">
+        <div class="bar"><span class="logo">HelpBook</span><span class="who">Computers 4 People ▾</span></div>
+        <div class="body">
+          <div class="blk card" style="border-color:var(--need)"><b>🔔 A need matches what you have</b>Ballard Food Bank needs 12 laptops (Critical). You listed "we often have: laptops".</div>
+          <div class="blk card"><span class="pill need">NEED · Critical</span> <b>Laptops for client intake stations</b>Ballard Food Bank · Seattle · 12 laptops · by Sep 30<br>Our intake computers died; clients can't register for services.</div>
+          <div class="blk">Match score 120 — same category · shared keywords: laptop, computer · need is critical · your offer covers full quantity</div>
+          <div class="row"><div class="btn offer">I have this</div><div class="btn">Let's collaborate</div></div>
+          <div class="blk">"I have this" proposes your open offer <i>15 refurbished laptops</i> — or create a new one.</div>
+          <div class="blk">Not relevant? <u>Tune my alerts</u></div>
+        </div>
+      </div>
+      <div class="note">Two intents, two buttons. <b>I have this</b> creates the match (prototype behavior). <b>Let's collaborate</b> opens a thread without a listing — "we should team up on this" — which the prototype doesn't have yet.</div>
+    </div>
+
+    <!-- W8 -->
+    <div class="wire">
+      <div class="wire-head"><b>W8 · Match thread</b><span>beat 6</span></div>
+      <div class="screen">
+        <div class="bar"><span class="logo">← Ballard Food Bank</span><span class="who">Match · Accepted</span></div>
+        <div class="body">
+          <div class="blk card"><span class="pill need">NEED</span> 12 laptops ↔ <span class="pill offer">OFFER</span> 15 refurbished laptops<br>Proposed by Computers 4 People · accepted by Ballard Food Bank</div>
+          <div class="msg">We can send 12 of the 15 this week.<small>Jordan · Computers 4 People · 10:02</small></div>
+          <div class="msg me">Yes please! Ship to 7001 24th Ave NW, Seattle 98117.<small>Casey · Ballard Food Bank · 10:05</small></div>
+          <div class="msg">Shipping Tuesday. Tracking to follow. Casey, best phone for the driver?<small>Jordan · 10:06</small></div>
+          <div class="blk input">Write a message…</div>
+          <div class="row"><div class="btn">Share contact card</div><div class="btn primary">Mark complete</div></div>
+        </div>
+      </div>
+      <div class="note">Prototype behavior, plus "share contact card" so people can move off-app deliberately. Completing closes both listings and records the outcome on both profiles.</div>
+    </div>
+
+    <!-- W9 -->
+    <div class="wire">
+      <div class="wire-head"><b>W9 · Business account</b><span>money &amp; ads</span></div>
+      <div class="screen">
+        <div class="bar"><span class="logo">HelpBook</span><span class="who">Puget Sound Office Supply ▾</span></div>
+        <div class="body">
+          <div class="blk card"><b>Puget Sound Office Supply <span class="pill offer">verified business</span></b>UBI 604-123-456 · Plan: Local ($49/mo) · renews Oct 1</div>
+          <div class="blk h">Needs you could fill</div>
+          <div class="blk card"><span class="pill need">NEED · High</span> 30 folding chairs — Rebuilding Together Seattle</div>
+          <div class="blk card"><span class="pill need">NEED</span> Printer toner — West Seattle Food Bank</div>
+          <div class="blk h">Your offers</div>
+          <div class="blk card"><span class="pill offer">OFFER</span> Surplus desk chairs (20) · 2 matches</div>
+          <div class="blk h">Sponsored placements</div>
+          <div class="blk card"><b>Category sponsor: Technology</b> "Technology needs — supported by Puget Sound Office Supply" · <span class="pill warn">pending review</span></div>
+          <div class="btn">Request a placement</div>
+        </div>
+      </div>
+      <div class="note">Businesses pay; nonprofits don't. Placements are limited to an allow-list (see <a href="#money">Money &amp; ads</a>) and every one is reviewed by an admin and labeled "Sponsored".</div>
+    </div>
+
+    <!-- W10 -->
+    <div class="wire">
+      <div class="wire-head"><b>W10 · Admin: verification queue</b><span>trust</span></div>
+      <div class="screen">
+        <div class="bar"><span class="logo">Admin</span><span class="who">7 pending</span></div>
+        <div class="body">
+          <div class="chips"><span class="chip on">Org claims (5)</span><span class="chip">Business (1)</span><span class="chip">Placements (1)</span><span class="chip">Reports (0)</span></div>
+          <div class="blk card"><b>Rainier Valley Food Bank ← maria.p@gmail.com</b>Method: document upload (IRS determination letter.pdf) · 2 days ago<br>IRS record: Seattle · 501(c)(3) · Z99Z (unclassified)</div>
+          <div class="row"><div class="btn offer">Approve</div><div class="btn">Ask for more</div><div class="btn">Reject</div></div>
+          <div class="blk card"><b>SE Seattle Tool Library ← j@setoollibrary.org</b>Method: email domain — <i>auto-approved</i></div>
+          <div class="blk card"><b>Spokane Youth Sports ← coach.dan@yahoo.com</b>Method: mailed code — awaiting code entry</div>
+        </div>
+      </div>
+      <div class="note">Every non-instant verification is a human decision with the IRS record beside it. This queue is also where the trust model gets tuned as we learn which methods are abused.</div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <h2 id="flow">Flow</h2>
+  <h3>The story as a sequence</h3>
+  <div class="diagram">
+<pre class="mermaid">
+sequenceDiagram
+    autonumber
+    actor Casey as Casey (Ballard Food Bank)
+    participant HB as HelpBook
+    participant M as Matcher + Alerts
+    actor Jordan as Jordan (Computers 4 People)
+
+    Casey->>HB: Sign up (Google) · "I'm with a nonprofit"
+    Casey->>HB: Claim "Ballard Food Bank" (EIN 91-1428805)
+    HB-->>Casey: Email domain matches org website → verified
+    Casey->>HB: Post NEED: 12 laptops, Technology, Critical
+    HB->>M: listing.created
+    M->>M: Score open offers + org tags ("we often have: laptops")
+    M-->>Jordan: Alert: a need matches what you have (in-app, email, push)
+    Jordan->>HB: Open need → "I have this" (proposes offer #4)
+    HB-->>Casey: Alert: Computers 4 People can fill your need
+    Casey->>HB: Accept match
+    HB-->>Jordan: Match accepted · thread opened
+    Jordan->>HB: Message: "We can send 12 this week"
+    Casey->>HB: Message: shipping address · share contact card
+    Jordan->>HB: Mark complete
+    HB-->>Casey: Both listings Fulfilled · outcome recorded on both profiles
+</pre>
+    <div class="diagram-cap">Steps 4–15 exist in the prototype today (minus alerts and contact cards). Steps 1–3 and 7 are Step 2.</div>
+  </div>
+
+  <h3>Joining: which door, which gate</h3>
+  <div class="diagram">
+<pre class="mermaid">
+flowchart TD
+    A[Create account: email or Google] --> B{I'm here as…}
+    B -->|Nonprofit| C[Search IRS-listed org by name or EIN]
+    C --> D{Verify association}
+    D -->|Email domain matches org website| E[Verified instantly]
+    D -->|Mailed code / document / member invite| F[Pending → admin queue]
+    F -->|approved| E
+    F -->|rejected| G[Browse only]
+    E --> H[Post needs & offers · message · free]
+    B -->|Business| I[Business name + WA UBI lookup + email domain]
+    I --> J[Choose plan · add payment]
+    J --> K[Post offers · request sponsored placements]
+    B -->|Supporter| L{Join gate}
+    L -->|Pay what you want| N[Follow orgs · get alerts]
+    L -->|Show a donation receipt to a WA 501c3 in last 12 months| M[Proof → admin queue] --> N
+</pre>
+    <div class="diagram-cap">Nonprofits never hit a paywall. Verification methods are pluggable; the two automatic ones (email domain, UBI lookup) keep the admin queue small.</div>
+  </div>
+
+  <h3>Lifecycles</h3>
+  <div class="diagram">
+<pre class="mermaid">
+stateDiagram-v2
+    direction LR
+    state "Org claim" as Claim {
+        [*] --> Pending
+        Pending --> Verified : auto (email domain) or admin approves
+        Pending --> Rejected : admin rejects
+        Verified --> Revoked : member removed / abuse
+    }
+    state "Listing" as L {
+        [*] --> Open
+        Open --> Matched : match accepted
+        Matched --> Fulfilled : match completed
+        Matched --> Open : match cancelled
+        Open --> Closed : owner closes
+        Open --> Expired : past expiry
+    }
+    state "Match" as Mt {
+        [*] --> Proposed
+        Proposed --> Accepted : other side accepts
+        Proposed --> Declined : other side declines
+        Accepted --> Completed : either side
+        Accepted --> Cancelled : either side
+        Proposed --> Cancelled : proposer withdraws
+    }
+</pre>
+    <div class="diagram-cap">Listing and Match lifecycles are exactly what the prototype enforces today; Org claim is new.</div>
+  </div>
+
+  <!-- ============================================================ -->
+  <h2 id="data">Data model</h2>
+  <p>What exists now is in the left cluster (IRS data, listings, matches, messages). Step 2 adds people, memberships, verification, tags, alerts, money, and moderation. Nothing about the exchange itself changes — the acting-org header simply becomes a real login.</p>
+  <div class="diagram">
+<pre class="mermaid">
+erDiagram
+    ORGANIZATION ||--o| ORG_PROFILE : "claimed details"
+    ORGANIZATION ||--o{ ORG_TAG : "we often need / have"
+    TAG ||--o{ ORG_TAG : ""
+    ORGANIZATION ||--o{ LISTING : posts
+    LISTING ||--o{ MATCH : "as need"
+    LISTING ||--o{ MATCH : "as offer"
+    MATCH ||--o{ MESSAGE : thread
+    ORGANIZATION ||--o{ ORG_CLAIM : "claimed by"
+    USER ||--o{ ORG_CLAIM : files
+    USER ||--o{ ORG_MEMBER : ""
+    ORGANIZATION ||--o{ ORG_MEMBER : ""
+    USER ||--o{ BUSINESS_MEMBER : ""
+    BUSINESS ||--o{ BUSINESS_MEMBER : ""
+    BUSINESS ||--o{ LISTING : "offers"
+    BUSINESS ||--o| SUBSCRIPTION : pays
+    USER ||--o| SUBSCRIPTION : "pay what you want"
+    USER ||--o{ DONATION_PROOF : submits
+    BUSINESS ||--o{ PLACEMENT : sponsors
+    ORGANIZATION ||--o{ ALERT_RULE : ""
+    USER ||--o{ ALERT_RULE : ""
+    USER ||--o{ NOTIFICATION : receives
+    USER ||--o{ FOLLOW : ""
+    ORGANIZATION ||--o{ FOLLOW : ""
+    USER ||--o{ REPORT : files
+
+    ORGANIZATION {
+        string ein PK "from IRS BMF"
+        string name
+        string city
+        string ntee_code
+        string foundation_code
+        bool is_501c3
+        bool is_active "Pub 78 + not revoked"
+    }
+    ORG_PROFILE {
+        string ein FK
+        string mission
+        string website
+        string public_contact
+        string logo_url
+    }
+    TAG {
+        int id PK
+        string name "laptops, refrigeration, drivers"
+        string kind "need | have | cause"
+    }
+    ORG_TAG {
+        string ein FK
+        int tag_id FK
+        string kind "need | have"
+    }
+    USER {
+        guid id PK
+        string email
+        string display_name
+        string auth_provider "google | email"
+        string account_types "nonprofit, business, supporter, admin"
+        datetime created_at
+    }
+    ORG_CLAIM {
+        int id PK
+        guid user_id FK
+        string ein FK
+        string method "email_domain | mailed_code | document | member_invite | admin"
+        string status "pending | verified | rejected | revoked"
+        string evidence_ref
+        guid reviewed_by
+    }
+    ORG_MEMBER {
+        guid user_id FK
+        string ein FK
+        string role "owner | editor | viewer"
+    }
+    BUSINESS {
+        int id PK
+        string name
+        string ubi "WA business id"
+        string domain
+        string status "pending | verified"
+    }
+    BUSINESS_MEMBER {
+        guid user_id FK
+        int business_id FK
+        string role
+    }
+    SUBSCRIPTION {
+        int id PK
+        string owner_type "business | user"
+        string tier "local | regional | pwyw"
+        decimal amount
+        string stripe_id
+        string status
+        datetime renews_at
+    }
+    DONATION_PROOF {
+        int id PK
+        guid user_id FK
+        string ein FK "recipient 501c3"
+        date donated_on
+        string evidence_ref
+        string status "pending | accepted | rejected"
+    }
+    LISTING {
+        int id PK
+        string kind "need | offer"
+        string owner_type "org | business"
+        string owner_id
+        string category
+        string title
+        int urgency
+        string status
+        string tags
+        datetime expires_at
+    }
+    MATCH {
+        int id PK
+        int need_listing_id FK
+        int offer_listing_id FK
+        string proposed_by
+        string status
+        int score
+    }
+    MESSAGE {
+        int id PK
+        int match_id FK
+        guid sender_user_id FK
+        string body
+        datetime sent_at
+    }
+    ALERT_RULE {
+        int id PK
+        string owner_type "org | user"
+        string owner_id
+        string categories
+        string keywords
+        int radius_miles
+        string channels "inapp | email | push"
+    }
+    NOTIFICATION {
+        int id PK
+        guid user_id FK
+        string type "match_found | match_proposed | message | claim_verified"
+        string payload_json
+        datetime read_at
+    }
+    PLACEMENT {
+        int id PK
+        int business_id FK
+        string type "sponsored_offer | need_sponsorship | category_sponsor | directory_card"
+        string target "category or listing id"
+        string status "pending | approved | live | ended | rejected"
+        date starts_on
+        date ends_on
+    }
+    FOLLOW {
+        guid user_id FK
+        string ein FK
+    }
+    REPORT {
+        int id PK
+        guid reporter_id FK
+        string target_type
+        string target_id
+        string reason
+        string status
+    }
+</pre>
+    <div class="diagram-cap">Bold facts: an org is identified by EIN forever (no duplicate orgs); a listing can be owned by an org <em>or</em> a business; verification evidence is a reference (file/secret), never inline PII; tags are shared vocabulary so "laptops" on one profile means the same as "laptops" in another's need.</div>
+  </div>
+
+  <!-- ============================================================ -->
+  <h2 id="verify">Verification</h2>
+  <p>The question is always "is this person allowed to speak for this organization?" — so verification hangs off an <code>OrgClaim</code> with a pluggable <code>method</code>. We can ship one method and add others without touching the rest of the system.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Method</th><th>How it works</th><th>Speed</th><th>Strength</th><th>Data we already have</th></tr></thead>
+    <tbody>
+      <tr><td>Email domain</td><td>Sign-up email's domain equals the org's website domain on file</td><td>Instant</td><td>Good for orgs with their own domain; useless for gmail-run orgs</td><td>Website from IRS 990-N / 990 XML; WA SOS later</td></tr>
+      <tr><td>Mailed code</td><td>Postcard with a code to the IRS-registered address</td><td>~1 week</td><td>Strong; Google Business uses the same trick</td><td>Address for all 42,510 orgs</td></tr>
+      <tr><td>Document upload</td><td>IRS determination letter or WA charity registration + a photo ID name match</td><td>Admin review, 1–2 days</td><td>Strong but manual</td><td>EIN on the letter must match</td></tr>
+      <tr><td>Member invite</td><td>An already-verified Owner invites a colleague by email</td><td>Instant</td><td>Inherits trust; most day-to-day joins will be this</td><td>—</td></tr>
+      <tr><td>Admin</td><td>Staff verifies by phone using the number on WA SOS registration</td><td>Days</td><td>Strong; the fallback for everything else</td><td>Phone via SOS public-records extract</td></tr>
+    </tbody>
+  </table></div>
+  <p><b>Businesses</b>: WA UBI lookup (state business license) + email domain + a payment method on file. <b>Supporters</b>: email + the join gate (PWYW payment or a donation receipt reviewed by admin). All three feed the same admin queue (W10).</p>
+
+  <!-- ============================================================ -->
+  <h2 id="money">Money &amp; ads</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Who</th><th>Pays</th><th>Gets</th></tr></thead>
+    <tbody>
+      <tr><td>Nonprofits</td><td>Nothing, ever</td><td>Everything: post, match, message, profile, alerts</td></tr>
+      <tr><td>Businesses</td><td>Subscription — e.g. <em>Local</em> (one county) and <em>Regional</em> (statewide); prices TBD</td><td>Verified badge, post offers, see the needs feed, request sponsored placements, "fulfilled by" credit on completed matches</td></tr>
+      <tr><td>Supporters</td><td>Pay-what-you-want (suggested amount, floor TBD — see decision 2) <em>or</em> proof of a recent donation to any WA 501(c)(3)</td><td>Follow orgs, alerts, public view of everything</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Placements businesses can buy (allow-list — nothing else)</h4>
+  <ul>
+    <li><b>Sponsored offer</b> — their own offer pinned at the top of its category feed.</li>
+    <li><b>Need sponsorship</b> — "Fulfilled thanks to ⟨Business⟩" on a completed match they filled; shown on both orgs' profiles.</li>
+    <li><b>Category sponsor</b> — "Technology needs — supported by ⟨Business⟩" banner on one category, one sponsor at a time.</li>
+    <li><b>Directory card</b> — a business card in the "Businesses who give" directory.</li>
+  </ul>
+  <p>Rules: every placement is reviewed by an admin before going live, labeled "Sponsored", tied to giving (no generic advertising, no political or fundraising-solicitation content), and never inserted into private threads.</p>
+
+  <div class="callout warn">
+    <p><b>Compliance line we don't cross:</b> HelpBook charges for its own service. It never collects, holds, or routes donations to nonprofits — cash giving links out to the org's own page. Doing otherwise in Washington can make the platform a commercial fundraiser under RCW 19.09 (registration, contracts, reporting) and raises money-transmitter questions. The supporter "donation proof" gate is evidence of a gift made elsewhere, not a payment through us.</p>
+  </div>
+
+  <!-- ============================================================ -->
+  <h2 id="match">Matching &amp; alerts</h2>
+  <p>The prototype scores a Need against Offers using category, shared keywords, location, urgency, and quantity — and returns the reasons. Step 2 widens the inputs so groups are "determined to be related" even when there's no listing yet:</p>
+  <ul>
+    <li><b>Org capability tags</b> — "we often have: laptops" on Computers 4 People means Ballard's laptop need alerts them with no offer posted.</li>
+    <li><b>Cause relatedness</b> — NTEE major groups that tend to trade (Food ↔ Human Services, Housing ↔ Materials) get a small boost; learned from completed matches over time.</li>
+    <li><b>Geography</b> — county and radius instead of city string equality (ZIP centroids first, real geocoding later via the NCCS geocoded BMF).</li>
+    <li><b>History</b> — orgs that completed a match before are more likely to again.</li>
+  </ul>
+  <p><b>Alerts</b> are rules, not spam: each org gets a default <code>AlertRule</code> generated from its tags, category, and area, editable from W7's "tune my alerts". Channels: in-app always; email and push opt-in. A digest option batches low-urgency matches daily; Critical needs go out immediately.</p>
+
+  <!-- ============================================================ -->
+  <h2 id="decide">Decisions to make before building</h2>
+  <ol class="decisions">
+    <li><b>Can an unverified nonprofit user post?</b> Proposed: browse and draft only until verified. Alternative: post with an "unverified" badge and hold messages. Trade-off is speed of first value vs. impersonation risk.</li>
+    <li><b>Pay-what-you-want floor.</b> $0 allowed (true PWYW, max signups) or a $1 floor (keeps a card on file, deters bots)? Proposed: $0 allowed, card optional.</li>
+    <li><b>Can supporters respond to needs?</b> Proposed: not in v1 — they follow and get alerts. v2 adds "I can help" personal offers once moderation exists.</li>
+    <li><b>Business pricing and tiers.</b> Two tiers by geography is the proposal; needs a number and a free trial decision.</li>
+    <li><b>Placement allow-list.</b> Confirm the four types above are the right four, and whether "category sponsor" is exclusive.</li>
+    <li><b>"Let's collaborate" threads without a listing.</b> Proposed: yes — a lightweight org-to-org thread type, rate-limited, since that's half of the ask ("we should collaborate on that").</li>
+    <li><b>Geography unit.</b> County + radius from ZIP centroid. Cheap and matches how people think about "near me".</li>
+    <li><b>The name.</b> "HelpBook" is the working title — worth a quick trademark/domain check before it appears on a screen.</li>
+    <li><b>Web framework</b> for the wireframes: Blazor (stays C#, shares DTOs) vs. React (bigger hiring pool, easier mobile-web parity). Doesn't need deciding until the wireframes are signed off.</li>
+  </ol>
+
+  <!-- ============================================================ -->
+  <h2 id="plan">Step 2 plan</h2>
+  <p>Each phase is shippable on its own and demonstrable through the existing API and CLI before the UI exists. Order is chosen so the "watch this" story becomes real end-to-end as early as possible.</p>
+  <div class="phases">
+    <div class="phase"><div class="id">2a</div><div><b>Identity &amp; accounts</b><span>ASP.NET Identity with Google + email login; <code>User</code> with account types; permission-based policies (same pattern as LightningQuote). The <code>X-Org-Ein</code> header is replaced by the login's memberships. Nothing below the controllers changes.</span></div></div>
+    <div class="phase"><div class="id">2b</div><div><b>Org claiming &amp; verification</b><span><code>OrgClaim</code> with pluggable methods; email-domain auto-verify using websites from the IRS 990-N file (also gives the "is this org alive" flag via Pub 78 + revocation list); admin queue endpoints; <code>OrgMember</code> roles and invites. <em>Story beats 1–2 done.</em></span></div></div>
+    <div class="phase"><div class="id">2c</div><div><b>Profiles, tags, directory</b><span><code>OrgProfile</code>, shared <code>Tag</code> vocabulary, "we often need / have"; directory search with IRS + HelpBook filters; follow. <em>W4, W5.</em></span></div></div>
+    <div class="phase"><div class="id">2d</div><div><b>Alerts &amp; notifications</b><span><code>AlertRule</code>, <code>Notification</code>, matcher extended with org tags and geography; in-app + email (SendGrid) + push-ready; digest vs. immediate. <em>Story beat 4 — the one that makes it feel alive.</em></span></div></div>
+    <div class="phase"><div class="id">2e</div><div><b>Collaborate threads &amp; contact cards</b><span>Org-to-org threads without a listing; share-contact action; completed-match history on profiles. <em>W7's second button, W8.</em></span></div></div>
+    <div class="phase"><div class="id">2f</div><div><b>Business accounts</b><span><code>Business</code>, UBI verification, Stripe Billing subscription, business-owned offers, <code>Placement</code> types with admin review and "Sponsored" labeling. <em>W9.</em></span></div></div>
+    <div class="phase"><div class="id">2g</div><div><b>Supporters</b><span>PWYW via Stripe Checkout, donation-proof upload + review, follows and alerts. Off-platform donate links on org profiles.</span></div></div>
+    <div class="phase"><div class="id">2h</div><div><b>Web app</b><span>Framework chosen after wireframe sign-off; implement W1–W10 against the API and SignalR hub. Mobile apps later reuse the same contracts (MAUI can reference the DTO assembly directly).</span></div></div>
+    <div class="phase"><div class="id">∞</div><div><b>Throughout</b><span>Moderation and reporting, listing expiry job, audit log, rate limits per account type, privacy rules (IRS "in care of" names and SOS officer contacts never public).</span></div></div>
+  </div>
+
+  <p class="meta">Prototype source: <span class="mono">C:\Projects\WaNonprofitConnect</span> — run <span class="mono">dotnet run --project src/WaNonprofitConnect.Cli -- demo</span> against the API for the live version of beats 3–6.</p>
+</div>
