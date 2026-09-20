@@ -274,24 +274,30 @@ function go(screen, sel){ S.screen = screen; if (sel !== undefined) S.sel = sel;
 function notify(ein, type, text, ref){ S.notifs.unshift({ id:Date.now()+Math.random(), ein, type, text, ref, at:new Date().toISOString(), read:false }); }
 
 // ---- actions -----------------------------------------------------------
-function postListing(d) {
-  const l = L(S.nextId++, d.kind, S.user.ein, d.category, d.title.trim(), d.desc||'', +d.qty||null, d.unit||'', d.urgency, d.tags, new Date().toISOString());
+function postListing(d, opts={}) {
+  const asEin = opts.asEin || S.user.ein;
+  const l = L(S.nextId++, d.kind, asEin, d.category, d.title.trim(), d.desc||'', +d.qty||null, d.unit||'', d.urgency, d.tags, new Date().toISOString());
   S.listings.unshift(l);
   // alerts: orgs with a matching open listing OR a matching capability tag
   const alerted = new Set();
   for (const sg of suggestions(l)) { if (!alerted.has(sg.l.ein)) { alerted.add(sg.l.ein); notify(sg.l.ein, 'match_found', `${l.kind==='Need'?'A need matches what you have':'An offer matches what you need'}: ${ORG(l.ein).name} — ${l.title}`, { listing:l.id }); } }
   for (const o of ORGS) { if (o.ein !== l.ein && !alerted.has(o.ein) && joined(o.ein)) { const hits = tagScore(l, o); if (hits.length) { alerted.add(o.ein); notify(o.ein, 'match_found', `${ORG(l.ein).name} ${l.kind==='Need'?'needs':'has'} "${l.title}" — your profile says you often ${l.kind==='Need'?'have':'need'} ${hits.join(', ')}`, { listing:l.id }); } } }
-  S.draft = null; go('listing', l.id); toast(`Posted. ${alerted.size} organization${alerted.size===1?'':'s'} alerted.`);
+  S.draft = null;
+  if (!opts.silent) { go('listing', l.id); toast(`Posted. ${alerted.size} organization${alerted.size===1?'':'s'} alerted.`); }
+  return l;
 }
-function propose(needId, offerId, note) {
+function propose(needId, offerId, note, opts={}) {
   const need = S.listings.find(x=>x.id===needId), offer = S.listings.find(x=>x.id===offerId);
-  if (S.matches.some(m => m.need===needId && m.offer===offerId)) { toast('Already proposed.'); return; }
-  const m = { id:S.matches.length+1, need:needId, offer:offerId, by:S.user.ein, status:'Proposed', score:score(need,offer).s, msgs:[], at:new Date().toISOString() };
-  if (note) m.msgs.push({ from:S.user.ein, who:S.user.name, text:note, at:m.at });
+  const existing = S.matches.find(m => m.need===needId && m.offer===offerId);
+  if (existing) { if (!opts.silent) { go('match', existing.id); toast('Already proposed.'); } return existing; }
+  const who = opts.as || S.user;
+  const m = { id:S.matches.length+1, need:needId, offer:offerId, by:who.ein, status:'Proposed', score:score(need,offer).s, msgs:[], at:new Date().toISOString() };
+  if (note) m.msgs.push({ from:who.ein, who:who.name, text:note, at:m.at });
   S.matches.push(m);
-  const other = S.user.ein === need.ein ? offer.ein : need.ein;
-  notify(other, 'match_proposed', `${ORG(S.user.ein).name} wants to connect: "${need.title}" ↔ "${offer.title}"`, { match:m.id });
-  go('match', m.id); toast('Proposed — waiting for ' + ORG(other).name);
+  const other = who.ein === need.ein ? offer.ein : need.ein;
+  notify(other, 'match_proposed', `${ORG(who.ein).name} wants to connect: "${need.title}" ↔ "${offer.title}"`, { match:m.id });
+  if (!opts.silent) { go('match', m.id); toast('Proposed — waiting for ' + ORG(other).name); }
+  return m;
 }
 function respond(mid, accept) {
   const m = S.matches.find(x=>x.id===mid); const need = S.listings.find(x=>x.id===m.need), offer = S.listings.find(x=>x.id===m.offer);
@@ -317,7 +323,9 @@ function sendMsg(mid, text) {
 }
 function switchTo(personId) {
   const p = PEOPLE.find(x=>x.id===personId); S.user = { ...p }; if (!S.joinedEins.includes(p.ein)) S.joinedEins.push(p.ein);
-  S.sheet = null; if (['signup','role','claim','verify'].includes(S.screen)) S.screen = 'feed'; render();
+  S.sheet = null; if (['signup','role','claim','verify'].includes(S.screen)) S.screen = 'feed';
+  const unread = S.notifs.filter(n=>n.ein===p.ein&&!n.read).length;
+  render(); if (unread) toast(`${p.name} · ${ORG(p.ein).name}: ${unread} new alert${unread===1?'':'s'} in Inbox`);
 }
 
 // =====================================================================
@@ -328,12 +336,17 @@ const STEPS = [
   { t:'Claim the org', s:'It’s already in the IRS data.', n:'Casey picks <b>"A nonprofit"</b>, types "Ballard Food" — and the org is already there, straight from the IRS file. Because casey@<b>ballardfoodbank.org</b> matches the org’s website, verification is instant. No forms.', enter(){ S.screen='role'; }, async auto(){ S.signup.role='np'; go('claim'); await wait(500); S.claimQuery='Ballard Food'; render(); await wait(600); S.claimPick='911428805'; render(); await wait(600); go('verify'); await wait(900); finishClaim(); } },
   { t:'Browse the board', s:'Needs and offers, and every org in WA.', n:'Casey lands on the board: what nearby groups need and have right now. The <b>Orgs</b> tab lists all 35,361 WA 501(c)(3)s with filters for cause, city, size, and self-declared tags — whether or not they’ve joined.', enter(){ if(!S.user) switchTo('casey'); S.feedFilter='All'; S.screen='feed'; }, async auto(){ go('feed'); await wait(900); S.orgFilter={q:'',cause:'K',city:'',joined:false,open:false}; go('orgs'); await wait(1200); go('org','911428805'); } },
   { t:'Post the need', s:'"12 laptops for client intake stations."', n:'Casey taps <b>+</b> and posts the need. Before it’s even submitted, HelpBook shows <b>likely matches</b> — Computers 4 People in Need has 15 refurbished laptops listed. Posting alerts every org whose listings or tags fit.', enter(){ if(!S.user) switchTo('casey'); S.draft={kind:'Need',category:'Technology',title:'Laptops for client intake stations',desc:'Our intake computers died; clients can’t register for services.',qty:12,unit:'laptops',urgency:'Critical',tags:'laptops,computers,intake'}; S.screen='post'; }, auto(){ if(!S.draft||!S.draft.title) this.enter(); if(!S.listings.some(l=>l.title==='Laptops for client intake stations')) postListing(S.draft); else go('feed'); } },
-  { t:'Jordan gets alerted', s:'Meanwhile in Bellingham…', n:'<b>Switch perspective to Jordan</b> at Computers 4 People in Need. Their inbox has an alert: a Critical need matches their laptops. Jordan opens it and taps <b>"I have this"</b> — their existing offer is proposed as the match.', enter(){ switchTo('jordan'); S.screen='inbox'; }, async auto(){ switchTo('jordan'); go('inbox'); await wait(900); const l=S.listings.find(x=>x.title==='Laptops for client intake stations'); if(!l) return; go('listing', l.id); await wait(1000); propose(l.id, 4, 'We can send 12 of the 15 this week.'); } },
-  { t:'Casey accepts', s:'Back at Ballard Food Bank.', n:'<b>Switch back to Casey.</b> The inbox says Computers 4 People wants to connect. Casey opens the match, <b>accepts</b>, and replies with the shipping address. Both listings flip to Matched.', enter(){ switchTo('casey'); S.screen='inbox'; }, async auto(){ switchTo('casey'); go('inbox'); await wait(900); const m=S.matches.find(x=>x.offer===4); if(!m) return; go('match', m.id); await wait(800); if(m.status==='Proposed') respond(m.id,true); await wait(700); sendMsg(m.id,'Yes please! Ship to 7001 24th Ave NW, Seattle 98117.'); } },
-  { t:'Hand-off, done', s:'Either side marks it complete.', n:'Jordan ships the laptops and taps <b>Mark complete</b>. Both listings become Fulfilled and the outcome shows on both profiles — so the next org looking for laptops knows who delivers.', enter(){ switchTo('jordan'); const m=S.matches.find(x=>x.offer===4); S.screen = m?'match':'inbox'; S.sel = m?m.id:null; }, async auto(){ switchTo('jordan'); const m=S.matches.find(x=>x.offer===4); if(!m) return; go('match', m.id); await wait(700); sendMsg(m.id,'Shipping Tuesday, tracking to follow. Thanks Casey!'); await wait(700); if(m.status==='Accepted') complete(m.id); } },
+  { t:'Jordan gets alerted', s:'Meanwhile in Bellingham…', n:'<b>Switch perspective to Jordan</b> at Computers 4 People in Need. Their inbox has an alert: a Critical need matches their laptops. Jordan opens it and taps <b>"I have this"</b> — their existing offer is proposed as the match.', enter(){ ensureNeed(); switchTo('jordan'); S.screen='inbox'; }, async auto(){ const l=ensureNeed(); switchTo('jordan'); go('inbox'); await wait(900); go('listing', l.id); await wait(1000); propose(l.id, 4, 'We can send 12 of the 15 this week.'); } },
+  { t:'Casey accepts', s:'Back at Ballard Food Bank.', n:'<b>Switch back to Casey.</b> The inbox says Computers 4 People wants to connect. Casey opens the match, <b>accepts</b>, and replies with the shipping address. Both listings flip to Matched.', enter(){ ensureProposed(); switchTo('casey'); S.screen='inbox'; }, async auto(){ const m=ensureProposed(); switchTo('casey'); go('inbox'); await wait(900); go('match', m.id); await wait(800); if(m.status==='Proposed') respond(m.id,true); await wait(700); sendMsg(m.id,'Yes please! Ship to 7001 24th Ave NW, Seattle 98117.'); } },
+  { t:'Hand-off, done', s:'Either side marks it complete.', n:'Jordan ships the laptops and taps <b>Mark complete</b>. Both listings become Fulfilled and the outcome shows on both profiles — so the next org looking for laptops knows who delivers.', enter(){ const m=ensureAccepted(); switchTo('jordan'); S.screen='match'; S.sel=m.id; }, async auto(){ const m=ensureAccepted(); switchTo('jordan'); go('match', m.id); await wait(700); sendMsg(m.id,'Shipping Tuesday, tracking to follow. Thanks Casey!'); await wait(700); if(m.status==='Accepted') complete(m.id); } },
   { t:'Now it’s yours', s:'Explore freely.', n:'That’s the whole loop: <b>claim → post → alert → connect → message → done</b>. Try it from any side: switch perspective (tap the org chip), post something of your own, or browse the org directory. <b>Reset</b> starts the story over.', enter(){ if(!S.user) switchTo('casey'); go('org','911428805'); }, auto(){ go('org','911428805'); } },
 ];
 const wait = ms => new Promise(r => setTimeout(r, ms));
+const NEED_TITLE = 'Laptops for client intake stations';
+const CASEY = PEOPLE[0], JORDAN = PEOPLE[1];
+function ensureNeed(){ let l = S.listings.find(x=>x.title===NEED_TITLE); if (!l) l = postListing({kind:'Need',category:'Technology',title:NEED_TITLE,desc:'Our intake computers died; clients can’t register for services.',qty:12,unit:'laptops',urgency:'Critical',tags:'laptops,computers,intake'}, {silent:true, asEin:CASEY.ein}); return l; }
+function ensureProposed(){ const l = ensureNeed(); return propose(l.id, 4, 'We can send 12 of the 15 this week.', {silent:true, as:JORDAN}); }
+function ensureAccepted(){ const m = ensureProposed(); if (m.status==='Proposed') { m.status='Accepted'; S.listings.find(x=>x.id===m.need).status='Matched'; S.listings.find(x=>x.id===m.offer).status='Matched'; notify(m.by,'match_accepted',`Ballard Food Bank accepted your connection on "${NEED_TITLE}"`,{match:m.id}); } return m; }
 async function playStep(){ const st = STEPS[S.step]; await st.auto(); save(); render(); }
 function setStep(i){ S.step = Math.max(0, Math.min(STEPS.length-1, i)); STEPS[S.step].enter(); S.sheet=null; save(); render(); }
 function finishClaim(){ switchTo('casey'); ORG('911428805').verified = true; go('feed'); toast('Verified — welcome, Ballard Food Bank'); }
