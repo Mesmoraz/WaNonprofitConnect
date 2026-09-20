@@ -119,7 +119,9 @@
 
   /* Diagrams */
   .diagram { background: var(--paper); border: 1px solid var(--line); padding: 12px; margin: 16px 0; overflow-x: auto; }
-  .diagram pre.mermaid { margin: 0; min-width: 640px; }
+  .diagram pre.mermaid { margin: 0; }
+  .diagram pre.mermaid svg { max-width: none !important; }
+  .diagram.wide { width: min(100vw - 32px, 1600px); margin-left: calc(50% - min(50vw - 16px, 800px)); }
   .diagram-cap { font-size: 13px; color: var(--ink-3); margin: 8px 4px 0; }
 
   /* Phases */
@@ -378,7 +380,7 @@
   <!-- ============================================================ -->
   <h2 id="flow">Flow</h2>
   <h3>The story as a sequence</h3>
-  <div class="diagram">
+  <div class="diagram wide">
 <pre class="mermaid">
 sequenceDiagram
     autonumber
@@ -429,7 +431,7 @@ flowchart TD
   </div>
 
   <h3>Lifecycles</h3>
-  <div class="diagram">
+  <div class="diagram wide">
 <pre class="mermaid">
 stateDiagram-v2
     direction LR
@@ -461,179 +463,72 @@ stateDiagram-v2
 
   <!-- ============================================================ -->
   <h2 id="data">Data model</h2>
-  <p>What exists now is in the left cluster (IRS data, listings, matches, messages). Step 2 adds people, memberships, verification, tags, alerts, money, and moderation. Nothing about the exchange itself changes — the acting-org header simply becomes a real login.</p>
+  <p>What exists now is the exchange cluster (IRS data, listings, matches, messages). Step 2 adds people, memberships, verification, tags, alerts, money, and moderation. Nothing about the exchange itself changes — the acting-org header simply becomes a real login. Relationships first, then what each table holds.</p>
+
+  <h3>People, organizations, verification</h3>
   <div class="diagram">
 <pre class="mermaid">
 erDiagram
+    USER ||--o{ ORG_CLAIM : "files"
+    ORGANIZATION ||--o{ ORG_CLAIM : "is claimed by"
+    USER ||--o{ ORG_MEMBER : "belongs as"
+    ORGANIZATION ||--o{ ORG_MEMBER : "has"
     ORGANIZATION ||--o| ORG_PROFILE : "claimed details"
     ORGANIZATION ||--o{ ORG_TAG : "we often need / have"
-    TAG ||--o{ ORG_TAG : ""
-    ORGANIZATION ||--o{ LISTING : posts
+    TAG ||--o{ ORG_TAG : "vocabulary"
+    USER ||--o{ BUSINESS_MEMBER : "belongs as"
+    BUSINESS ||--o{ BUSINESS_MEMBER : "has"
+    USER ||--o{ FOLLOW : "follows"
+    ORGANIZATION ||--o{ FOLLOW : "followed by"
+</pre>
+    <div class="diagram-cap">An organization is identified by EIN forever — people attach to it, they never create a duplicate. A user can hold memberships in several orgs and businesses.</div>
+  </div>
+
+  <h3>Exchange, alerts, money, moderation</h3>
+  <div class="diagram">
+<pre class="mermaid">
+erDiagram
+    ORGANIZATION ||--o{ LISTING : "posts"
+    BUSINESS ||--o{ LISTING : "posts offers"
     LISTING ||--o{ MATCH : "as need"
     LISTING ||--o{ MATCH : "as offer"
-    MATCH ||--o{ MESSAGE : thread
-    ORGANIZATION ||--o{ ORG_CLAIM : "claimed by"
-    USER ||--o{ ORG_CLAIM : files
-    USER ||--o{ ORG_MEMBER : ""
-    ORGANIZATION ||--o{ ORG_MEMBER : ""
-    USER ||--o{ BUSINESS_MEMBER : ""
-    BUSINESS ||--o{ BUSINESS_MEMBER : ""
-    BUSINESS ||--o{ LISTING : "offers"
-    BUSINESS ||--o| SUBSCRIPTION : pays
+    MATCH ||--o{ MESSAGE : "thread"
+    USER ||--o{ MESSAGE : "sends"
+    ORGANIZATION ||--o{ ALERT_RULE : "tunes"
+    USER ||--o{ ALERT_RULE : "tunes"
+    USER ||--o{ NOTIFICATION : "receives"
+    BUSINESS ||--o| SUBSCRIPTION : "pays"
     USER ||--o| SUBSCRIPTION : "pay what you want"
-    USER ||--o{ DONATION_PROOF : submits
-    BUSINESS ||--o{ PLACEMENT : sponsors
-    ORGANIZATION ||--o{ ALERT_RULE : ""
-    USER ||--o{ ALERT_RULE : ""
-    USER ||--o{ NOTIFICATION : receives
-    USER ||--o{ FOLLOW : ""
-    ORGANIZATION ||--o{ FOLLOW : ""
-    USER ||--o{ REPORT : files
-
-    ORGANIZATION {
-        string ein PK "from IRS BMF"
-        string name
-        string city
-        string ntee_code
-        string foundation_code
-        bool is_501c3
-        bool is_active "Pub 78 + not revoked"
-    }
-    ORG_PROFILE {
-        string ein FK
-        string mission
-        string website
-        string public_contact
-        string logo_url
-    }
-    TAG {
-        int id PK
-        string name "laptops, refrigeration, drivers"
-        string kind "need | have | cause"
-    }
-    ORG_TAG {
-        string ein FK
-        int tag_id FK
-        string kind "need | have"
-    }
-    USER {
-        guid id PK
-        string email
-        string display_name
-        string auth_provider "google | email"
-        string account_types "nonprofit, business, supporter, admin"
-        datetime created_at
-    }
-    ORG_CLAIM {
-        int id PK
-        guid user_id FK
-        string ein FK
-        string method "email_domain | mailed_code | document | member_invite | admin"
-        string status "pending | verified | rejected | revoked"
-        string evidence_ref
-        guid reviewed_by
-    }
-    ORG_MEMBER {
-        guid user_id FK
-        string ein FK
-        string role "owner | editor | viewer"
-    }
-    BUSINESS {
-        int id PK
-        string name
-        string ubi "WA business id"
-        string domain
-        string status "pending | verified"
-    }
-    BUSINESS_MEMBER {
-        guid user_id FK
-        int business_id FK
-        string role
-    }
-    SUBSCRIPTION {
-        int id PK
-        string owner_type "business | user"
-        string tier "local | regional | pwyw"
-        decimal amount
-        string stripe_id
-        string status
-        datetime renews_at
-    }
-    DONATION_PROOF {
-        int id PK
-        guid user_id FK
-        string ein FK "recipient 501c3"
-        date donated_on
-        string evidence_ref
-        string status "pending | accepted | rejected"
-    }
-    LISTING {
-        int id PK
-        string kind "need | offer"
-        string owner_type "org | business"
-        string owner_id
-        string category
-        string title
-        int urgency
-        string status
-        string tags
-        datetime expires_at
-    }
-    MATCH {
-        int id PK
-        int need_listing_id FK
-        int offer_listing_id FK
-        string proposed_by
-        string status
-        int score
-    }
-    MESSAGE {
-        int id PK
-        int match_id FK
-        guid sender_user_id FK
-        string body
-        datetime sent_at
-    }
-    ALERT_RULE {
-        int id PK
-        string owner_type "org | user"
-        string owner_id
-        string categories
-        string keywords
-        int radius_miles
-        string channels "inapp | email | push"
-    }
-    NOTIFICATION {
-        int id PK
-        guid user_id FK
-        string type "match_found | match_proposed | message | claim_verified"
-        string payload_json
-        datetime read_at
-    }
-    PLACEMENT {
-        int id PK
-        int business_id FK
-        string type "sponsored_offer | need_sponsorship | category_sponsor | directory_card"
-        string target "category or listing id"
-        string status "pending | approved | live | ended | rejected"
-        date starts_on
-        date ends_on
-    }
-    FOLLOW {
-        guid user_id FK
-        string ein FK
-    }
-    REPORT {
-        int id PK
-        guid reporter_id FK
-        string target_type
-        string target_id
-        string reason
-        string status
-    }
+    USER ||--o{ DONATION_PROOF : "submits"
+    BUSINESS ||--o{ PLACEMENT : "sponsors"
+    USER ||--o{ REPORT : "files"
 </pre>
-    <div class="diagram-cap">Bold facts: an org is identified by EIN forever (no duplicate orgs); a listing can be owned by an org <em>or</em> a business; verification evidence is a reference (file/secret), never inline PII; tags are shared vocabulary so "laptops" on one profile means the same as "laptops" in another's need.</div>
+    <div class="diagram-cap">Listing, Match and Message exist in the prototype; a listing gains an owner type so businesses can post offers too.</div>
   </div>
+
+  <h3>What each table holds</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Table</th><th>Key fields</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>ORGANIZATION</td><td><code>ein</code> PK, name, city, zip, ntee_code, foundation_code, is_501c3, <b>is_active</b></td><td>From the IRS BMF (exists). <code>is_active</code> = in Pub 78 and not on the revocation list (2b).</td></tr>
+      <tr><td>ORG_PROFILE</td><td>ein FK, mission, website, public_contact, logo_url</td><td>Editable by members; IRS block stays read-only beside it.</td></tr>
+      <tr><td>TAG / ORG_TAG</td><td>name, kind (need · have · cause) / ein, tag_id, kind</td><td>Shared vocabulary so "laptops" means the same everywhere. Drives alerts with no listing posted.</td></tr>
+      <tr><td>USER</td><td>id, email, display_name, auth_provider (google · email), account_types, created_at</td><td>ASP.NET Identity. Account types are a set, not one value.</td></tr>
+      <tr><td>ORG_CLAIM</td><td>user_id, ein, <b>method</b> (email_domain · mailed_code · document · member_invite · admin), status (pending · verified · rejected · revoked), evidence_ref, reviewed_by</td><td>Pluggable verification. Evidence is a reference to a file or secret, never inline PII.</td></tr>
+      <tr><td>ORG_MEMBER</td><td>user_id, ein, role (owner · editor · viewer)</td><td>Created when a claim is verified or an invite is accepted.</td></tr>
+      <tr><td>BUSINESS / BUSINESS_MEMBER</td><td>name, ubi, domain, status / user_id, business_id, role</td><td>UBI = WA business license id, looked up at verification.</td></tr>
+      <tr><td>SUBSCRIPTION</td><td>owner_type (business · user), tier (local · regional · pwyw), amount, stripe_id, status, renews_at</td><td>Stripe Billing. Nonprofits never have one.</td></tr>
+      <tr><td>DONATION_PROOF</td><td>user_id, ein (recipient), donated_on, evidence_ref, status</td><td>The supporter join gate; evidence of a gift made elsewhere, not through us.</td></tr>
+      <tr><td>LISTING</td><td>kind (need · offer), <b>owner_type</b> (org · business), owner_id, category, title, quantity, urgency, status, tags, expires_at</td><td>Exists; gains owner_type.</td></tr>
+      <tr><td>MATCH</td><td>need_listing_id, offer_listing_id, proposed_by, status, score</td><td>Exists, unchanged.</td></tr>
+      <tr><td>MESSAGE</td><td>match_id (or collaborate_thread_id), sender_user_id, body, sent_at</td><td>Exists; sender becomes a user, threads can exist without a match (2e).</td></tr>
+      <tr><td>ALERT_RULE</td><td>owner_type (org · user), owner_id, categories, keywords, radius_miles, channels (inapp · email · push), digest</td><td>Default rule generated from tags + category + area; editable.</td></tr>
+      <tr><td>NOTIFICATION</td><td>user_id, type (match_found · match_proposed · message · claim_verified …), payload_json, read_at</td><td>In-app record; email/push are deliveries of the same row.</td></tr>
+      <tr><td>PLACEMENT</td><td>business_id, type (sponsored_offer · need_sponsorship · category_sponsor · directory_card), target, status (pending · approved · live · ended · rejected), starts_on, ends_on</td><td>Allow-listed types only; admin-reviewed; always labeled "Sponsored".</td></tr>
+      <tr><td>FOLLOW</td><td>user_id, ein</td><td>Supporters (and anyone) following an org.</td></tr>
+      <tr><td>REPORT</td><td>reporter_id, target_type, target_id, reason, status</td><td>Moderation queue input.</td></tr>
+    </tbody>
+  </table></div>
 
   <!-- ============================================================ -->
   <h2 id="verify">Verification</h2>

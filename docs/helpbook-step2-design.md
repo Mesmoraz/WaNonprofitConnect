@@ -100,32 +100,41 @@ stateDiagram-v2
 
 ## Data model (additions to the prototype)
 
+People, organizations, verification:
+
 ```mermaid
 erDiagram
+    USER ||--o{ ORG_CLAIM : "files"
+    ORGANIZATION ||--o{ ORG_CLAIM : "is claimed by"
+    USER ||--o{ ORG_MEMBER : "belongs as"
+    ORGANIZATION ||--o{ ORG_MEMBER : "has"
     ORGANIZATION ||--o| ORG_PROFILE : "claimed details"
     ORGANIZATION ||--o{ ORG_TAG : "we often need / have"
-    TAG ||--o{ ORG_TAG : ""
-    ORGANIZATION ||--o{ LISTING : posts
+    TAG ||--o{ ORG_TAG : "vocabulary"
+    USER ||--o{ BUSINESS_MEMBER : "belongs as"
+    BUSINESS ||--o{ BUSINESS_MEMBER : "has"
+    USER ||--o{ FOLLOW : "follows"
+    ORGANIZATION ||--o{ FOLLOW : "followed by"
+```
+
+Exchange, alerts, money, moderation:
+
+```mermaid
+erDiagram
+    ORGANIZATION ||--o{ LISTING : "posts"
+    BUSINESS ||--o{ LISTING : "posts offers"
     LISTING ||--o{ MATCH : "as need"
     LISTING ||--o{ MATCH : "as offer"
-    MATCH ||--o{ MESSAGE : thread
-    ORGANIZATION ||--o{ ORG_CLAIM : "claimed by"
-    USER ||--o{ ORG_CLAIM : files
-    USER ||--o{ ORG_MEMBER : ""
-    ORGANIZATION ||--o{ ORG_MEMBER : ""
-    USER ||--o{ BUSINESS_MEMBER : ""
-    BUSINESS ||--o{ BUSINESS_MEMBER : ""
-    BUSINESS ||--o{ LISTING : offers
-    BUSINESS ||--o| SUBSCRIPTION : pays
+    MATCH ||--o{ MESSAGE : "thread"
+    USER ||--o{ MESSAGE : "sends"
+    ORGANIZATION ||--o{ ALERT_RULE : "tunes"
+    USER ||--o{ ALERT_RULE : "tunes"
+    USER ||--o{ NOTIFICATION : "receives"
+    BUSINESS ||--o| SUBSCRIPTION : "pays"
     USER ||--o| SUBSCRIPTION : "pay what you want"
-    USER ||--o{ DONATION_PROOF : submits
-    BUSINESS ||--o{ PLACEMENT : sponsors
-    ORGANIZATION ||--o{ ALERT_RULE : ""
-    USER ||--o{ ALERT_RULE : ""
-    USER ||--o{ NOTIFICATION : receives
-    USER ||--o{ FOLLOW : ""
-    ORGANIZATION ||--o{ FOLLOW : ""
-    USER ||--o{ REPORT : files
+    USER ||--o{ DONATION_PROOF : "submits"
+    BUSINESS ||--o{ PLACEMENT : "sponsors"
+    USER ||--o{ REPORT : "files"
 ```
 
 Entity notes:
