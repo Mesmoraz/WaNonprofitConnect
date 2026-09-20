@@ -373,14 +373,14 @@ function propose(needId, offerId, note, opts={}) {
   return m;
 }
 function respond(mid, accept) {
-  const m = S.matches.find(x=>x.id===mid); const need = S.listings.find(x=>x.id===m.need), offer = S.listings.find(x=>x.id===m.offer);
+  const m = S.matches.find(x=>x.id===mid); if (!m || m.status !== 'Proposed') return; const need = S.listings.find(x=>x.id===m.need), offer = S.listings.find(x=>x.id===m.offer);
   m.status = accept ? 'Accepted' : 'Declined';
   if (accept) { need.status = 'Matched'; offer.status = 'Matched'; }
   notify(m.by, accept?'match_accepted':'match_declined', `${ORG(S.user.ein).name} ${accept?'accepted':'declined'} your connection on "${need.title}"`, { match:m.id });
   render(); toast(accept ? 'Accepted — you can message now' : 'Declined');
 }
 function complete(mid) {
-  const m = S.matches.find(x=>x.id===mid); const need = S.listings.find(x=>x.id===m.need), offer = S.listings.find(x=>x.id===m.offer);
+  const m = S.matches.find(x=>x.id===mid); if (!m || m.status !== 'Accepted') return; const need = S.listings.find(x=>x.id===m.need), offer = S.listings.find(x=>x.id===m.offer);
   m.status = 'Completed'; need.status = 'Fulfilled'; offer.status = 'Fulfilled'; m.doneAt = new Date().toISOString();
   const other = S.user.ein === need.ein ? offer.ein : need.ein;
   notify(other, 'match_completed', `Hand-off complete: "${need.title}". Thank you!`, { match:m.id });

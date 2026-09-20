@@ -36,9 +36,9 @@ const assert = (cond, msg) => { if (!cond) { console.error('FAIL:', msg); proces
   act('switch to Jordan', () => x.switchTo('jordan')); assert(s().step === 4, 'switching perspective alone does not advance');
   act('Jordan proposes', () => x.propose(need.id, 4, 'hi')); assert(s().step === 5, 'proposal advanced to step 6');
   act('switch to Casey', () => x.switchTo('casey'));
-  act('Casey accepts', () => x.respond(s().matches[0].id, true)); assert(s().step === 6, 'accept advanced to step 7');
+  act('Casey accepts', () => x.respond(s().matches.find(m=>m.offer===4).id, true)); assert(s().step === 6, 'accept advanced to step 7');
   act('switch to Jordan', () => x.switchTo('jordan'));
-  act('Jordan completes', () => x.complete(s().matches[0].id)); assert(s().step === 7, 'complete advanced to step 8');
+  act('Jordan completes', () => x.complete(s().matches.find(m=>m.offer===4).id)); assert(s().step === 7, 'complete advanced to step 8');
 
   // --- Prev then an unrelated action must not throw the guide forward again.
   s().step = 3; const was = x.STEPS[3].done(); x.go('feed'); x.syncStep(was);
