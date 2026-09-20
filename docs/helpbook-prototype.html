@@ -171,15 +171,26 @@
   .pin.sel { stroke: var(--ink); stroke-width: 3; }
   .hit { fill: transparent; cursor: pointer; }
   /* Threads are strings, not arrows: the dash drifts from giver to receiver. Hover or select to see it clearly. */
-  .thread { fill: none; stroke-linecap: round; cursor: pointer; animation: flow 2.4s linear infinite; }
-  .thread.Completed { stroke: #D9A12B; opacity: 0.7; }
-  .thread.Accepted { stroke: var(--offer); opacity: 0.65; }
-  .thread.Proposed { stroke: var(--need); opacity: 0.5; }
-  .thread.suggested { stroke: var(--ink-3); opacity: 0.4; }
-  .thread:hover, .thread.hi { opacity: 1; animation-duration: 0.7s; }
-  .thread.Completed.hi, .thread.Completed:hover { filter: drop-shadow(0 0 3px rgba(217,161,43,0.9)); }
+  .thread { fill: none; stroke-linecap: round; cursor: pointer; opacity: 0.32; transition: opacity 0.2s; }
+  .thread.Completed { stroke: #D9A12B; }
+  .thread.Accepted { stroke: var(--offer); }
+  .thread.Proposed { stroke: var(--need); }
+  .thread.suggested { stroke: var(--ink-3); opacity: 0.22; }
+  .thread:hover { opacity: 0.85; }
+  .thread.hi { opacity: 1; animation: flow 1s linear infinite; }
+  .thread.Completed.hi { filter: drop-shadow(0 0 4px rgba(217,161,43,0.9)); }
+  .thread.Accepted.hi { filter: drop-shadow(0 0 4px rgba(116,184,148,0.8)); }
+  .mover { fill: #fff; stroke: none; pointer-events: none; }
+  .mover.Completed { fill: #F2C14E; } .mover.Accepted { fill: var(--offer); } .mover.Proposed { fill: var(--need); }
+  /* while something is selected, everything unrelated steps back */
+  #mapg.has-sel .thread:not(.hi) { opacity: 0.1; }
+  #mapg.has-sel .org:not(.sel):not(.endpoint) { opacity: 0.4; }
+  #mapg.has-sel .org:not(.sel):not(.endpoint) .heat { opacity: 0.06; }
+  .org { transition: opacity 0.2s; }
+  .heat { opacity: 0.1; }
+  .heat.hot { opacity: 0.18; }
   @keyframes flow { to { stroke-dashoffset: calc(-1 * var(--dash)); } }
-  @media (prefers-reduced-motion: reduce) { .thread { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .thread { animation: none; } .mover { display: none; } }
   .heat { fill: var(--offer); opacity: 0.14; pointer-events: none; }
   .heat.hot { opacity: 0.26; }
   .cnt { fill: #fff; font-weight: 700; text-anchor: middle; pointer-events: none; font-family: "IBM Plex Sans", sans-serif; stroke: none !important; }
@@ -625,7 +636,8 @@ function renderPhone(){
       const ls = ranked.map(r => r.l);
       const n = activeFilterCount();
       body = `${topbar()}<div class="screen"><div class="row"><button class="btn need sm" style="flex:1" data-a="new" data-k="Need">+ I need something</button><button class="btn primary sm" style="flex:1" data-a="new" data-k="Offer">+ I have something</button></div>
-        <div class="flt-head"><span>${ls.length} listing${ls.length===1?'':'s'}${n?` · ${n} filter${n===1?'':'s'} on (same as Map)`:''}</span><button data-a="flt-toggle">${S.filtersOpen?'Hide filters':'Filters'}</button></div>
+        <div class="flt-head"><span>${ls.length} listing${ls.length===1?'':'s'}${n?' · filtered, same as the Map':''}</span><button data-a="flt-toggle">${S.filtersOpen?'Hide filters':'Filters'}</button></div>
+        ${n && !S.filtersOpen ? `<div class="chips">${activeFilterChips()}</div>` : ''}
         ${S.filtersOpen ? filterBlock(false) : ''}
         ${ranked.map(r=>listingCard(r.l, `<span class="why">${r.why}</span>`)).join('')||'<div class="empty">Nothing matches these filters.</div>'}
         <p class="hint">Order: priority first, then whoever has been seen least. No org holds more than 2 of the top 6, and one top slot always goes to the least-seen listing.</p></div>${tabs('feed')}`; break; }
@@ -752,6 +764,14 @@ function listingPasses(l, f = S.filter) {
     && (f.who==='All' || ORG(l.ein).type===f.who)
     && (!f.radius || !mine || MILES(mine, ORG(l.ein)) <= f.radius);
 }
+function activeFilterChips() {
+  const f = S.filter, c = [];
+  if (f.kind !== 'All') c.push(['kind', f.kind + 's']);
+  if (f.who !== 'All') c.push(['who', f.who === 'person' ? 'Community members' : f.who === 'business' ? 'Businesses' : 'Nonprofits']);
+  if (f.category) c.push(['category', f.category]);
+  if (f.radius) c.push(['radius', 'within ' + f.radius + ' mi']);
+  return c.map(([k, l]) => `<button class="chip on" data-a="flt-off" data-k="${k}">${l} ×</button>`).join('');
+}
 function filterBlock(showThreads) {
   const f = S.filter;
   return `<div class="flt">
@@ -830,7 +850,7 @@ function renderMap(){
   const onSet = new Set(ORGS.filter(o => visible.has(o.ein) || threads.some(m => endsOf(m).includes(o.ein))).map(o => o.ein));
 
   // ---- Clustering: pins that would sit within ~30 screen px of each other merge into one node; zooming in splits them.
-  const focusM = v.selMatch ? S.matches.find(x=>x.id===v.selMatch) : null; const standalone = new Set(focusM ? endsOf(focusM) : []); if (v.sel) standalone.add(v.sel);
+  const focusM = v.selMatch ? S.matches.find(x=>x.id===v.selMatch) : null; const standalone = new Set(focusM ? endsOf(focusM) : []); if (v.sel) { standalone.add(v.sel); for (const m of threads) { const e = endsOf(m); if (e.includes(v.sel)) e.forEach(x => standalone.add(x)); } }
   const nodes = [], nodeOf = {};
   const ordered = ORGS.slice().sort((a,b) => (onSet.has(b.ein)-onSet.has(a.ein)) || (degreeOf(b.ein)-degreeOf(a.ein)));
   for (const o of ordered) { const x = PROJ.x(o.lon), y = PROJ.y(o.lat);
@@ -847,7 +867,9 @@ function renderMap(){
   const thread = (aEin, bEin, st, extra='', title='') => { const a = nodeOf[aEin], b = nodeOf[bEin]; if (!a || !b || a === b) return '';
     const x1=a.x, y1=a.y, x2=b.x, y2=b.y, dx=x2-x1, dy=y2-y1, d=Math.hypot(dx,dy)||1, bend=Math.min(d*0.16, px(36)); const cx=(x1+x2)/2 - dy/d*bend, cy=(y1+y2)/2 + dx/d*bend;
     const [on, off] = dash[st] || [9,7]; const hi = /\bhi\b/.test(extra) ? 1 : 0;
-    return `<path class="thread ${st}${hi?' hi':''}" style="stroke-width:${px(hi?3:st==='Completed'?2.2:1.6).toFixed(3)}px;stroke-dasharray:${px(on).toFixed(2)} ${px(off).toFixed(2)};--dash:${px(on+off).toFixed(2)}px" d="M${x1.toFixed(1)},${y1.toFixed(1)} Q${cx.toFixed(1)},${cy.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}" ${extra.replace(/\bhi\b/,'')}><title>${esc(title)}</title></path>`; };
+    const dpath = `M${x1.toFixed(1)},${y1.toFixed(1)} Q${cx.toFixed(1)},${cy.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}`;
+    const mover = hi && st !== 'suggested' ? `<circle class="mover ${st}" r="${px(3.2).toFixed(3)}"><animateMotion dur="1.6s" repeatCount="indefinite" path="${dpath}"/></circle>` : '';
+    return `<path class="thread ${st}${hi?' hi':''}" style="stroke-width:${px(hi?3:st==='Completed'?2:1.5).toFixed(3)}px;stroke-dasharray:${px(on).toFixed(2)} ${px(off).toFixed(2)};--dash:${px(on+off).toFixed(2)}px" d="${dpath}" ${extra.replace(/\bhi\b/,'')}><title>${esc(title)}</title></path>${mover}`; };
   const defs = `<defs><filter id="heatblur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="${px(7).toFixed(2)}"/></filter></defs>`;
 
   // ---- Labels: greedy placement by priority; overlapping ones wait for zoom or hover.
@@ -866,7 +888,7 @@ function renderMap(){
     const o = n.single ? n.members[0] : null, on = n.on > 0, r = n.single ? px(5.5 + Math.min(4, n.deg)) : px(9 + 3.5 * Math.sqrt(n.members.length));
     const type = n.single ? o.type : (n.members.filter(m=>m.type==='nonprofit').length >= n.members.length/2 ? 'nonprofit' : n.members[0].type);
     const heat = (n.deg > 0 || !n.single) ? `<circle class="heat ${n.deg>=3?'hot':''}" filter="url(#heatblur)" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${(r + px(6 + 3*Math.sqrt(n.deg+n.members.length))).toFixed(3)}"/>` : '';
-    return `<g class="org ${n.single?'':'cluster'} ${on?'':'dim'} ${n.sel?'sel':''}" style="--deg:${(1 + 0.3 * Math.min(6, n.deg)).toFixed(2)}" data-a="${n.single?'map-pin':'map-cluster'}" data-id="${n.single?o.ein:n.id}" data-members="${n.members.map(m=>m.ein).join(',')}">
+    return `<g class="org ${n.single?'':'cluster'} ${on?'':'dim'} ${n.sel?'sel':''} ${n.solo && !n.sel ? 'endpoint' : ''}" style="--deg:${(1 + 0.3 * Math.min(6, n.deg)).toFixed(2)}" data-a="${n.single?'map-pin':'map-cluster'}" data-id="${n.single?o.ein:n.id}" data-members="${n.members.map(m=>m.ein).join(',')}">
       ${heat}<circle class="hit" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${(r + px(8)).toFixed(3)}"/>
       <circle class="pin ${type} ${on?'':'dim'} ${n.mine?'me':''} ${n.sel?'sel':''}" vector-effect="non-scaling-stroke" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${r.toFixed(3)}"/>
       ${n.single ? '' : `<text class="cnt" style="font-size:${px(11).toFixed(3)}px" x="${n.x.toFixed(2)}" y="${(n.y + px(4)).toFixed(2)}">${n.members.length}</text>`}
@@ -876,9 +898,9 @@ function renderMap(){
   const bigCities = k >= 2 ? Object.keys(CITY) : ['SEATTLE','TACOMA','SPOKANE','BELLINGHAM','OLYMPIA','PULLMAN','TOPPENISH'];
   const labels = k >= 6 ? '' : Object.entries(CITY).filter(([c,[lat,lon]]) => bigCities.includes(c) && !nodes.some(n => Math.hypot(n.x - PROJ.x(lon), n.y - PROJ.y(lat)) < (n.single ? px(5.5 + Math.min(4, n.deg)) : px(9 + 3.5 * Math.sqrt(n.members.length))) + px(26))).map(([c,[lat,lon]]) => `<text class="citylbl" style="font-size:${px(10).toFixed(3)}px" x="${(PROJ.x(lon)+px(8)).toFixed(1)}" y="${(PROJ.y(lat)-px(8)).toFixed(1)}">${cap(c)}</text>`).join('');
   const svg = `<svg id="mapsvg" viewBox="0 0 ${MAP_W} ${MAP_H}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Map of Washington with organizations and connections">${defs}<rect class="water" width="${MAP_W}" height="${MAP_H}"/>
-    <g id="mapg" transform="translate(${S.map.tx.toFixed(2)} ${S.map.ty.toFixed(2)}) scale(${k.toFixed(4)})"><path class="land" vector-effect="non-scaling-stroke" d="${path}"/>${radius}${labels}
+    <g id="mapg" class="${(v.selMatch || v.sel) ? 'has-sel' : ''}" transform="translate(${S.map.tx.toFixed(2)} ${S.map.ty.toFixed(2)}) scale(${k.toFixed(4)})"><path class="land" vector-effect="non-scaling-stroke" d="${path}"/>${radius}${labels}
     ${suggested.map(x => thread(x.offer.ein, x.need.ein, 'suggested', '', `Suggested: ${ORG(x.offer.ein).name} \u2192 ${ORG(x.need.ein).name}`)).join('')}
-    ${threads.map(m => { const n=S.listings.find(l=>l.id===m.need), o=S.listings.find(l=>l.id===m.offer); return thread(o.ein, n.ein, m.status, `data-a="map-thread" data-id="${m.id}"${v.selMatch===m.id?' hi':''}`, `${ORG(o.ein).name} \u2192 ${ORG(n.ein).name} \u00b7 ${n.category} \u00b7 ${m.status}${m.agreement?' \u00b7 \u21bb '+m.agreement.cadence:''}`); }).join('')}
+    ${threads.map(m => { const n=S.listings.find(l=>l.id===m.need), o=S.listings.find(l=>l.id===m.offer); return thread(o.ein, n.ein, m.status, `data-a="map-thread" data-id="${m.id}"${(v.selMatch===m.id || (v.sel && (o.ein===v.sel || n.ein===v.sel)))?' hi':''}`, `${ORG(o.ein).name} \u2192 ${ORG(n.ein).name} \u00b7 ${n.category} \u00b7 ${m.status}${m.agreement?' \u00b7 \u21bb '+m.agreement.cadence:''}`); }).join('')}
     ${pins}</g>${scaleBar(k)}</svg>
     <div class="zoomctl"><button data-a="map-zoom" data-v="in" aria-label="Zoom in">+</button><button data-a="map-zoom" data-v="out" aria-label="Zoom out">−</button><button class="fit" data-a="map-zoom" data-v="fit" aria-label="Fit whole state">WA</button></div>
     <div class="maphint">${k > 1.05 ? Math.round(k*10)/10 + '× · drag to pan' : 'pinch or scroll to zoom'}</div>`;
@@ -893,11 +915,11 @@ function renderMap(){
   else if (v.selMatch) { const m = S.matches.find(x=>x.id===v.selMatch); if (m) { const n=S.listings.find(l=>l.id===m.need), o=S.listings.find(l=>l.id===m.offer); const party = [n.ein,o.ein].includes(mine.ein);
     detail = `<div class="card"><span class="pill ${m.status==='Completed'?'ok':'need'}">${m.status}</span> <span class="pill grey">${n.category}</span><span class="t">${esc(ORG(o.ein).name)} → ${esc(ORG(n.ein).name)}</span><span class="m">gives "${esc(o.title)}" for "${esc(n.title)}" · ${Math.round(MILES(ORG(n.ein),ORG(o.ein)))} mi${m.agreement?` · ↻ ${m.agreement.cadence} since ${new Date(m.agreement.since).toLocaleDateString(undefined,{month:'short',year:'numeric'})}, ${m.agreement.occurrences.length} logged`:''}${m.doneAt?' · completed '+ago(m.doneAt):''}</span>${party?`<button class="btn sm primary" style="margin-top:8px" data-a="go" data-s="match" data-id="${m.id}">Open thread</button>`:'<span class="m hint">Details are private to the two organizations.</span>'}</div>`; } }
 
-  const nf = activeFilterCount();
   const connRows = threads.slice().sort((a,b)=>new Date(b.doneAt||b.at)-new Date(a.doneAt||a.at)).map(m => { const n=S.listings.find(l=>l.id===m.need), o=S.listings.find(l=>l.id===m.offer); return `<button class="card tap ${v.selMatch===m.id?'sel':''}" data-a="map-focus" data-id="${m.id}"><span class="conn"><span><span class="from">${esc(ORG(o.ein).name.replace(/ \(.*\)$/, ''))}</span> <span class="arrow">→</span> <span class="to">${esc(ORG(n.ein).name.replace(/ \(.*\)$/, ''))}</span></span><span class="pill ${m.status==='Completed'?'ok':m.status==='Proposed'?'need':'grey'}">${m.status}</span><span class="m">${n.category} · ${esc(o.title)}${m.agreement?` · ↻ ${m.agreement.cadence}, ${m.agreement.occurrences.length} logged`:''} · ${Math.round(MILES(ORG(n.ein),ORG(o.ein)))} mi</span></span></button>`; }).join('') || '<div class="hint">No connections match these filters.</div>';
+  const nf = activeFilterCount();
   const legend = `<div class="legend"><span><i style="background:var(--offer)"></i>nonprofit</span><span><i style="background:#3B5BA9"></i>business</span><span><i style="background:#7A5CA8"></i>community member</span><span><b style="border-color:#D9A12B;border-top-width:3px"></b>completed</span><span><b style="border-color:var(--offer)"></b>in progress</span><span><b class="dashed" style="border-color:var(--need)"></b>proposed</span><span><b class="dotted" style="border-color:var(--ink-3)"></b>suggested</span></div>
     <p class="hint">The dash drifts from giver to receiver — tap a thread to see it clearly. Numbered circles are clusters: tap to zoom in. Glow marks activity; a pin grows with its connections when you hover it. Pinch or scroll to zoom (up to 40×), drag to pan, double-tap to zoom in; the bar shows miles at the current zoom. Pins sit at each organization’s ZIP code, so placement is neighborhood-accurate, not door-accurate. Business and community-member pins are examples, not real accounts. Organization locations: IRS Business Master File posted 2026-09-08 · refreshed monthly.</p>`;
-  S.mapSheets = { filters: `<h3>Filters</h3><p class="sub">These apply to the Board too.</p>${filterBlock(true)}`, conns: `<h3>Connections (${threads.length})</h3><p class="sub">Giver → receiver. Tap one to frame it on the map.</p><div class="stack">${connRows}</div>`, legend: `<h3>Reading the map</h3>${legend}` };
+  S.mapSheets = { filters: `<h3>Filters</h3><p class="sub">These apply to the Board too.</p>${nf ? `<div class="chips" style="margin-bottom:6px">${activeFilterChips()}</div>` : ''}${filterBlock(true)}`, conns: `<h3>Connections (${threads.length})</h3><p class="sub">Giver → receiver. Tap one to frame it on the map.</p><div class="stack">${connRows}</div>`, legend: `<h3>Reading the map</h3>${legend}` };
   return `${topbar()}<div class="screen mapscreen"><div class="map full">${svg}
     <div class="ov stat">${done} completed · ${active} in progress · ${visible.size} with listings</div>
     <button class="ov btn-ov filters ${nf?'on':''}" data-a="sheet-filters">Filters${nf?' · '+nf:''}</button>
@@ -954,6 +976,7 @@ document.addEventListener('click', async e => {
     case 'flt-thread': S.filter.threads[el.dataset.k] = !S.filter.threads[el.dataset.k]; render(); return;
     case 'flt-toggle': S.filtersOpen = !S.filtersOpen; render(); return;
     case 'flt-clear': S.filter = { ...S.filter, kind:'All', category:'', who:'All', radius:0 }; render(); return;
+    case 'flt-off': { const k = el.dataset.k; S.filter[k] = k === 'radius' ? 0 : k === 'category' ? '' : 'All'; render(); return; }
     case 'map-focus': { const m = S.matches.find(x=>x.id===+id); if (!m) return; S.map.selMatch = m.id; S.map.sel = null; S.sheet = null; const t = { k:S.map.k, tx:S.map.tx, ty:S.map.ty }; fitView(t, [ORG(S.listings.find(l=>l.id===m.need).ein), ORG(S.listings.find(l=>l.id===m.offer).ein)], { separate:true }); render(); animateView(t); return; }
     case 'map-pin': if (gesture.moved) return; S.map.sel = S.map.sel === id ? null : id; S.map.selMatch = null; render(); return;
     case 'map-cluster': { if (gesture.moved) return; const members = (el.dataset.members || '').split(',').map(ORG).filter(Boolean); const before = S.map.k; const t = { k:S.map.k, tx:S.map.tx, ty:S.map.ty }; if (members.length) fitView(t, members); if (t.k < before * 1.8) { const c = members.reduce((a,o)=>[a[0]+PROJ.x(o.lon)/members.length, a[1]+PROJ.y(o.lat)/members.length],[0,0]); t.k = before; t.tx = MAP_W/2 - c[0]*before; t.ty = MAP_H/2 - c[1]*before; zoomAt(t, 2.2, MAP_W/2, MAP_H/2); } S.map.sel = null; S.map.selMatch = null; animateView(t); return; }
