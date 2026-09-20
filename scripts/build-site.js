@@ -48,7 +48,7 @@ fs.writeFileSync(path.join(out, 'index.html'), `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>HelpBook</title>
+<title>Name TBD</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Sans:wght@400;600&display=swap">
 <style>
   :root { --ground:#F5F7F3; --paper:#fff; --ink:#1B2430; --ink-2:#4B5563; --line:#D9DED7; --accent:#2E6B4E; --accent-ink:#fff; }
@@ -69,7 +69,7 @@ fs.writeFileSync(path.join(out, 'index.html'), `<!doctype html>
 </head>
 <body>
 <main>
-  <h1>HelpBook</h1>
+  <h1>Name TBD</h1>
   <p>Where Washington's 35,000 nonprofits say what they need and what they have — and get connected. A working concept, not a product yet.</p>
   <a class="card primary" href="prototype.html"><b>Try the prototype →</b><span>Play the story from both sides: a food bank needs laptops, a refurbisher has them. Works on your phone.</span></a>
   <a class="card" href="design.html"><b>Read the design brief</b><span>Account types, verification, wireframes, data model, and the plan.</span></a>
@@ -80,7 +80,7 @@ fs.writeFileSync(path.join(out, 'index.html'), `<!doctype html>
 `);
 
 fs.writeFileSync(path.join(out, '.nojekyll'), '');
-fs.writeFileSync(path.join(out, 'README.md'), `# HelpBook — prototype site
+fs.writeFileSync(path.join(out, 'README.md'), `# Name TBD — prototype site
 
 Static pages only: the clickable prototype and the Step 2 design brief. Generated from the (private) WaNonprofitConnect repo by \`scripts/build-site.js\`; edit there, not here.
 `);

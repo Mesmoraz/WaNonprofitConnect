@@ -1,4 +1,4 @@
-<title>HelpBook Prototype</title>
+<title>Name TBD Prototype</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
   :root {
@@ -270,7 +270,7 @@ const cap = s => s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
 const ago = iso => { const m = Math.round((Date.now()-new Date(iso))/60000); return m<1?'just now':m<60?`${m}m ago`:m<1440?`${Math.round(m/60)}h ago`:`${Math.round(m/1440)}d ago`; };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function toast(t){ S.toast = t; render(); setTimeout(()=>{ if (S.toast===t){ S.toast=null; render(); } }, 2600); }
-function go(screen, sel){ S.screen = screen; if (sel !== undefined) S.sel = sel; S.sheet = null; render(); }
+function go(screen, sel){ S.screen = screen; if (sel !== undefined) S.sel = sel; S.sheet = null; if (screen === 'orgs' || screen === 'org') S.visitedOrgs = true; render(); }
 function notify(ein, type, text, ref){ S.notifs.unshift({ id:Date.now()+Math.random(), ein, type, text, ref, at:new Date().toISOString(), read:false }); }
 
 // ---- actions -----------------------------------------------------------
@@ -332,23 +332,37 @@ function switchTo(personId) {
 // Story guide
 // =====================================================================
 const STEPS = [
-  { t:'Casey needs laptops', s:'Ballard Food Bank’s intake computers died.', n:'<b>Casey</b> runs client intake at Ballard Food Bank. Twelve laptops just died and nobody can register for services. Casey opens HelpBook. <b>Tap "Continue with Google".</b>', enter(){ S.user=null; S.screen='signup'; S.claimPick=null; S.claimQuery=''; }, auto(){ S.signup={google:true}; go('role'); } },
+  { t:'Casey needs laptops', s:'Ballard Food Bank’s intake computers died.', n:'<b>Casey</b> runs client intake at Ballard Food Bank. Twelve laptops just died and nobody can register for services. Casey opens Name TBD. <b>Tap "Continue with Google".</b>', enter(){ S.user=null; S.screen='signup'; S.claimPick=null; S.claimQuery=''; }, auto(){ S.signup={google:true}; go('role'); } },
   { t:'Claim the org', s:'It’s already in the IRS data.', n:'Casey picks <b>"A nonprofit"</b>, types "Ballard Food" — and the org is already there, straight from the IRS file. Because casey@<b>ballardfoodbank.org</b> matches the org’s website, verification is instant. No forms.', enter(){ S.screen='role'; }, async auto(){ S.signup.role='np'; go('claim'); await wait(500); S.claimQuery='Ballard Food'; render(); await wait(600); S.claimPick='911428805'; render(); await wait(600); go('verify'); await wait(900); finishClaim(); } },
   { t:'Browse the board', s:'Needs and offers, and every org in WA.', n:'Casey lands on the board: what nearby groups need and have right now. The <b>Orgs</b> tab lists all 35,361 WA 501(c)(3)s with filters for cause, city, size, and self-declared tags — whether or not they’ve joined.', enter(){ if(!S.user) switchTo('casey'); S.feedFilter='All'; S.screen='feed'; }, async auto(){ go('feed'); await wait(900); S.orgFilter={q:'',cause:'K',city:'',joined:false,open:false}; go('orgs'); await wait(1200); go('org','911428805'); } },
-  { t:'Post the need', s:'"12 laptops for client intake stations."', n:'Casey taps <b>+</b> and posts the need. Before it’s even submitted, HelpBook shows <b>likely matches</b> — Computers 4 People in Need has 15 refurbished laptops listed. Posting alerts every org whose listings or tags fit.', enter(){ if(!S.user) switchTo('casey'); S.draft={kind:'Need',category:'Technology',title:'Laptops for client intake stations',desc:'Our intake computers died; clients can’t register for services.',qty:12,unit:'laptops',urgency:'Critical',tags:'laptops,computers,intake'}; S.screen='post'; }, auto(){ if(!S.draft||!S.draft.title) this.enter(); if(!S.listings.some(l=>l.title==='Laptops for client intake stations')) postListing(S.draft); else go('feed'); } },
+  { t:'Post the need', s:'"12 laptops for client intake stations."', n:'Casey taps <b>+</b> and posts the need. Before it’s even submitted, Name TBD shows <b>likely matches</b> — Computers 4 People in Need has 15 refurbished laptops listed. Posting alerts every org whose listings or tags fit.', enter(){ if(!S.user) switchTo('casey'); S.draft={kind:'Need',category:'Technology',title:'Laptops for client intake stations',desc:'Our intake computers died; clients can’t register for services.',qty:12,unit:'laptops',urgency:'Critical',tags:'laptops,computers,intake'}; S.screen='post'; }, auto(){ if(!S.draft||!S.draft.title) this.enter(); if(!S.listings.some(l=>l.title==='Laptops for client intake stations')) postListing(S.draft); else go('feed'); } },
   { t:'Jordan gets alerted', s:'Meanwhile in Bellingham…', n:'<b>Switch perspective to Jordan</b> at Computers 4 People in Need. Their inbox has an alert: a Critical need matches their laptops. Jordan opens it and taps <b>"I have this"</b> — their existing offer is proposed as the match.', enter(){ ensureNeed(); switchTo('jordan'); S.screen='inbox'; }, async auto(){ const l=ensureNeed(); switchTo('jordan'); go('inbox'); await wait(900); go('listing', l.id); await wait(1000); propose(l.id, 4, 'We can send 12 of the 15 this week.'); } },
   { t:'Casey accepts', s:'Back at Ballard Food Bank.', n:'<b>Switch back to Casey.</b> The inbox says Computers 4 People wants to connect. Casey opens the match, <b>accepts</b>, and replies with the shipping address. Both listings flip to Matched.', enter(){ ensureProposed(); switchTo('casey'); S.screen='inbox'; }, async auto(){ const m=ensureProposed(); switchTo('casey'); go('inbox'); await wait(900); go('match', m.id); await wait(800); if(m.status==='Proposed') respond(m.id,true); await wait(700); sendMsg(m.id,'Yes please! Ship to 7001 24th Ave NW, Seattle 98117.'); } },
   { t:'Hand-off, done', s:'Either side marks it complete.', n:'Jordan ships the laptops and taps <b>Mark complete</b>. Both listings become Fulfilled and the outcome shows on both profiles — so the next org looking for laptops knows who delivers.', enter(){ const m=ensureAccepted(); switchTo('jordan'); S.screen='match'; S.sel=m.id; }, async auto(){ const m=ensureAccepted(); switchTo('jordan'); go('match', m.id); await wait(700); sendMsg(m.id,'Shipping Tuesday, tracking to follow. Thanks Casey!'); await wait(700); if(m.status==='Accepted') complete(m.id); } },
   { t:'Now it’s yours', s:'Explore freely.', n:'That’s the whole loop: <b>claim → post → alert → connect → message → done</b>. Try it from any side: switch perspective (tap the org chip), post something of your own, or browse the org directory. <b>Reset</b> starts the story over.', enter(){ if(!S.user) switchTo('casey'); go('org','911428805'); }, auto(){ go('org','911428805'); } },
 ];
 const wait = ms => new Promise(r => setTimeout(r, ms));
+const needExists = () => S.listings.some(l => l.title === NEED_TITLE_CHECK());
+function NEED_TITLE_CHECK(){ return 'Laptops for client intake stations'; }
+const storyMatch = () => S.matches.find(m => m.offer === 4);
+STEPS[0].done = () => !!S.user || S.screen !== 'signup';
+STEPS[1].done = () => !!S.user;
+STEPS[2].done = () => !!S.visitedOrgs || needExists();
+STEPS[3].done = () => needExists();
+STEPS[4].done = () => !!storyMatch();
+STEPS[5].done = () => { const m = storyMatch(); return !!m && m.status !== 'Proposed'; };
+STEPS[6].done = () => { const m = storyMatch(); return !!m && m.status === 'Completed'; };
+STEPS[7].done = () => false;
 const NEED_TITLE = 'Laptops for client intake stations';
 const CASEY = PEOPLE[0], JORDAN = PEOPLE[1];
 function ensureNeed(){ let l = S.listings.find(x=>x.title===NEED_TITLE); if (!l) l = postListing({kind:'Need',category:'Technology',title:NEED_TITLE,desc:'Our intake computers died; clients can’t register for services.',qty:12,unit:'laptops',urgency:'Critical',tags:'laptops,computers,intake'}, {silent:true, asEin:CASEY.ein}); return l; }
 function ensureProposed(){ const l = ensureNeed(); return propose(l.id, 4, 'We can send 12 of the 15 this week.', {silent:true, as:JORDAN}); }
 function ensureAccepted(){ const m = ensureProposed(); if (m.status==='Proposed') { m.status='Accepted'; S.listings.find(x=>x.id===m.need).status='Matched'; S.listings.find(x=>x.id===m.offer).status='Matched'; notify(m.by,'match_accepted',`Ballard Food Bank accepted your connection on "${NEED_TITLE}"`,{match:m.id}); } return m; }
-async function playStep(){ const st = STEPS[S.step]; await st.auto(); save(); render(); }
+let playing = false;
+async function playStep(){ if (playing) return; playing = true; try { const i = S.step; await STEPS[i].auto(); if (S.step === i && i < STEPS.length-1) S.step = i+1; } finally { playing = false; } save(); render(); }
 function setStep(i){ S.step = Math.max(0, Math.min(STEPS.length-1, i)); STEPS[S.step].enter(); S.sheet=null; save(); render(); }
+// Called after every user action: if the action just completed the current step, move the guide forward.
+function syncStep(wasDone){ if (!wasDone && S.step < STEPS.length-1 && STEPS[S.step].done()) { S.step++; save(); } }
 function finishClaim(){ switchTo('casey'); ORG('911428805').verified = true; go('feed'); toast('Verified — welcome, Ballard Food Bank'); }
 
 // =====================================================================
@@ -362,8 +376,8 @@ function renderGuide(){
   return `
     <div class="mini"><b>${S.step+1}/${STEPS.length} · ${esc(st.t)}</b><button class="gbtn" data-a="guide-toggle">${S.guideMin?'Show story':'Hide'}</button></div>
     <div class="eyebrow">Clickable prototype · story mode</div>
-    <h1>HelpBook</h1>
-    <p>A 501(c)(3) needs something. Watch how it gets connected — from both sides.</p>
+    <h1>Name TBD</h1>
+    <p>Working name TBD. A 501(c)(3) needs something — watch it get connected, from both sides.</p>
     <div class="steps">${STEPS.map((s,i)=>`<button class="step ${i===S.step?'active':''} ${i<S.step?'done':''}" data-a="step" data-i="${i}"><span class="n">${i<S.step?'✓':i+1}</span><span><b>${esc(s.t)}</b><span>${esc(s.s)}</span></span></button>`).join('')}</div>
     <div class="narration">${st.n}</div>
     <div class="guide-actions">
@@ -378,7 +392,7 @@ function renderGuide(){
 function topbar(opts={}){
   const m = me();
   const who = m ? `<button class="who" data-a="sheet-who"><span class="dot">${esc(S.user.name[0])}</span><span>${esc(S.user.name)} · ${esc(m.name)}</span></button>` : '';
-  return `<div class="topbar">${opts.back?`<button class="back" data-a="go" data-s="${opts.back}">← ${esc(opts.title||'Back')}</button>`:`<span class="logo">HelpBook</span>`}${who}</div>`;
+  return `<div class="topbar">${opts.back?`<button class="back" data-a="go" data-s="${opts.back}">← ${esc(opts.title||'Back')}</button>`:`<span class="logo">Name TBD</span>`}${who}</div>`;
 }
 function tabs(on){
   const unread = S.user ? S.notifs.filter(n=>n.ein===S.user.ein&&!n.read).length + S.matches.filter(m=>m.status==='Proposed'&&m.by!==S.user.ein&&[m.need,m.offer].some(id=>S.listings.find(l=>l.id===id).ein===S.user.ein)).length : 0;
@@ -391,7 +405,7 @@ function listingCard(l, extra=''){
 }
 function orgCard(o){
   const open = S.listings.filter(l=>l.ein===o.ein&&l.status==='Open').length;
-  return `<button class="card tap" data-a="go" data-s="org" data-id="${o.ein}"><span class="t" style="margin-top:0">${esc(o.name)} ${o.verified||joined(o.ein)?'<span class="verified">✓ on HelpBook</span>':''}</span><span class="m">${cap(o.city)} · ${CAUSES[o.cause]} · ${SIZE[o.inc]}${open?` · <b>${open} open</b>`:''}</span></button>`;
+  return `<button class="card tap" data-a="go" data-s="org" data-id="${o.ein}"><span class="t" style="margin-top:0">${esc(o.name)} ${o.verified||joined(o.ein)?'<span class="verified">✓ on Name TBD</span>':''}</span><span class="m">${cap(o.city)} · ${CAUSES[o.cause]} · ${SIZE[o.inc]}${open?` · <b>${open} open</b>`:''}</span></button>`;
 }
 function myMatches(){ return S.matches.filter(m => [m.need,m.offer].some(id => S.listings.find(l=>l.id===id).ein===S.user.ein)); }
 
@@ -400,7 +414,7 @@ function renderPhone(){
   const s = S.screen;
   if (!S.user && !['signup','role','claim','verify'].includes(s)) S.screen = 'signup';
   switch (S.screen) {
-    case 'signup': body = `${topbar()}<div class="screen"><div style="height:8%"></div><h2 class="h center">Join HelpBook</h2><p class="sub center">Where Washington nonprofits find what they need — and share what they have.</p><div style="height:10px"></div>
+    case 'signup': body = `${topbar()}<div class="screen"><div style="height:8%"></div><h2 class="h center">Join Name TBD</h2><p class="sub center">Where Washington nonprofits find what they need — and share what they have.</p><div style="height:10px"></div>
       <button class="btn" data-a="signup-google">Continue with Google</button><div class="center hint">or</div><input id="email" placeholder="you@yourorganization.org" value="${esc(S.signup.email||'')}"><button class="btn primary" data-a="signup-email">Continue with email</button>
       <p class="hint center" style="margin-top:20px">Free for 501(c)(3)s. No card, no forms — your organization is already listed.</p>
       <button class="btn quiet" data-a="sheet-who">Already playing? Switch perspective</button></div>`; break;
@@ -412,7 +426,7 @@ function renderPhone(){
       const hits = q.length>=2 ? ORGS.filter(o => o.name.toLowerCase().includes(q) || o.ein.includes(q.replace(/\D/g,''))).slice(0,6) : [];
       body = `${topbar({back:'role',title:'Back'})}<div class="screen"><h2 class="h">Which organization are you with?</h2><p class="sub">Every WA 501(c)(3) is already here from the IRS. Just find yours.</p>
         <input id="claimq" placeholder="Organization name or EIN" value="${esc(S.claimQuery)}" autocomplete="off">
-        ${hits.map(o=>`<button class="card tap ${S.claimPick===o.ein?'sel':''}" data-a="claim-pick" data-id="${o.ein}"><span class="t" style="margin-top:0">${esc(o.name)}</span><span class="m">${cap(o.city)} · EIN ${o.ein.slice(0,2)}-${o.ein.slice(2)} · ${CAUSES[o.cause]}</span><span class="m"><span class="pill grey">IRS-listed 501(c)(3)</span> ${joined(o.ein)?'<span class="verified">already on HelpBook — ask a member to invite you</span>':''}</span></button>`).join('')}
+        ${hits.map(o=>`<button class="card tap ${S.claimPick===o.ein?'sel':''}" data-a="claim-pick" data-id="${o.ein}"><span class="t" style="margin-top:0">${esc(o.name)}</span><span class="m">${cap(o.city)} · EIN ${o.ein.slice(0,2)}-${o.ein.slice(2)} · ${CAUSES[o.cause]}</span><span class="m"><span class="pill grey">IRS-listed 501(c)(3)</span> ${joined(o.ein)?'<span class="verified">already on Name TBD — ask a member to invite you</span>':''}</span></button>`).join('')}
         ${q.length>=2&&!hits.length?`<div class="empty">No match in this demo’s 32 sample orgs (the real app searches all 35,361).</div>`:''}
         ${!q?`<p class="hint">Try "Ballard Food" or "91-1428805".</p>`:''}
         <button class="btn primary" data-a="claim-continue" ${S.claimPick?'':'disabled'}>This is my organization</button>
@@ -441,13 +455,13 @@ function renderPhone(){
       body = `${topbar()}<div class="screen"><h2 class="h">Organizations</h2><p class="sub">${ORGS.length} of 35,361 WA 501(c)(3)s in this demo</p>
         <input id="orgq" placeholder="Name or EIN" value="${esc(f.q)}" autocomplete="off">
         <div class="row"><select id="cause"><option value="">Any cause</option>${causes.map(c=>`<option value="${c}" ${f.cause===c?'selected':''}>${CAUSES[c]}</option>`).join('')}</select><select id="city"><option value="">Any city</option>${cities.map(c=>`<option value="${c}" ${f.city===c?'selected':''}>${cap(c)}</option>`).join('')}</select></div>
-        <div class="chips"><button class="chip ${f.joined?'on':''}" data-a="org-toggle" data-k="joined">On HelpBook</button><button class="chip ${f.open?'on':''}" data-a="org-toggle" data-k="open">Has open listings</button></div>
-        <p class="hint">${os.length} result${os.length===1?'':'s'} · filters come from IRS data (cause, city, size) plus HelpBook (joined, tags, open listings)</p>
+        <div class="chips"><button class="chip ${f.joined?'on':''}" data-a="org-toggle" data-k="joined">On Name TBD</button><button class="chip ${f.open?'on':''}" data-a="org-toggle" data-k="open">Has open listings</button></div>
+        <p class="hint">${os.length} result${os.length===1?'':'s'} · filters come from IRS data (cause, city, size) plus Name TBD (joined, tags, open listings)</p>
         ${os.map(orgCard).join('')}</div>${tabs('orgs')}`; break; }
     case 'org': {
       const o = ORG(S.sel); const open = S.listings.filter(l=>l.ein===o.ein&&l.status!=='Fulfilled'&&l.status!=='Closed'); const done = S.matches.filter(m=>m.status==='Completed'&&[m.need,m.offer].some(id=>S.listings.find(l=>l.id===id).ein===o.ein));
       const isMe = me()&&me().ein===o.ein; const fol = S.follows.includes(o.ein);
-      body = `${topbar({back:'orgs',title:'Orgs'})}<div class="screen"><h2 class="h">${esc(o.name)}</h2><p class="sub">${cap(o.city)}, WA · ${CAUSES[o.cause]} ${o.verified||joined(o.ein)?'· <span class="verified">✓ on HelpBook</span>':'· <span class="hint">not on HelpBook yet</span>'}</p>
+      body = `${topbar({back:'orgs',title:'Orgs'})}<div class="screen"><h2 class="h">${esc(o.name)}</h2><p class="sub">${cap(o.city)}, WA · ${CAUSES[o.cause]} ${o.verified||joined(o.ein)?'· <span class="verified">✓ on Name TBD</span>':'· <span class="hint">not on Name TBD yet</span>'}</p>
         ${isMe?'':`<div class="row"><button class="btn sm" data-a="follow" data-id="${o.ein}">${fol?'Following':'Follow'}</button><button class="btn sm primary" data-a="collab" data-id="${o.ein}">Let’s collaborate</button></div>`}
         <div class="label">We often need</div><div class="chips">${o.needTags.map(t=>`<span class="chip tag">${esc(t)}</span>`).join('')||'<span class="hint">nothing listed</span>'}${isMe?'<button class="chip">+ add</button>':''}</div>
         <div class="label">We often have</div><div class="chips">${o.haveTags.map(t=>`<span class="chip tag">${esc(t)}</span>`).join('')||'<span class="hint">nothing listed</span>'}${isMe?'<button class="chip">+ add</button>':''}</div>
@@ -518,12 +532,15 @@ function renderPhone(){
 document.addEventListener('click', async e => {
   const el = e.target.closest('[data-a]'); if (!el) return;
   const a = el.dataset.a, id = el.dataset.id;
+  const guideAction = ['guide-toggle','step','prev','next','play','reset'].includes(a);
+  const wasDone = guideAction ? true : STEPS[S.step].done();
+  if (!guideAction) setTimeout(() => { syncStep(wasDone); render(); }, 0);
   const read = () => { const g = i => document.getElementById(i); if (S.screen==='post' && g('d-title')) S.draft = { ...S.draft, title:g('d-title').value, category:g('d-category').value, urgency:g('d-urgency')?g('d-urgency').value:'Normal', qty:g('d-qty').value, unit:g('d-unit').value, desc:g('d-desc').value, tags:g('d-tags').value }; if (S.screen==='orgs' && g('orgq')) S.orgFilter = { ...S.orgFilter, q:g('orgq').value, cause:g('cause').value, city:g('city').value }; if (S.screen==='claim' && g('claimq')) S.claimQuery = g('claimq').value; if (S.screen==='signup' && g('email')) S.signup.email = g('email').value; };
   switch (a) {
     case 'guide-toggle': S.guideMin = !S.guideMin; document.getElementById('guide').classList.toggle('min', S.guideMin); render(); document.getElementById('guide').classList.toggle('min', S.guideMin); return;
     case 'step': setStep(+el.dataset.i); break;
-    case 'prev': setStep(S.step-1); break;
-    case 'next': setStep(S.step+1); break;
+    case 'prev': S.step = Math.max(0, S.step-1); S.sheet = null; save(); render(); return;
+    case 'next': setStep(S.step+1); return;
     case 'play': await playStep(); return;
     case 'reset': if (confirm('Reset the demo to the beginning?')) { S = fresh(); ORGS.forEach(o=>{o.verified=false;}); setStep(0); } return;
     case 'go': read(); go(el.dataset.s, id ? (isNaN(+id)?id:+id) : undefined); return;
