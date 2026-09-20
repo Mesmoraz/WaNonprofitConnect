@@ -148,7 +148,9 @@
   .pin.me { stroke: var(--need); stroke-width: 2; }
   .pin.me.dim { opacity: 0.45; }
   .thread.suggested { stroke: var(--ink-3); stroke-width: 1.2; stroke-dasharray: 2 4; opacity: 0.8; }
-  .arrow-Completed { fill: #D9A12B; } .arrow-Accepted, .arrow-Proposed { fill: var(--need); } .arrow-suggested { fill: var(--ink-3); }
+  .arrow-Completed { fill: #D9A12B; } .arrow-Accepted { fill: var(--offer); } .arrow-Proposed { fill: var(--need); } .arrow-suggested { fill: var(--ink-3); }
+  .legend b.dashed { border-top-style: dashed; } .legend b.dotted { border-top-style: dotted; }
+  .asof { font-size: 11px; color: var(--ink-3); }
   .flt { display: flex; flex-direction: column; gap: 8px; }
   .flt-head { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink-2); }
   .flt-head button { font-weight: 600; color: var(--accent); }
@@ -168,8 +170,8 @@
   .hit { fill: transparent; cursor: pointer; }
   .thread { fill: none; stroke-linecap: round; cursor: pointer; }
   .thread.suggested { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 2 4; opacity: 0.7; }
-  .thread.Proposed { stroke: var(--need); stroke-width: 1.6; stroke-dasharray: 5 4; }
-  .thread.Accepted { stroke: var(--need); stroke-width: 2.2; }
+  .thread.Proposed { stroke: var(--need); stroke-width: 1.8; stroke-dasharray: 6 4; }
+  .thread.Accepted { stroke: var(--offer); stroke-width: 2.4; }
   .thread.Completed { stroke: #D9A12B; stroke-width: 3; filter: drop-shadow(0 0 3px rgba(217,161,43,0.7)); }
   .thread.hi { stroke-width: 4; }
   .radius { fill: rgba(46,107,78,0.08); stroke: var(--offer); stroke-dasharray: 3 3; stroke-width: 1; }
@@ -569,7 +571,7 @@ function renderPhone(){
       if (f.q) os = os.filter(o=>o.name.toLowerCase().includes(f.q.toLowerCase())||o.ein.includes(f.q));
       if (f.cause) os = os.filter(o=>o.cause===f.cause); if (f.city) os = os.filter(o=>o.city===f.city); if (f.joined) os = os.filter(o=>joined(o.ein)||o.verified); if (f.open) os = os.filter(o=>S.listings.some(l=>l.ein===o.ein&&l.status==='Open'));
       const causes = [...new Set(ORGS.map(o=>o.cause))].sort(); const cities = [...new Set(ORGS.map(o=>o.city))].sort();
-      body = `${topbar()}<div class="screen"><h2 class="h">Organizations</h2><p class="sub">${ORGS.length} of 35,361 WA 501(c)(3)s in this demo</p>
+      body = `${topbar()}<div class="screen"><h2 class="h">Organizations</h2><p class="sub">${ORGS.length} of 35,361 WA 501(c)(3)s in this demo</p><p class="asof">Organization data: IRS Business Master File posted 2026-09-08 · refreshed monthly</p>
         <input id="orgq" placeholder="Name or EIN" value="${esc(f.q)}" autocomplete="off">
         <div class="row"><select id="cause"><option value="">Any cause</option>${causes.map(c=>`<option value="${c}" ${f.cause===c?'selected':''}>${CAUSES[c]}</option>`).join('')}</select><select id="city"><option value="">Any city</option>${cities.map(c=>`<option value="${c}" ${f.city===c?'selected':''}>${cap(c)}</option>`).join('')}</select></div>
         <div class="chips"><button class="chip ${f.joined?'on':''}" data-a="org-toggle" data-k="joined">On Name TBD</button><button class="chip ${f.open?'on':''}" data-a="org-toggle" data-k="open">Has open listings</button></div>
@@ -584,7 +586,7 @@ function renderPhone(){
         <div class="label">We often have</div><div class="chips">${o.haveTags.map(t=>`<span class="chip tag">${esc(t)}</span>`).join('')||'<span class="hint">nothing listed</span>'}${isMe?'<button class="chip">+ add</button>':''}</div>
         <div class="label">Open listings (${open.length})</div>${open.map(l=>listingCard(l)).join('')||'<div class="hint">None right now.</div>'}
         ${done.length?`<div class="label">Completed connections (${done.length})</div>${done.map(m=>{const n=S.listings.find(l=>l.id===m.need),f2=S.listings.find(l=>l.id===m.offer);return `<div class="card"><span class="pill ok">Fulfilled</span><span class="t">${esc(n.title)}</span><span class="m">${esc(ORG(f2.ein).name)} → ${esc(ORG(n.ein).name)} · ${ago(m.doneAt)}</span></div>`;}).join('')}`:''}
-        <div class="label">From the IRS record</div><div class="card"><div class="kv"><span>EIN</span><span>${o.ein.slice(0,2)}-${o.ein.slice(2)}</span><span>Status</span><span>501(c)(3) public charity</span><span>Since</span><span>${o.ruling}</span><span>Revenue</span><span>${o.rev?'$'+o.rev.toLocaleString():'not reported (files 990-N)'}</span><span>NTEE</span><span>${o.ntee||'not coded'}</span></div><p class="hint" style="margin:8px 0 0">Source: IRS Exempt Organizations Business Master File · <u>ProPublica</u> · <u>IRS TEOS</u></p></div></div>${tabs('orgs')}`; break; }
+        <div class="label">From the IRS record</div><div class="card"><div class="kv"><span>EIN</span><span>${o.ein.slice(0,2)}-${o.ein.slice(2)}</span><span>Status</span><span>501(c)(3) public charity</span><span>Since</span><span>${o.ruling}</span><span>Revenue</span><span>${o.rev?'$'+o.rev.toLocaleString():'not reported (files 990-N)'}</span><span>NTEE</span><span>${o.ntee||'not coded'}</span></div><p class="hint" style="margin:8px 0 0">Source: IRS Business Master File posted 2026-09-08 · refreshed monthly · <u>ProPublica</u> · <u>IRS TEOS</u></p></div></div>${tabs('orgs')}`; break; }
     case 'post': {
       const d = S.draft || (S.draft = { kind:'Need', category:'Technology', title:'', desc:'', qty:'', unit:'', urgency:'Normal', tags:'' });
       const preview = d.title.trim().length>3 ? suggestions({ ...d, ein:S.user.ein, qty:+d.qty||null, createdAt:new Date().toISOString(), status:'Open', id:0 }).slice(0,3) : [];
@@ -755,13 +757,13 @@ function renderMap(){
 
   return `${topbar()}<div class="screen"><h2 class="h">Map</h2><p class="sub">${done} completed · ${active} in progress · ${visible.size-1} with matching listings</p>
     <div class="map">${svg}</div>
-    <div class="legend"><span><i style="background:var(--offer)"></i>nonprofit</span><span><i style="background:#3B5BA9"></i>business</span><span><i style="background:#7A5CA8"></i>community member</span><span><b style="border-color:#D9A12B"></b>completed</span><span><b style="border-color:var(--need)"></b>in progress</span><span><b style="border-color:var(--ink-3);border-top-style:dotted"></b>suggested</span><span>→ arrow points from giver to receiver · bigger pin = more connections</span></div>
+    <div class="legend"><span><i style="background:var(--offer)"></i>nonprofit</span><span><i style="background:#3B5BA9"></i>business</span><span><i style="background:#7A5CA8"></i>community member</span><span><b style="border-color:#D9A12B;border-top-width:4px"></b>completed</span><span><b style="border-color:var(--offer)"></b>in progress (accepted)</span><span><b class="dashed" style="border-color:var(--need)"></b>proposed, awaiting answer</span><span><b class="dotted" style="border-color:var(--ink-3)"></b>suggested by matching</span><span>→ arrow points from giver to receiver · bigger pin = more connections</span></div>
     ${detail}
     <div class="flt-head"><span>Filters apply to the Board too</span></div>
     ${filterBlock(true)}
     <div class="label">Connections (${threads.length})</div>
     ${threads.slice().sort((a,b)=>new Date(b.doneAt||b.at)-new Date(a.doneAt||a.at)).map(m => { const n=S.listings.find(l=>l.id===m.need), o=S.listings.find(l=>l.id===m.offer); return `<button class="card tap ${v.selMatch===m.id?'sel':''}" data-a="map-focus" data-id="${m.id}"><span class="conn"><span><span class="from">${esc(ORG(o.ein).name.replace(/ \(.*\)$/, ''))}</span> <span class="arrow">→</span> <span class="to">${esc(ORG(n.ein).name.replace(/ \(.*\)$/, ''))}</span></span><span class="pill ${m.status==='Completed'?'ok':m.status==='Proposed'?'need':'grey'}">${m.status}</span><span class="m">${n.category} · ${esc(o.title)} · ${Math.round(MILES(ORG(n.ein),ORG(o.ein)))} mi</span></span></button>`; }).join('') || '<div class="hint">No connections match these filters.</div>'}
-    <p class="hint">Pinch or scroll to zoom (up to 40×), drag to pan, double-tap to zoom in; the bar shows miles at the current zoom. Pins sit at each organization’s ZIP code, so placement is neighborhood-accurate, not door-accurate. Tap a pin for an organization (hover grows it by its number of connections); tap a line or a row below for a connection. Gold lines are completed hand-offs — the thread of help between groups. Business and community-member pins are examples, not real accounts.</p></div>${tabs('map')}`;
+    <p class="hint">Pinch or scroll to zoom (up to 40×), drag to pan, double-tap to zoom in; the bar shows miles at the current zoom. Pins sit at each organization’s ZIP code, so placement is neighborhood-accurate, not door-accurate. Tap a pin for an organization (hover grows it by its number of connections); tap a line or a row below for a connection. Gold lines are completed hand-offs — the thread of help between groups. Business and community-member pins are examples, not real accounts. Organization locations: IRS Business Master File posted 2026-09-08 · refreshed monthly.</p></div>${tabs('map')}`;
 }
 
 // =====================================================================
