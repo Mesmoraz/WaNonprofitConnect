@@ -9,7 +9,7 @@ function boot() {
   const els = { guide: { innerHTML: '', classList: { toggle() {}, add() {} } }, phone: { innerHTML: '' } };
   global.document = { getElementById: id => els[id] || null, addEventListener() {} };
   global.localStorage = { getItem: () => null, setItem() {} };
-  global.confirm = () => true; global.window = { addEventListener() {} };
+  global.confirm = () => true; global.window = { addEventListener() {} }; global.requestAnimationFrame = fn => setTimeout(() => fn(performance.now() + 1000), 0); global.cancelAnimationFrame = clearTimeout; global.matchMedia = () => ({ matches: true });
   const m = { exports: {} };
   new Function('module', 'exports', js + ';module.exports={S:()=>S,STEPS,playStep,syncStep,go,finishClaim,propose,respond,complete,switchTo,postListing};')(m, m.exports);
   return m.exports;
