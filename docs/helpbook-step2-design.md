@@ -1,6 +1,6 @@
 # HelpBook — Step 2 design (accounts, verification, alerts, money)
 
-Draft for discussion, 2026-09-19. Shareable rendered version with wireframes: `docs/helpbook-step2-design.html` (published at https://claude.ai/artifact/Tev9dE62ksqfMLQLrqqXTv). Nothing here is implemented yet; the prototype covers listings, matching, propose/accept/complete, messaging, and the real-time feed.
+Draft for discussion, 2026-09-19. Shareable rendered version with wireframes: `docs/helpbook-step2-design.html` (published at https://claude.ai/artifact/Tev9dE62ksqfMLQLrqqXTv). Clickable phone-first prototype of the story: `docs/helpbook-prototype.html` (published at https://claude.ai/artifact/14WxTqjyxp8hBrgXqyELN9). Nothing here is implemented yet; the prototype covers listings, matching, propose/accept/complete, messaging, and the real-time feed.
 
 ## The "watch this" story
 

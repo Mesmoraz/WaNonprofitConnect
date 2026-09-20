@@ -1,0 +1,558 @@
+<title>HelpBook Prototype</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --ground: #E9ECE6; --paper: #FFFFFF; --paper-2: #F4F6F2; --ink: #1B2430; --ink-2: #4B5563; --ink-3: #7C8794;
+    --line: #D9DED7; --line-2: #EAEDE7;
+    --need: #B8741A; --need-bg: #FBF1E0; --offer: #2E6B4E; --offer-bg: #E4F0E9;
+    --accent: #2E6B4E; --accent-ink: #FFFFFF; --warn: #A33A2E; --warn-bg: #F9E8E5; --good: #2E6B4E;
+    --guide: #1B2430; --guide-ink: #E7EAE4; --guide-2: #B6BDB6; --guide-line: #2E3A40;
+    --shadow: 0 18px 50px rgba(20, 30, 25, 0.22);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0F1418; --paper: #1B2329; --paper-2: #222B31; --ink: #E7EAE4; --ink-2: #B6BDB6; --ink-3: #8A938C;
+      --line: #2E3A40; --line-2: #26313A; --need: #E0A04B; --need-bg: #3A2C15; --offer: #74B894; --offer-bg: #1E3529;
+      --accent: #74B894; --accent-ink: #0F1A14; --warn: #E58C7D; --warn-bg: #3B221E; --good: #74B894;
+      --guide: #161D22; --guide-ink: #E7EAE4; --guide-2: #B6BDB6; --guide-line: #2E3A40; --shadow: 0 18px 50px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0F1418; --paper: #1B2329; --paper-2: #222B31; --ink: #E7EAE4; --ink-2: #B6BDB6; --ink-3: #8A938C;
+    --line: #2E3A40; --line-2: #26313A; --need: #E0A04B; --need-bg: #3A2C15; --offer: #74B894; --offer-bg: #1E3529;
+    --accent: #74B894; --accent-ink: #0F1A14; --warn: #E58C7D; --warn-bg: #3B221E; --good: #74B894;
+    --guide: #161D22; --guide-ink: #E7EAE4; --guide-2: #B6BDB6; --guide-line: #2E3A40; --shadow: 0 18px 50px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--ground); color: var(--ink); font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 15px; line-height: 1.45; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  input, select, textarea { font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; width: 100%; }
+  textarea { min-height: 80px; resize: vertical; }
+  h1, h2, h3 { font-family: "Bricolage Grotesque", "IBM Plex Sans", sans-serif; margin: 0; line-height: 1.15; text-wrap: balance; }
+
+  /* ---------- Layout: guide + phone ---------- */
+  .stage { min-height: 100%; display: grid; grid-template-columns: minmax(280px, 380px) 1fr; }
+  .guide { background: var(--guide); color: var(--guide-ink); padding: 28px 26px calc(28px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 18px; position: sticky; top: 0; height: 100vh; overflow: auto; }
+  .guide .eyebrow { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--guide-2); }
+  .guide h1 { font-size: 30px; }
+  .guide p { margin: 0; color: var(--guide-2); font-size: 14px; }
+  .steps { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+  .step { display: grid; grid-template-columns: 26px 1fr; gap: 10px; padding: 8px 10px; border-radius: 8px; text-align: left; color: var(--guide-2); }
+  .step.active { background: rgba(255,255,255,0.08); color: var(--guide-ink); }
+  .step.done .n { background: var(--good); color: var(--accent-ink); border-color: var(--good); }
+  .step .n { width: 24px; height: 24px; border: 1px solid var(--guide-line); border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 600; }
+  .step b { display: block; font-size: 14px; }
+  .step span { font-size: 12px; }
+  .narration { background: rgba(255,255,255,0.06); border-left: 3px solid var(--accent); padding: 12px 14px; font-size: 14px; color: var(--guide-ink); }
+  .narration b { color: var(--accent); }
+  .guide-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .gbtn { border: 1px solid var(--guide-line); color: var(--guide-ink); padding: 9px 14px; border-radius: 8px; font-weight: 600; font-size: 14px; }
+  .gbtn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .gbtn:disabled { opacity: 0.4; cursor: default; }
+  .guide .foot { margin-top: auto; font-size: 12px; color: var(--guide-2); }
+  .guide .foot a { color: var(--guide-ink); }
+
+  .phone-col { display: grid; place-items: center; padding: 28px 20px; }
+  .phone { width: 100%; max-width: 400px; height: min(820px, calc(100vh - 56px)); background: var(--paper); border-radius: 28px; box-shadow: var(--shadow); border: 1px solid var(--line); overflow: hidden; display: flex; flex-direction: column; position: relative; }
+
+  /* ---------- App chrome ---------- */
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 14px 10px; border-bottom: 1px solid var(--line-2); background: var(--paper); }
+  .topbar .logo { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.01em; }
+  .topbar .back { font-weight: 600; color: var(--accent); }
+  .who { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px 4px 6px; font-size: 12px; font-weight: 600; max-width: 60%; }
+  .who .dot { width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-size: 10px; flex: none; }
+  .who span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .screen { flex: 1; overflow: auto; padding: 14px 14px 20px; display: flex; flex-direction: column; gap: 10px; -webkit-overflow-scrolling: touch; }
+  .tabs { display: grid; grid-template-columns: repeat(5, 1fr); border-top: 1px solid var(--line-2); background: var(--paper); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .tab { padding: 8px 4px 9px; font-size: 11px; font-weight: 600; color: var(--ink-3); display: flex; flex-direction: column; align-items: center; gap: 2px; position: relative; }
+  .tab.on { color: var(--accent); }
+  .tab .ic { font-size: 18px; line-height: 1; }
+  .tab.plus .ic { background: var(--accent); color: var(--accent-ink); width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 22px; margin-top: -12px; }
+  .badge { position: absolute; top: 4px; right: 18%; background: var(--need); color: #fff; font-size: 10px; min-width: 16px; height: 16px; border-radius: 8px; display: grid; place-items: center; padding: 0 4px; }
+
+  /* ---------- Components ---------- */
+  .h { font-size: 22px; }
+  .sub { color: var(--ink-2); font-size: 14px; margin: 0; }
+  .card { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 13px; text-align: left; width: 100%; display: block; }
+  .card.tap:hover { border-color: var(--ink-3); }
+  .card .t { font-weight: 600; display: block; margin: 4px 0 2px; }
+  .card .m { color: var(--ink-2); font-size: 13px; }
+  .card.sel { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; letter-spacing: 0.02em; }
+  .pill.need { background: var(--need-bg); color: var(--need); }
+  .pill.offer { background: var(--offer-bg); color: var(--offer); }
+  .pill.grey { background: var(--paper-2); color: var(--ink-2); }
+  .pill.ok { background: var(--offer-bg); color: var(--offer); }
+  .pill.warn { background: var(--warn-bg); color: var(--warn); }
+  .btn { display: block; width: 100%; text-align: center; padding: 12px 14px; border-radius: 10px; font-weight: 600; border: 1px solid var(--line); background: var(--paper); }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .btn.need { background: var(--need); color: #fff; border-color: var(--need); }
+  .btn.quiet { color: var(--ink-2); }
+  .btn.sm { padding: 8px 12px; font-size: 13px; width: auto; }
+  .row { display: flex; gap: 8px; }
+  .row > * { flex: 1; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 500; background: var(--paper); }
+  .chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .chip.tag { background: var(--paper-2); }
+  .label { font-size: 12px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 6px; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; font-size: 13px; }
+  .kv span:nth-child(odd) { color: var(--ink-3); }
+  .reason { font-size: 12px; color: var(--ink-2); }
+  .score { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 18px; color: var(--accent); }
+  .msgs { display: flex; flex-direction: column; gap: 8px; }
+  .msg { max-width: 85%; padding: 8px 11px; border-radius: 12px; background: var(--paper-2); font-size: 14px; }
+  .msg.me { align-self: flex-end; background: var(--offer-bg); }
+  .msg small { display: block; color: var(--ink-3); font-size: 11px; margin-top: 2px; }
+  .sys { text-align: center; font-size: 12px; color: var(--ink-3); }
+  .composer { display: flex; gap: 6px; }
+  .composer input { flex: 1; }
+  .composer button { flex: none; }
+  .notif { border-left: 3px solid var(--need); }
+  .notif.read { border-left-color: var(--line); opacity: 0.8; }
+  .empty { color: var(--ink-3); text-align: center; padding: 30px 10px; font-size: 14px; }
+  .toast { position: absolute; left: 14px; right: 14px; bottom: 74px; background: var(--ink); color: var(--paper); padding: 10px 14px; border-radius: 10px; font-size: 13px; box-shadow: var(--shadow); z-index: 5; }
+  .sheet-bg { position: absolute; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: flex-end; z-index: 6; }
+  .sheet { background: var(--paper); width: 100%; border-radius: 18px 18px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 8px; max-height: 80%; overflow: auto; }
+  .verified { color: var(--good); font-weight: 600; font-size: 12px; }
+  .big { font-size: 40px; text-align: center; }
+  .center { text-align: center; }
+  .stack { display: flex; flex-direction: column; gap: 8px; }
+  .hint { font-size: 12px; color: var(--ink-3); }
+  .role { display: grid; grid-template-columns: 24px 1fr; gap: 10px; align-items: start; }
+  .role .r { width: 20px; height: 20px; border: 2px solid var(--line); border-radius: 50%; margin-top: 2px; }
+  .card.sel .role .r { border-color: var(--accent); background: radial-gradient(var(--accent) 45%, transparent 50%); }
+  .likely { background: var(--offer-bg); border-color: var(--offer); }
+
+  /* ---------- Phone width: app full-screen, guide as bottom sheet ---------- */
+  @media (max-width: 860px) {
+    .stage { display: block; }
+    .guide { position: fixed; left: 0; right: 0; bottom: 0; height: auto; max-height: 46vh; padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); gap: 10px; border-radius: 16px 16px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.25); z-index: 20; transition: max-height 0.2s; }
+    .guide.min { max-height: 64px; overflow: hidden; }
+    .guide h1, .guide .eyebrow, .guide .foot, .steps { display: none; }
+    .guide .mini { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .guide .mini b { font-size: 14px; }
+    .guide.min .narration, .guide.min .guide-actions { display: none; }
+    .phone-col { padding: 0; }
+    .phone { max-width: none; height: 100vh; height: 100dvh; border-radius: 0; border: 0; box-shadow: none; }
+    .screen { padding-bottom: 80px; }
+    .tabs { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
+  }
+  @media (min-width: 861px) { .guide .mini { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .guide { transition: none; } }
+</style>
+
+<div class="stage">
+  <aside class="guide" id="guide"></aside>
+  <div class="phone-col"><div class="phone" id="phone"></div></div>
+</div>
+
+<script>
+// =====================================================================
+// Data — real WA 501(c)(3)s from the IRS Business Master File (Sept 2026).
+// Listings, people, tags and messages are invented for the demo.
+// =====================================================================
+const CAUSES = { A:'Arts & Culture', B:'Education', C:'Environment', D:'Animals', E:'Health', F:'Mental Health', G:'Health', H:'Medical Research', I:'Legal', J:'Employment', K:'Food & Nutrition', L:'Housing & Shelter', M:'Public Safety', N:'Recreation', O:'Youth', P:'Human Services', Q:'International', R:'Civil Rights', S:'Community', T:'Philanthropy', U:'Science', V:'Social Science', W:'Public Benefit', X:'Religion', Y:'Membership', Z:'Uncategorized' };
+const SIZE = { '0':'no revenue on file', '1':'under $10k', '2':'$10–25k', '3':'$25–100k', '4':'$100–500k', '5':'$500k–1M', '6':'$1–5M', '7':'$5–10M', '8':'$10–50M', '9':'$50M+' };
+// [ein, name, city, zip, ntee, cause override, income band, revenue, ruling year, filing, need tags, have tags]
+const ORG_ROWS = [
+  ['911428805','Ballard Food Bank','SEATTLE','98107','','K','8',17321514,1989,'01',['laptops','refrigeration','pallets','drivers'],['surplus produce','cardboard']],
+  ['822888626','Computers 4 People in Need','BELLINGHAM','98225','T50','T','0',0,2017,'02',['donated computers','volunteers'],['laptops','desktops','monitors','tech support']],
+  ['581735531','Tacoma-Pierce Habitat for Humanity','TACOMA','98409','L20Z','L','8',25766572,1987,'01',['volunteers','appliances'],['plywood','lumber','doors','windows']],
+  ['911606330','Rebuilding Together Seattle','TUKWILA','98188','Z99Z','L','5',538342,1993,'01',['plywood','lumber','grab bars','volunteers'],['tools loan']],
+  ['465378620','Southeast Seattle Tool Library','SEATTLE','98108','S99','S','3',52652,2014,'01',['lumber','plywood','hand tools'],['tool loans','workshop space']],
+  ['811434757','West Seattle Tool Library','SEATTLE','98106','S20','S','3',96455,2016,'01',['power tools'],['tool loans','refrigerator']],
+  ['911464412','West Seattle Food Bank','SEATTLE','98126','K31Z','K','7',6987532,1990,'01',['refrigeration','drivers'],['surplus bread']],
+  ['911500768','Rainier Valley Food Bank','SEATTLE','98118','Z99Z','K','8',9253469,1996,'01',['shelving'],['surplus produce']],
+  ['910826037','Northwest Harvest','SEATTLE','98102','','K','9',52779515,1975,'01',['warehouse space','drivers'],['canned food','pallets']],
+  ['237297837','Thurston County Food Bank','OLYMPIA','98501','K31Z','K','8',16688458,1972,'01',['pallet jack','refrigeration'],['surplus produce']],
+  ['237173826','Second Harvest Inland Northwest','SPOKANE','99202','K31','K','9',151727874,2002,'01',['drivers'],['canned food']],
+  ['911425676','Treehouse','SEATTLE','98144','O500','O','8',28224827,1989,'01',['backpacks','school supplies','laptops'],['clothing']],
+  ['910982116','Hopelink','REDMOND','98052','P20','P','9',108992829,1977,'01',['vehicles','laptops'],['furniture']],
+  ['911546757','FareStart','SEATTLE','98101','J220','J','8',14654450,1992,'01',['kitchen equipment'],['kitchen space','prepared meals']],
+  ['223939593','NW Furniture Bank','TACOMA','98421','P20','P','6',4148792,2007,'01',['drivers','box truck','mattresses'],['furniture','office chairs']],
+  ['237421892','Solid Ground Washington','SEATTLE','98103','L40Z','L','8',31839054,1975,'01',['laptops','furniture'],['office chairs','desks']],
+  ['910565011','Spokane Humane Society','SPOKANE','99217','D200','D','6',2665159,1941,'01',['pet food','towels','crates'],['volunteer training']],
+  ['910677564','Whatcom Humane Society','BELLINGHAM','98226','D200','D','6',3809777,1951,'01',['towels','crates'],[]],
+  ['263482643','Boys & Girls Club of Lewis County','CHEHALIS','98532','O50','O','6',1162744,2009,'01',['sports equipment','laptops'],['gym space']],
+  ['455497267','Family Promise of the Palouse','PULLMAN','99163','P85','P','6',1228349,2012,'01',['bedding','car seats'],[]],
+  ['910565555','United Way of King County','SEATTLE','98104','T700','T','9',49716900,1953,'01',[],['volunteers','grants']],
+  ['010852888','Team Read','SEATTLE','98124','B92','B','6',1126469,2006,'01',['books','tablets'],[]],
+  ['043602577','Northwest Education Access','SEATTLE','98115','B90','B','6',3920853,2002,'01',['laptops'],[]],
+  ['061652679','Seattle Children’s PlayGarden','SEATTLE','98144','O52','O','5',852358,2003,'01',['plywood','soil','plants'],['produce']],
+  ['061764737','Habitat for Humanity Spokane','SPOKANE','99220','L20Z','L','5',769800,1987,'01',['volunteers'],['lumber','cabinets']],
+  ['237139744','Environmental Works','SEATTLE','98112','L190','L','7',7033175,1972,'01',[],['design services']],
+  ['237438529','Chinese Information and Service Center','SEATTLE','98104','P84Z','P','8',15595502,1977,'01',['laptops','interpreters'],['meeting space']],
+  ['260779977','Belong Partners','SEATTLE','98134','O50','O','6',1573496,2008,'01',['sports equipment'],[]],
+  ['261620304','Blessings Under the Bridge','SPOKANE','99202','P85','P','6',1124227,2011,'01',['blankets','socks','hygiene kits'],[]],
+  ['262465531','New Family Traditions','SEATTLE','98106','P20','P','6',1193452,2008,'01',['diapers','car seats'],[]],
+  ['208845738','Partners in Prevention Education','OLYMPIA','98506','P40','P','6',1686032,2007,'01',['laptops','bus passes'],[]],
+  ['413026773','Computer Upcycle Project','OLYMPIA','98501','S43','S','0',0,2026,'02',['donated computers'],['laptops','refurbished PCs']],
+];
+const ORGS = ORG_ROWS.map(r => ({ ein:r[0], name:r[1], city:r[2], zip:r[3], ntee:r[4], cause:r[5], inc:r[6], rev:r[7], ruling:r[8], filing:r[9], needTags:r[10], haveTags:r[11], joined:false, verified:false, followers:0 }));
+const ORG = ein => ORGS.find(o => o.ein === ein);
+const PEOPLE = [
+  { id:'casey', name:'Casey', ein:'911428805', email:'casey@ballardfoodbank.org' },
+  { id:'jordan', name:'Jordan', ein:'822888626', email:'jordan@c4pin.org' },
+  { id:'sam', name:'Sam', ein:'581735531', email:'sam@tpc-habitat.org' },
+  { id:'riley', name:'Riley', ein:'911606330', email:'riley@rtseattle.org' },
+];
+const CATEGORIES = ['Materials','Equipment','Technology','Furniture','Food','Clothing','Vehicles','Services','Volunteers','Space','Other'];
+const URG = ['Low','Normal','High','Critical'];
+
+function seedListings() {
+  const d = h => new Date(Date.now() - h * 3600e3).toISOString();
+  return [
+    L(1,'Offer','581735531','Materials','40 sheets of ¾" plywood left over from a build','Full sheets, dry, stored indoors. Pickup in Tacoma weekdays.',40,'sheets','Normal','plywood,lumber,building materials',d(30)),
+    L(2,'Need','911606330','Materials','Plywood for wheelchair ramps','Building 6 accessibility ramps for seniors this month; need ~25 sheets ¾" exterior plywood.',25,'sheets','High','plywood,ramps,accessibility',d(26)),
+    L(3,'Need','465378620','Materials','Lumber and plywood for workshop benches','',10,'sheets','Normal','plywood,lumber,workbench',d(50)),
+    L(4,'Offer','822888626','Technology','15 refurbished laptops (Win 11, 8 GB)','Wiped and reimaged. Can ship anywhere in WA.',15,'laptops','Normal','laptops,computers',d(20)),
+    L(5,'Need','911428805','Equipment','Walk-in cooler or commercial refrigerator','For fresh produce storage.',1,'unit','High','refrigerator,cooler,cold storage',d(70)),
+    L(6,'Offer','811434757','Equipment','Used 2-door commercial refrigerator','Works, needs a new gasket.',1,'unit','Normal','refrigerator,cooler',d(12)),
+    L(7,'Need','223939593','Volunteers','Box truck drivers, Saturday mornings','CDL not required. 4-hour shifts, Tacoma.',4,'volunteers','Normal','drivers,box truck,volunteers',d(90)),
+    L(8,'Offer','910826037','Food','6 pallets of canned vegetables','Best-by dates 6+ months out. Must take full pallets.',6,'pallets','High','canned food,pallets,vegetables',d(8)),
+    L(9,'Need','911425676','Other','Backpacks and school supplies for 200 students','Fall enrollment. New or like-new.',200,'backpacks','High','backpacks,school supplies',d(40)),
+    L(10,'Offer','911546757','Space','Commercial kitchen time, Sunday afternoons','Licensed kitchen, 12 burners, walk-in access.',1,'kitchen','Normal','kitchen,space,cooking',d(100)),
+    L(11,'Need','237297837','Equipment','Pallet jack','Manual is fine. Olympia.',1,'unit','Normal','pallet jack,warehouse',d(60)),
+    L(12,'Offer','237421892','Furniture','20 office chairs, good condition','Office downsizing. Pickup in Fremont.',20,'chairs','Low','office chairs,furniture',d(15)),
+  ];
+}
+function L(id,kind,ein,category,title,desc,qty,unit,urg,tags,createdAt){ return { id, kind, ein, category, title, desc, qty, unit, urgency:urg, tags, status:'Open', createdAt }; }
+
+// =====================================================================
+// Matching — same rules as the backend MatchScorer.
+// =====================================================================
+const STOP = new Set('A AN AND ANY ARE AS AT BE BY FOR FROM HAVE HAS IN IS IT NEED NEEDS NEEDED OF ON OR OUR SOME SPARE SURPLUS EXTRA THE TO WE WITH LOOKING WANT WANTED OFFER OFFERING DONATE DONATION FREE PLEASE NEW USED GOOD LEFT OVER'.split(' '));
+const stem = t => t.length>4&&t.endsWith('IES') ? t.slice(0,-3)+'Y' : (t.length>3&&t.endsWith('S')&&!t.endsWith('SS') ? t.slice(0,-1) : t);
+const tokens = s => [...new Set(s.toUpperCase().replace(/[^A-Z0-9 ]/g,' ').split(/\s+/).filter(t=>t.length>=3&&!STOP.has(t)).map(stem))];
+const ltokens = l => tokens([l.title, l.desc||'', (l.tags||'').replace(/,/g,' ')].join(' '));
+function score(need, offer) {
+  const reasons = []; let s = 0;
+  if (need.category === offer.category) { s += 50; reasons.push(`same category (${need.category})`); }
+  const nt = new Set(ltokens(need)); const shared = ltokens(offer).filter(t => nt.has(t));
+  if (shared.length) { s += Math.min(60, 25 + 10*(shared.length-1)); reasons.push('shared keywords: ' + shared.slice(0,4).map(x=>x.toLowerCase()).join(', ')); }
+  const no = ORG(need.ein), oo = ORG(offer.ein);
+  if (no.city === oo.city) { s += 20; reasons.push(`same city (${cap(no.city)})`); }
+  else if (no.zip.slice(0,3) === oo.zip.slice(0,3)) { s += 10; reasons.push('same area'); }
+  if (need.urgency === 'Critical') { s += 10; reasons.push('need is critical'); } else if (need.urgency === 'High') { s += 5; reasons.push('need is high urgency'); }
+  if (need.qty && offer.qty) { if (offer.qty >= need.qty) { s += 10; reasons.push('offer covers full quantity'); } else { s += 5; reasons.push(`offer covers ${Math.round(100*offer.qty/need.qty)}% of quantity`); } }
+  if (Date.now() - new Date(offer.createdAt) < 30*864e5) s += 5;
+  return { s, reasons };
+}
+function tagScore(listing, org) { // org-level "we often have/need" tags → alerts with no listing
+  const lt = new Set(ltokens(listing)); const tags = listing.kind === 'Need' ? org.haveTags : org.needTags;
+  const hits = tags.filter(t => tokens(t).some(x => lt.has(x)));
+  return hits;
+}
+function suggestions(listing) {
+  const want = listing.kind === 'Need' ? 'Offer' : 'Need';
+  return S.listings.filter(l => l.kind === want && l.status === 'Open' && l.ein !== listing.ein)
+    .map(c => { const [n,o] = listing.kind==='Need' ? [listing,c] : [c,listing]; const r = score(n,o); return { l:c, ...r }; })
+    .filter(x => x.s >= 15).sort((a,b) => b.s - a.s);
+}
+
+// =====================================================================
+// State
+// =====================================================================
+let S;
+function fresh() {
+  return { step:0, screen:'signup', signup:{}, user:null, listings:seedListings(), matches:[], notifs:[], follows:[], nextId:13, feedFilter:'All', orgFilter:{ q:'', cause:'', city:'', joined:false, open:false }, draft:null, sel:null, toast:null, sheet:null, claimQuery:'', claimPick:null, guideMin:false, joinedEins:['822888626','581735531','911606330','465378620','811434757','910826037','223939593','237421892','911425676','911546757'] };
+}
+function save(){ try { localStorage.setItem('helpbook-proto', JSON.stringify(S)); } catch(e){} }
+function load(){ try { const j = localStorage.getItem('helpbook-proto'); if (j) { S = JSON.parse(j); return true; } } catch(e){} return false; }
+if (!load()) S = fresh();
+const joined = ein => S.joinedEins.includes(ein);
+const me = () => S.user ? ORG(S.user.ein) : null;
+const cap = s => s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+const ago = iso => { const m = Math.round((Date.now()-new Date(iso))/60000); return m<1?'just now':m<60?`${m}m ago`:m<1440?`${Math.round(m/60)}h ago`:`${Math.round(m/1440)}d ago`; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(t){ S.toast = t; render(); setTimeout(()=>{ if (S.toast===t){ S.toast=null; render(); } }, 2600); }
+function go(screen, sel){ S.screen = screen; if (sel !== undefined) S.sel = sel; S.sheet = null; render(); }
+function notify(ein, type, text, ref){ S.notifs.unshift({ id:Date.now()+Math.random(), ein, type, text, ref, at:new Date().toISOString(), read:false }); }
+
+// ---- actions -----------------------------------------------------------
+function postListing(d) {
+  const l = L(S.nextId++, d.kind, S.user.ein, d.category, d.title.trim(), d.desc||'', +d.qty||null, d.unit||'', d.urgency, d.tags, new Date().toISOString());
+  S.listings.unshift(l);
+  // alerts: orgs with a matching open listing OR a matching capability tag
+  const alerted = new Set();
+  for (const sg of suggestions(l)) { if (!alerted.has(sg.l.ein)) { alerted.add(sg.l.ein); notify(sg.l.ein, 'match_found', `${l.kind==='Need'?'A need matches what you have':'An offer matches what you need'}: ${ORG(l.ein).name} — ${l.title}`, { listing:l.id }); } }
+  for (const o of ORGS) { if (o.ein !== l.ein && !alerted.has(o.ein) && joined(o.ein)) { const hits = tagScore(l, o); if (hits.length) { alerted.add(o.ein); notify(o.ein, 'match_found', `${ORG(l.ein).name} ${l.kind==='Need'?'needs':'has'} "${l.title}" — your profile says you often ${l.kind==='Need'?'have':'need'} ${hits.join(', ')}`, { listing:l.id }); } } }
+  S.draft = null; go('listing', l.id); toast(`Posted. ${alerted.size} organization${alerted.size===1?'':'s'} alerted.`);
+}
+function propose(needId, offerId, note) {
+  const need = S.listings.find(x=>x.id===needId), offer = S.listings.find(x=>x.id===offerId);
+  if (S.matches.some(m => m.need===needId && m.offer===offerId)) { toast('Already proposed.'); return; }
+  const m = { id:S.matches.length+1, need:needId, offer:offerId, by:S.user.ein, status:'Proposed', score:score(need,offer).s, msgs:[], at:new Date().toISOString() };
+  if (note) m.msgs.push({ from:S.user.ein, who:S.user.name, text:note, at:m.at });
+  S.matches.push(m);
+  const other = S.user.ein === need.ein ? offer.ein : need.ein;
+  notify(other, 'match_proposed', `${ORG(S.user.ein).name} wants to connect: "${need.title}" ↔ "${offer.title}"`, { match:m.id });
+  go('match', m.id); toast('Proposed — waiting for ' + ORG(other).name);
+}
+function respond(mid, accept) {
+  const m = S.matches.find(x=>x.id===mid); const need = S.listings.find(x=>x.id===m.need), offer = S.listings.find(x=>x.id===m.offer);
+  m.status = accept ? 'Accepted' : 'Declined';
+  if (accept) { need.status = 'Matched'; offer.status = 'Matched'; }
+  notify(m.by, accept?'match_accepted':'match_declined', `${ORG(S.user.ein).name} ${accept?'accepted':'declined'} your connection on "${need.title}"`, { match:m.id });
+  render(); toast(accept ? 'Accepted — you can message now' : 'Declined');
+}
+function complete(mid) {
+  const m = S.matches.find(x=>x.id===mid); const need = S.listings.find(x=>x.id===m.need), offer = S.listings.find(x=>x.id===m.offer);
+  m.status = 'Completed'; need.status = 'Fulfilled'; offer.status = 'Fulfilled'; m.doneAt = new Date().toISOString();
+  const other = S.user.ein === need.ein ? offer.ein : need.ein;
+  notify(other, 'match_completed', `Hand-off complete: "${need.title}". Thank you!`, { match:m.id });
+  render(); toast('Marked complete — both listings fulfilled');
+}
+function sendMsg(mid, text) {
+  const m = S.matches.find(x=>x.id===mid); if (!text.trim()) return;
+  m.msgs.push({ from:S.user.ein, who:S.user.name, text:text.trim(), at:new Date().toISOString() });
+  const need = S.listings.find(x=>x.id===m.need), offer = S.listings.find(x=>x.id===m.offer);
+  const other = S.user.ein === need.ein ? offer.ein : need.ein;
+  notify(other, 'message', `${S.user.name} (${ORG(S.user.ein).name}): ${text.trim().slice(0,60)}`, { match:m.id });
+  render();
+}
+function switchTo(personId) {
+  const p = PEOPLE.find(x=>x.id===personId); S.user = { ...p }; if (!S.joinedEins.includes(p.ein)) S.joinedEins.push(p.ein);
+  S.sheet = null; if (['signup','role','claim','verify'].includes(S.screen)) S.screen = 'feed'; render();
+}
+
+// =====================================================================
+// Story guide
+// =====================================================================
+const STEPS = [
+  { t:'Casey needs laptops', s:'Ballard Food Bank’s intake computers died.', n:'<b>Casey</b> runs client intake at Ballard Food Bank. Twelve laptops just died and nobody can register for services. Casey opens HelpBook. <b>Tap "Continue with Google".</b>', enter(){ S.user=null; S.screen='signup'; S.claimPick=null; S.claimQuery=''; }, auto(){ S.signup={google:true}; go('role'); } },
+  { t:'Claim the org', s:'It’s already in the IRS data.', n:'Casey picks <b>"A nonprofit"</b>, types "Ballard Food" — and the org is already there, straight from the IRS file. Because casey@<b>ballardfoodbank.org</b> matches the org’s website, verification is instant. No forms.', enter(){ S.screen='role'; }, async auto(){ S.signup.role='np'; go('claim'); await wait(500); S.claimQuery='Ballard Food'; render(); await wait(600); S.claimPick='911428805'; render(); await wait(600); go('verify'); await wait(900); finishClaim(); } },
+  { t:'Browse the board', s:'Needs and offers, and every org in WA.', n:'Casey lands on the board: what nearby groups need and have right now. The <b>Orgs</b> tab lists all 35,361 WA 501(c)(3)s with filters for cause, city, size, and self-declared tags — whether or not they’ve joined.', enter(){ if(!S.user) switchTo('casey'); S.feedFilter='All'; S.screen='feed'; }, async auto(){ go('feed'); await wait(900); S.orgFilter={q:'',cause:'K',city:'',joined:false,open:false}; go('orgs'); await wait(1200); go('org','911428805'); } },
+  { t:'Post the need', s:'"12 laptops for client intake stations."', n:'Casey taps <b>+</b> and posts the need. Before it’s even submitted, HelpBook shows <b>likely matches</b> — Computers 4 People in Need has 15 refurbished laptops listed. Posting alerts every org whose listings or tags fit.', enter(){ if(!S.user) switchTo('casey'); S.draft={kind:'Need',category:'Technology',title:'Laptops for client intake stations',desc:'Our intake computers died; clients can’t register for services.',qty:12,unit:'laptops',urgency:'Critical',tags:'laptops,computers,intake'}; S.screen='post'; }, auto(){ if(!S.draft||!S.draft.title) this.enter(); if(!S.listings.some(l=>l.title==='Laptops for client intake stations')) postListing(S.draft); else go('feed'); } },
+  { t:'Jordan gets alerted', s:'Meanwhile in Bellingham…', n:'<b>Switch perspective to Jordan</b> at Computers 4 People in Need. Their inbox has an alert: a Critical need matches their laptops. Jordan opens it and taps <b>"I have this"</b> — their existing offer is proposed as the match.', enter(){ switchTo('jordan'); S.screen='inbox'; }, async auto(){ switchTo('jordan'); go('inbox'); await wait(900); const l=S.listings.find(x=>x.title==='Laptops for client intake stations'); if(!l) return; go('listing', l.id); await wait(1000); propose(l.id, 4, 'We can send 12 of the 15 this week.'); } },
+  { t:'Casey accepts', s:'Back at Ballard Food Bank.', n:'<b>Switch back to Casey.</b> The inbox says Computers 4 People wants to connect. Casey opens the match, <b>accepts</b>, and replies with the shipping address. Both listings flip to Matched.', enter(){ switchTo('casey'); S.screen='inbox'; }, async auto(){ switchTo('casey'); go('inbox'); await wait(900); const m=S.matches.find(x=>x.offer===4); if(!m) return; go('match', m.id); await wait(800); if(m.status==='Proposed') respond(m.id,true); await wait(700); sendMsg(m.id,'Yes please! Ship to 7001 24th Ave NW, Seattle 98117.'); } },
+  { t:'Hand-off, done', s:'Either side marks it complete.', n:'Jordan ships the laptops and taps <b>Mark complete</b>. Both listings become Fulfilled and the outcome shows on both profiles — so the next org looking for laptops knows who delivers.', enter(){ switchTo('jordan'); const m=S.matches.find(x=>x.offer===4); S.screen = m?'match':'inbox'; S.sel = m?m.id:null; }, async auto(){ switchTo('jordan'); const m=S.matches.find(x=>x.offer===4); if(!m) return; go('match', m.id); await wait(700); sendMsg(m.id,'Shipping Tuesday, tracking to follow. Thanks Casey!'); await wait(700); if(m.status==='Accepted') complete(m.id); } },
+  { t:'Now it’s yours', s:'Explore freely.', n:'That’s the whole loop: <b>claim → post → alert → connect → message → done</b>. Try it from any side: switch perspective (tap the org chip), post something of your own, or browse the org directory. <b>Reset</b> starts the story over.', enter(){ if(!S.user) switchTo('casey'); go('org','911428805'); }, auto(){ go('org','911428805'); } },
+];
+const wait = ms => new Promise(r => setTimeout(r, ms));
+async function playStep(){ const st = STEPS[S.step]; await st.auto(); save(); render(); }
+function setStep(i){ S.step = Math.max(0, Math.min(STEPS.length-1, i)); STEPS[S.step].enter(); S.sheet=null; save(); render(); }
+function finishClaim(){ switchTo('casey'); ORG('911428805').verified = true; go('feed'); toast('Verified — welcome, Ballard Food Bank'); }
+
+// =====================================================================
+// Rendering
+// =====================================================================
+const guideEl = document.getElementById('guide'), phoneEl = document.getElementById('phone');
+function render(){ guideEl.innerHTML = renderGuide(); phoneEl.innerHTML = renderPhone(); save(); }
+
+function renderGuide(){
+  const st = STEPS[S.step];
+  return `
+    <div class="mini"><b>${S.step+1}/${STEPS.length} · ${esc(st.t)}</b><button class="gbtn" data-a="guide-toggle">${S.guideMin?'Show story':'Hide'}</button></div>
+    <div class="eyebrow">Clickable prototype · story mode</div>
+    <h1>HelpBook</h1>
+    <p>A 501(c)(3) needs something. Watch how it gets connected — from both sides.</p>
+    <div class="steps">${STEPS.map((s,i)=>`<button class="step ${i===S.step?'active':''} ${i<S.step?'done':''}" data-a="step" data-i="${i}"><span class="n">${i<S.step?'✓':i+1}</span><span><b>${esc(s.t)}</b><span>${esc(s.s)}</span></span></button>`).join('')}</div>
+    <div class="narration">${st.n}</div>
+    <div class="guide-actions">
+      <button class="gbtn primary" data-a="play">▶ Play this step</button>
+      <button class="gbtn" data-a="prev" ${S.step===0?'disabled':''}>←</button>
+      <button class="gbtn" data-a="next" ${S.step===STEPS.length-1?'disabled':''}>Next →</button>
+      <button class="gbtn" data-a="reset">Reset</button>
+    </div>
+    <div class="foot">Organizations are real WA 501(c)(3)s from the IRS Business Master File. People, listings and messages are invented for the demo. Nothing here is stored or sent anywhere.</div>`;
+}
+
+function topbar(opts={}){
+  const m = me();
+  const who = m ? `<button class="who" data-a="sheet-who"><span class="dot">${esc(S.user.name[0])}</span><span>${esc(S.user.name)} · ${esc(m.name)}</span></button>` : '';
+  return `<div class="topbar">${opts.back?`<button class="back" data-a="go" data-s="${opts.back}">← ${esc(opts.title||'Back')}</button>`:`<span class="logo">HelpBook</span>`}${who}</div>`;
+}
+function tabs(on){
+  const unread = S.user ? S.notifs.filter(n=>n.ein===S.user.ein&&!n.read).length + S.matches.filter(m=>m.status==='Proposed'&&m.by!==S.user.ein&&[m.need,m.offer].some(id=>S.listings.find(l=>l.id===id).ein===S.user.ein)).length : 0;
+  const t = (id,ic,lbl,cls='') => `<button class="tab ${on===id?'on':''} ${cls}" data-a="go" data-s="${id}"><span class="ic">${ic}</span>${lbl}${id==='inbox'&&unread?`<span class="badge">${unread}</span>`:''}</button>`;
+  return `<div class="tabs">${t('feed','☷','Board')}${t('orgs','⌂','Orgs')}${t('post','+','Post','plus')}${t('inbox','✉','Inbox')}${t('me','☺','Me')}</div>`;
+}
+function listingCard(l, extra=''){
+  const o = ORG(l.ein); const q = l.qty ? ` · ${l.qty} ${esc(l.unit)}` : '';
+  return `<button class="card tap" data-a="go" data-s="listing" data-id="${l.id}"><span class="pill ${l.kind.toLowerCase()}">${l.kind.toUpperCase()}${l.kind==='Need'&&l.urgency!=='Normal'?' · '+l.urgency:''}</span> ${l.status!=='Open'?`<span class="pill grey">${l.status}</span>`:''}<span class="t">${esc(l.title)}</span><span class="m">${esc(o.name)} · ${cap(o.city)}${q} · ${ago(l.createdAt)}</span>${extra}</button>`;
+}
+function orgCard(o){
+  const open = S.listings.filter(l=>l.ein===o.ein&&l.status==='Open').length;
+  return `<button class="card tap" data-a="go" data-s="org" data-id="${o.ein}"><span class="t" style="margin-top:0">${esc(o.name)} ${o.verified||joined(o.ein)?'<span class="verified">✓ on HelpBook</span>':''}</span><span class="m">${cap(o.city)} · ${CAUSES[o.cause]} · ${SIZE[o.inc]}${open?` · <b>${open} open</b>`:''}</span></button>`;
+}
+function myMatches(){ return S.matches.filter(m => [m.need,m.offer].some(id => S.listings.find(l=>l.id===id).ein===S.user.ein)); }
+
+function renderPhone(){
+  let body = '';
+  const s = S.screen;
+  if (!S.user && !['signup','role','claim','verify'].includes(s)) S.screen = 'signup';
+  switch (S.screen) {
+    case 'signup': body = `${topbar()}<div class="screen"><div style="height:8%"></div><h2 class="h center">Join HelpBook</h2><p class="sub center">Where Washington nonprofits find what they need — and share what they have.</p><div style="height:10px"></div>
+      <button class="btn" data-a="signup-google">Continue with Google</button><div class="center hint">or</div><input id="email" placeholder="you@yourorganization.org" value="${esc(S.signup.email||'')}"><button class="btn primary" data-a="signup-email">Continue with email</button>
+      <p class="hint center" style="margin-top:20px">Free for 501(c)(3)s. No card, no forms — your organization is already listed.</p>
+      <button class="btn quiet" data-a="sheet-who">Already playing? Switch perspective</button></div>`; break;
+    case 'role': body = `${topbar({back:'signup',title:'Back'})}<div class="screen"><h2 class="h">I’m here as…</h2><p class="sub">Signed in as ${esc(S.signup.email||'casey@ballardfoodbank.org')}</p>
+      ${[['np','A nonprofit','I work or volunteer with a 501(c)(3). Free, always.'],['biz','A business','We want to donate goods or services. Premium account.'],['sup','A supporter','I want to follow and help local causes.']].map(([k,t,d])=>`<button class="card tap ${S.signup.role===k?'sel':''}" data-a="role" data-k="${k}"><span class="role"><span class="r"></span><span><span class="t" style="margin:0">${t}</span><span class="m">${d}</span></span></span></button>`).join('')}
+      <button class="btn primary" data-a="role-continue">Continue</button>${S.signup.role&&S.signup.role!=='np'?`<p class="hint">Business and supporter sign-up isn’t in this prototype yet — pick <b>A nonprofit</b> to follow the story.</p>`:''}</div>`; break;
+    case 'claim': {
+      const q = S.claimQuery.trim().toLowerCase();
+      const hits = q.length>=2 ? ORGS.filter(o => o.name.toLowerCase().includes(q) || o.ein.includes(q.replace(/\D/g,''))).slice(0,6) : [];
+      body = `${topbar({back:'role',title:'Back'})}<div class="screen"><h2 class="h">Which organization are you with?</h2><p class="sub">Every WA 501(c)(3) is already here from the IRS. Just find yours.</p>
+        <input id="claimq" placeholder="Organization name or EIN" value="${esc(S.claimQuery)}" autocomplete="off">
+        ${hits.map(o=>`<button class="card tap ${S.claimPick===o.ein?'sel':''}" data-a="claim-pick" data-id="${o.ein}"><span class="t" style="margin-top:0">${esc(o.name)}</span><span class="m">${cap(o.city)} · EIN ${o.ein.slice(0,2)}-${o.ein.slice(2)} · ${CAUSES[o.cause]}</span><span class="m"><span class="pill grey">IRS-listed 501(c)(3)</span> ${joined(o.ein)?'<span class="verified">already on HelpBook — ask a member to invite you</span>':''}</span></button>`).join('')}
+        ${q.length>=2&&!hits.length?`<div class="empty">No match in this demo’s 32 sample orgs (the real app searches all 35,361).</div>`:''}
+        ${!q?`<p class="hint">Try "Ballard Food" or "91-1428805".</p>`:''}
+        <button class="btn primary" data-a="claim-continue" ${S.claimPick?'':'disabled'}>This is my organization</button>
+        <p class="hint center">Not a 501(c)(3)? <u>Join as a business or supporter</u></p></div>`; break; }
+    case 'verify': {
+      const o = ORG(S.claimPick||'911428805'); const email = S.signup.email || 'casey@ballardfoodbank.org'; const domainOk = email.endsWith('@ballardfoodbank.org') && o.ein==='911428805';
+      body = `${topbar({back:'claim',title:'Back'})}<div class="screen"><h2 class="h">Verify you’re with ${esc(o.name)}</h2>
+        ${domainOk?`<div class="card likely"><span class="t" style="margin-top:0">✓ Your email domain matches</span><span class="m"><b>ballardfoodbank.org</b> is this organization’s website on file with the IRS. You’re verified.</span></div><button class="btn primary" data-a="claim-finish">Go to my organization</button>`
+        :`<div class="card"><span class="t" style="margin-top:0">Your email doesn’t match a domain on file</span><span class="m">Pick another way — each one is reviewed by a person.</span></div>
+          ${['Mail a code to the IRS-registered address (about a week)','Upload your IRS determination letter','Ask an existing member to invite you'].map(t=>`<button class="card tap"><span class="m">${t}</span></button>`).join('')}
+          <button class="btn primary" data-a="claim-finish">Continue (demo: verify instantly)</button>`}
+        <p class="hint">Verification methods are pluggable — we can add or remove ways without changing anything else.</p></div>`; break; }
+    case 'feed': {
+      const mine = me();
+      let ls = S.listings.filter(l => l.status==='Open' || l.status==='Matched');
+      if (S.feedFilter==='Needs') ls = ls.filter(l=>l.kind==='Need'); if (S.feedFilter==='Offers') ls = ls.filter(l=>l.kind==='Offer'); if (S.feedFilter==='Near me') ls = ls.filter(l=>ORG(l.ein).city===mine.city);
+      ls = ls.slice().sort((a,b)=> (a.status==='Matched')-(b.status==='Matched') || URG.indexOf(b.urgency)-URG.indexOf(a.urgency) || new Date(b.createdAt)-new Date(a.createdAt));
+      body = `${topbar()}<div class="screen"><div class="row"><button class="btn need sm" style="flex:1" data-a="new" data-k="Need">+ I need something</button><button class="btn primary sm" style="flex:1" data-a="new" data-k="Offer">+ I have something</button></div>
+        <div class="chips">${['All','Needs','Offers','Near me'].map(f=>`<button class="chip ${S.feedFilter===f?'on':''}" data-a="feed-filter" data-f="${f}">${f}</button>`).join('')}</div>
+        ${ls.map(l=>listingCard(l)).join('')||'<div class="empty">Nothing here yet.</div>'}</div>${tabs('feed')}`; break; }
+    case 'orgs': {
+      const f = S.orgFilter; let os = ORGS.slice();
+      if (f.q) os = os.filter(o=>o.name.toLowerCase().includes(f.q.toLowerCase())||o.ein.includes(f.q));
+      if (f.cause) os = os.filter(o=>o.cause===f.cause); if (f.city) os = os.filter(o=>o.city===f.city); if (f.joined) os = os.filter(o=>joined(o.ein)||o.verified); if (f.open) os = os.filter(o=>S.listings.some(l=>l.ein===o.ein&&l.status==='Open'));
+      const causes = [...new Set(ORGS.map(o=>o.cause))].sort(); const cities = [...new Set(ORGS.map(o=>o.city))].sort();
+      body = `${topbar()}<div class="screen"><h2 class="h">Organizations</h2><p class="sub">${ORGS.length} of 35,361 WA 501(c)(3)s in this demo</p>
+        <input id="orgq" placeholder="Name or EIN" value="${esc(f.q)}" autocomplete="off">
+        <div class="row"><select id="cause"><option value="">Any cause</option>${causes.map(c=>`<option value="${c}" ${f.cause===c?'selected':''}>${CAUSES[c]}</option>`).join('')}</select><select id="city"><option value="">Any city</option>${cities.map(c=>`<option value="${c}" ${f.city===c?'selected':''}>${cap(c)}</option>`).join('')}</select></div>
+        <div class="chips"><button class="chip ${f.joined?'on':''}" data-a="org-toggle" data-k="joined">On HelpBook</button><button class="chip ${f.open?'on':''}" data-a="org-toggle" data-k="open">Has open listings</button></div>
+        <p class="hint">${os.length} result${os.length===1?'':'s'} · filters come from IRS data (cause, city, size) plus HelpBook (joined, tags, open listings)</p>
+        ${os.map(orgCard).join('')}</div>${tabs('orgs')}`; break; }
+    case 'org': {
+      const o = ORG(S.sel); const open = S.listings.filter(l=>l.ein===o.ein&&l.status!=='Fulfilled'&&l.status!=='Closed'); const done = S.matches.filter(m=>m.status==='Completed'&&[m.need,m.offer].some(id=>S.listings.find(l=>l.id===id).ein===o.ein));
+      const isMe = me()&&me().ein===o.ein; const fol = S.follows.includes(o.ein);
+      body = `${topbar({back:'orgs',title:'Orgs'})}<div class="screen"><h2 class="h">${esc(o.name)}</h2><p class="sub">${cap(o.city)}, WA · ${CAUSES[o.cause]} ${o.verified||joined(o.ein)?'· <span class="verified">✓ on HelpBook</span>':'· <span class="hint">not on HelpBook yet</span>'}</p>
+        ${isMe?'':`<div class="row"><button class="btn sm" data-a="follow" data-id="${o.ein}">${fol?'Following':'Follow'}</button><button class="btn sm primary" data-a="collab" data-id="${o.ein}">Let’s collaborate</button></div>`}
+        <div class="label">We often need</div><div class="chips">${o.needTags.map(t=>`<span class="chip tag">${esc(t)}</span>`).join('')||'<span class="hint">nothing listed</span>'}${isMe?'<button class="chip">+ add</button>':''}</div>
+        <div class="label">We often have</div><div class="chips">${o.haveTags.map(t=>`<span class="chip tag">${esc(t)}</span>`).join('')||'<span class="hint">nothing listed</span>'}${isMe?'<button class="chip">+ add</button>':''}</div>
+        <div class="label">Open listings (${open.length})</div>${open.map(l=>listingCard(l)).join('')||'<div class="hint">None right now.</div>'}
+        ${done.length?`<div class="label">Completed connections (${done.length})</div>${done.map(m=>{const n=S.listings.find(l=>l.id===m.need),f2=S.listings.find(l=>l.id===m.offer);return `<div class="card"><span class="pill ok">Fulfilled</span><span class="t">${esc(n.title)}</span><span class="m">${esc(ORG(f2.ein).name)} → ${esc(ORG(n.ein).name)} · ${ago(m.doneAt)}</span></div>`;}).join('')}`:''}
+        <div class="label">From the IRS record</div><div class="card"><div class="kv"><span>EIN</span><span>${o.ein.slice(0,2)}-${o.ein.slice(2)}</span><span>Status</span><span>501(c)(3) public charity</span><span>Since</span><span>${o.ruling}</span><span>Revenue</span><span>${o.rev?'$'+o.rev.toLocaleString():'not reported (files 990-N)'}</span><span>NTEE</span><span>${o.ntee||'not coded'}</span></div><p class="hint" style="margin:8px 0 0">Source: IRS Exempt Organizations Business Master File · <u>ProPublica</u> · <u>IRS TEOS</u></p></div></div>${tabs('orgs')}`; break; }
+    case 'post': {
+      const d = S.draft || (S.draft = { kind:'Need', category:'Technology', title:'', desc:'', qty:'', unit:'', urgency:'Normal', tags:'' });
+      const preview = d.title.trim().length>3 ? suggestions({ ...d, ein:S.user.ein, qty:+d.qty||null, createdAt:new Date().toISOString(), status:'Open', id:0 }).slice(0,3) : [];
+      body = `${topbar({back:'feed',title:'Cancel'})}<div class="screen"><h2 class="h">${d.kind==='Need'?'What do you need?':'What do you have?'}</h2><p class="sub">Posting as ${esc(me().name)}</p>
+        <div class="chips"><button class="chip ${d.kind==='Need'?'on':''}" data-a="d" data-k="kind" data-v="Need">We need</button><button class="chip ${d.kind==='Offer'?'on':''}" data-a="d" data-k="kind" data-v="Offer">We have</button></div>
+        <input id="d-title" placeholder="${d.kind==='Need'?'e.g. Laptops for client intake stations':'e.g. 40 sheets of plywood'}" value="${esc(d.title)}">
+        <div class="row"><select id="d-category">${CATEGORIES.map(c=>`<option ${d.category===c?'selected':''}>${c}</option>`).join('')}</select>${d.kind==='Need'?`<select id="d-urgency">${URG.map(u=>`<option ${d.urgency===u?'selected':''}>${u}</option>`).join('')}</select>`:''}</div>
+        <div class="row"><input id="d-qty" type="number" placeholder="Qty" value="${esc(d.qty)}"><input id="d-unit" placeholder="Unit (laptops, sheets…)" value="${esc(d.unit)}"></div>
+        <textarea id="d-desc" placeholder="Details: condition, pickup or delivery, deadline…">${esc(d.desc)}</textarea>
+        <input id="d-tags" placeholder="Tags, comma-separated (laptops, computers)" value="${esc(d.tags)}">
+        ${preview.length?`<div class="card likely"><span class="t" style="margin-top:0">Likely matches right now</span>${preview.map(p=>`<span class="m">• ${esc(ORG(p.l.ein).name)} — ${esc(p.l.title)} <b>(${p.s})</b></span><br>`).join('')}</div>`:''}
+        <button class="btn ${d.kind==='Need'?'need':'primary'}" data-a="post">Post ${d.kind.toLowerCase()}</button></div>${tabs('post')}`; break; }
+    case 'listing': {
+      const l = S.listings.find(x=>x.id===S.sel); if (!l) { S.screen='feed'; return renderPhone(); }
+      const o = ORG(l.ein); const isMine = l.ein===me().ein; const sugg = suggestions(l).slice(0,5);
+      const myOpp = S.listings.filter(x=>x.ein===me().ein&&x.status==='Open'&&x.kind!==l.kind);
+      const existing = S.matches.find(m=>(m.need===l.id||m.offer===l.id)&&[m.need,m.offer].some(id=>S.listings.find(z=>z.id===id).ein===me().ein));
+      body = `${topbar({back:'feed',title:'Board'})}<div class="screen"><span><span class="pill ${l.kind.toLowerCase()}">${l.kind.toUpperCase()}${l.kind==='Need'?' · '+l.urgency:''}</span> <span class="pill grey">${l.status}</span></span><h2 class="h">${esc(l.title)}</h2>
+        <button class="card tap" data-a="go" data-s="org" data-id="${o.ein}"><span class="t" style="margin-top:0">${esc(o.name)}</span><span class="m">${cap(o.city)} · ${CAUSES[o.cause]} · posted ${ago(l.createdAt)}</span></button>
+        <div class="kv">${l.qty?`<span>Quantity</span><span>${l.qty} ${esc(l.unit)}</span>`:''}<span>Category</span><span>${l.category}</span>${l.desc?`<span>Details</span><span>${esc(l.desc)}</span>`:''}${l.tags?`<span>Tags</span><span>${esc(l.tags)}</span>`:''}</div>
+        ${existing?`<button class="btn primary" data-a="go" data-s="match" data-id="${existing.id}">Open your connection (${existing.status})</button>`:
+          isMine?`${l.status==='Open'?`<button class="btn" data-a="close-listing" data-id="${l.id}">Close listing</button>`:''}`:
+          l.status==='Open'?`<div class="row"><button class="btn ${l.kind==='Need'?'primary':'need'}" data-a="sheet-ihave" data-id="${l.id}">${l.kind==='Need'?'I have this':'I need this'}</button><button class="btn" data-a="collab" data-id="${o.ein}">Let’s collaborate</button></div>`:''}
+        <div class="label">${isMine?'Suggested matches':'How this matches others'} (${sugg.length})</div>
+        ${sugg.map(p=>`${listingCard(p.l, `<span class="m"><span class="score">${p.s}</span> · ${esc(p.reasons.join(' · '))}</span>`)}`).join('')||'<div class="hint">No counterpart listings yet. Orgs with matching tags were still alerted.</div>'}</div>${tabs('feed')}`; break; }
+    case 'inbox': {
+      const ns = S.notifs.filter(n=>n.ein===me().ein); const ms = myMatches().slice().reverse();
+      body = `${topbar()}<div class="screen"><h2 class="h">Inbox</h2>
+        <div class="label">Alerts</div>${ns.slice(0,8).map(n=>`<button class="card tap notif ${n.read?'read':''}" data-a="notif" data-id="${n.id}"><span class="m">${esc(n.text)}</span><span class="m hint">${ago(n.at)}</span></button>`).join('')||'<div class="hint">No alerts yet. You’ll hear when a need or offer matches your listings or your "we often need / have" tags.</div>'}
+        <div class="label">Connections</div>${ms.map(m=>{const n=S.listings.find(l=>l.id===m.need),f2=S.listings.find(l=>l.id===m.offer);const other=n.ein===me().ein?ORG(f2.ein):ORG(n.ein);const waiting=m.status==='Proposed'&&m.by!==me().ein;return `<button class="card tap" data-a="go" data-s="match" data-id="${m.id}"><span class="pill ${m.status==='Completed'?'ok':m.status==='Proposed'?'need':'grey'}">${m.status}</span> ${waiting?'<span class="pill warn">needs your answer</span>':''}<span class="t">${esc(other.name)}</span><span class="m">"${esc(n.title)}" ↔ "${esc(f2.title)}" · ${m.msgs.length} message${m.msgs.length===1?'':'s'}</span></button>`;}).join('')||'<div class="hint">No connections yet.</div>'}</div>${tabs('inbox')}`; break; }
+    case 'match': {
+      const m = S.matches.find(x=>x.id===S.sel); if (!m) { S.screen='inbox'; return renderPhone(); }
+      const n = S.listings.find(l=>l.id===m.need), f2 = S.listings.find(l=>l.id===m.offer); const other = n.ein===me().ein?ORG(f2.ein):ORG(n.ein);
+      const canRespond = m.status==='Proposed' && m.by!==me().ein; const canChat = ['Accepted','Completed'].includes(m.status) || m.status==='Proposed';
+      body = `${topbar({back:'inbox',title:'Inbox'})}<div class="screen"><h2 class="h">${esc(other.name)}</h2><p class="sub"><span class="pill need">NEED</span> ${esc(n.title)} &nbsp;↔&nbsp; <span class="pill offer">OFFER</span> ${esc(f2.title)}</p>
+        <div class="card"><span class="m"><span class="pill ${m.status==='Completed'?'ok':m.status==='Declined'?'warn':'grey'}">${m.status}</span> · proposed by ${esc(ORG(m.by).name)} · match score ${m.score}</span></div>
+        ${canRespond?`<div class="row"><button class="btn primary" data-a="respond" data-id="${m.id}" data-v="1">Accept</button><button class="btn" data-a="respond" data-id="${m.id}" data-v="0">Decline</button></div>`:''}
+        ${m.status==='Proposed'&&m.by===me().ein?`<div class="sys">Waiting for ${esc(other.name)} to accept.</div>`:''}
+        <div class="msgs">${m.msgs.map(x=>`<div class="msg ${x.from===me().ein?'me':''}">${esc(x.text)}<small>${esc(x.who)} · ${esc(ORG(x.from).name)} · ${ago(x.at)}</small></div>`).join('')||'<div class="sys">No messages yet.</div>'}${m.status==='Completed'?'<div class="sys">✓ Hand-off complete — both listings fulfilled.</div>':''}</div>
+        ${canChat&&m.status!=='Completed'?`<div class="composer"><input id="msg" placeholder="Write a message…"><button class="btn primary sm" data-a="send" data-id="${m.id}">Send</button></div>`:''}
+        ${m.status==='Accepted'?`<div class="row"><button class="btn sm" data-a="contact">Share contact card</button><button class="btn sm primary" data-a="complete" data-id="${m.id}">Mark complete</button></div>`:''}
+        ${m.status==='Declined'?'<div class="sys">Declined. Both listings stay open.</div>':''}</div>${tabs('inbox')}`; break; }
+    case 'me': {
+      const o = me();
+      body = `${topbar()}<div class="screen"><h2 class="h">${esc(S.user.name)}</h2><p class="sub">${esc(S.user.email)}</p>
+        <button class="card tap" data-a="go" data-s="org" data-id="${o.ein}"><span class="t" style="margin-top:0">${esc(o.name)} <span class="verified">✓ verified member</span></span><span class="m">Owner · ${cap(o.city)} · free account</span></button>
+        <div class="label">My listings</div>${S.listings.filter(l=>l.ein===o.ein).map(l=>listingCard(l)).join('')||'<div class="hint">None yet.</div>'}
+        <div class="label">Alerts</div><div class="card"><span class="m">You’re alerted for: <b>${o.needTags.concat(o.haveTags).slice(0,5).join(', ')}</b> · ${CAUSES[o.cause]} · near ${cap(o.city)}. In-app always; email and push on.</span></div>
+        <button class="btn" data-a="sheet-who">Switch perspective</button><button class="btn quiet" data-a="reset">Reset the demo</button></div>${tabs('me')}`; break; }
+  }
+  let overlay = '';
+  if (S.toast) overlay += `<div class="toast">${esc(S.toast)}</div>`;
+  if (S.sheet==='who') overlay += `<div class="sheet-bg" data-a="sheet-close"><div class="sheet"><h3>Play as…</h3><p class="sub">Each person is a verified member of a real WA 501(c)(3). The story switches sides at steps 5 and 6.</p>${PEOPLE.map(p=>`<button class="card tap ${S.user&&S.user.id===p.id?'sel':''}" data-a="switch" data-id="${p.id}"><span class="t" style="margin-top:0">${p.name} · ${esc(ORG(p.ein).name)}</span><span class="m">${cap(ORG(p.ein).city)} · ${esc(p.email)}</span></button>`).join('')}</div></div>`;
+  if (S.sheet && S.sheet.ihave) { const l = S.listings.find(x=>x.id===S.sheet.ihave); const mine = S.listings.filter(x=>x.ein===me().ein&&x.status==='Open'&&x.kind!==l.kind);
+    overlay += `<div class="sheet-bg" data-a="sheet-close"><div class="sheet"><h3>${l.kind==='Need'?'Which offer fills this need?':'Which need does this fill?'}</h3>${mine.map(x=>`<button class="card tap" data-a="propose" data-need="${l.kind==='Need'?l.id:x.id}" data-offer="${l.kind==='Need'?x.id:l.id}"><span class="pill ${x.kind.toLowerCase()}">${x.kind.toUpperCase()}</span><span class="t">${esc(x.title)}</span><span class="m">score ${l.kind==='Need'?score(l,x).s:score(x,l).s}</span></button>`).join('')||`<div class="hint">You have no open ${l.kind==='Need'?'offers':'needs'} yet.</div>`}<button class="btn" data-a="new-for" data-id="${l.id}">+ Create a new ${l.kind==='Need'?'offer':'need'} for this</button></div></div>`; }
+  return body + overlay;
+}
+
+// =====================================================================
+// Events
+// =====================================================================
+document.addEventListener('click', async e => {
+  const el = e.target.closest('[data-a]'); if (!el) return;
+  const a = el.dataset.a, id = el.dataset.id;
+  const read = () => { const g = i => document.getElementById(i); if (S.screen==='post' && g('d-title')) S.draft = { ...S.draft, title:g('d-title').value, category:g('d-category').value, urgency:g('d-urgency')?g('d-urgency').value:'Normal', qty:g('d-qty').value, unit:g('d-unit').value, desc:g('d-desc').value, tags:g('d-tags').value }; if (S.screen==='orgs' && g('orgq')) S.orgFilter = { ...S.orgFilter, q:g('orgq').value, cause:g('cause').value, city:g('city').value }; if (S.screen==='claim' && g('claimq')) S.claimQuery = g('claimq').value; if (S.screen==='signup' && g('email')) S.signup.email = g('email').value; };
+  switch (a) {
+    case 'guide-toggle': S.guideMin = !S.guideMin; document.getElementById('guide').classList.toggle('min', S.guideMin); render(); document.getElementById('guide').classList.toggle('min', S.guideMin); return;
+    case 'step': setStep(+el.dataset.i); break;
+    case 'prev': setStep(S.step-1); break;
+    case 'next': setStep(S.step+1); break;
+    case 'play': await playStep(); return;
+    case 'reset': if (confirm('Reset the demo to the beginning?')) { S = fresh(); ORGS.forEach(o=>{o.verified=false;}); setStep(0); } return;
+    case 'go': read(); go(el.dataset.s, id ? (isNaN(+id)?id:+id) : undefined); return;
+    case 'signup-google': S.signup = { google:true, email:'casey@ballardfoodbank.org' }; go('role'); return;
+    case 'signup-email': read(); if (!S.signup.email) { toast('Enter an email (try casey@ballardfoodbank.org)'); return; } go('role'); return;
+    case 'role': S.signup.role = el.dataset.k; render(); return;
+    case 'role-continue': if (S.signup.role==='np') go('claim'); else if (!S.signup.role) toast('Pick one to continue'); else render(); return;
+    case 'claim-pick': read(); S.claimPick = id; render(); return;
+    case 'claim-continue': read(); if (S.claimPick) go('verify'); return;
+    case 'claim-finish': finishClaim(); return;
+    case 'sheet-who': read(); S.sheet = 'who'; render(); return;
+    case 'sheet-close': if (e.target === el) { S.sheet = null; render(); } return;
+    case 'switch': switchTo(id); return;
+    case 'feed-filter': S.feedFilter = el.dataset.f; render(); return;
+    case 'org-toggle': read(); S.orgFilter[el.dataset.k] = !S.orgFilter[el.dataset.k]; render(); return;
+    case 'follow': S.follows.includes(id) ? S.follows.splice(S.follows.indexOf(id),1) : S.follows.push(id); render(); return;
+    case 'collab': toast(`"Let’s collaborate" threads without a listing are planned (decision 6 in the brief).`); return;
+    case 'new': S.draft = { kind:el.dataset.k, category:'Technology', title:'', desc:'', qty:'', unit:'', urgency:'Normal', tags:'' }; go('post'); return;
+    case 'new-for': { const l = S.listings.find(x=>x.id===+id); S.draft = { kind:l.kind==='Need'?'Offer':'Need', category:l.category, title:'', desc:'', qty:l.qty||'', unit:l.unit||'', urgency:'Normal', tags:l.tags }; go('post'); return; }
+    case 'd': S.draft[el.dataset.k] = el.dataset.v; read(); S.draft.kind = el.dataset.v; render(); return;
+    case 'post': read(); if (!S.draft.title.trim()) { toast('Give it a title'); return; } postListing(S.draft); return;
+    case 'close-listing': { const l = S.listings.find(x=>x.id===+id); l.status='Closed'; render(); toast('Closed'); return; }
+    case 'sheet-ihave': S.sheet = { ihave:+id }; render(); return;
+    case 'propose': S.sheet = null; propose(+el.dataset.need, +el.dataset.offer, ''); return;
+    case 'respond': respond(+id, el.dataset.v==='1'); return;
+    case 'complete': complete(+id); return;
+    case 'send': { const inp = document.getElementById('msg'); sendMsg(+id, inp.value); return; }
+    case 'contact': toast(`Shared: ${S.user.name}, ${S.user.email}, (206) 555-0100`); return;
+    case 'notif': { const n = S.notifs.find(x=>x.id===+id); n.read = true; if (n.ref.match) go('match', n.ref.match); else if (n.ref.listing) go('listing', n.ref.listing); return; }
+  }
+  render();
+});
+document.addEventListener('input', e => {
+  if (e.target.id === 'claimq') { S.claimQuery = e.target.value; S.claimPick = null; const pos = e.target.selectionStart; render(); const el = document.getElementById('claimq'); el.focus(); el.setSelectionRange(pos,pos); }
+  if (e.target.id === 'orgq') { S.orgFilter.q = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('orgq'); el.focus(); el.setSelectionRange(pos,pos); }
+  if (e.target.id === 'd-title') { S.draft.title = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('d-title'); el.focus(); el.setSelectionRange(pos,pos); }
+});
+document.addEventListener('change', e => { if (['cause','city'].includes(e.target.id)) { S.orgFilter[e.target.id] = e.target.value; render(); } if (['d-category','d-urgency','d-qty','d-unit','d-desc','d-tags'].includes(e.target.id)) { S.draft[e.target.id.slice(2)] = e.target.value; render(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'msg') { const id = +e.target.nextElementSibling.dataset.id; sendMsg(id, e.target.value); } });
+
+// Boot: if nothing saved, start the story at step 0.
+if (!S.user && S.step === 0 && S.screen === 'signup') STEPS[0].enter();
+render();
+if (S.guideMin) document.getElementById('guide').classList.add('min');
+</script>
