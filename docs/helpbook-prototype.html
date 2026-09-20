@@ -88,6 +88,11 @@
   .pill.grey { background: var(--paper-2); color: var(--ink-2); }
   .pill.ok { background: var(--offer-bg); color: var(--offer); }
   .pill.warn { background: var(--warn-bg); color: var(--warn); }
+  .pill.p0 { background: var(--warn); color: #fff; } .pill.p1 { background: var(--need); color: #fff; } .pill.p2 { background: var(--need-bg); color: var(--need); } .pill.p3 { background: var(--paper-2); color: var(--ink-2); }
+  .why { font-size: 11px; color: var(--ink-3); display: block; margin-top: 4px; }
+  .thread.agreement { stroke-dasharray: 10 3 2 3; }
+  .legend b.agree { border-top-style: double; border-top-width: 5px; }
+  .occ { display: flex; gap: 4px; flex-wrap: wrap; } .occ span { font-size: 11px; background: var(--offer-bg); color: var(--offer); padding: 1px 6px; border-radius: 999px; }
   .btn { display: block; width: 100%; text-align: center; padding: 12px 14px; border-radius: 10px; font-weight: 600; border: 1px solid var(--line); background: var(--paper); }
   .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
   .btn.need { background: var(--need); color: #fff; border-color: var(--need); }
@@ -282,6 +287,12 @@ const PEOPLE = [
 ];
 const CATEGORIES = ['Materials','Equipment','Technology','Furniture','Food','Clothing','Vehicles','Services','Volunteers','Space','Other'];
 const URG = ['Low','Normal','High','Critical'];
+// Priority vocabulary shown to people. Internally the four levels stay as they were.
+const PRI = { Critical:['P0','can’t operate without it'], High:['P1','needed this week'], Normal:['P2','needed this month'], Low:['P3','whenever it works'] };
+const CADENCE = ['One-time','Weekly','Monthly','Quarterly','Ongoing'];
+const isRecurring = l => l.cadence && l.cadence !== 'One-time';
+const priPill = l => l.kind==='Need' ? `<span class="pill ${PRI[l.urgency][0].toLowerCase()}" title="${PRI[l.urgency][1]}">${PRI[l.urgency][0]}</span>` : '';
+const cadenceTag = l => isRecurring(l) ? ` ↻ ${l.cadence}` : '';
 
 function seedListings() {
   const d = h => new Date(Date.now() - h * 3600e3).toISOString();
@@ -292,10 +303,10 @@ function seedListings() {
     L(4,'Offer','822888626','Technology','15 refurbished laptops (Win 11, 8 GB)','Wiped and reimaged. Can ship anywhere in WA.',15,'laptops','Normal','laptops,computers',d(20)),
     L(5,'Need','911428805','Equipment','Walk-in cooler or commercial refrigerator','For fresh produce storage.',1,'unit','High','refrigerator,cooler,cold storage',d(70)),
     L(6,'Offer','811434757','Equipment','Used 2-door commercial refrigerator','Works, needs a new gasket.',1,'unit','Normal','refrigerator,cooler',d(12)),
-    L(7,'Need','223939593','Volunteers','Box truck drivers, Saturday mornings','CDL not required. 4-hour shifts, Tacoma.',4,'volunteers','Normal','drivers,box truck,volunteers',d(90)),
+    L(7,'Need','223939593','Volunteers','Box truck drivers, Saturday mornings','CDL not required. 4-hour shifts, Tacoma.',4,'volunteers','Normal','drivers,box truck,volunteers',d(90),'Weekly'),
     L(8,'Offer','910826037','Food','6 pallets of canned vegetables','Best-by dates 6+ months out. Must take full pallets.',6,'pallets','High','canned food,pallets,vegetables',d(8)),
     L(9,'Need','911425676','Other','Backpacks and school supplies for 200 students','Fall enrollment. New or like-new.',200,'backpacks','High','backpacks,school supplies',d(40)),
-    L(10,'Offer','911546757','Space','Commercial kitchen time, Sunday afternoons','Licensed kitchen, 12 burners, walk-in access.',1,'kitchen','Normal','kitchen,space,cooking',d(100)),
+    L(10,'Offer','911546757','Space','Commercial kitchen time, Sunday afternoons','Licensed kitchen, 12 burners, walk-in access.',1,'kitchen','Normal','kitchen,space,cooking',d(100),'Weekly'),
     L(11,'Need','237297837','Equipment','Pallet jack','Manual is fine. Olympia.',1,'unit','Normal','pallet jack,warehouse',d(60)),
     L(12,'Offer','237421892','Furniture','20 office chairs, good condition','Office downsizing. Pickup in Fremont.',20,'chairs','Low','office chairs,furniture',d(15)),
     L(13,'Need','911546757','Furniture','Chairs for the job-training classroom','',18,'chairs','Normal','chairs,classroom,furniture',d(200)),
@@ -311,12 +322,17 @@ function seedListings() {
     L(23,'Need','061652679','Furniture','Folding tables for outdoor programs','',4,'tables','Normal','folding tables,tables',d(12)),
     L(24,'Need','262465531','Furniture','Cribs and toddler beds','',6,'cribs','High','cribs,beds,furniture',d(400)),
     L(25,'Offer','223939593','Furniture','Cribs (new, donated overstock)','',10,'cribs','Normal','cribs,beds',d(420)),
+    L(26,'Need','237297837','Food','Fresh produce for weekly distribution','About 800 lbs a month.',800,'lbs','High','produce,vegetables,fruit',d(1500),'Monthly'),
+    L(27,'Offer','910826037','Food','Surplus produce, monthly pallet','Mixed produce from grocery partners.',900,'lbs','Normal','produce,vegetables,pallet',d(1520),'Monthly'),
+    L(28,'Need','911425676','Services','Bookkeeping, a few hours a month','QuickBooks; remote is fine.',4,'hours','Normal','bookkeeping,accounting,finance',d(300),'Monthly'),
+    L(29,'Offer','B-1','Services','Quarterly office-supply drop for one nonprofit','Paper, toner, basics. We pick the recipient each quarter.',1,'delivery','Normal','office supplies,paper,toner',d(60),'Quarterly'),
   ];
 }
 function seedMatches(listings) {
   const d = h => new Date(Date.now() - h * 3600e3).toISOString();
   const at = (a, b) => { listings.find(l=>l.id===a).status = listings.find(l=>l.id===b).status = 'Fulfilled'; };
   at(13, 12); at(20, 21); at(24, 25);
+  listings.find(l=>l.id===26).status = listings.find(l=>l.id===27).status = 'Matched';
   listings.find(l=>l.id===14).status = listings.find(l=>l.id===15).status = 'Matched';
   listings.find(l=>l.id===22).status = listings.find(l=>l.id===17).status = 'Matched';
   return [
@@ -324,12 +340,13 @@ function seedMatches(listings) {
     { id:5, need:24, offer:25, by:'262465531', status:'Completed', score:120, at:d(410), doneAt:d(380), msgs:[] },
     { id:6, need:22, offer:17, by:'B-1', status:'Accepted', score:95, at:d(20), msgs:[{from:'B-1',who:'Morgan',text:'We can drop these off Thursday.',at:d(18)}] },
     { id:7, need:23, offer:18, by:'P-1', status:'Proposed', score:90, at:d(4), msgs:[] },
+    { id:8, need:26, offer:27, by:'237297837', status:'Accepted', score:115, at:d(1450), msgs:[], agreement:{ cadence:'Monthly', since:d(1450), occurrences:[d(1100), d(380), d(30)], nextAt:new Date(Date.now()+22*864e5).toISOString() } },
     { id:1, need:13, offer:12, by:'911546757', status:'Completed', score:96, at:d(190), doneAt:d(120), msgs:[{from:'911546757',who:'Alex',text:'Can we pick up Friday?',at:d(180)},{from:'237421892',who:'Priya',text:'Friday works. Ask for the dock on 34th.',at:d(170)}] },
     { id:2, need:14, offer:15, by:'237173826', status:'Accepted', score:105, at:d(50), msgs:[{from:'237173826',who:'Sam',text:'We can deliver with Tuesday’s route.',at:d(40)}] },
     { id:3, need:3, offer:16, by:'B-2', status:'Proposed', score:85, at:d(6), msgs:[] },
   ];
 }
-function L(id,kind,ein,category,title,desc,qty,unit,urg,tags,createdAt){ return { id, kind, ein, category, title, desc, qty, unit, urgency:urg, tags, status:'Open', createdAt }; }
+function L(id,kind,ein,category,title,desc,qty,unit,urg,tags,createdAt,cadence){ return { id, kind, ein, category, title, desc, qty, unit, urgency:urg, tags, status:'Open', createdAt, cadence: cadence || 'One-time', views: 0 }; }
 
 // =====================================================================
 // Matching — same rules as the backend MatchScorer.
@@ -369,7 +386,7 @@ function suggestions(listing) {
 let S;
 function fresh() {
   const seeded = seedListings();
-  return { step:0, screen:'signup', signup:{}, user:null, listings:seeded, matches:seedMatches(seeded), filter:{ kind:'All', category:'', who:'All', radius:0, threads:{ Completed:true, Accepted:true, Proposed:true, suggested:false } }, filtersOpen:false, map:{ sel:null, selMatch:null, k:1, tx:0, ty:0 }, notifs:[], follows:[], nextId:24, feedFilter:'All', orgFilter:{ q:'', cause:'', city:'', joined:false, open:false }, draft:null, sel:null, toast:null, sheet:null, claimQuery:'', claimPick:null, guideMin:false, joinedEins:['822888626','581735531','911606330','465378620','811434757','910826037','223939593','237421892','911425676','911546757'] };
+  return { step:0, screen:'signup', signup:{}, user:null, listings:seeded, matches:seedMatches(seeded), filter:{ kind:'All', category:'', who:'All', radius:0, threads:{ Completed:true, Accepted:true, Proposed:true, suggested:false } }, filtersOpen:false, map:{ sel:null, selMatch:null, k:1, tx:0, ty:0 }, notifs:[], follows:[], nextId:30, feedFilter:'All', orgFilter:{ q:'', cause:'', city:'', joined:false, open:false }, draft:null, sel:null, toast:null, sheet:null, claimQuery:'', claimPick:null, guideMin:false, joinedEins:['822888626','581735531','911606330','465378620','811434757','910826037','223939593','237421892','911425676','911546757'] };
 }
 function save(){ try { localStorage.setItem('helpbook-proto', JSON.stringify(S)); } catch(e){} }
 function load(){ try { const j = localStorage.getItem('helpbook-proto'); if (j) { S = JSON.parse(j); return true; } } catch(e){} return false; }
@@ -377,20 +394,21 @@ if (!load()) S = fresh();
 if (!S.filter) S.filter = { kind:'All', category:'', who:'All', radius:0, threads:{ Completed:true, Accepted:true, Proposed:true, suggested:false } };
 if (!S.filter.threads) S.filter.threads = { Completed:true, Accepted:true, Proposed:true, suggested:false };
 if (!S.map || !S.map.k) S.map = { sel:null, selMatch:null, k:1, tx:0, ty:0 };
-if (!S.listings.some(l => l.id === 25)) { const have = new Set(S.listings.map(l => l.id)); const extra = seedListings().filter(l => l.id >= 13 && !have.has(l.id)); S.listings.push(...extra); const pairs = new Set(S.matches.map(m => m.need + ':' + m.offer)); for (const m of seedMatches(S.listings)) if (!pairs.has(m.need + ':' + m.offer)) S.matches.push({ ...m, id: S.matches.length + 1 }); if (S.nextId < 24) S.nextId = 24; }
+for (const l of S.listings) { if (!l.cadence) l.cadence = 'One-time'; if (l.views == null) l.views = 0; }
+if (!S.listings.some(l => l.id === 29)) { const have = new Set(S.listings.map(l => l.id)); const extra = seedListings().filter(l => l.id >= 13 && !have.has(l.id)); S.listings.push(...extra); const pairs = new Set(S.matches.map(m => m.need + ':' + m.offer)); for (const m of seedMatches(S.listings)) if (!pairs.has(m.need + ':' + m.offer)) S.matches.push({ ...m, id: S.matches.length + 1 }); if (S.nextId < 30) S.nextId = 30; }
 const joined = ein => S.joinedEins.includes(ein) || (ORG(ein) && ORG(ein).type !== 'nonprofit');
 const me = () => S.user ? ORG(S.user.ein) : null;
 const cap = s => s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
 const ago = iso => { const m = Math.round((Date.now()-new Date(iso))/60000); return m<1?'just now':m<60?`${m}m ago`:m<1440?`${Math.round(m/60)}h ago`:`${Math.round(m/1440)}d ago`; };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function toast(t){ S.toast = t; render(); setTimeout(()=>{ if (S.toast===t){ S.toast=null; render(); } }, 2600); }
-function go(screen, sel){ S.screen = screen; if (sel !== undefined) S.sel = sel; S.sheet = null; if (screen === 'orgs' || screen === 'org') S.visitedOrgs = true; render(); }
+function go(screen, sel){ if (screen === 'feed' && S.screen !== 'feed' && S.user) countViews(); S.screen = screen; if (sel !== undefined) S.sel = sel; S.sheet = null; if (screen === 'orgs' || screen === 'org') S.visitedOrgs = true; render(); }
 function notify(ein, type, text, ref){ S.notifs.unshift({ id:Date.now()+Math.random(), ein, type, text, ref, at:new Date().toISOString(), read:false }); }
 
 // ---- actions -----------------------------------------------------------
 function postListing(d, opts={}) {
   const asEin = opts.asEin || S.user.ein;
-  const l = L(S.nextId++, d.kind, asEin, d.category, d.title.trim(), d.desc||'', +d.qty||null, d.unit||'', d.urgency, d.tags, new Date().toISOString());
+  const l = L(S.nextId++, d.kind, asEin, d.category, d.title.trim(), d.desc||'', +d.qty||null, d.unit||'', d.urgency, d.tags, new Date().toISOString(), d.cadence);
   S.listings.unshift(l);
   // alerts: orgs with a matching open listing OR a matching capability tag
   const alerted = new Set();
@@ -416,9 +434,25 @@ function propose(needId, offerId, note, opts={}) {
 function respond(mid, accept) {
   const m = S.matches.find(x=>x.id===mid); if (!m || m.status !== 'Proposed') return; const need = S.listings.find(x=>x.id===m.need), offer = S.listings.find(x=>x.id===m.offer);
   m.status = accept ? 'Accepted' : 'Declined';
-  if (accept) { need.status = 'Matched'; offer.status = 'Matched'; }
+  if (accept) { need.status = 'Matched'; offer.status = 'Matched';
+    const cad = isRecurring(need) ? need.cadence : isRecurring(offer) ? offer.cadence : null;
+    if (cad) m.agreement = { cadence: cad, since: new Date().toISOString(), occurrences: [], nextAt: nextDate(cad) }; }
   notify(m.by, accept?'match_accepted':'match_declined', `${ORG(S.user.ein).name} ${accept?'accepted':'declined'} your connection on "${need.title}"`, { match:m.id });
   render(); toast(accept ? 'Accepted — you can message now' : 'Declined');
+}
+function nextDate(cad){ const days = { Weekly:7, Monthly:30, Quarterly:91, Ongoing:30 }[cad] || 30; return new Date(Date.now() + days*864e5).toISOString(); }
+function logOccurrence(mid) {
+  const m = S.matches.find(x=>x.id===mid); if (!m || !m.agreement || m.status !== 'Accepted') return;
+  m.agreement.occurrences.push(new Date().toISOString()); m.agreement.nextAt = nextDate(m.agreement.cadence);
+  const need = S.listings.find(x=>x.id===m.need), offer = S.listings.find(x=>x.id===m.offer); const other = S.user.ein === need.ein ? offer.ein : need.ein;
+  notify(other, 'agreement_logged', `${ORG(S.user.ein).name} logged a ${m.agreement.cadence.toLowerCase()} delivery on "${need.title}"`, { match:m.id });
+  render(); toast('Logged. Next: ' + new Date(m.agreement.nextAt).toLocaleDateString());
+}
+function endAgreement(mid) {
+  const m = S.matches.find(x=>x.id===mid); if (!m || !m.agreement || m.status !== 'Accepted') return;
+  m.status = 'Completed'; m.doneAt = new Date().toISOString();
+  const need = S.listings.find(x=>x.id===m.need), offer = S.listings.find(x=>x.id===m.offer); need.status = 'Fulfilled'; offer.status = 'Fulfilled';
+  render(); toast(`Agreement ended after ${m.agreement.occurrences.length} deliver${m.agreement.occurrences.length===1?'y':'ies'}`);
 }
 function complete(mid) {
   const m = S.matches.find(x=>x.id===mid); if (!m || m.status !== 'Accepted') return; const need = S.listings.find(x=>x.id===m.need), offer = S.listings.find(x=>x.id===m.offer);
@@ -520,7 +554,7 @@ function tabs(on){
 }
 function listingCard(l, extra=''){
   const o = ORG(l.ein); const q = l.qty ? ` · ${l.qty} ${esc(l.unit)}` : '';
-  return `<button class="card tap" data-a="go" data-s="listing" data-id="${l.id}"><span class="pill ${l.kind.toLowerCase()}">${l.kind.toUpperCase()}${l.kind==='Need'&&l.urgency!=='Normal'?' · '+l.urgency:''}</span> ${l.status!=='Open'?`<span class="pill grey">${l.status}</span>`:''}<span class="t">${esc(l.title)}</span><span class="m">${esc(o.name)} · ${cap(o.city)}${q} · ${ago(l.createdAt)}</span>${extra}</button>`;
+  return `<button class="card tap" data-a="go" data-s="listing" data-id="${l.id}"><span class="pill ${l.kind.toLowerCase()}">${l.kind.toUpperCase()}${cadenceTag(l)}</span> ${priPill(l)} ${l.status!=='Open'?`<span class="pill grey">${l.status}</span>`:''}<span class="t">${esc(l.title)}</span><span class="m">${esc(o.name)} · ${cap(o.city)}${q} · ${ago(l.createdAt)}</span>${extra}</button>`;
 }
 function orgCard(o){
   const open = S.listings.filter(l=>l.ein===o.ein&&l.status==='Open').length;
@@ -559,13 +593,14 @@ function renderPhone(){
           <button class="btn primary" data-a="claim-finish">Continue (demo: verify instantly)</button>`}
         <p class="hint">Verification methods are pluggable — we can add or remove ways without changing anything else.</p></div>`; break; }
     case 'feed': {
-      let ls = S.listings.filter(l => listingPasses(l));
-      ls = ls.slice().sort((a,b)=> (a.status==='Matched')-(b.status==='Matched') || URG.indexOf(b.urgency)-URG.indexOf(a.urgency) || new Date(b.createdAt)-new Date(a.createdAt));
+      const ranked = rankFeed(S.listings.filter(l => listingPasses(l)));
+      const ls = ranked.map(r => r.l);
       const n = activeFilterCount();
       body = `${topbar()}<div class="screen"><div class="row"><button class="btn need sm" style="flex:1" data-a="new" data-k="Need">+ I need something</button><button class="btn primary sm" style="flex:1" data-a="new" data-k="Offer">+ I have something</button></div>
         <div class="flt-head"><span>${ls.length} listing${ls.length===1?'':'s'}${n?` · ${n} filter${n===1?'':'s'} on (same as Map)`:''}</span><button data-a="flt-toggle">${S.filtersOpen?'Hide filters':'Filters'}</button></div>
         ${S.filtersOpen ? filterBlock(false) : ''}
-        ${ls.map(l=>listingCard(l)).join('')||'<div class="empty">Nothing matches these filters.</div>'}</div>${tabs('feed')}`; break; }
+        ${ranked.map(r=>listingCard(r.l, `<span class="why">${r.why}</span>`)).join('')||'<div class="empty">Nothing matches these filters.</div>'}
+        <p class="hint">Order: priority first, then whoever has been seen least. No org holds more than 2 of the top 6, and one top slot always goes to the least-seen listing.</p></div>${tabs('feed')}`; break; }
     case 'orgs': {
       const f = S.orgFilter; let os = ORGS.filter(o => o.type === 'nonprofit');
       if (f.q) os = os.filter(o=>o.name.toLowerCase().includes(f.q.toLowerCase())||o.ein.includes(f.q));
@@ -588,12 +623,14 @@ function renderPhone(){
         ${done.length?`<div class="label">Completed connections (${done.length})</div>${done.map(m=>{const n=S.listings.find(l=>l.id===m.need),f2=S.listings.find(l=>l.id===m.offer);return `<div class="card"><span class="pill ok">Fulfilled</span><span class="t">${esc(n.title)}</span><span class="m">${esc(ORG(f2.ein).name)} → ${esc(ORG(n.ein).name)} · ${ago(m.doneAt)}</span></div>`;}).join('')}`:''}
         <div class="label">From the IRS record</div><div class="card"><div class="kv"><span>EIN</span><span>${o.ein.slice(0,2)}-${o.ein.slice(2)}</span><span>Status</span><span>501(c)(3) public charity</span><span>Since</span><span>${o.ruling}</span><span>Revenue</span><span>${o.rev?'$'+o.rev.toLocaleString():'not reported (files 990-N)'}</span><span>NTEE</span><span>${o.ntee||'not coded'}</span></div><p class="hint" style="margin:8px 0 0">Source: IRS Business Master File posted 2026-09-08 · refreshed monthly · <u>ProPublica</u> · <u>IRS TEOS</u></p></div></div>${tabs('orgs')}`; break; }
     case 'post': {
-      const d = S.draft || (S.draft = { kind:'Need', category:'Technology', title:'', desc:'', qty:'', unit:'', urgency:'Normal', tags:'' });
+      const d = S.draft || (S.draft = { kind:'Need', category:'Technology', title:'', desc:'', qty:'', unit:'', urgency:'Normal', tags:'', cadence:'One-time' });
       const preview = d.title.trim().length>3 ? suggestions({ ...d, ein:S.user.ein, qty:+d.qty||null, createdAt:new Date().toISOString(), status:'Open', id:0 }).slice(0,3) : [];
       body = `${topbar({back:'feed',title:'Cancel'})}<div class="screen"><h2 class="h">${d.kind==='Need'?'What do you need?':'What do you have?'}</h2><p class="sub">Posting as ${esc(me().name)}</p>
         <div class="chips"><button class="chip ${d.kind==='Need'?'on':''}" data-a="d" data-k="kind" data-v="Need">We need</button><button class="chip ${d.kind==='Offer'?'on':''}" data-a="d" data-k="kind" data-v="Offer">We have</button></div>
         <input id="d-title" placeholder="${d.kind==='Need'?'e.g. Laptops for client intake stations':'e.g. 40 sheets of plywood'}" value="${esc(d.title)}">
-        <div class="row"><select id="d-category">${CATEGORIES.map(c=>`<option ${d.category===c?'selected':''}>${c}</option>`).join('')}</select>${d.kind==='Need'?`<select id="d-urgency">${URG.map(u=>`<option ${d.urgency===u?'selected':''}>${u}</option>`).join('')}</select>`:''}</div>
+        <div class="row"><select id="d-category">${CATEGORIES.map(c=>`<option ${d.category===c?'selected':''}>${c}</option>`).join('')}</select><select id="d-cadence">${CADENCE.map(c=>`<option ${(d.cadence||'One-time')===c?'selected':''}>${c}</option>`).join('')}</select></div>
+        ${d.kind==='Need'?`<select id="d-urgency">${['Critical','High','Normal','Low'].map(u=>`<option value="${u}" ${d.urgency===u?'selected':''}>${PRI[u][0]} — ${PRI[u][1]}</option>`).join('')}</select>`:''}
+        ${(d.cadence||'One-time')!=='One-time'?`<p class="hint">${d.cadence==='Ongoing'?'An ongoing arrangement (a contract or standing gig). When accepted it becomes a standing agreement you can log against and end at any time.':`Recurs ${d.cadence.toLowerCase()}. When accepted it becomes a standing agreement with a next date; each delivery gets logged.`}</p>`:''}
         <div class="row"><input id="d-qty" type="number" placeholder="Qty" value="${esc(d.qty)}"><input id="d-unit" placeholder="Unit (laptops, sheets…)" value="${esc(d.unit)}"></div>
         <textarea id="d-desc" placeholder="Details: condition, pickup or delivery, deadline…">${esc(d.desc)}</textarea>
         <input id="d-tags" placeholder="Tags, comma-separated (laptops, computers)" value="${esc(d.tags)}">
@@ -604,7 +641,8 @@ function renderPhone(){
       const o = ORG(l.ein); const isMine = l.ein===me().ein; const sugg = suggestions(l).slice(0,5);
       const myOpp = S.listings.filter(x=>x.ein===me().ein&&x.status==='Open'&&x.kind!==l.kind);
       const existing = S.matches.find(m=>(m.need===l.id||m.offer===l.id)&&[m.need,m.offer].some(id=>S.listings.find(z=>z.id===id).ein===me().ein));
-      body = `${topbar({back:'feed',title:'Board'})}<div class="screen"><span><span class="pill ${l.kind.toLowerCase()}">${l.kind.toUpperCase()}${l.kind==='Need'?' · '+l.urgency:''}</span> <span class="pill grey">${l.status}</span></span><h2 class="h">${esc(l.title)}</h2>
+      body = `${topbar({back:'feed',title:'Board'})}<div class="screen"><span><span class="pill ${l.kind.toLowerCase()}">${l.kind.toUpperCase()}${cadenceTag(l)}</span> ${priPill(l)} <span class="pill grey">${l.status}</span></span><h2 class="h">${esc(l.title)}</h2>
+        ${isRecurring(l)?`<p class="sub">${l.cadence==='Ongoing'?'Ongoing arrangement':'Recurs '+l.cadence.toLowerCase()} — accepting this creates a standing agreement.</p>`:''}${l.kind==='Need'?`<p class="sub">${PRI[l.urgency][0]}: ${PRI[l.urgency][1]}</p>`:''}
         <button class="card tap" data-a="go" data-s="org" data-id="${o.ein}"><span class="t" style="margin-top:0">${esc(o.name)}</span><span class="m">${cap(o.city)} · ${CAUSES[o.cause]} · posted ${ago(l.createdAt)}</span></button>
         <div class="kv">${l.qty?`<span>Quantity</span><span>${l.qty} ${esc(l.unit)}</span>`:''}<span>Category</span><span>${l.category}</span>${l.desc?`<span>Details</span><span>${esc(l.desc)}</span>`:''}${l.tags?`<span>Tags</span><span>${esc(l.tags)}</span>`:''}</div>
         ${existing?`<button class="btn primary" data-a="go" data-s="match" data-id="${existing.id}">Open your connection (${existing.status})</button>`:
@@ -616,7 +654,7 @@ function renderPhone(){
       const ns = S.notifs.filter(n=>n.ein===me().ein); const ms = myMatches().slice().reverse();
       body = `${topbar()}<div class="screen"><h2 class="h">Inbox</h2>
         <div class="label">Alerts</div>${ns.slice(0,8).map(n=>`<button class="card tap notif ${n.read?'read':''}" data-a="notif" data-id="${n.id}"><span class="m">${esc(n.text)}</span><span class="m hint">${ago(n.at)}</span></button>`).join('')||'<div class="hint">No alerts yet. You’ll hear when a need or offer matches your listings or your "we often need / have" tags.</div>'}
-        <div class="label">Connections</div>${ms.map(m=>{const n=S.listings.find(l=>l.id===m.need),f2=S.listings.find(l=>l.id===m.offer);const other=n.ein===me().ein?ORG(f2.ein):ORG(n.ein);const waiting=m.status==='Proposed'&&m.by!==me().ein;return `<button class="card tap" data-a="go" data-s="match" data-id="${m.id}"><span class="pill ${m.status==='Completed'?'ok':m.status==='Proposed'?'need':'grey'}">${m.status}</span> ${waiting?'<span class="pill warn">needs your answer</span>':''}<span class="t">${esc(other.name)}</span><span class="m">"${esc(n.title)}" ↔ "${esc(f2.title)}" · ${m.msgs.length} message${m.msgs.length===1?'':'s'}</span></button>`;}).join('')||'<div class="hint">No connections yet.</div>'}</div>${tabs('inbox')}`; break; }
+        <div class="label">Connections</div>${ms.map(m=>{const n=S.listings.find(l=>l.id===m.need),f2=S.listings.find(l=>l.id===m.offer);const other=n.ein===me().ein?ORG(f2.ein):ORG(n.ein);const waiting=m.status==='Proposed'&&m.by!==me().ein;return `<button class="card tap" data-a="go" data-s="match" data-id="${m.id}"><span class="pill ${m.status==='Completed'?'ok':m.status==='Proposed'?'need':'grey'}">${m.status}</span> ${m.agreement?`<span class="pill offer">↻ ${m.agreement.cadence}</span>`:''} ${waiting?'<span class="pill warn">needs your answer</span>':''}<span class="t">${esc(other.name)}</span><span class="m">"${esc(n.title)}" ↔ "${esc(f2.title)}" · ${m.msgs.length} message${m.msgs.length===1?'':'s'}</span></button>`;}).join('')||'<div class="hint">No connections yet.</div>'}</div>${tabs('inbox')}`; break; }
     case 'match': {
       const m = S.matches.find(x=>x.id===S.sel); if (!m) { S.screen='inbox'; return renderPhone(); }
       const n = S.listings.find(l=>l.id===m.need), f2 = S.listings.find(l=>l.id===m.offer); const other = n.ein===me().ein?ORG(f2.ein):ORG(n.ein);
@@ -627,7 +665,7 @@ function renderPhone(){
         ${m.status==='Proposed'&&m.by===me().ein?`<div class="sys">Waiting for ${esc(other.name)} to accept.</div>`:''}
         <div class="msgs">${m.msgs.map(x=>`<div class="msg ${x.from===me().ein?'me':''}">${esc(x.text)}<small>${esc(x.who)} · ${esc(ORG(x.from).name)} · ${ago(x.at)}</small></div>`).join('')||'<div class="sys">No messages yet.</div>'}${m.status==='Completed'?'<div class="sys">✓ Hand-off complete — both listings fulfilled.</div>':''}</div>
         ${canChat&&m.status!=='Completed'?`<div class="composer"><input id="msg" placeholder="Write a message…"><button class="btn primary sm" data-a="send" data-id="${m.id}">Send</button></div>`:''}
-        ${m.status==='Accepted'?`<div class="row"><button class="btn sm" data-a="contact">Share contact card</button><button class="btn sm primary" data-a="complete" data-id="${m.id}">Mark complete</button></div>`:''}
+        ${m.status==='Accepted' && m.agreement ? `<div class="card"><span class="t" style="margin-top:0">↻ Standing agreement · ${m.agreement.cadence}</span><span class="m">since ${new Date(m.agreement.since).toLocaleDateString()} · ${m.agreement.occurrences.length} logged · next ${new Date(m.agreement.nextAt).toLocaleDateString()}</span><div class="occ" style="margin-top:6px">${m.agreement.occurrences.slice(-6).map(o=>`<span>✓ ${new Date(o).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</span>`).join('')}</div><div class="row" style="margin-top:8px"><button class="btn sm primary" data-a="log-occ" data-id="${m.id}">Log this ${m.agreement.cadence==='Weekly'?'week':m.agreement.cadence==='Quarterly'?'quarter':'month'}’s delivery</button><button class="btn sm" data-a="end-agree" data-id="${m.id}">End agreement</button></div></div><button class="btn sm" data-a="contact">Share contact card</button>` : m.status==='Accepted'?`<div class="row"><button class="btn sm" data-a="contact">Share contact card</button><button class="btn sm primary" data-a="complete" data-id="${m.id}">Mark complete</button></div>`:''}
         ${m.status==='Declined'?'<div class="sys">Declined. Both listings stay open.</div>':''}</div>${tabs('inbox')}`; break; }
     case 'map': body = renderMap(); break;
     case 'me': {
@@ -635,6 +673,7 @@ function renderPhone(){
       body = `${topbar()}<div class="screen"><h2 class="h">${esc(S.user.name)}</h2><p class="sub">${esc(S.user.email)}</p>
         <button class="card tap" data-a="go" data-s="org" data-id="${o.ein}"><span class="t" style="margin-top:0">${esc(o.name)} <span class="verified">✓ verified member</span></span><span class="m">Owner · ${cap(o.city)} · free account</span></button>
         <div class="label">My listings</div>${S.listings.filter(l=>l.ein===o.ein).map(l=>listingCard(l)).join('')||'<div class="hint">None yet.</div>'}
+        <div class="label">Exposure</div><div class="card"><span class="m">${(() => { const mine = S.listings.filter(l=>l.ein===o.ein&&l.status==='Open'); const open = S.listings.filter(l=>l.status==='Open'); const avg = open.length ? open.reduce((a,l)=>a+(l.views||0),0)/open.length : 0; const mv = mine.length ? mine.reduce((a,l)=>a+(l.views||0),0)/mine.length : 0; return mine.length ? `Your open listings have been seen <b>${mv.toFixed(1)}×</b> on average vs <b>${avg.toFixed(1)}×</b> for everyone. Ranking rotates so under-seen listings rise; nobody can buy placement in the board.` : 'Post something to see how often it’s shown compared with everyone else.'; })()}</span></div>
         <div class="label">Alerts</div><div class="card"><span class="m">You’re alerted for: <b>${o.needTags.concat(o.haveTags).slice(0,5).join(', ')}</b> · ${CAUSES[o.cause]} · near ${cap(o.city)}. In-app always; email and push on.</span></div>
         <button class="btn" data-a="sheet-who">Switch perspective</button><button class="btn quiet" data-a="reset">Reset the demo</button></div>${tabs('me')}`; break; }
   }
@@ -644,6 +683,34 @@ function renderPhone(){
   if (S.sheet && S.sheet.ihave) { const l = S.listings.find(x=>x.id===S.sheet.ihave); const mine = S.listings.filter(x=>x.ein===me().ein&&x.status==='Open'&&x.kind!==l.kind);
     overlay += `<div class="sheet-bg" data-a="sheet-close"><div class="sheet"><h3>${l.kind==='Need'?'Which offer fills this need?':'Which need does this fill?'}</h3>${mine.map(x=>`<button class="card tap" data-a="propose" data-need="${l.kind==='Need'?l.id:x.id}" data-offer="${l.kind==='Need'?x.id:l.id}"><span class="pill ${x.kind.toLowerCase()}">${x.kind.toUpperCase()}</span><span class="t">${esc(x.title)}</span><span class="m">score ${l.kind==='Need'?score(l,x).s:score(x,l).s}</span></button>`).join('')||`<div class="hint">You have no open ${l.kind==='Need'?'offers':'needs'} yet.</div>`}<button class="btn" data-a="new-for" data-id="${l.id}">+ Create a new ${l.kind==='Need'?'offer':'need'} for this</button></div></div>`; }
   return body + overlay;
+}
+
+// ---- Equitable exposure ------------------------------------------------------
+// Ranking is a rotation, not a popularity contest: priority band first, then fewest views, with an org cap and a reserved slot.
+function rankFeed(list) {
+  const open = list.filter(l => l.status === 'Open'), matched = list.filter(l => l.status !== 'Open');
+  const avg = open.length ? open.reduce((a, l) => a + (l.views||0), 0) / open.length : 0;
+  const band = l => l.kind === 'Need' ? URG.indexOf(l.urgency) : 1;   // offers sit with P2
+  const sorted = open.slice().sort((a, b) => band(b) - band(a) || (a.views||0) - (b.views||0) || new Date(b.createdAt) - new Date(a.createdAt));
+  const out = [], perOrg = {}, deferred = [];
+  for (const l of sorted) { const c = perOrg[l.ein] || 0; if (out.length < 6 && c >= 2) { deferred.push(l); continue; } perOrg[l.ein] = c + 1; out.push(l); }
+  // Reserve slot 3 for the least-seen open listing not already in the top 3.
+  const leastSeen = open.slice().sort((a, b) => (a.views||0) - (b.views||0) || new Date(a.createdAt) - new Date(b.createdAt))[0];
+  if (leastSeen && out.length > 3 && !out.slice(0, 3).includes(leastSeen)) { out.splice(out.indexOf(leastSeen), 1); out.splice(2, 0, leastSeen); }
+  const all = out.concat(deferred, matched);
+  return all.map((l, i) => {
+    const v = l.views || 0; let why;
+    if (l.status !== 'Open') why = l.status === 'Matched' ? 'matched — shown for context' : '';
+    else if (i === 2 && l === leastSeen) why = 'fair-rotation slot: seen least of anything open';
+    else if (l.kind === 'Need' && l.urgency === 'Critical') why = 'P0 — always on top';
+    else if (v < avg * 0.6) why = `seen ${v}× — below the ${Math.round(avg)}× average, so it rises`;
+    else if (deferred.includes(l)) why = 'org already has 2 in the top 6';
+    else why = `${l.kind === 'Need' ? PRI[l.urgency][0] : 'offer'} · seen ${v}×`;
+    return { l, why };
+  });
+}
+function countViews() { // called when the Board is opened: the first 6 shown get a view
+  for (const r of rankFeed(S.listings.filter(l => listingPasses(l))).slice(0, 6)) if (r.l.status === 'Open') r.l.views = (r.l.views || 0) + 1;
 }
 
 // ---- Shared filters (Board + Map) ------------------------------------------
@@ -740,7 +807,7 @@ function renderMap(){
   const svg = `<svg id="mapsvg" viewBox="0 0 620 400" role="img" aria-label="Map of Washington with organizations and connections">${defs}<rect class="water" width="620" height="400"/>
     <g id="mapg" transform="translate(${S.map.tx.toFixed(2)} ${S.map.ty.toFixed(2)}) scale(${k.toFixed(4)})"><path class="land" vector-effect="non-scaling-stroke" d="${path}"/>${radius}${labels}
     ${suggested.map(x => line(ORG(x.offer.ein), ORG(x.need.ein), 'suggested')).join('')}
-    ${threads.map(m => { const n=S.listings.find(l=>l.id===m.need), o=S.listings.find(l=>l.id===m.offer); return line(ORG(o.ein), ORG(n.ein), m.status + (v.selMatch===m.id?' hi':''), `data-a="map-thread" data-id="${m.id}"`); }).join('')}
+    ${threads.map(m => { const n=S.listings.find(l=>l.id===m.need), o=S.listings.find(l=>l.id===m.offer); return line(ORG(o.ein), ORG(n.ein), m.status + (m.agreement?' agreement':'') + (v.selMatch===m.id?' hi':''), `data-a="map-thread" data-id="${m.id}"`); }).join('')}
     ${pins}</g>${scaleBar(k)}</svg>
     <div class="zoomctl"><button data-a="map-zoom" data-v="in" aria-label="Zoom in">+</button><button data-a="map-zoom" data-v="out" aria-label="Zoom out">−</button><button class="fit" data-a="map-zoom" data-v="fit" aria-label="Fit whole state">WA</button></div>
     <div class="maphint">${k > 1.05 ? Math.round(k*10)/10 + '× · drag to pan' : 'pinch or scroll to zoom'}</div>`;
@@ -753,16 +820,16 @@ function renderMap(){
       ${ms.map(m=>{ const n=S.listings.find(l=>l.id===m.need), of=S.listings.find(l=>l.id===m.offer); const giving = of.ein===o.ein; const other = ORG(giving?n.ein:of.ein); return `<span class="m">${giving?'→ gives to':'← receives from'} <b>${esc(other.name)}</b> · ${n.category} · ${m.status}</span>`; }).join('')}
       <div class="row" style="margin-top:8px">${o.type==='nonprofit'?`<button class="btn sm" data-a="go" data-s="org" data-id="${o.ein}">Profile</button>`:''}${ls[0]?`<button class="btn sm primary" data-a="go" data-s="listing" data-id="${ls[0].id}">Open listing</button>`:''}</div></div>`; }
   else if (v.selMatch) { const m = S.matches.find(x=>x.id===v.selMatch); if (m) { const n=S.listings.find(l=>l.id===m.need), o=S.listings.find(l=>l.id===m.offer); const party = [n.ein,o.ein].includes(mine.ein);
-    detail = `<div class="card"><span class="pill ${m.status==='Completed'?'ok':'need'}">${m.status}</span> <span class="pill grey">${n.category}</span><span class="t">${esc(ORG(o.ein).name)} → ${esc(ORG(n.ein).name)}</span><span class="m">gives "${esc(o.title)}" for "${esc(n.title)}" · ${Math.round(MILES(ORG(n.ein),ORG(o.ein)))} mi${m.doneAt?' · completed '+ago(m.doneAt):''}</span>${party?`<button class="btn sm primary" style="margin-top:8px" data-a="go" data-s="match" data-id="${m.id}">Open thread</button>`:'<span class="m hint">Details are private to the two organizations.</span>'}</div>`; } }
+    detail = `<div class="card"><span class="pill ${m.status==='Completed'?'ok':'need'}">${m.status}</span> <span class="pill grey">${n.category}</span><span class="t">${esc(ORG(o.ein).name)} → ${esc(ORG(n.ein).name)}</span><span class="m">gives "${esc(o.title)}" for "${esc(n.title)}" · ${Math.round(MILES(ORG(n.ein),ORG(o.ein)))} mi${m.agreement?` · ↻ ${m.agreement.cadence} since ${new Date(m.agreement.since).toLocaleDateString(undefined,{month:'short',year:'numeric'})}, ${m.agreement.occurrences.length} logged`:''}${m.doneAt?' · completed '+ago(m.doneAt):''}</span>${party?`<button class="btn sm primary" style="margin-top:8px" data-a="go" data-s="match" data-id="${m.id}">Open thread</button>`:'<span class="m hint">Details are private to the two organizations.</span>'}</div>`; } }
 
   return `${topbar()}<div class="screen"><h2 class="h">Map</h2><p class="sub">${done} completed · ${active} in progress · ${visible.size-1} with matching listings</p>
     <div class="map">${svg}</div>
-    <div class="legend"><span><i style="background:var(--offer)"></i>nonprofit</span><span><i style="background:#3B5BA9"></i>business</span><span><i style="background:#7A5CA8"></i>community member</span><span><b style="border-color:#D9A12B;border-top-width:4px"></b>completed</span><span><b style="border-color:var(--offer)"></b>in progress (accepted)</span><span><b class="dashed" style="border-color:var(--need)"></b>proposed, awaiting answer</span><span><b class="dotted" style="border-color:var(--ink-3)"></b>suggested by matching</span><span>→ arrow points from giver to receiver · bigger pin = more connections</span></div>
+    <div class="legend"><span><i style="background:var(--offer)"></i>nonprofit</span><span><i style="background:#3B5BA9"></i>business</span><span><i style="background:#7A5CA8"></i>community member</span><span><b style="border-color:#D9A12B;border-top-width:4px"></b>completed</span><span><b style="border-color:var(--offer)"></b>in progress (accepted)</span><span><b class="dashed" style="border-color:var(--need)"></b>proposed, awaiting answer</span><span><b class="dotted" style="border-color:var(--ink-3)"></b>suggested by matching</span><span><b class="agree" style="border-color:var(--offer)"></b>↻ standing agreement (recurring)</span><span>→ arrow points from giver to receiver · bigger pin = more connections</span></div>
     ${detail}
     <div class="flt-head"><span>Filters apply to the Board too</span></div>
     ${filterBlock(true)}
     <div class="label">Connections (${threads.length})</div>
-    ${threads.slice().sort((a,b)=>new Date(b.doneAt||b.at)-new Date(a.doneAt||a.at)).map(m => { const n=S.listings.find(l=>l.id===m.need), o=S.listings.find(l=>l.id===m.offer); return `<button class="card tap ${v.selMatch===m.id?'sel':''}" data-a="map-focus" data-id="${m.id}"><span class="conn"><span><span class="from">${esc(ORG(o.ein).name.replace(/ \(.*\)$/, ''))}</span> <span class="arrow">→</span> <span class="to">${esc(ORG(n.ein).name.replace(/ \(.*\)$/, ''))}</span></span><span class="pill ${m.status==='Completed'?'ok':m.status==='Proposed'?'need':'grey'}">${m.status}</span><span class="m">${n.category} · ${esc(o.title)} · ${Math.round(MILES(ORG(n.ein),ORG(o.ein)))} mi</span></span></button>`; }).join('') || '<div class="hint">No connections match these filters.</div>'}
+    ${threads.slice().sort((a,b)=>new Date(b.doneAt||b.at)-new Date(a.doneAt||a.at)).map(m => { const n=S.listings.find(l=>l.id===m.need), o=S.listings.find(l=>l.id===m.offer); return `<button class="card tap ${v.selMatch===m.id?'sel':''}" data-a="map-focus" data-id="${m.id}"><span class="conn"><span><span class="from">${esc(ORG(o.ein).name.replace(/ \(.*\)$/, ''))}</span> <span class="arrow">→</span> <span class="to">${esc(ORG(n.ein).name.replace(/ \(.*\)$/, ''))}</span></span><span class="pill ${m.status==='Completed'?'ok':m.status==='Proposed'?'need':'grey'}">${m.status}</span><span class="m">${n.category} · ${esc(o.title)}${m.agreement?` · ↻ ${m.agreement.cadence}, ${m.agreement.occurrences.length} logged`:''} · ${Math.round(MILES(ORG(n.ein),ORG(o.ein)))} mi</span></span></button>`; }).join('') || '<div class="hint">No connections match these filters.</div>'}
     <p class="hint">Pinch or scroll to zoom (up to 40×), drag to pan, double-tap to zoom in; the bar shows miles at the current zoom. Pins sit at each organization’s ZIP code, so placement is neighborhood-accurate, not door-accurate. Tap a pin for an organization (hover grows it by its number of connections); tap a line or a row below for a connection. Gold lines are completed hand-offs — the thread of help between groups. Business and community-member pins are examples, not real accounts. Organization locations: IRS Business Master File posted 2026-09-08 · refreshed monthly.</p></div>${tabs('map')}`;
 }
 
@@ -775,7 +842,7 @@ document.addEventListener('click', async e => {
   const guideAction = ['guide-toggle','step','prev','next','play','reset'].includes(a);
   const wasDone = guideAction ? true : STEPS[S.step].done();
   if (!guideAction) setTimeout(() => { syncStep(wasDone); render(); }, 0);
-  const read = () => { const g = i => document.getElementById(i); if (S.screen==='post' && g('d-title')) S.draft = { ...S.draft, title:g('d-title').value, category:g('d-category').value, urgency:g('d-urgency')?g('d-urgency').value:'Normal', qty:g('d-qty').value, unit:g('d-unit').value, desc:g('d-desc').value, tags:g('d-tags').value }; if (S.screen==='orgs' && g('orgq')) S.orgFilter = { ...S.orgFilter, q:g('orgq').value, cause:g('cause').value, city:g('city').value }; if (S.screen==='claim' && g('claimq')) S.claimQuery = g('claimq').value; if (S.screen==='signup' && g('email')) S.signup.email = g('email').value; };
+  const read = () => { const g = i => document.getElementById(i); if (S.screen==='post' && g('d-title')) S.draft = { ...S.draft, title:g('d-title').value, category:g('d-category').value, cadence:g('d-cadence')?g('d-cadence').value:'One-time', urgency:g('d-urgency')?g('d-urgency').value:'Normal', qty:g('d-qty').value, unit:g('d-unit').value, desc:g('d-desc').value, tags:g('d-tags').value }; if (S.screen==='orgs' && g('orgq')) S.orgFilter = { ...S.orgFilter, q:g('orgq').value, cause:g('cause').value, city:g('city').value }; if (S.screen==='claim' && g('claimq')) S.claimQuery = g('claimq').value; if (S.screen==='signup' && g('email')) S.signup.email = g('email').value; };
   switch (a) {
     case 'guide-toggle': S.guideMin = !S.guideMin; document.getElementById('guide').classList.toggle('min', S.guideMin); render(); document.getElementById('guide').classList.toggle('min', S.guideMin); return;
     case 'step': setStep(+el.dataset.i); break;
@@ -797,7 +864,7 @@ document.addEventListener('click', async e => {
     case 'org-toggle': read(); S.orgFilter[el.dataset.k] = !S.orgFilter[el.dataset.k]; render(); return;
     case 'follow': S.follows.includes(id) ? S.follows.splice(S.follows.indexOf(id),1) : S.follows.push(id); render(); return;
     case 'collab': toast(`"Let’s collaborate" threads without a listing are planned (decision 6 in the brief).`); return;
-    case 'new': S.draft = { kind:el.dataset.k, category:'Technology', title:'', desc:'', qty:'', unit:'', urgency:'Normal', tags:'' }; go('post'); return;
+    case 'new': S.draft = { kind:el.dataset.k, category:'Technology', title:'', desc:'', qty:'', unit:'', urgency:'Normal', tags:'', cadence:'One-time' }; go('post'); return;
     case 'new-for': { const l = S.listings.find(x=>x.id===+id); S.draft = { kind:l.kind==='Need'?'Offer':'Need', category:l.category, title:'', desc:'', qty:l.qty||'', unit:l.unit||'', urgency:'Normal', tags:l.tags }; go('post'); return; }
     case 'd': S.draft[el.dataset.k] = el.dataset.v; read(); S.draft.kind = el.dataset.v; render(); return;
     case 'post': read(); if (!S.draft.title.trim()) { toast('Give it a title'); return; } postListing(S.draft); return;
@@ -806,6 +873,8 @@ document.addEventListener('click', async e => {
     case 'propose': S.sheet = null; propose(+el.dataset.need, +el.dataset.offer, ''); return;
     case 'respond': respond(+id, el.dataset.v==='1'); return;
     case 'complete': complete(+id); return;
+    case 'log-occ': logOccurrence(+id); return;
+    case 'end-agree': if (confirm('End this standing agreement?')) endAgreement(+id); return;
     case 'send': { const inp = document.getElementById('msg'); sendMsg(+id, inp.value); return; }
     case 'flt': read(); S.filter[el.dataset.k] = el.dataset.v; S.map.sel = null; S.map.selMatch = null; render(); return;
     case 'flt-thread': S.filter.threads[el.dataset.k] = !S.filter.threads[el.dataset.k]; render(); return;
@@ -826,7 +895,7 @@ document.addEventListener('input', e => {
   if (e.target.id === 'orgq') { S.orgFilter.q = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('orgq'); el.focus(); el.setSelectionRange(pos,pos); }
   if (e.target.id === 'd-title') { S.draft.title = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('d-title'); el.focus(); el.setSelectionRange(pos,pos); }
 });
-document.addEventListener('change', e => { if (e.target.id === 'flt-category') { S.filter.category = e.target.value; render(); } if (e.target.id === 'flt-radius') { S.filter.radius = +e.target.value; render(); } if (['cause','city'].includes(e.target.id)) { S.orgFilter[e.target.id] = e.target.value; render(); } if (['d-category','d-urgency','d-qty','d-unit','d-desc','d-tags'].includes(e.target.id)) { S.draft[e.target.id.slice(2)] = e.target.value; render(); } });
+document.addEventListener('change', e => { if (e.target.id === 'flt-category') { S.filter.category = e.target.value; render(); } if (e.target.id === 'flt-radius') { S.filter.radius = +e.target.value; render(); } if (['cause','city'].includes(e.target.id)) { S.orgFilter[e.target.id] = e.target.value; render(); } if (['d-category','d-cadence','d-urgency','d-qty','d-unit','d-desc','d-tags'].includes(e.target.id)) { S.draft[e.target.id.slice(2)] = e.target.value; render(); } });
 document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'msg') { const id = +e.target.nextElementSibling.dataset.id; sendMsg(id, e.target.value); } });
 
 // ---- Map gestures: drag to pan, pinch / wheel / double-tap to zoom ----------
