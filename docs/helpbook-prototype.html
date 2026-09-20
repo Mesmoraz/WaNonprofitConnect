@@ -800,7 +800,8 @@ function renderMap(){
     n.members.push(o); n.on += onSet.has(o.ein) ? 1 : 0; n.deg += degreeOf(o.ein); nodeOf[o.ein] = n; }
   for (const n of nodes) { n.x = n.members.reduce((a,o)=>a+PROJ.x(o.lon),0)/n.members.length; n.y = n.members.reduce((a,o)=>a+PROJ.y(o.lat),0)/n.members.length;
     n.single = n.members.length === 1; n.sel = n.single && v.sel === n.members[0].ein; n.mine = n.members.some(o => o.ein === mine.ein);
-    const cities = [...new Set(n.members.map(o => o.city))]; n.label = n.single ? n.members[0].name.replace(/ \(.*\)$/, '') : (cities.length === 1 ? cap(cities[0]) : cap(cities[0]) + ' area'); }
+    const cities = [...new Set(n.members.map(o => o.city))]; const anchor = n.members[0].name.replace(/ \(.*\)$/, '');
+    n.label = n.single ? anchor : (k >= 2 ? `${anchor} +${n.members.length - 1}` : (cities.length === 1 ? cap(cities[0]) : cap(cities[0]) + ' area') + ` · ${n.members.length} orgs`); }
 
   // ---- Threads: gently curved strings between nodes. Dash drifts giver → receiver.
   const dash = { Completed:[14, 7], Accepted:[9, 7], Proposed:[5, 8], suggested:[2, 7] };
@@ -812,11 +813,12 @@ function renderMap(){
 
   // ---- Labels: greedy placement by priority; overlapping ones wait for zoom or hover.
   const placed = [];
-  const labelFits = (x, y, name, size) => { const w = px(size * 0.58) * name.length + px(10), h = px(size + 3); const box = { x1: x + px(10), y1: y - h/2, x2: x + px(10) + w, y2: y + h/2 };
+  const labelFits = (x, y, name, size, r = px(10)) => { const w = px(size * 0.58) * name.length + px(6), h = px(size + 3); const box = { x1: x + r + px(5), y1: y - h/2, x2: x + r + px(5) + w, y2: y + h/2 };
     if (placed.some(b => !(box.x2 < b.x1 || box.x1 > b.x2 || box.y2 < b.y1 || box.y1 > b.y2))) return false; placed.push(box); return true; };
   const nodeOrder = nodes.slice().sort((a, b) => (b.sel - a.sel) || (b.on - a.on) || (b.deg - a.deg) || (b.members.length - a.members.length));
+  for (const n of nodes) { const r = n.single ? px(5.5 + Math.min(4, n.deg)) : px(9 + 3.5 * Math.sqrt(n.members.length)); placed.push({ x1: n.x - r, y1: n.y - r, x2: n.x + r, y2: n.y + r }); }
   const labelOk = new Set();
-  for (const n of nodeOrder) { if ((n.on || !n.single) && (k >= 4 || n.sel || !n.single) && labelFits(n.x, n.y, n.label, n.single ? 13 : 11)) labelOk.add(n.id); }
+  for (const n of nodeOrder) { if ((n.on || !n.single) && (k >= 4 || n.sel || !n.single) && labelFits(n.x, n.y, n.label, n.single ? 13 : 11, n.single ? px(5.5 + Math.min(4, n.deg)) : px(9 + 3.5 * Math.sqrt(n.members.length)))) labelOk.add(n.id); }
 
   const pins = nodeOrder.slice().reverse().map(n => {
     const o = n.single ? n.members[0] : null, on = n.on > 0, r = n.single ? px(5.5 + Math.min(4, n.deg)) : px(9 + 3.5 * Math.sqrt(n.members.length));
@@ -826,11 +828,11 @@ function renderMap(){
       ${heat}<circle class="hit" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${(r + px(8)).toFixed(3)}"/>
       <circle class="pin ${type} ${on?'':'dim'} ${n.mine?'me':''} ${n.sel?'sel':''}" vector-effect="non-scaling-stroke" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${r.toFixed(3)}"/>
       ${n.single ? '' : `<text class="cnt" style="font-size:${px(11).toFixed(3)}px" x="${n.x.toFixed(2)}" y="${(n.y + px(4)).toFixed(2)}">${n.members.length}</text>`}
-      <text class="${labelOk.has(n.id) ? '' : 'hoveronly'}" style="font-size:${px(n.single?13:11).toFixed(3)}px;stroke-width:${px(3.5).toFixed(3)}px" x="${(n.x + r + px(5)).toFixed(2)}" y="${(n.y + px(4.5)).toFixed(2)}">${esc(n.label)}${n.single ? '' : ' \u00b7 ' + n.members.length + ' orgs'}</text></g>`; }).join('');
+      <text class="${labelOk.has(n.id) ? '' : 'hoveronly'}" style="font-size:${px(n.single?13:11).toFixed(3)}px;stroke-width:${px(3.5).toFixed(3)}px" x="${(n.x + r + px(5)).toFixed(2)}" y="${(n.y + px(4.5)).toFixed(2)}">${esc(n.label)}</text></g>`; }).join('');
 
   const radius = f.radius ? `<ellipse class="radius" vector-effect="non-scaling-stroke" cx="${PROJ.x(mine.lon).toFixed(1)}" cy="${PROJ.y(mine.lat).toFixed(1)}" rx="${(f.radius/69/Math.cos(mine.lat*Math.PI/180)/(124.95-116.75)*620).toFixed(1)}" ry="${(f.radius/69/(49.1-45.45)*400).toFixed(1)}"/>` : '';
   const bigCities = k >= 2 ? Object.keys(CITY) : ['SEATTLE','TACOMA','SPOKANE','BELLINGHAM','OLYMPIA','PULLMAN','TOPPENISH'];
-  const labels = k >= 6 ? '' : Object.entries(CITY).filter(([c]) => bigCities.includes(c) && !nodes.some(n => !n.single && n.label === cap(c))).map(([c,[lat,lon]]) => `<text class="citylbl" style="font-size:${px(10).toFixed(3)}px" x="${(PROJ.x(lon)+px(8)).toFixed(1)}" y="${(PROJ.y(lat)-px(8)).toFixed(1)}">${cap(c)}</text>`).join('');
+  const labels = k >= 6 ? '' : Object.entries(CITY).filter(([c,[lat,lon]]) => bigCities.includes(c) && !nodes.some(n => Math.hypot(n.x - PROJ.x(lon), n.y - PROJ.y(lat)) < px(34))).map(([c,[lat,lon]]) => `<text class="citylbl" style="font-size:${px(10).toFixed(3)}px" x="${(PROJ.x(lon)+px(8)).toFixed(1)}" y="${(PROJ.y(lat)-px(8)).toFixed(1)}">${cap(c)}</text>`).join('');
   const svg = `<svg id="mapsvg" viewBox="0 0 620 400" role="img" aria-label="Map of Washington with organizations and connections">${defs}<rect class="water" width="620" height="400"/>
     <g id="mapg" transform="translate(${S.map.tx.toFixed(2)} ${S.map.ty.toFixed(2)}) scale(${k.toFixed(4)})"><path class="land" vector-effect="non-scaling-stroke" d="${path}"/>${radius}${labels}
     ${suggested.map(x => thread(x.offer.ein, x.need.ein, 'suggested', '', `Suggested: ${ORG(x.offer.ein).name} \u2192 ${ORG(x.need.ein).name}`)).join('')}
@@ -931,8 +933,8 @@ const gesture = { pointers: new Map(), moved: false, last: null, pinchDist: 0, p
 function svgPoint(svg, clientX, clientY){ const r = svg.getBoundingClientRect(); return [ (clientX - r.left) * MAP_W / r.width, (clientY - r.top) * MAP_H / r.height ]; }
 document.addEventListener('pointerdown', e => {
   const svg = e.target.closest('#mapsvg'); if (!svg) return;
-  svg.setPointerCapture(e.pointerId); gesture.pointers.set(e.pointerId, [e.clientX, e.clientY]); gesture.moved = false;
-  if (gesture.pointers.size === 1) { gesture.last = [e.clientX, e.clientY]; svg.classList.add('dragging'); }
+  gesture.pointers.set(e.pointerId, [e.clientX, e.clientY]); gesture.moved = false;
+  if (gesture.pointers.size === 1) { gesture.last = [e.clientX, e.clientY]; gesture.travel = 0; svg.classList.add('dragging'); }
   if (gesture.pointers.size === 2) { const [a, b] = [...gesture.pointers.values()]; gesture.pinchDist = Math.hypot(a[0]-b[0], a[1]-b[1]); gesture.pinchMid = [(a[0]+b[0])/2, (a[1]+b[1])/2]; }
 });
 document.addEventListener('pointermove', e => {
@@ -947,7 +949,7 @@ document.addEventListener('pointermove', e => {
   }
   if (gesture.pointers.size === 1 && gesture.last) {
     const dx = e.clientX - gesture.last[0], dy = e.clientY - gesture.last[1];
-    if (Math.abs(dx) + Math.abs(dy) > 3) gesture.moved = true;
+    gesture.travel = (gesture.travel || 0) + Math.abs(dx) + Math.abs(dy); if (gesture.travel > 8) gesture.moved = true;
     if (S.map.k > 1) { S.map.tx += dx * unitsPerPx; S.map.ty += dy * unitsPerPx; clampView(S.map); applyView(); }
     gesture.last = [e.clientX, e.clientY];
   }
