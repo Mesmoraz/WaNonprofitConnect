@@ -153,3 +153,12 @@ EF Core is used provider-agnostically (no SQL-Server-only features) so the produ
 - **No money moves through the app in v1.** Cash giving links out to the org's own donate page; a Stripe Connect flow can come later. Routing donations yourself in WA can trigger charitable-solicitation / commercial-fundraiser registration (RCW 19.09) and money-transmitter questions. In-kind offers avoid this entirely.
 - **PII**: the IRS `ICO` ("in care of") name is stored but never served publicly. WA SOS officer contact data should be visible only to verified users and never bulk-exported.
 - **Terms**: IRS data is public domain; ProPublica requires attribution and non-resale; check terms on any SOS extract.
+
+## Public prototype site
+
+The clickable prototype and design brief are published as static pages at **https://mesmoraz.github.io/helpbook-site/** from the separate public repo `Mesmoraz/helpbook-site` (pages only — this backend repo stays private). To update after editing `docs/helpbook-prototype.html` or `docs/helpbook-step2-design.html`:
+
+```powershell
+node scripts/build-site.js          # regenerates ../helpbook-site
+cd ../helpbook-site; git add -A; git commit -m "update"; git push
+```
