@@ -41,7 +41,7 @@ const mermaid = `<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/m
 
 fs.writeFileSync(path.join(out, 'prototype.html'), wrap('helpbook-prototype.html'));
 fs.writeFileSync(path.join(out, 'design.html'), wrap('helpbook-step2-design.html', { extraBody: mermaid }));
-fs.writeFileSync(path.join(out, 'how-it-works.html'), wrap('how-it-works.html', { extraBody: mermaid }));
+fs.writeFileSync(path.join(out, 'how-it-works.html'), wrap('how-it-works.html'));
 
 fs.writeFileSync(path.join(out, 'index.html'), `<!doctype html>
 <html lang="en">

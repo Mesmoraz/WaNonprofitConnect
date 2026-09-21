@@ -2,330 +2,386 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
   :root {
-    --ground: #F5F7F3;
-    --paper: #FFFFFF;
-    --ink: #1B2430;
-    --ink-2: #4B5563;
-    --ink-3: #7C8794;
-    --line: #D9DED7;
-    --line-2: #EAEDE7;
-    --need: #B8741A;
-    --need-bg: #FBF1E0;
-    --offer: #2E6B4E;
-    --offer-bg: #E4F0E9;
-    --accent: #2E6B4E;
-    --accent-ink: #FFFFFF;
-    --wire: #EEF0EC;
-    --wire-line: #B9C0B8;
-    --code-bg: #EEF1EC;
-    --warn: #A33A2E;
-    --warn-bg: #F9E8E5;
-    --info-bg: #E8EEF6;
+    --ground: #F5F7F3; --paper: #FFFFFF; --ink: #1B2430; --ink-2: #4B5563; --ink-3: #7C8794; --line: #D9DED7; --line-2: #EAEDE7;
+    --need: #B8741A; --need-bg: #FBF1E0; --offer: #2E6B4E; --offer-bg: #E4F0E9; --accent: #2E6B4E; --accent-ink: #FFFFFF;
+    --code-bg: #EEF1EC; --info-bg: #E8EEF6; --gold: #C9971F;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --ground: #131A1E; --paper: #1B2329; --ink: #E7EAE4; --ink-2: #B6BDB6; --ink-3: #8A938C;
-      --line: #2E3A40; --line-2: #26313A; --need: #E0A04B; --need-bg: #3A2C15; --offer: #74B894; --offer-bg: #1E3529;
-      --accent: #74B894; --accent-ink: #0F1A14; --wire: #222B31; --wire-line: #4A5860; --code-bg: #222B31;
-      --warn: #E58C7D; --warn-bg: #3B221E; --info-bg: #21303C;
+      --ground: #131A1E; --paper: #1B2329; --ink: #E7EAE4; --ink-2: #B6BDB6; --ink-3: #8A938C; --line: #2E3A40; --line-2: #26313A;
+      --need: #E0A04B; --need-bg: #3A2C15; --offer: #74B894; --offer-bg: #1E3529; --accent: #74B894; --accent-ink: #0F1A14;
+      --code-bg: #222B31; --info-bg: #21303C; --gold: #D9A12B;
     }
   }
   :root[data-theme="dark"] {
-    --ground: #131A1E; --paper: #1B2329; --ink: #E7EAE4; --ink-2: #B6BDB6; --ink-3: #8A938C;
-    --line: #2E3A40; --line-2: #26313A; --need: #E0A04B; --need-bg: #3A2C15; --offer: #74B894; --offer-bg: #1E3529;
-    --accent: #74B894; --accent-ink: #0F1A14; --wire: #222B31; --wire-line: #4A5860; --code-bg: #222B31;
-    --warn: #E58C7D; --warn-bg: #3B221E; --info-bg: #21303C;
+    --ground: #131A1E; --paper: #1B2329; --ink: #E7EAE4; --ink-2: #B6BDB6; --ink-3: #8A938C; --line: #2E3A40; --line-2: #26313A;
+    --need: #E0A04B; --need-bg: #3A2C15; --offer: #74B894; --offer-bg: #1E3529; --accent: #74B894; --accent-ink: #0F1A14;
+    --code-bg: #222B31; --info-bg: #21303C; --gold: #D9A12B;
   }
-
   * { box-sizing: border-box; }
-  body { background: var(--ground); color: var(--ink); font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 16px; line-height: 1.55; }
-  .wrap { max-width: 1080px; margin: 0 auto; padding-block: 32px 96px; padding-inline: 20px; }
-  h1, h2, h3, h4 { font-family: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif; line-height: 1.15; text-wrap: balance; margin: 0; }
-  h1 { font-size: clamp(34px, 5vw, 52px); font-weight: 700; letter-spacing: -0.01em; }
-  h2 { font-size: clamp(24px, 3vw, 32px); font-weight: 700; margin-top: 72px; padding-top: 24px; border-top: 2px solid var(--ink); }
-  h3 { font-size: 20px; font-weight: 700; margin-top: 36px; }
-  h4 { font-size: 16px; font-weight: 700; margin-top: 20px; }
-  p, li { max-width: 72ch; }
-  p { margin: 12px 0; }
-  ul, ol { padding-left: 22px; margin: 8px 0; }
-  li { margin: 4px 0; }
+  body { background: var(--ground); color: var(--ink); font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 17px; line-height: 1.65; }
+  .wrap { max-width: 880px; margin: 0 auto; padding-block: 24px 120px; padding-inline: 20px; }
+  h1, h2, h3 { font-family: "Bricolage Grotesque", "IBM Plex Sans", sans-serif; line-height: 1.12; text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(34px, 6vw, 54px); font-weight: 700; letter-spacing: -0.015em; margin: 28px 0 16px; }
+  h2 { font-size: clamp(22px, 3.4vw, 30px); font-weight: 700; margin: 56px 0 14px; }
+  h3 { font-size: 19px; font-weight: 700; margin: 0 0 6px; }
+  p { margin: 0 0 18px; max-width: 62ch; }
+  p.big { font-size: clamp(20px, 2.8vw, 26px); line-height: 1.4; color: var(--ink); max-width: 30ch; font-family: "Bricolage Grotesque", sans-serif; font-weight: 500; margin-bottom: 26px; }
+  p.soft { color: var(--ink-2); }
   a { color: var(--accent); }
-  code, .mono { font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 0.92em; }
-  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; }
-  .eyebrow { font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px; }
-  .lede { font-size: 19px; color: var(--ink-2); max-width: 64ch; }
-  .meta { color: var(--ink-3); font-size: 14px; margin-top: 14px; }
+  .eyebrow { font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
 
-  nav.toc { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 28px; padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); font-size: 14px; }
-  nav.toc a { color: var(--ink-2); text-decoration: none; }
-  nav.toc a:hover, nav.toc a:focus-visible { color: var(--accent); text-decoration: underline; }
+  /* Page nav */
+  nav.pages { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--ground); display: flex; gap: 6px; overflow-x: auto; padding: 10px 0; margin: 0 -20px; padding-inline: 20px; scrollbar-width: none; border-bottom: 1px solid var(--line-2); }
+  nav.pages::-webkit-scrollbar { display: none; }
+  nav.pages a { flex: none; font-size: 13px; font-weight: 600; color: var(--ink-2); text-decoration: none; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); white-space: nowrap; }
+  nav.pages a.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  nav.pages a .n { font-family: "IBM Plex Mono", monospace; font-size: 11px; opacity: 0.7; margin-right: 5px; }
+  section.page { display: none; }
+  section.page.on { display: block; }
+  .pager { display: flex; justify-content: space-between; gap: 12px; margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--line); }
+  .pager a { text-decoration: none; font-weight: 600; padding: 12px 18px; border-radius: 10px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); }
+  .pager a.next { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); margin-left: auto; }
+  .pager a small { display: block; font-weight: 400; font-size: 12px; color: inherit; opacity: 0.75; }
 
-  .callout { border-left: 4px solid var(--accent); background: var(--paper); padding: 14px 18px; margin: 20px 0; max-width: 80ch; }
-  .callout.warn { border-color: var(--warn); }
-  .callout p { margin: 6px 0; }
+  /* Cards, steps, drop-downs */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin: 8px 0 28px; }
+  .card { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; }
+  .card p { margin: 0; font-size: 15px; color: var(--ink-2); }
+  .card h3 { font-size: 17px; }
+  .steps { display: grid; gap: 0; margin: 14px 0 28px; }
+  .step { display: grid; grid-template-columns: 56px 1fr; gap: 14px; align-items: start; padding: 16px 0; border-bottom: 1px solid var(--line-2); }
+  .step:last-child { border-bottom: 0; }
+  .step .n { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 20px; }
+  .step .n.gold { background: var(--gold); color: #1B2430; }
+  .step h3 { margin-bottom: 4px; }
+  .step p { margin: 0; color: var(--ink-2); font-size: 16px; }
+  details { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 0; margin: 12px 0; max-width: 72ch; }
+  summary { cursor: pointer; padding: 16px 20px; font-weight: 600; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font-family: "IBM Plex Mono", monospace; font-size: 20px; color: var(--ink-3); flex: none; }
+  details[open] summary::after { content: "\2212"; }
+  summary .sub { display: block; font-weight: 400; font-size: 15px; color: var(--ink-2); margin-top: 2px; }
+  details .body { padding: 0 20px 18px; border-top: 1px solid var(--line-2); padding-top: 14px; font-size: 16px; }
+  details .body p { font-size: 16px; }
+  details .body p:last-child { margin-bottom: 0; }
+  .piece { display: grid; grid-template-columns: 52px 1fr; gap: 14px; align-items: start; }
+  .piece .ic { width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; font-size: 24px; background: var(--offer-bg); }
+  .piece .ic.you { background: var(--need-bg); }
+  .tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; background: var(--code-bg); color: var(--ink-2); margin-left: 8px; vertical-align: middle; }
+  .tag.you { background: var(--need-bg); color: var(--need); }
+  .callout { border-left: 4px solid var(--accent); background: var(--paper); padding: 14px 18px; border-radius: 0 12px 12px 0; margin: 20px 0 28px; max-width: 72ch; }
+  .callout p { margin: 0; }
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; margin: 12px 0 28px; }
+  .flow .box { flex: 1 1 130px; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 12px 10px; font-size: 14px; min-width: 130px; }
+  .flow .box b { display: block; font-family: "Bricolage Grotesque", sans-serif; font-size: 16px; margin-bottom: 4px; }
+  .flow .box.hi { border-color: var(--accent); background: var(--offer-bg); }
+  .flow .arrow { align-self: center; color: var(--ink-3); font-size: 22px; flex: none; }
+  @media (max-width: 560px) { .flow { flex-direction: column; } .flow .arrow { transform: rotate(90deg); text-align: center; } }
 
-  /* Story beats */
-  .beats { counter-reset: beat; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 20px; }
-  .beat { background: var(--paper); border: 1px solid var(--line); padding: 16px 16px 14px; position: relative; }
-  .beat::before { counter-increment: beat; content: counter(beat); font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 28px; color: var(--accent); line-height: 1; display: block; margin-bottom: 8px; }
-  .beat strong { display: block; margin-bottom: 4px; }
-  .beat span { color: var(--ink-2); font-size: 14px; }
+  /* Score demo + legend */
+  .score { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; max-width: 56ch; font-size: 16px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; margin: 8px 0 28px; }
+  .score .n { font-family: "IBM Plex Mono", monospace; text-align: right; }
+  .score .tot { border-top: 1px solid var(--line); padding-top: 8px; font-weight: 700; }
+  .legend-row { display: grid; grid-template-columns: 48px 1fr; gap: 14px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line-2); }
+  .legend-row:last-child { border-bottom: 0; }
+  .legend-row .sw { height: 26px; display: grid; place-items: center; }
+  .dot { width: 16px; height: 16px; border-radius: 50%; }
+  .ln { width: 44px; height: 0; border-top: 3px solid; }
+  .ln.dashed { border-top-style: dashed; } .ln.dotted { border-top-style: dotted; }
+  .legend-row p { margin: 0; font-size: 16px; }
 
-  /* Tables */
-  .tbl { overflow-x: auto; margin: 16px 0; }
+  /* Builders */
+  .tbl { overflow-x: auto; margin: 10px 0 28px; }
   table { border-collapse: collapse; width: 100%; font-size: 14px; background: var(--paper); }
-  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line-2); vertical-align: top; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line-2); vertical-align: top; }
   th { font-weight: 600; background: var(--code-bg); font-size: 13px; }
-  td:first-child { font-weight: 600; white-space: nowrap; }
-
-  /* Pills */
-  .pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; line-height: 1.5; }
-  .pill.need { background: var(--need-bg); color: var(--need); }
-  .pill.offer { background: var(--offer-bg); color: var(--offer); }
-  .pill.neutral { background: var(--code-bg); color: var(--ink-2); }
-  .pill.warn { background: var(--warn-bg); color: var(--warn); }
-
-  /* Wireframes */
-  .wires { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; margin-top: 18px; }
-  .wire { background: var(--paper); border: 1px solid var(--line); }
-  .wire-head { padding: 10px 14px; border-bottom: 1px solid var(--line-2); display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
-  .wire-head b { font-family: "Bricolage Grotesque", sans-serif; font-size: 15px; }
-  .wire-head span { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--ink-3); }
-  .screen { background: var(--wire); margin: 12px; border: 1px solid var(--wire-line); font-size: 12px; color: var(--ink-2); min-height: 300px; display: flex; flex-direction: column; }
-  .bar { background: var(--paper); border-bottom: 1px solid var(--wire-line); padding: 7px 10px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--ink); }
-  .bar .logo { font-family: "Bricolage Grotesque", sans-serif; letter-spacing: -0.01em; }
-  .bar .who { font-weight: 400; color: var(--ink-3); font-size: 11px; }
-  .body { padding: 10px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
-  .blk { border: 1px dashed var(--wire-line); background: var(--paper); padding: 7px 9px; }
-  .blk.h { font-weight: 600; color: var(--ink); }
-  .blk.input { color: var(--ink-3); font-style: italic; }
-  .blk.card { border-style: solid; }
-  .blk.card b { color: var(--ink); display: block; }
-  .btn { border: 1px solid var(--ink); background: var(--paper); color: var(--ink); padding: 6px 9px; text-align: center; font-weight: 600; }
-  .btn.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .btn.offer { background: var(--offer); color: var(--accent-ink); border-color: var(--offer); }
-  .row { display: flex; gap: 6px; flex-wrap: wrap; }
-  .row > * { flex: 1 1 auto; }
-  .chips { display: flex; gap: 4px; flex-wrap: wrap; }
-  .chip { border: 1px solid var(--wire-line); background: var(--paper); padding: 1px 7px; border-radius: 999px; font-size: 11px; }
-  .chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .note { font-size: 13px; color: var(--ink-2); padding: 0 14px 14px; }
-  .note b { color: var(--ink); }
-  .msg { padding: 6px 9px; border: 1px solid var(--wire-line); background: var(--paper); max-width: 85%; }
-  .msg.me { align-self: flex-end; background: var(--offer-bg); border-color: var(--offer); }
-  .msg small { display: block; color: var(--ink-3); font-size: 10px; }
-  .kv { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; }
-  .kv span:nth-child(odd) { color: var(--ink-3); }
-
-  /* Diagrams */
-  .diagram { background: var(--paper); border: 1px solid var(--line); padding: 12px; margin: 16px 0; overflow-x: auto; }
-  .diagram pre.mermaid { margin: 0; }
-  .diagram pre.mermaid svg { max-width: none !important; }
-  .diagram.wide { width: min(100vw - 32px, 1600px); margin-left: calc(50% - min(50vw - 16px, 800px)); }
-  .diagram-cap { font-size: 13px; color: var(--ink-3); margin: 8px 4px 0; }
-
-  /* Phases */
-  .phases { display: grid; gap: 10px; margin-top: 16px; }
-  .phase { display: grid; grid-template-columns: 64px 1fr; gap: 12px; background: var(--paper); border: 1px solid var(--line); padding: 12px 14px; }
-  .phase .id { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 22px; color: var(--accent); }
-  .phase b { display: block; }
-  .phase span { color: var(--ink-2); font-size: 14px; }
-  .decisions li { margin: 8px 0; }
-  .decisions b { display: block; }
-  @media (max-width: 480px) { .phase { grid-template-columns: 1fr; } }
-  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
-  /* how-it-works extras */
-  .plain { background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 12px 16px; margin: 14px 0; max-width: 80ch; font-size: 15px; }
-  .plain b { color: var(--accent); }
-  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 14px; }
-  .part { background: var(--paper); border: 1px solid var(--line); padding: 14px 16px; }
-  .part h4 { margin-top: 0; }
-  .part p { font-size: 14px; margin: 6px 0 0; }
   .ep { font-family: "IBM Plex Mono", monospace; font-size: 13px; white-space: nowrap; }
   .verb { display: inline-block; font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-right: 6px; }
   .verb.get { background: var(--offer-bg); color: var(--offer); } .verb.post { background: var(--need-bg); color: var(--need); } .verb.ws { background: var(--info-bg); color: var(--ink-2); }
-  .ex { font-family: "IBM Plex Mono", monospace; font-size: 12px; background: var(--code-bg); padding: 8px 10px; border-radius: 6px; overflow-x: auto; margin: 8px 0; }
-  dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; max-width: 80ch; font-size: 14px; }
+  .ex { font-family: "IBM Plex Mono", monospace; font-size: 12px; background: var(--code-bg); padding: 8px 10px; border-radius: 6px; overflow-x: auto; margin: 8px 0 0; white-space: pre; }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; max-width: 76ch; font-size: 15px; }
   dt { font-weight: 600; } dd { margin: 0; color: var(--ink-2); }
-  @media (max-width: 520px) { dl { grid-template-columns: 1fr; } dd { margin-bottom: 8px; } }
-  .score { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; max-width: 60ch; font-size: 14px; background: var(--paper); border: 1px solid var(--line); padding: 10px 14px; }
-  .score .n { font-family: "IBM Plex Mono", monospace; text-align: right; }
-  .score .tot { border-top: 1px solid var(--line); padding-top: 6px; font-weight: 700; }
+  @media (max-width: 560px) { dl { grid-template-columns: 1fr; } dd { margin-bottom: 8px; } }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 </style>
+
 <div class="wrap">
   <div class="eyebrow">Name TBD · how it works</div>
-  <nav class="toc" style="margin-top:12px">
-    <a href="#idea">The idea</a><a href="#pieces">The pieces</a><a href="#orgs">Where the organizations come from</a><a href="#lifecycle">Need to hand-off</a><a href="#matching">Matching &amp; fairness</a><a href="#map">The map</a><a href="#endpoints">Every endpoint</a><a href="#live">Real-time feed</a><a href="#real">Real vs. simulated</a><a href="#glossary">Glossary</a>
+  <nav class="pages" id="pages">
+    <a href="#problem"><span class="n">1</span>The problem</a>
+    <a href="#solution"><span class="n">2</span>What we're building</a>
+    <a href="#orgs"><span class="n">3</span>Where the organizations come from</a>
+    <a href="#handoff"><span class="n">4</span>From a need to a hand-off</a>
+    <a href="#matching"><span class="n">5</span>Matching &amp; fairness</a>
+    <a href="#map"><span class="n">6</span>The map</a>
+    <a href="#builders"><span class="n">7</span>For builders</a>
   </nav>
-  <p class="lede" style="margin-top:24px">This page explains the whole system to someone who has never seen it — what each part is, why it exists, and how the parts talk to each other. No programming knowledge assumed.</p>
 
-  <h2 id="idea" style="margin-top:36px">The idea in one paragraph</h2>
-  <p>Every nonprofit in Washington already exists in a public list kept by the IRS. Instead of asking 35,000 organizations to sign up, we start from that list. A person who works at one of them claims it, says what the organization <b>needs</b> or <b>has</b>, and the system finds other organizations (or businesses, or neighbors) who fit — then lets the two sides talk and hand things off. The map shows those hand-offs as threads between places, so anyone can see help moving around the state.</p>
+  <!-- ================================================================ 1 -->
+  <section class="page" id="problem">
+    <h1>The problem</h1>
+    <p class="big">Nonprofits need help. People and businesses want to give it. The two rarely find each other.</p>
+    <div class="cards">
+      <div class="card"><h3>A food bank's intake computers die.</h3><p>Nobody nearby knows. A refurbisher forty miles away has fifteen laptops sitting on a shelf.</p></div>
+      <div class="card"><h3>A business has forty sheets of plywood left over.</h3><p>It would love to give them away. It has no idea who could use them, or how to ask.</p></div>
+      <div class="card"><h3>There's no shared place to look.</h3><p>Who needs what, right now, near me? Who has extra? Who already helps whom? Today that lives in people's heads and inboxes.</p></div>
+    </div>
+    <h2>How we're handling it</h2>
+    <p>One place where every nonprofit is already listed, can say what it <b>needs</b> or <b>has</b>, and gets connected to the people who can help. The results show up on a map, so anyone can see help moving from one place to another.</p>
+    <p class="soft">The next pages walk through each part in plain language. The last page is for developers and can be skipped.</p>
+    <div class="pager"><a class="next" href="#solution">Next: What we're building <small>2 of 7</small></a></div>
+  </section>
 
-  <h2 id="pieces">The pieces, and how they connect</h2>
-  <div class="diagram">
-<pre class="mermaid">
-flowchart LR
-    IRS[("IRS public files<br/>(every WA exempt org)")] -->|"monthly download"| IMP["Importer<br/>reads the file, keeps what changed"]
-    IMP --> DB[("Database<br/>organizations, listings,<br/>connections, messages")]
-    DB <--> API["API<br/>the one door every app uses"]
-    API <-->|"HTTP requests"| PHONE["Phone / website<br/>(the prototype you tap)"]
-    API <-->|"HTTP requests"| CLI["Command line demo<br/>(same door, no screen)"]
-    API -->|"live events"| HUB["Real-time feed<br/>pushes changes as they happen"]
-    HUB --> PHONE
-    HUB --> CLI
-</pre>
-    <div class="diagram-cap">Arrows show the direction data moves. Everything on the right only ever talks to the API; nothing reaches into the database directly.</div>
-  </div>
-  <div class="grid2">
-    <div class="part"><h4>IRS public files</h4><p>The IRS publishes a spreadsheet of every tax-exempt organization, one file per state, updated monthly. It is free and public. For Washington it has 42,510 rows; 35,361 are 501(c)(3) charities. This is the only place organizations come from — nobody types them in.</p></div>
-    <div class="part"><h4>Importer</h4><p>A small program that downloads that file, checks whether it changed since last time (by fingerprinting it), and updates the database organization by organization. It logs every run: which file, how many rows added or changed. It never deletes an organization that disappears from the file — it flags it.</p></div>
-    <div class="part"><h4>Database</h4><p>Where everything is stored: the organizations, plus everything people create — listings (needs and offers), connections between listings, messages, and later accounts. Think of it as a set of linked spreadsheets that many people can safely use at once.</p></div>
-    <div class="part"><h4>API</h4><p>“Application Programming Interface” — in practice, a list of web addresses (<em>endpoints</em>) that apps call to read or change data, each with a clear job: “search organizations”, “post a need”, “accept this connection”. Because every screen goes through the same door, a phone app, a website and a robot all behave identically, and the rules (who may accept a match, what a P0 means) live in exactly one place.</p></div>
-    <div class="part"><h4>Phone / website</h4><p>The screens people use. Today that is the clickable prototype; the real app will be the same screens wired to the API. It holds no rules of its own — it asks the API and shows the answer.</p></div>
-    <div class="part"><h4>Command-line demo</h4><p>A text-only way to drive the API from a terminal (“post this need as Ballard Food Bank”). It exists to prove the API works without a screen, and to run the whole story end-to-end in one command.</p></div>
-    <div class="part"><h4>Real-time feed</h4><p>Normally an app has to keep asking “anything new?”. Instead, the server keeps a line open and <em>pushes</em> events the moment they happen: a listing was posted, a connection was proposed, a message arrived. Public events go to everyone; private ones (matches, messages) only to the two organizations involved.</p></div>
-  </div>
+  <!-- ================================================================ 2 -->
+  <section class="page" id="solution">
+    <h1>What we're building</h1>
+    <p class="big">Seven pieces make up the product. You will only ever touch two of them.</p>
+    <p class="soft">The two you see are marked <span class="tag you">you use this</span>. The rest work quietly behind the scenes. Tap any piece to read more.</p>
 
-  <h2 id="orgs">Where the organizations come from</h2>
-  <p>The IRS file gives us, for each organization:</p>
-  <dl>
-    <dt>EIN</dt><dd>Employer Identification Number — the organization’s permanent ID, like a Social Security number for a company. We use it as the one true identifier so an org can never be duplicated. Shown as 91-1428805.</dd>
-    <dt>Name, address, ZIP</dt><dd>As registered with the IRS. The ZIP places the pin on the map (neighborhood-accurate, not door-accurate).</dd>
-    <dt>Subsection</dt><dd>Which part of the tax code the org falls under. “03” means 501(c)(3) — a charity that can receive tax-deductible gifts. Only these can use the exchange as nonprofits.</dd>
-    <dt>Foundation code</dt><dd>Tells a public charity (a food bank) from a private foundation (a family grant-maker). Foundations give money; they rarely need plywood — so the app treats them differently.</dd>
-    <dt>NTEE code</dt><dd>The cause category: K = food, L = housing, B = education, and so on. About one in five WA orgs has none, and some are wrong (a food bank coded “unknown”), which is why organizations can fix their own tags later.</dd>
-    <dt>Revenue, filing type</dt><dd>Size, and whether they file a full return or the tiny “e-Postcard” (under $50k a year). About 70% of WA charities are small enough to report no financials at all.</dd>
-  </dl>
-  <div class="plain"><b>What the IRS file does not have:</b> phone, email, or website. Those come from other IRS files (the e-Postcard has a website), from the WA Secretary of State registry, or — most reliably — from the organization itself once someone claims it.</div>
-  <p>Refresh: monthly. The importer only writes when the file actually changed, and it never overwrites anything a verified member typed. Every screen states which file it came from.</p>
+    <div class="flow">
+      <div class="box"><b>1 · The public list</b>Every nonprofit, from the IRS</div><div class="arrow">→</div>
+      <div class="box"><b>2 · The updater</b>Fetches the newest list monthly</div><div class="arrow">→</div>
+      <div class="box"><b>3 · The storage</b>Organizations, needs, offers, connections</div><div class="arrow">→</div>
+      <div class="box"><b>4 · The rulebook</b>One front door that enforces the rules</div><div class="arrow">→</div>
+      <div class="box hi"><b>5 · The app</b>What you tap on your phone</div>
+    </div>
 
-  <h2 id="lifecycle">How a need becomes a hand-off</h2>
-  <div class="diagram wide">
-<pre class="mermaid">
-flowchart LR
-    A["1. Post<br/>a Need or an Offer"] --> B["2. Match<br/>the system scores counterparts<br/>and alerts the fits"]
-    B --> C["3. Propose<br/>one side says 'I have this'"]
-    C --> D["4. Accept<br/>the other side says yes"]
-    D --> E["5. Talk<br/>a private thread, contact card"]
-    E --> F["6. Complete<br/>either side marks it done"]
-    F --> G["Recorded<br/>on both profiles and the map"]
-    C -.->|"declined"| A
-    D -.->|"cancelled: both listings reopen"| A
-    D -->|"recurring listing"| H["Standing agreement<br/>log each delivery, end any time"]
-</pre>
-  </div>
-  <dl>
-    <dt>Listing</dt><dd>One thing an organization needs or has: a title, a category (Materials, Technology, Food, Volunteers, Space…), quantity, tags, and for needs a <b>priority</b> and for anything a <b>cadence</b>.</dd>
-    <dt>Priority</dt><dd><b>P0</b> can’t operate without it · <b>P1</b> needed this week · <b>P2</b> this month · <b>P3</b> whenever. Each org may hold at most two P0s per month so the word keeps meaning something.</dd>
-    <dt>Cadence</dt><dd>One-time, weekly, monthly, quarterly, or ongoing. A recurring pair, once accepted, becomes a <b>standing agreement</b>: it has a next date, each delivery is logged, and either side can end it.</dd>
-    <dt>Connection (match)</dt><dd>One Need paired with one Offer. It starts <em>Proposed</em>; only the <em>other</em> organization can accept. Accepted listings are held (nobody else can match them); completing marks both fulfilled; cancelling reopens both.</dd>
-    <dt>Thread</dt><dd>Messages inside a connection. Only the two parties can read or write. Nothing here is broadcast.</dd>
-  </dl>
+    <details open>
+      <summary><span class="piece"><span class="ic">🗂️</span><span>1 · The public list<span class="sub">Every nonprofit in the state, already written down.</span></span></span></summary>
+      <div class="body">
+        <p>Every nonprofit in the United States is registered with the IRS. The IRS publishes that registry as a free spreadsheet anyone can download — one file per state, refreshed every month. It lists each organization's name, address, tax ID, what kind of organization it is, and roughly how big it is.</p>
+        <p>We start from that spreadsheet. That is why no nonprofit has to sign up to be found: Washington's 35,361 charities are all there on day one. Someone who works at one of them simply claims it.</p>
+        <p>What the spreadsheet does <b>not</b> have: phone numbers, email, or websites. Those come later — from other public files, or from the organization itself once claimed.</p>
+      </div>
+    </details>
+    <details>
+      <summary><span class="piece"><span class="ic">🔄</span><span>2 · The updater<span class="sub">Keeps our copy of the list current, without touching what people typed.</span></span></span></summary>
+      <div class="body">
+        <p>A small program that, once a month, downloads the newest IRS spreadsheet and compares it with what we already have. New organizations are added. Organizations that changed are updated. Ones that disappear from the file are flagged, never deleted, so history stays intact.</p>
+        <p>It writes down every run — which file, when, how many rows changed — so we can always answer "how fresh is this?". And it never overwrites anything a person entered: a description a nonprofit wrote stays theirs.</p>
+      </div>
+    </details>
+    <details>
+      <summary><span class="piece"><span class="ic">🗄️</span><span>3 · The storage<span class="sub">Where everything lives.</span></span></span></summary>
+      <div class="body">
+        <p>Think of a set of linked spreadsheets that many people can safely use at the same time: one for organizations, one for needs and offers, one for the connections between them, one for messages. Later, one for accounts.</p>
+        <p>Every organization is filed under its IRS tax ID, so the same organization can never be listed twice.</p>
+      </div>
+    </details>
+    <details>
+      <summary><span class="piece"><span class="ic">🚪</span><span>4 · The rulebook<span class="sub">One front door that every screen goes through — and the rules live there.</span></span></span></summary>
+      <div class="body">
+        <p>The phone app, the website, and any tool we build later never reach into the storage directly. They all knock on the same door and ask: "search organizations", "post this need", "accept this connection". The door checks who is asking and whether the rules allow it, then does the work.</p>
+        <p>Because there is one door, the rules exist in exactly one place: only the <em>other</em> side can accept a connection; an organization can hold at most two "can't operate" needs at a time; only the two parties can read a thread. No screen can bend them.</p>
+        <p>Developers call this door an <em>API</em>. The last page lists everything it can do.</p>
+      </div>
+    </details>
+    <details>
+      <summary><span class="piece"><span class="ic you">📱</span><span>5 · The app<span class="tag you">you use this</span><span class="sub">The screens: board, map, organizations, post, inbox, you.</span></span></span></summary>
+      <div class="body">
+        <p>What a nonprofit, a business, or a neighbor actually sees. Today it's the clickable prototype; the finished version will be the same screens on a phone and on the web. The app holds no rules of its own — it asks the door and shows the answer.</p>
+        <p>The six tabs: <b>Board</b> (needs and offers), <b>Map</b>, <b>Orgs</b> (every organization), <b>+</b> (post something), <b>Inbox</b> (alerts and your connections), <b>Me</b>.</p>
+      </div>
+    </details>
+    <details>
+      <summary><span class="piece"><span class="ic">⚡</span><span>6 · Live updates<span class="sub">You're told the moment something relevant happens.</span></span></span></summary>
+      <div class="body">
+        <p>Normally an app has to keep asking "anything new?". Instead, the door keeps a line open and pushes news the instant it happens: a need was posted that matches what you have, someone accepted your proposal, a message arrived.</p>
+        <p>Public news (a new listing) goes to everyone. Private news (your connections, your messages) goes only to the two organizations involved.</p>
+      </div>
+    </details>
+    <details>
+      <summary><span class="piece"><span class="ic you">🗺️</span><span>7 · The map<span class="tag you">you use this</span><span class="sub">Where help is, and where it's flowing.</span></span></span></summary>
+      <div class="body">
+        <p>Every organization as a pin where it actually is. Every connection as a thread between two pins — gold once the hand-off is done. Zoomed out, nearby pins gather into numbered circles; zoom in and they spread out. Page 6 explains how to read it.</p>
+      </div>
+    </details>
 
-  <h2 id="matching">How matching and fairness work</h2>
-  <p>Matching is deliberately simple and explainable. For a need, every open offer is scored, and the score comes with its reasons. Ballard Food Bank’s laptop need against Computers 4 People’s laptop offer:</p>
-  <div class="score">
-    <span>Same category (Technology)</span><span class="n">+50</span>
-    <span>Shared words: laptop, computer</span><span class="n">+35</span>
-    <span>Different cities, different areas</span><span class="n">+0</span>
-    <span>Need is P0</span><span class="n">+10</span>
-    <span>Offer covers the full quantity (15 ≥ 12)</span><span class="n">+10</span>
-    <span>Offer posted in the last 30 days</span><span class="n">+5</span>
-    <span class="tot">Match score</span><span class="n tot">110</span>
-  </div>
-  <p>Anything under 15 is not shown. Organizations are also alerted by their profile tags (“we often have: laptops”) even when they have no offer posted yet.</p>
-  <div class="plain"><b>Fairness rules for the board.</b> Listings are ordered by priority first, then by <em>fewest views</em> — so within a priority band the least-seen listing rises, like a rotation. No organization holds more than 2 of the top 6. One top slot always goes to the least-seen listing overall. Every card says why it’s there, and every organization can see its own exposure against the average. Sponsored content is labeled and lives outside this ranking; placement cannot be bought.</div>
+    <div class="pager"><a href="#problem">← The problem</a><a class="next" href="#orgs">Next: Where the organizations come from <small>3 of 7</small></a></div>
+  </section>
 
-  <h2 id="map">The map</h2>
-  <dl>
-    <dt>Pins</dt><dd>One per organization, at its ZIP code. Green = nonprofit, blue = business, purple = community member. A pin grows with its number of connections when you hover it.</dd>
-    <dt>Clusters</dt><dd>Zoomed out, nearby pins merge into a numbered circle (“Seattle area · 25 orgs”). Tap it to zoom in and it splits. The glow behind a circle is its activity.</dd>
-    <dt>Threads</dt><dd>A curved string between two organizations that are connected. Gold = completed, green = in progress, amber dashed = proposed, grey dotted = suggested by matching. At rest they are faint; select one (tap it, or pick it from the Connections list) and it lights up, the dash drifts from giver to receiver and a dot travels the same way — that motion is the direction.</dd>
-    <dt>Filters</dt><dd>Needs/offers, who is posting, category, distance from you, and which connection states to show. The same filters drive the Board, so the list and the map always agree.</dd>
-    <dt>Scale bar</dt><dd>Bottom-left, in miles, re-labels itself as you zoom (1× to 40×).</dd>
-  </dl>
+  <!-- ================================================================ 3 -->
+  <section class="page" id="orgs">
+    <h1>Where the organizations come from</h1>
+    <p class="big">The IRS already keeps the list. We just read it carefully.</p>
+    <p>For each organization, the IRS spreadsheet tells us a handful of things. Here is what they mean and why we care.</p>
+    <div class="cards">
+      <div class="card"><h3>Tax ID (EIN)</h3><p>A permanent nine-digit number, like a Social Security number for an organization. We use it as the one true identifier, so nobody can be listed twice. Shown like 91-1428805.</p></div>
+      <div class="card"><h3>Name, address, ZIP</h3><p>As registered. The ZIP code places the pin on the map — accurate to the neighborhood, not the front door.</p></div>
+      <div class="card"><h3>Charity or not</h3><p>The IRS marks which organizations are 501(c)(3) charities — the kind you can donate to tax-free. Only those can use the exchange as nonprofits.</p></div>
+      <div class="card"><h3>Public charity vs. foundation</h3><p>A food bank and a family foundation are both charities, but a foundation gives money and rarely needs plywood. We tell them apart.</p></div>
+      <div class="card"><h3>Cause</h3><p>A category code: food, housing, education, animals, and so on. About one in five organizations has none, and some are wrong — so organizations can fix their own tags.</p></div>
+      <div class="card"><h3>Size</h3><p>Yearly revenue and what kind of tax return they file. Most Washington charities are small enough to report no financial details at all.</p></div>
+    </div>
+    <h2>What the list doesn't give us</h2>
+    <p>Phone numbers, email, or websites. Those come from other public files (small organizations list a website on their yearly postcard to the IRS), from the Washington Secretary of State's charity registry, or — best of all — from the organization itself once someone claims it.</p>
+    <h2>How it stays current</h2>
+    <p>The IRS reposts the file every month. Our updater fetches it, changes only what changed, and never overwrites what a person typed. Every screen says which month's file it's showing.</p>
+    <div class="pager"><a href="#solution">← What we're building</a><a class="next" href="#handoff">Next: From a need to a hand-off <small>4 of 7</small></a></div>
+  </section>
 
-  <h2 id="endpoints">Every endpoint</h2>
-  <p>An endpoint is one web address with one job. <span class="verb get">GET</span> reads, <span class="verb post">POST</span> changes something. Anyone can read organization data; changing anything requires saying which organization you act for (today a header called <span class="ep">X-Org-Ein</span>; later a real login). The API runs at <span class="ep">http://localhost:5253</span> in development and documents itself at <span class="ep">/swagger</span>.</p>
+  <!-- ================================================================ 4 -->
+  <section class="page" id="handoff">
+    <h1>From a need to a hand-off</h1>
+    <p class="big">Six steps, and both sides can see where they are.</p>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div><h3>Post</h3><p>A nonprofit says "we need twelve laptops" — or "we have forty sheets of plywood". It picks a category, a quantity, and for needs a priority.</p></div></div>
+      <div class="step"><div class="n">2</div><div><h3>Match</h3><p>The system compares it with everything open and alerts the organizations that fit — including ones whose profile simply says "we often have laptops".</p></div></div>
+      <div class="step"><div class="n">3</div><div><h3>Propose</h3><p>One side taps "I have this" (or "I need this"). That pairs a need with an offer and asks the other side.</p></div></div>
+      <div class="step"><div class="n">4</div><div><h3>Accept</h3><p>Only the <em>other</em> side can say yes. Once accepted, both listings are held so nobody else can claim them.</p></div></div>
+      <div class="step"><div class="n">5</div><div><h3>Talk</h3><p>A private thread for the two of them: timing, pickup, a contact card. Nobody else can see it.</p></div></div>
+      <div class="step"><div class="n gold">6</div><div><h3>Complete</h3><p>Either side marks it done. Both listings close, and the hand-off is recorded on both profiles and drawn on the map in gold.</p></div></div>
+    </div>
+    <p class="soft">If the other side declines, nothing changes. If an accepted pair is cancelled, both listings simply reopen.</p>
 
-  <h3>Organizations (public data)</h3>
-  <div class="tbl"><table>
-    <thead><tr><th>Endpoint</th><th>What it does</th></tr></thead>
-    <tbody>
-      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/orgs</span></td><td>Search organizations. Filters: <span class="ep">q</span> (words in the name, or a 9-digit EIN), <span class="ep">city</span>, <span class="ep">zip</span>, <span class="ep">ntee</span> (a letter like K or a full code like K31), <span class="ep">foundation</span>, <span class="ep">only501c3</span> (default true), <span class="ep">excludePrivateFoundations</span>, <span class="ep">minRevenue</span>/<span class="ep">maxRevenue</span>, <span class="ep">page</span>/<span class="ep">pageSize</span>. Returns a page of short records.<div class="ex">GET /api/v1/orgs?q=food+bank&amp;city=Seattle</div></td></tr>
-      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/orgs/{ein}</span></td><td>One organization in full, every IRS code translated to words, plus links to ProPublica and the IRS lookup. Never includes the “in care of” person’s name.<div class="ex">GET /api/v1/orgs/91-1428805</div></td></tr>
-      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/stats</span></td><td>Counts: how many orgs, how many 501(c)(3)s, by cause, by size, by city, by filing type. Answers “how much is out there?”</td></tr>
-      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/ntee</span></td><td>The 26 cause categories (A–Z) with their names, for building filters.</td></tr>
-      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/codes</span></td><td>Every IRS code table the API translates (subsection, foundation, filing requirement…) so a screen can show words instead of codes.</td></tr>
-      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/imports</span></td><td>The import log: which IRS file, when, its fingerprint, rows added and changed. This is how you know how fresh the data is.</td></tr>
-      <tr><td><span class="verb get">GET</span><span class="ep">/health</span></td><td>“Healthy” if the API can reach its database. Used by monitoring.</td></tr>
-    </tbody>
-  </table></div>
+    <h2>A few words you'll see</h2>
+    <details><summary>Priority: P0, P1, P2, P3</summary><div class="body"><p><b>P0</b> — we can't operate without it. <b>P1</b> — needed this week. <b>P2</b> — needed this month. <b>P3</b> — whenever it works.</p><p>To keep P0 meaningful, an organization can have at most two open P0s a month.</p></div></details>
+    <details><summary>Recurring needs and standing agreements</summary><div class="body"><p>A need or offer can be one-time, weekly, monthly, quarterly, or ongoing. When a recurring pair is accepted it becomes a <b>standing agreement</b>: it has a next date, each delivery gets logged with a tap, and either side can end it at any time. "Monthly produce to Thurston County Food Bank since July, three deliveries so far."</p></div></details>
+    <details><summary>Who can see what</summary><div class="body"><p>Needs and offers are public — that's the point. Connections and messages are private to the two organizations in them. An organization's "in care of" contact from the IRS file is never shown.</p></div></details>
+    <div class="pager"><a href="#orgs">← Where the organizations come from</a><a class="next" href="#matching">Next: Matching &amp; fairness <small>5 of 7</small></a></div>
+  </section>
 
-  <h3>Listings (needs and offers)</h3>
-  <div class="tbl"><table>
-    <thead><tr><th>Endpoint</th><th>What it does</th></tr></thead>
-    <tbody>
-      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/listings</span></td><td>The board. Filters: <span class="ep">kind</span> (Need/Offer), <span class="ep">category</span>, <span class="ep">status</span> (default Open), <span class="ep">city</span>, <span class="ep">orgEin</span>, <span class="ep">q</span> (keywords). Most urgent and newest first.</td></tr>
-      <tr><td><span class="verb post">POST</span><span class="ep">/api/v1/listings</span></td><td>Post a need or an offer as the acting organization. Body: kind, category, title, description, quantity, unit, urgency, tags, expiry. The org’s city and ZIP are attached automatically. Everyone whose listings or tags fit is alerted.<div class="ex">POST /api/v1/listings  (X-Org-Ein: 911428805)<br/>{ "kind":"Need", "category":"Technology", "title":"Laptops for client intake stations", "quantity":12, "unit":"laptops", "urgency":"Critical", "tags":"laptops,computers" }</div></td></tr>
-      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/listings/{id}</span></td><td>One listing in full.</td></tr>
-      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/listings/{id}/matches</span></td><td>The best counterparts for this listing (offers for a need, needs for an offer), each with a score and its reasons in plain English.</td></tr>
-      <tr><td><span class="verb post">POST</span><span class="ep">/api/v1/listings/{id}/close</span></td><td>The posting organization takes it down.</td></tr>
-    </tbody>
-  </table></div>
+  <!-- ================================================================ 5 -->
+  <section class="page" id="matching">
+    <h1>Matching &amp; fairness</h1>
+    <p class="big">Every match comes with its reasons. Every listing gets its turn.</p>
+    <h2>How a match is scored</h2>
+    <p>For a need, every open offer gets points, and the points are explained. Ballard Food Bank needs twelve laptops; Computers 4 People in Need has fifteen:</p>
+    <div class="score">
+      <span>Same category (Technology)</span><span class="n">+50</span>
+      <span>Same words: laptop, computer</span><span class="n">+35</span>
+      <span>Different cities</span><span class="n">+0</span>
+      <span>The need is P0</span><span class="n">+10</span>
+      <span>The offer covers the whole quantity</span><span class="n">+10</span>
+      <span>The offer is recent</span><span class="n">+5</span>
+      <span class="tot">Match score</span><span class="n tot">110</span>
+    </div>
+    <p>Weak matches (under 15) are not shown. Organizations are also alerted by their own profile tags — "we often have: laptops" — even before they post an offer.</p>
 
-  <h3>Connections (matches) and messages</h3>
-  <div class="tbl"><table>
-    <thead><tr><th>Endpoint</th><th>What it does</th></tr></thead>
-    <tbody>
-      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/matches</span></td><td>The acting organization’s inbox: every connection it is part of, with messages.</td></tr>
-      <tr><td><span class="verb post">POST</span><span class="ep">/api/v1/matches</span></td><td>Propose a connection between a need and an offer. You must own one of the two. Body: needListingId, offerListingId, optional note.</td></tr>
-      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/matches/{id}</span></td><td>One connection with its thread. Only the two parties may read it.</td></tr>
-      <tr><td><span class="verb post">POST</span><span class="ep">/api/v1/matches/{id}/accept</span></td><td>The <em>other</em> side accepts. Both listings become Matched. The proposer cannot accept its own proposal.</td></tr>
-      <tr><td><span class="verb post">POST</span><span class="ep">/api/v1/matches/{id}/decline</span></td><td>The other side declines. Listings stay open.</td></tr>
-      <tr><td><span class="verb post">POST</span><span class="ep">/api/v1/matches/{id}/complete</span></td><td>Either side marks the hand-off done. Both listings become Fulfilled.</td></tr>
-      <tr><td><span class="verb post">POST</span><span class="ep">/api/v1/matches/{id}/cancel</span></td><td>Either side cancels; an accepted pair reopens both listings.</td></tr>
-      <tr><td><span class="verb post">POST</span><span class="ep">/api/v1/matches/{id}/messages</span></td><td>Send a message in the thread. Body: text. Not allowed on declined or cancelled connections.</td></tr>
-    </tbody>
-  </table></div>
-  <p>Errors come back as short, human sentences with a standard code: 400 you sent something invalid, 401 you didn’t say who you are, 403 you’re not allowed (“Only the two organizations in this match can access it”), 404 not found, 409 wrong state (“Offer listing is Matched”). Every endpoint is rate-limited per caller.</p>
+    <h2>How the board stays fair</h2>
+    <p>A board that rewards whoever is biggest or posts the most would quietly bury small organizations. So:</p>
+    <div class="cards">
+      <div class="card"><h3>Priority first, then the least-seen</h3><p>Within a priority level, the listing that has been shown to the fewest people rises to the top. It's a rotation, not a popularity contest.</p></div>
+      <div class="card"><h3>No crowding</h3><p>No organization holds more than two of the top six spots.</p></div>
+      <div class="card"><h3>A reserved seat</h3><p>One of the top spots always goes to the least-seen open listing, whoever posted it.</p></div>
+      <div class="card"><h3>Say why</h3><p>Every listing on the board says why it's there ("P1 · seen twice"). Every organization can see how often it's shown compared with average.</p></div>
+      <div class="card"><h3>Not for sale</h3><p>Sponsored content is labeled and lives outside this ranking. Placement can't be bought.</p></div>
+      <div class="card"><h3>Alerts follow rules, not size</h3><p>You're alerted because something fits your tags, category, and area — never because someone is big or popular.</p></div>
+    </div>
+    <div class="pager"><a href="#handoff">← From a need to a hand-off</a><a class="next" href="#map">Next: The map <small>6 of 7</small></a></div>
+  </section>
 
-  <h2 id="live">The real-time feed</h2>
-  <div class="tbl"><table>
-    <thead><tr><th>Event</th><th>Who receives it</th><th>When</th></tr></thead>
-    <tbody>
-      <tr><td><span class="verb ws">LIVE</span><span class="ep">listing.created</span></td><td>Everyone connected</td><td>A need or offer is posted</td></tr>
-      <tr><td><span class="verb ws">LIVE</span><span class="ep">listing.updated</span></td><td>Everyone connected</td><td>A listing changes state (matched, fulfilled, reopened)</td></tr>
-      <tr><td><span class="verb ws">LIVE</span><span class="ep">match.proposed / accepted / declined / completed / cancelled</span></td><td>Only the two organizations in the connection</td><td>A connection changes</td></tr>
-      <tr><td><span class="verb ws">LIVE</span><span class="ep">message.sent</span></td><td>Only the two organizations in the thread</td><td>A message is sent</td></tr>
-    </tbody>
-  </table></div>
-  <p>An app connects once to <span class="ep">/hubs/exchange</span>, says which organization it represents, and then simply receives. This is what makes “Jordan gets alerted” happen without Jordan refreshing anything.</p>
+  <!-- ================================================================ 6 -->
+  <section class="page" id="map">
+    <h1>The map</h1>
+    <p class="big">Where help is, and where it's flowing.</p>
+    <div class="legend-row"><div class="sw"><span class="dot" style="background:var(--offer)"></span></div><p><b>Green pin</b> — a nonprofit, placed at its ZIP code.</p></div>
+    <div class="legend-row"><div class="sw"><span class="dot" style="background:#3B5BA9"></span></div><p><b>Blue pin</b> — a business that gives.</p></div>
+    <div class="legend-row"><div class="sw"><span class="dot" style="background:#7A5CA8"></span></div><p><b>Purple pin</b> — a community member who gives.</p></div>
+    <div class="legend-row"><div class="sw"><span class="dot" style="background:var(--offer);width:26px;height:26px;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:700">7</span></div><p><b>Numbered circle</b> — several organizations close together. Tap it to zoom in and they spread apart. The soft glow behind it is how active that place is.</p></div>
+    <div class="legend-row"><div class="sw"><span class="ln" style="border-color:var(--gold)"></span></div><p><b>Gold thread</b> — a completed hand-off between two organizations.</p></div>
+    <div class="legend-row"><div class="sw"><span class="ln" style="border-color:var(--offer)"></span></div><p><b>Green thread</b> — accepted and in progress.</p></div>
+    <div class="legend-row"><div class="sw"><span class="ln dashed" style="border-color:var(--need)"></span></div><p><b>Amber dashed</b> — proposed, waiting for an answer.</p></div>
+    <div class="legend-row"><div class="sw"><span class="ln dotted" style="border-color:var(--ink-3)"></span></div><p><b>Grey dotted</b> — suggested by matching; nobody has acted yet.</p></div>
+    <h2>Reading direction</h2>
+    <p>Threads are quiet until you choose one. Tap a thread — or pick it from the Connections list — and it lights up: the dashes drift and a small dot travels along it <b>from the giver to the receiver</b>. Everything else fades back so you can't lose it.</p>
+    <h2>Filters</h2>
+    <p>Needs or offers, who's giving, category, and distance from you — plus which kinds of thread to show. The same filters drive the Board, so the list and the map always agree.</p>
+    <div class="pager"><a href="#matching">← Matching &amp; fairness</a><a class="next" href="#builders">Next: For builders <small>7 of 7</small></a></div>
+  </section>
 
-  <h2 id="real">What is real and what is simulated</h2>
-  <div class="grid2">
-    <div class="part"><h4>Real today</h4><p>The IRS data for all 42,510 WA organizations, loaded into a database. The API above, with matching, connections, messaging and the real-time feed, exercised end-to-end by the command-line demo and 57 automated tests. The 32 organizations in the prototype, with their real EINs, cities and sizes.</p></div>
-    <div class="part"><h4>Simulated in the prototype</h4><p>Accounts and sign-in (the prototype pretends), the people (Casey, Jordan), every listing, connection and message, the three example businesses and the community member, and the alerts. The prototype runs the same matching rules in the browser and stores everything only on your device.</p></div>
-    <div class="part"><h4>Designed, not built yet</h4><p>Claiming an organization and verifying you belong to it, business and supporter accounts and payments, standing agreements and P-levels in the backend, email/push alerts, the web app itself. See the design brief.</p></div>
-  </div>
+  <!-- ================================================================ 7 -->
+  <section class="page" id="builders">
+    <h1>For builders</h1>
+    <p class="big">The technical page. Everything the door can do, in one list.</p>
+    <p class="soft">If you're not building on this, you can stop here — the earlier pages are the whole story. This page documents the backend as it exists today.</p>
 
-  <h2 id="glossary">Glossary</h2>
-  <dl>
-    <dt>501(c)(3)</dt><dd>The section of US tax law for charities. Donations to them are tax-deductible. The IRS decides who qualifies.</dd>
-    <dt>EIN</dt><dd>An organization’s permanent nine-digit tax ID. Our primary key.</dd>
-    <dt>NTEE</dt><dd>National Taxonomy of Exempt Entities — the letter-plus-number cause code (K31 = food banks).</dd>
-    <dt>Database</dt><dd>Structured storage many programs can read and write at once, safely.</dd>
-    <dt>API / endpoint</dt><dd>The set of web addresses apps call; each address is an endpoint with one job.</dd>
-    <dt>JSON</dt><dd>The text format requests and answers travel in — readable by people and programs alike.</dd>
-    <dt>Real-time feed (SignalR)</dt><dd>A connection the server pushes events through, so screens update without refreshing.</dd>
-    <dt>Listing / need / offer</dt><dd>One posted item. A need is “we need”; an offer is “we have”.</dd>
-    <dt>Connection / match</dt><dd>One need paired with one offer, moving Proposed → Accepted → Completed.</dd>
-    <dt>Standing agreement</dt><dd>An accepted recurring pair: weekly, monthly, quarterly or ongoing, with logged deliveries.</dd>
-    <dt>P0–P3</dt><dd>Priority levels, from “can’t operate” to “whenever”.</dd>
-    <dt>Cluster</dt><dd>Several nearby pins shown as one numbered circle until you zoom in.</dd>
-    <dt>ZIP centroid</dt><dd>The center point of a ZIP code area; where a pin sits until street-level geocoding exists.</dd>
-    <dt>Acting organization</dt><dd>The organization a request is made on behalf of — today an <span class="ep">X-Org-Ein</span> header, later your login.</dd>
-  </dl>
-  <p class="meta">Companion pages: <a href="prototype.html">the prototype</a> · <a href="design.html">the design brief</a>.</p>
+    <h2>Every endpoint</h2>
+    <p>An endpoint is one web address with one job. <span class="verb get">GET</span> reads, <span class="verb post">POST</span> changes something. Reading organization data is open; changing anything requires naming the organization you act for (today a header <span class="ep">X-Org-Ein</span>; later a real login). Development address <span class="ep">http://localhost:5253</span>; interactive documentation at <span class="ep">/swagger</span>.</p>
+
+    <h3>Organizations (public data)</h3>
+    <div class="tbl"><table>
+      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/orgs</span></td><td>Search. Filters: <span class="ep">q</span> (words, or a 9-digit EIN), <span class="ep">city</span>, <span class="ep">zip</span>, <span class="ep">ntee</span> (K or K31), <span class="ep">foundation</span>, <span class="ep">only501c3</span>, <span class="ep">excludePrivateFoundations</span>, <span class="ep">minRevenue</span>/<span class="ep">maxRevenue</span>, <span class="ep">page</span>/<span class="ep">pageSize</span>.<div class="ex">GET /api/v1/orgs?q=food+bank&amp;city=Seattle</div></td></tr>
+      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/orgs/{ein}</span></td><td>One organization, every IRS code translated to words, with ProPublica and IRS links. Never includes the "in care of" name.</td></tr>
+      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/stats</span></td><td>Counts by cause, size, city, filing type.</td></tr>
+      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/ntee</span></td><td>The 26 cause categories.</td></tr>
+      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/codes</span></td><td>Every IRS code table, translated.</td></tr>
+      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/imports</span></td><td>The import log: file, date, fingerprint, rows changed.</td></tr>
+      <tr><td><span class="verb get">GET</span><span class="ep">/health</span></td><td>"Healthy" when the database is reachable.</td></tr>
+    </table></div>
+
+    <h3>Listings (needs and offers)</h3>
+    <div class="tbl"><table>
+      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/listings</span></td><td>The board. Filters: <span class="ep">kind</span>, <span class="ep">category</span>, <span class="ep">status</span> (default Open), <span class="ep">city</span>, <span class="ep">orgEin</span>, <span class="ep">q</span>.</td></tr>
+      <tr><td><span class="verb post">POST</span><span class="ep">/api/v1/listings</span></td><td>Post a need or offer as the acting organization. Alerts everyone whose listings or tags fit.<div class="ex">POST /api/v1/listings   (X-Org-Ein: 911428805)
+{ "kind":"Need", "category":"Technology", "title":"Laptops for client intake stations",
+  "quantity":12, "unit":"laptops", "urgency":"Critical", "tags":"laptops,computers" }</div></td></tr>
+      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/listings/{id}</span></td><td>One listing.</td></tr>
+      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/listings/{id}/matches</span></td><td>Best counterparts, each with a score and plain-English reasons.</td></tr>
+      <tr><td><span class="verb post">POST</span><span class="ep">/api/v1/listings/{id}/close</span></td><td>The poster takes it down.</td></tr>
+    </table></div>
+
+    <h3>Connections and messages</h3>
+    <div class="tbl"><table>
+      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/matches</span></td><td>The acting organization's inbox, with threads.</td></tr>
+      <tr><td><span class="verb post">POST</span><span class="ep">/api/v1/matches</span></td><td>Propose: <span class="ep">needListingId</span>, <span class="ep">offerListingId</span>, optional note. You must own one side.</td></tr>
+      <tr><td><span class="verb get">GET</span><span class="ep">/api/v1/matches/{id}</span></td><td>One connection with its thread. Parties only.</td></tr>
+      <tr><td><span class="verb post">POST</span><span class="ep">/api/v1/matches/{id}/accept</span></td><td>The other side accepts; both listings become Matched.</td></tr>
+      <tr><td><span class="verb post">POST</span><span class="ep">/api/v1/matches/{id}/decline</span></td><td>The other side declines; listings stay open.</td></tr>
+      <tr><td><span class="verb post">POST</span><span class="ep">/api/v1/matches/{id}/complete</span></td><td>Either side; both listings become Fulfilled.</td></tr>
+      <tr><td><span class="verb post">POST</span><span class="ep">/api/v1/matches/{id}/cancel</span></td><td>Either side; an accepted pair reopens.</td></tr>
+      <tr><td><span class="verb post">POST</span><span class="ep">/api/v1/matches/{id}/messages</span></td><td>Send a message. Not on declined or cancelled connections.</td></tr>
+    </table></div>
+    <p>Errors are short sentences with a standard code: 400 invalid input, 401 you didn't say who you are, 403 not allowed ("Only the two organizations in this match can access it"), 404 not found, 409 wrong state ("Offer listing is Matched"). Every endpoint is rate-limited per caller.</p>
+
+    <h2>Live updates</h2>
+    <div class="tbl"><table>
+      <tr><th>Event</th><th>Who gets it</th></tr>
+      <tr><td><span class="verb ws">LIVE</span><span class="ep">listing.created · listing.updated</span></td><td>Everyone connected</td></tr>
+      <tr><td><span class="verb ws">LIVE</span><span class="ep">match.proposed / accepted / declined / completed / cancelled</span></td><td>The two organizations in the connection</td></tr>
+      <tr><td><span class="verb ws">LIVE</span><span class="ep">message.sent</span></td><td>The two organizations in the thread</td></tr>
+    </table></div>
+    <p>An app connects once to <span class="ep">/hubs/exchange</span>, says which organization it represents, and then just listens.</p>
+
+    <h2>What is real and what is simulated</h2>
+    <div class="cards">
+      <div class="card"><h3>Real today</h3><p>IRS data for all 42,510 Washington organizations in a database. The endpoints above, with matching, connections, messaging and live updates — run end-to-end by a command-line demo and 57 automated tests. The 32 organizations in the prototype are real records.</p></div>
+      <div class="card"><h3>Simulated in the prototype</h3><p>Sign-in, the people (Casey, Jordan), every listing, connection and message, the example businesses and community member, the alerts. The prototype runs the same matching rules in the browser and keeps everything on your device.</p></div>
+      <div class="card"><h3>Designed, not built</h3><p>Claiming an organization and verifying you belong, business and supporter accounts and payments, standing agreements and priorities in the backend, email and push alerts, the finished app. See the design brief.</p></div>
+    </div>
+
+    <h2>Glossary</h2>
+    <dl>
+      <dt>501(c)(3)</dt><dd>The part of US tax law for charities. Gifts to them are tax-deductible; the IRS decides who qualifies.</dd>
+      <dt>EIN</dt><dd>An organization's permanent nine-digit tax ID. Our primary key.</dd>
+      <dt>NTEE code</dt><dd>The cause category (K31 = food banks).</dd>
+      <dt>API / endpoint</dt><dd>The front door; each address on it is an endpoint with one job.</dd>
+      <dt>JSON</dt><dd>The text format requests and answers travel in.</dd>
+      <dt>SignalR</dt><dd>The technology behind live updates.</dd>
+      <dt>Listing</dt><dd>One need or one offer.</dd>
+      <dt>Match / connection</dt><dd>One need paired with one offer: Proposed → Accepted → Completed.</dd>
+      <dt>Standing agreement</dt><dd>An accepted recurring pair with logged deliveries.</dd>
+      <dt>ZIP centroid</dt><dd>The center of a ZIP code area; where a pin sits until street-level geocoding exists.</dd>
+      <dt>Acting organization</dt><dd>The organization a request is made for — today a header, later your login.</dd>
+    </dl>
+    <p class="soft">Companion pages: <a href="prototype.html">the prototype</a> · <a href="design.html">the design brief</a>.</p>
+    <div class="pager"><a href="#map">← The map</a></div>
+  </section>
 </div>
+
+<script>
+  (function () {
+    const ids = ['problem', 'solution', 'orgs', 'handoff', 'matching', 'map', 'builders'];
+    const links = [...document.querySelectorAll('#pages a')];
+    function show() {
+      const id = ids.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'problem';
+      document.querySelectorAll('section.page').forEach(s => s.classList.toggle('on', s.id === id));
+      links.forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + id));
+      const on = links.find(a => a.classList.contains('on')); if (on && on.scrollIntoView) on.scrollIntoView({ inline: 'center', block: 'nearest' });
+      window.scrollTo({ top: 0 });
+    }
+    window.addEventListener('hashchange', show);
+    show();
+  })();
+</script>
