@@ -227,6 +227,8 @@
   .slider input { flex: 1; padding: 0; border: 0; background: none; }
   .tabs.six { grid-template-columns: repeat(6, 1fr); }
   .tabs.six .tab { font-size: 10px; }
+  .cta-bar { border-top: 1px solid var(--line-2); background: var(--paper); padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px)); }
+  .cta-bar .btn { margin: 0; }
 
   /* ---------- Phone width: app full-screen, guide as bottom sheet ---------- */
   @media (max-width: 860px) {
@@ -241,6 +243,7 @@
     .phone { max-width: none; height: 100vh; height: 100dvh; border-radius: 0; border: 0; box-shadow: none; }
     .screen { padding-bottom: 80px; }
     .tabs { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
+    .cta-bar { padding-bottom: calc(82px + env(safe-area-inset-bottom, 0px)); }
   }
   @media (min-width: 861px) { .guide .mini { display: none; } }
   @media (prefers-reduced-motion: reduce) { .guide { transition: none; } }
@@ -627,8 +630,8 @@ function renderPhone(){
         ${hits.map(o=>`<button class="card tap ${S.claimPick===o.ein?'sel':''}" data-a="claim-pick" data-id="${o.ein}"><span class="t" style="margin-top:0">${esc(o.name)}</span><span class="m">${cap(o.city)} · EIN ${o.ein.slice(0,2)}-${o.ein.slice(2)} · ${CAUSES[o.cause]}</span><span class="m"><span class="pill grey">IRS-listed 501(c)(3)</span> ${joined(o.ein)?'<span class="verified">already on Name TBD — ask a member to invite you</span>':''}</span></button>`).join('')}
         ${q.length>=2&&!hits.length?`<div class="empty">No match in this demo’s 32 sample orgs (the real app searches all 35,361).</div>`:''}
         ${!q?`<p class="hint">Try "Ballard Food" or "91-1428805".</p>`:''}
-        <button class="btn primary" data-a="claim-continue" ${S.claimPick?'':'disabled'}>This is my organization</button>
-        <p class="hint center">Not a 501(c)(3)? <u>Join as a business or supporter</u></p></div>`; break; }
+        <p class="hint center">Not a 501(c)(3)? <u>Join as a business or supporter</u></p></div>
+        <div class="cta-bar"><button class="btn primary" data-a="claim-continue" ${S.claimPick?'':'disabled'}>This is my organization</button></div>`; break; }
     case 'verify': {
       const o = ORG(S.claimPick||'911428805'); const email = S.signup.email || 'casey@ballardfoodbank.org'; const domainOk = email.endsWith('@ballardfoodbank.org') && o.ein==='911428805';
       body = `${topbar({back:'claim',title:'Back'})}<div class="screen"><h2 class="h">Verify you’re with ${esc(o.name)}</h2>
