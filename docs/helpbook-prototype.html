@@ -635,11 +635,11 @@ function renderPhone(){
     case 'verify': {
       const o = ORG(S.claimPick||'911428805'); const email = S.signup.email || 'casey@ballardfoodbank.org'; const domainOk = email.endsWith('@ballardfoodbank.org') && o.ein==='911428805';
       body = `${topbar({back:'claim',title:'Back'})}<div class="screen"><h2 class="h">Verify you’re with ${esc(o.name)}</h2>
-        ${domainOk?`<div class="card likely"><span class="t" style="margin-top:0">✓ Your email domain matches</span><span class="m"><b>ballardfoodbank.org</b> is this organization’s website on file with the IRS. You’re verified.</span></div><button class="btn primary" data-a="claim-finish">Go to my organization</button>`
+        ${domainOk?`<div class="card likely"><span class="t" style="margin-top:0">✓ Your email domain matches</span><span class="m"><b>ballardfoodbank.org</b> is this organization’s website on file with the IRS. You’re verified.</span></div>`
         :`<div class="card"><span class="t" style="margin-top:0">Your email doesn’t match a domain on file</span><span class="m">Pick another way — each one is reviewed by a person.</span></div>
-          ${['Mail a code to the IRS-registered address (about a week)','Upload your IRS determination letter','Ask an existing member to invite you'].map(t=>`<button class="card tap"><span class="m">${t}</span></button>`).join('')}
-          <button class="btn primary" data-a="claim-finish">Continue (demo: verify instantly)</button>`}
-        <p class="hint">Verification methods are pluggable — we can add or remove ways without changing anything else.</p></div>`; break; }
+          ${['Mail a code to the IRS-registered address (about a week)','Upload your IRS determination letter','Ask an existing member to invite you'].map(t=>`<button class="card tap"><span class="m">${t}</span></button>`).join('')}`}
+        <p class="hint">Verification methods are pluggable — we can add or remove ways without changing anything else.</p></div>
+        <div class="cta-bar"><button class="btn primary" data-a="claim-finish">${domainOk?'Go to my organization':'Continue (demo: verify instantly)'}</button></div>`; break; }
     case 'feed': {
       const ranked = rankFeed(S.listings.filter(l => listingPasses(l)));
       const ls = ranked.map(r => r.l);
