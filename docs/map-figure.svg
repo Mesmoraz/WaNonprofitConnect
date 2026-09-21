@@ -1,0 +1,33 @@
+<svg viewBox="0 0 560 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Map of Puget Sound with a golden thread from Computers 4 People in Need in Bellingham to Ballard Food Bank in Seattle" style="width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--line)">
+  <defs><filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter></defs>
+  <rect width="560" height="420" fill="#101619"/>
+  <path d="M1131.5,-10.8 L263.7,-10.8 L242.8,43.1 L280.0,107.7 L309.7,172.3 L343.9,208.9 L320.1,243.4 L315.7,269.2 L311.2,295.1 L306.7,329.5 L299.3,355.4 L284.5,376.9 L250.3,404.9 L220.6,398.5 L210.2,344.6 L235.4,301.5 L250.3,258.5 L265.1,183.1 L168.5,172.3 L79.4,161.5 L-27.6,120.6 L-17.2,226.2 L19.9,344.6 L64.5,441.5 L72.0,570.8 L153.7,577.2 L242.8,613.8 L277.0,717.2 L450.9,700.0 L540.1,710.8 L688.7,667.7 L777.8,650.5 L823.9,635.4 L1131.5,635.4 Z" fill="#1B2329" stroke="#2E3A40" stroke-width="1.2"/>
+  <text x="314.3" y="34.1" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#8A938C">Bellingham</text>
+  <text x="336.6" y="279.6" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#8A938C">Seattle</text>
+  <text x="320.2" y="357.2" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#8A938C">Tacoma</text>
+  <text x="251.8" y="402.4" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#8A938C">Olympia</text>
+  <text x="367.8" y="266.7" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#8A938C">Redmond</text>
+  <circle cx="303.8" cy="44.2" r="22" fill="#74B894" opacity="0.18" filter="url(#glow)"/>
+  <circle cx="320.4" cy="276.1" r="26" fill="#74B894" opacity="0.2" filter="url(#glow)"/>
+  <circle cx="311.2" cy="36.6" r="5.5" fill="#74B894" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="326.1" cy="277.8" r="5.5" fill="#74B894" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="328.7" cy="283.9" r="5.5" fill="#74B894" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="332.0" cy="294.0" r="5.5" fill="#74B894" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="320.9" cy="305.8" r="5.5" fill="#74B894" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="326.8" cy="296.2" r="5.5" fill="#3B5BA9" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="332.0" cy="272.5" r="5.5" fill="#7A5CA8" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="358.8" cy="275.7" r="5.5" fill="#74B894" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="305.3" cy="374.1" r="5.5" fill="#74B894" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="317.2" cy="363.6" r="5.5" fill="#74B894" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="244.3" cy="413.5" r="5.5" fill="#74B894" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <path d="M303.8,44.2 Q276.2,162.7 320.4,276.1" fill="none" stroke="#D9A12B" stroke-width="3" stroke-linecap="round" stroke-dasharray="14 7" opacity="0.95" style="filter:drop-shadow(0 0 4px rgba(217,161,43,0.9))"/>
+  <circle r="4" fill="#F2C14E"><animateMotion dur="1.8s" repeatCount="indefinite" path="M303.8,44.2 Q276.2,162.7 320.4,276.1"/></circle>
+  <circle cx="303.8" cy="44.2" r="8" fill="#74B894" stroke="#E7EAE4" stroke-width="2"/>
+  <circle cx="320.4" cy="276.1" r="9" fill="#74B894" stroke="#E0A04B" stroke-width="3"/>
+  <text x="317.8" y="49.2" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#E7EAE4" stroke="#101619" stroke-width="3" paint-order="stroke">Computers 4 People in Need</text>
+  <text x="335.4" y="281.1" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#E7EAE4" stroke="#101619" stroke-width="3" paint-order="stroke">Ballard Food Bank</text>
+  <g transform="translate(370 356)"><rect width="178" height="52" rx="8" fill="#1B2329" stroke="#2E3A40"/>
+    <text x="10" y="18" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#B6BDB6">15 refurbished laptops, given</text>
+    <text x="10" y="34" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#B6BDB6">Bellingham → Seattle · 79 mi</text>
+    <text x="10" y="47" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#8A938C">the dot moves from giver to receiver</text></g>
+</svg>

@@ -62,6 +62,12 @@
   summary::after { content: "+"; font-family: "IBM Plex Mono", monospace; font-size: 20px; color: var(--ink-3); flex: none; }
   details[open] summary::after { content: "\2212"; }
   summary .sub { display: block; font-weight: 400; font-size: 15px; color: var(--ink-2); margin-top: 2px; }
+  summary .ttl { font-size: 18px; font-family: "Bricolage Grotesque", sans-serif; }
+  .ph { border: 2px dashed var(--line); border-radius: 14px; padding: 18px 20px; color: var(--ink-3); font-style: italic; max-width: 72ch; margin: 8px 0 28px; background: transparent; }
+  .lbl { display: inline-block; font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-right: 6px; }
+  details .body p { margin-bottom: 12px; }
+  figure { margin: 8px 0 32px; }
+  figcaption { font-size: 14px; color: var(--ink-3); margin-top: 8px; }
   details .body { padding: 0 20px 18px; border-top: 1px solid var(--line-2); padding-top: 14px; font-size: 16px; }
   details .body p { font-size: 16px; }
   details .body p:last-child { margin-bottom: 0; }
@@ -105,16 +111,15 @@
   @media (max-width: 560px) { dl { grid-template-columns: 1fr; } dd { margin-bottom: 8px; } }
   @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 </style>
-
 <div class="wrap">
   <div class="eyebrow">Name TBD · how it works</div>
   <nav class="pages" id="pages">
     <a href="#problem"><span class="n">1</span>The problem</a>
-    <a href="#solution"><span class="n">2</span>What we're building</a>
-    <a href="#orgs"><span class="n">3</span>Where the organizations come from</a>
+    <a href="#building"><span class="n">2</span>What we're building</a>
+    <a href="#pieces"><span class="n">3</span>How it works</a>
     <a href="#handoff"><span class="n">4</span>From a need to a hand-off</a>
     <a href="#matching"><span class="n">5</span>Matching &amp; fairness</a>
-    <a href="#map"><span class="n">6</span>The map</a>
+    <a href="#map"><span class="n">6</span>Reading the map</a>
     <a href="#builders"><span class="n">7</span>For builders</a>
   </nav>
 
@@ -122,180 +127,200 @@
   <section class="page" id="problem">
     <h1>The problem</h1>
     <p class="big">Nonprofits need help. People and businesses want to give it. The two rarely find each other.</p>
-    <div class="cards">
-      <div class="card"><h3>A food bank's intake computers die.</h3><p>Nobody nearby knows. A refurbisher forty miles away has fifteen laptops sitting on a shelf.</p></div>
-      <div class="card"><h3>A business has forty sheets of plywood left over.</h3><p>It would love to give them away. It has no idea who could use them, or how to ask.</p></div>
-      <div class="card"><h3>There's no shared place to look.</h3><p>Who needs what, right now, near me? Who has extra? Who already helps whom? Today that lives in people's heads and inboxes.</p></div>
-    </div>
+    <div class="ph">Examples of nonprofits, people, and businesses working together go here.</div>
     <h2>How we're handling it</h2>
-    <p>One place where every nonprofit is already listed, can say what it <b>needs</b> or <b>has</b>, and gets connected to the people who can help. The results show up on a map, so anyone can see help moving from one place to another.</p>
-    <p class="soft">The next pages walk through each part in plain language. The last page is for developers and can be skipped.</p>
-    <div class="pager"><a class="next" href="#solution">Next: What we're building <small>2 of 7</small></a></div>
+    <div class="ph">Explanation of the idea goes here.</div>
+    <div class="pager"><a class="next" href="#building">Next: What we're building <small>2 of 7</small></a></div>
   </section>
 
   <!-- ================================================================ 2 -->
-  <section class="page" id="solution">
+  <section class="page" id="building">
     <h1>What we're building</h1>
-    <p class="big">Seven pieces make up the product. You will only ever touch two of them.</p>
-    <p class="soft">The two you see are marked <span class="tag you">you use this</span>. The rest work quietly behind the scenes. Tap any piece to read more.</p>
-
-    <div class="flow">
-      <div class="box"><b>1 · The public list</b>Every nonprofit, from the IRS</div><div class="arrow">→</div>
-      <div class="box"><b>2 · The updater</b>Fetches the newest list monthly</div><div class="arrow">→</div>
-      <div class="box"><b>3 · The storage</b>Organizations, needs, offers, connections</div><div class="arrow">→</div>
-      <div class="box"><b>4 · The rulebook</b>One front door that enforces the rules</div><div class="arrow">→</div>
-      <div class="box hi"><b>5 · The app</b>What you tap on your phone</div>
-    </div>
-
-    <details open>
-      <summary><span class="piece"><span class="ic">🗂️</span><span>1 · The public list<span class="sub">Every nonprofit in the state, already written down.</span></span></span></summary>
-      <div class="body">
-        <p>Every nonprofit in the United States is registered with the IRS. The IRS publishes that registry as a free spreadsheet anyone can download — one file per state, refreshed every month. It lists each organization's name, address, tax ID, what kind of organization it is, and roughly how big it is.</p>
-        <p>We start from that spreadsheet. That is why no nonprofit has to sign up to be found: Washington's 35,361 charities are all there on day one. Someone who works at one of them simply claims it.</p>
-        <p>What the spreadsheet does <b>not</b> have: phone numbers, email, or websites. Those come later — from other public files, or from the organization itself once claimed.</p>
-      </div>
-    </details>
-    <details>
-      <summary><span class="piece"><span class="ic">🔄</span><span>2 · The updater<span class="sub">Keeps our copy of the list current, without touching what people typed.</span></span></span></summary>
-      <div class="body">
-        <p>A small program that, once a month, downloads the newest IRS spreadsheet and compares it with what we already have. New organizations are added. Organizations that changed are updated. Ones that disappear from the file are flagged, never deleted, so history stays intact.</p>
-        <p>It writes down every run — which file, when, how many rows changed — so we can always answer "how fresh is this?". And it never overwrites anything a person entered: a description a nonprofit wrote stays theirs.</p>
-      </div>
-    </details>
-    <details>
-      <summary><span class="piece"><span class="ic">🗄️</span><span>3 · The storage<span class="sub">Where everything lives.</span></span></span></summary>
-      <div class="body">
-        <p>Think of a set of linked spreadsheets that many people can safely use at the same time: one for organizations, one for needs and offers, one for the connections between them, one for messages. Later, one for accounts.</p>
-        <p>Every organization is filed under its IRS tax ID, so the same organization can never be listed twice.</p>
-      </div>
-    </details>
-    <details>
-      <summary><span class="piece"><span class="ic">🚪</span><span>4 · The rulebook<span class="sub">One front door that every screen goes through — and the rules live there.</span></span></span></summary>
-      <div class="body">
-        <p>The phone app, the website, and any tool we build later never reach into the storage directly. They all knock on the same door and ask: "search organizations", "post this need", "accept this connection". The door checks who is asking and whether the rules allow it, then does the work.</p>
-        <p>Because there is one door, the rules exist in exactly one place: only the <em>other</em> side can accept a connection; an organization can hold at most two "can't operate" needs at a time; only the two parties can read a thread. No screen can bend them.</p>
-        <p>Developers call this door an <em>API</em>. The last page lists everything it can do.</p>
-      </div>
-    </details>
-    <details>
-      <summary><span class="piece"><span class="ic you">📱</span><span>5 · The app<span class="tag you">you use this</span><span class="sub">The screens: board, map, organizations, post, inbox, you.</span></span></span></summary>
-      <div class="body">
-        <p>What a nonprofit, a business, or a neighbor actually sees. Today it's the clickable prototype; the finished version will be the same screens on a phone and on the web. The app holds no rules of its own — it asks the door and shows the answer.</p>
-        <p>The six tabs: <b>Board</b> (needs and offers), <b>Map</b>, <b>Orgs</b> (every organization), <b>+</b> (post something), <b>Inbox</b> (alerts and your connections), <b>Me</b>.</p>
-      </div>
-    </details>
-    <details>
-      <summary><span class="piece"><span class="ic">⚡</span><span>6 · Live updates<span class="sub">You're told the moment something relevant happens.</span></span></span></summary>
-      <div class="body">
-        <p>Normally an app has to keep asking "anything new?". Instead, the door keeps a line open and pushes news the instant it happens: a need was posted that matches what you have, someone accepted your proposal, a message arrived.</p>
-        <p>Public news (a new listing) goes to everyone. Private news (your connections, your messages) goes only to the two organizations involved.</p>
-      </div>
-    </details>
-    <details>
-      <summary><span class="piece"><span class="ic you">🗺️</span><span>7 · The map<span class="tag you">you use this</span><span class="sub">Where help is, and where it's flowing.</span></span></span></summary>
-      <div class="body">
-        <p>Every organization as a pin where it actually is. Every connection as a thread between two pins — gold once the hand-off is done. Zoomed out, nearby pins gather into numbered circles; zoom in and they spread out. Page 6 explains how to read it.</p>
-      </div>
-    </details>
-
-    <div class="pager"><a href="#problem">← The problem</a><a class="next" href="#orgs">Next: Where the organizations come from <small>3 of 7</small></a></div>
+    <p class="big">We're building a map to see the golden thread between nonprofits, businesses, and people.</p>
+    <figure>
+      <svg viewBox="0 0 560 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Map of Puget Sound with a golden thread from Computers 4 People in Need in Bellingham to Ballard Food Bank in Seattle" style="width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--line)">
+  <defs><filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter></defs>
+  <rect width="560" height="420" fill="#101619"/>
+  <path d="M1131.5,-10.8 L263.7,-10.8 L242.8,43.1 L280.0,107.7 L309.7,172.3 L343.9,208.9 L320.1,243.4 L315.7,269.2 L311.2,295.1 L306.7,329.5 L299.3,355.4 L284.5,376.9 L250.3,404.9 L220.6,398.5 L210.2,344.6 L235.4,301.5 L250.3,258.5 L265.1,183.1 L168.5,172.3 L79.4,161.5 L-27.6,120.6 L-17.2,226.2 L19.9,344.6 L64.5,441.5 L72.0,570.8 L153.7,577.2 L242.8,613.8 L277.0,717.2 L450.9,700.0 L540.1,710.8 L688.7,667.7 L777.8,650.5 L823.9,635.4 L1131.5,635.4 Z" fill="#1B2329" stroke="#2E3A40" stroke-width="1.2"/>
+  <text x="314.3" y="34.1" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#8A938C">Bellingham</text>
+  <text x="336.6" y="279.6" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#8A938C">Seattle</text>
+  <text x="320.2" y="357.2" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#8A938C">Tacoma</text>
+  <text x="251.8" y="402.4" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#8A938C">Olympia</text>
+  <text x="367.8" y="266.7" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#8A938C">Redmond</text>
+  <circle cx="303.8" cy="44.2" r="22" fill="#74B894" opacity="0.18" filter="url(#glow)"/>
+  <circle cx="320.4" cy="276.1" r="26" fill="#74B894" opacity="0.2" filter="url(#glow)"/>
+  <circle cx="311.2" cy="36.6" r="5.5" fill="#74B894" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="326.1" cy="277.8" r="5.5" fill="#74B894" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="328.7" cy="283.9" r="5.5" fill="#74B894" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="332.0" cy="294.0" r="5.5" fill="#74B894" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="320.9" cy="305.8" r="5.5" fill="#74B894" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="326.8" cy="296.2" r="5.5" fill="#3B5BA9" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="332.0" cy="272.5" r="5.5" fill="#7A5CA8" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="358.8" cy="275.7" r="5.5" fill="#74B894" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="305.3" cy="374.1" r="5.5" fill="#74B894" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="317.2" cy="363.6" r="5.5" fill="#74B894" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="244.3" cy="413.5" r="5.5" fill="#74B894" stroke="#1B2329" stroke-width="1.5" opacity="0.6"/>
+  <path d="M303.8,44.2 Q276.2,162.7 320.4,276.1" fill="none" stroke="#D9A12B" stroke-width="3" stroke-linecap="round" stroke-dasharray="14 7" opacity="0.95" style="filter:drop-shadow(0 0 4px rgba(217,161,43,0.9))"/>
+  <circle r="4" fill="#F2C14E"><animateMotion dur="1.8s" repeatCount="indefinite" path="M303.8,44.2 Q276.2,162.7 320.4,276.1"/></circle>
+  <circle cx="303.8" cy="44.2" r="8" fill="#74B894" stroke="#E7EAE4" stroke-width="2"/>
+  <circle cx="320.4" cy="276.1" r="9" fill="#74B894" stroke="#E0A04B" stroke-width="3"/>
+  <text x="317.8" y="49.2" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#E7EAE4" stroke="#101619" stroke-width="3" paint-order="stroke">Computers 4 People in Need</text>
+  <text x="335.4" y="281.1" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#E7EAE4" stroke="#101619" stroke-width="3" paint-order="stroke">Ballard Food Bank</text>
+  <g transform="translate(370 356)"><rect width="178" height="52" rx="8" fill="#1B2329" stroke="#2E3A40"/>
+    <text x="10" y="18" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#B6BDB6">15 refurbished laptops, given</text>
+    <text x="10" y="34" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#B6BDB6">Bellingham → Seattle · 79 mi</text>
+    <text x="10" y="47" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#8A938C">the dot moves from giver to receiver</text></g>
+</svg>
+      <figcaption>An example from the prototype: Computers 4 People in Need in Bellingham gave fifteen laptops to Ballard Food Bank in Seattle. Once a hand-off is done, it stays on the map as a gold thread. <a href="prototype.html">Open the live map →</a></figcaption>
+    </figure>
+    <p>Every nonprofit is a pin where it actually is. When one organization helps another, a thread appears between them. Zoomed out you see where help is flowing across the state; zoomed in you see who helped whom, with what, and when.</p>
+    <p>Around the map is the part that makes the threads happen: a board where organizations say what they need and what they have, matching that finds who fits, and a private conversation to work out the hand-off. The next page walks through each piece.</p>
+    <div class="pager"><a href="#problem">← The problem</a><a class="next" href="#pieces">Next: How it works <small>3 of 7</small></a></div>
   </section>
 
   <!-- ================================================================ 3 -->
-  <section class="page" id="orgs">
-    <h1>Where the organizations come from</h1>
-    <p class="big">The IRS already keeps the list. We just read it carefully.</p>
-    <p>For each organization, the IRS spreadsheet tells us a handful of things. Here is what they mean and why we care.</p>
-    <div class="cards">
-      <div class="card"><h3>Tax ID (EIN)</h3><p>A permanent nine-digit number, like a Social Security number for an organization. We use it as the one true identifier, so nobody can be listed twice. Shown like 91-1428805.</p></div>
-      <div class="card"><h3>Name, address, ZIP</h3><p>As registered. The ZIP code places the pin on the map — accurate to the neighborhood, not the front door.</p></div>
-      <div class="card"><h3>Charity or not</h3><p>The IRS marks which organizations are 501(c)(3) charities — the kind you can donate to tax-free. Only those can use the exchange as nonprofits.</p></div>
-      <div class="card"><h3>Public charity vs. foundation</h3><p>A food bank and a family foundation are both charities, but a foundation gives money and rarely needs plywood. We tell them apart.</p></div>
-      <div class="card"><h3>Cause</h3><p>A category code: food, housing, education, animals, and so on. About one in five organizations has none, and some are wrong — so organizations can fix their own tags.</p></div>
-      <div class="card"><h3>Size</h3><p>Yearly revenue and what kind of tax return they file. Most Washington charities are small enough to report no financial details at all.</p></div>
-    </div>
-    <h2>What the list doesn't give us</h2>
-    <p>Phone numbers, email, or websites. Those come from other public files (small organizations list a website on their yearly postcard to the IRS), from the Washington Secretary of State's charity registry, or — best of all — from the organization itself once someone claims it.</p>
-    <h2>How it stays current</h2>
-    <p>The IRS reposts the file every month. Our updater fetches it, changes only what changed, and never overwrites what a person typed. Every screen says which month's file it's showing.</p>
-    <div class="pager"><a href="#solution">← What we're building</a><a class="next" href="#handoff">Next: From a need to a hand-off <small>4 of 7</small></a></div>
+  <section class="page" id="pieces">
+    <h1>How it works</h1>
+    <p class="big">Here's each piece, where we're at with it, and what's still missing.</p>
+
+    <details open>
+      <summary><span><span class="ttl">The public list</span><span class="sub">Every nonprofit is already written down. We start from there.</span></span></summary>
+      <div class="body">
+        <p>Every nonprofit is registered with the IRS. The IRS publishes that registry as a free spreadsheet anyone can download. It lists each organization's name, address, tax ID, what kind of organization it is, and roughly how big it is.</p>
+        <p>The nonprofits do not need to sign up for this service. We use the IRS's database to pull in that information so there's no extra work on their part. We found that Washington has 35,361 nonprofit organizations, and all of them are available in our app from day one. Someone who works at one of these organizations will be able to "claim" it in the app, as long as they can verify they work there.</p>
+        <p><span class="lbl">Missing</span>Phone numbers, emails, and websites. The IRS spreadsheet doesn't have them. We'll have to find that information from other sources — other public filings, the state's charity registry, or the organization itself once it's claimed.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary><span><span class="ttl">Keeping the list current</span><span class="sub">The IRS updates monthly. So do we, without touching anything a person typed.</span></span></summary>
+      <div class="body">
+        <p><span class="lbl">Where we're at</span>The IRS reposts the spreadsheet every month. We built a small program that downloads the new one, compares it to what we have, and updates only what changed: new organizations get added, changed ones get updated, ones that dropped off get flagged rather than deleted. It writes down every run so we can always say how fresh the data is.</p>
+        <p>It never overwrites anything a person entered. If a food bank writes its own description, that stays theirs no matter what the next IRS file says.</p>
+        <p><span class="lbl">Missing</span>Right now someone has to run it. We still need to put it on a schedule so it runs itself each month, and to pull in the IRS's other monthly files — the one that says who's currently in good standing, and the one that says who lost their status.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary><span><span class="ttl">Where everything lives</span><span class="sub">One place for the organizations and everything people add.</span></span></summary>
+      <div class="body">
+        <p><span class="lbl">Where we're at</span>All 42,510 Washington organizations are loaded and searchable, along with the needs and offers people post, the connections between them, and the messages inside those connections. Every organization is filed under its IRS tax ID, so the same one can never show up twice.</p>
+        <p><span class="lbl">Missing</span>Accounts. Today the prototype pretends you're signed in. The real version needs real sign-in, and a record of which people belong to which organizations.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary><span><span class="ttl">The rules</span><span class="sub">One front door that every screen goes through, so the rules can't be bent.</span></span></summary>
+      <div class="body">
+        <p><span class="lbl">Where we're at</span>The phone app, the website, and anything we build later never touch the stored data directly. They all go through one door and ask: search organizations, post this need, accept this connection. The door checks who's asking and whether the rules allow it, then does the work.</p>
+        <p>That means the rules live in one place. Only the <em>other</em> side can accept a connection. Only the two organizations in a connection can read their messages. An organization can only have two "we can't operate without this" needs open at a time. No screen can get around any of that.</p>
+        <p><span class="lbl">Missing</span>Knowing who's really asking. Today a request just says which organization it's for and we take its word. Real sign-in and "prove you work there" are the next thing to build.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary><span><span class="ttl">The app</span><span class="sub">The screens: board, map, organizations, post, inbox, you.</span></span></summary>
+      <div class="body">
+        <p><span class="lbl">Where we're at</span>A clickable prototype you can open on a phone. It walks through the whole story — a food bank posts a need, a refurbisher gets alerted, they connect, message, and hand off — from both sides. The organizations in it are real; the people, posts, and messages are invented so we could show the flow.</p>
+        <p><span class="lbl">Missing</span>The real thing. The prototype keeps everything on your device and pretends to sign you in. The finished app will be the same screens, connected to the real data, with real accounts.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary><span><span class="ttl">Being told the moment something happens</span><span class="sub">You shouldn't have to keep checking.</span></span></summary>
+      <div class="body">
+        <p><span class="lbl">Where we're at</span>When a need is posted that matches what you have, when someone accepts your proposal, when a message arrives — the app is told the instant it happens rather than the next time you refresh. Public news (a new listing) goes to everyone. Private news (your connections, your messages) goes only to the two organizations involved. This works today.</p>
+        <p><span class="lbl">Missing</span>Reaching you when the app is closed: email and phone notifications, and a daily digest for the less urgent stuff.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary><span><span class="ttl">The map</span><span class="sub">Where help is, and where it's flowing.</span></span></summary>
+      <div class="body">
+        <p><span class="lbl">Where we're at</span>Every organization is placed by its ZIP code. Nearby ones gather into numbered circles when you're zoomed out and spread apart as you zoom in. Every connection is a thread; completed ones are gold. You can filter by needs or offers, who's giving, category, and distance. Page 6 explains how to read it.</p>
+        <p><span class="lbl">Missing</span>Street-level placement (we know the addresses; we just haven't turned them into exact map points yet), and a real street map underneath instead of the plain outline.</p>
+      </div>
+    </details>
+
+    <div class="pager"><a href="#building">← What we're building</a><a class="next" href="#handoff">Next: From a need to a hand-off <small>4 of 7</small></a></div>
   </section>
 
   <!-- ================================================================ 4 -->
   <section class="page" id="handoff">
     <h1>From a need to a hand-off</h1>
-    <p class="big">Six steps, and both sides can see where they are.</p>
+    <p class="big">Six steps. Both sides can always see where things stand.</p>
     <div class="steps">
-      <div class="step"><div class="n">1</div><div><h3>Post</h3><p>A nonprofit says "we need twelve laptops" — or "we have forty sheets of plywood". It picks a category, a quantity, and for needs a priority.</p></div></div>
-      <div class="step"><div class="n">2</div><div><h3>Match</h3><p>The system compares it with everything open and alerts the organizations that fit — including ones whose profile simply says "we often have laptops".</p></div></div>
-      <div class="step"><div class="n">3</div><div><h3>Propose</h3><p>One side taps "I have this" (or "I need this"). That pairs a need with an offer and asks the other side.</p></div></div>
-      <div class="step"><div class="n">4</div><div><h3>Accept</h3><p>Only the <em>other</em> side can say yes. Once accepted, both listings are held so nobody else can claim them.</p></div></div>
-      <div class="step"><div class="n">5</div><div><h3>Talk</h3><p>A private thread for the two of them: timing, pickup, a contact card. Nobody else can see it.</p></div></div>
-      <div class="step"><div class="n gold">6</div><div><h3>Complete</h3><p>Either side marks it done. Both listings close, and the hand-off is recorded on both profiles and drawn on the map in gold.</p></div></div>
+      <div class="step"><div class="n">1</div><div><h3>You post</h3><p>"We need twelve laptops." Or: "We have forty sheets of plywood." You pick a category and a quantity, and for a need, how urgent it is.</p></div></div>
+      <div class="step"><div class="n">2</div><div><h3>We look for fits</h3><p>We compare it with everything open and let the organizations that fit know — including ones that haven't posted anything but told us "we often have laptops."</p></div></div>
+      <div class="step"><div class="n">3</div><div><h3>Someone raises a hand</h3><p>One side taps "I have this" (or "I need this"). That pairs the need with the offer and asks the other side.</p></div></div>
+      <div class="step"><div class="n">4</div><div><h3>The other side says yes</h3><p>Only they can. Once accepted, both listings are held so nobody else can claim them in the meantime.</p></div></div>
+      <div class="step"><div class="n">5</div><div><h3>You work it out</h3><p>A private conversation for just the two of you: timing, pickup, who to call. Nobody else can see it.</p></div></div>
+      <div class="step"><div class="n gold">6</div><div><h3>Done</h3><p>Either side marks it complete. Both listings close, and the hand-off shows on both organizations' pages and on the map as a gold thread.</p></div></div>
     </div>
-    <p class="soft">If the other side declines, nothing changes. If an accepted pair is cancelled, both listings simply reopen.</p>
+    <p class="soft">If the other side says no, nothing changes. If you cancel after accepting, both listings just reopen.</p>
 
-    <h2>A few words you'll see</h2>
-    <details><summary>Priority: P0, P1, P2, P3</summary><div class="body"><p><b>P0</b> — we can't operate without it. <b>P1</b> — needed this week. <b>P2</b> — needed this month. <b>P3</b> — whenever it works.</p><p>To keep P0 meaningful, an organization can have at most two open P0s a month.</p></div></details>
-    <details><summary>Recurring needs and standing agreements</summary><div class="body"><p>A need or offer can be one-time, weekly, monthly, quarterly, or ongoing. When a recurring pair is accepted it becomes a <b>standing agreement</b>: it has a next date, each delivery gets logged with a tap, and either side can end it at any time. "Monthly produce to Thurston County Food Bank since July, three deliveries so far."</p></div></details>
-    <details><summary>Who can see what</summary><div class="body"><p>Needs and offers are public — that's the point. Connections and messages are private to the two organizations in them. An organization's "in care of" contact from the IRS file is never shown.</p></div></details>
-    <div class="pager"><a href="#orgs">← Where the organizations come from</a><a class="next" href="#matching">Next: Matching &amp; fairness <small>5 of 7</small></a></div>
+    <h2>A few things you'll run into</h2>
+    <details><summary><span><span class="ttl">How urgent: P0 to P3</span><span class="sub">So "urgent" keeps meaning something.</span></span></summary><div class="body"><p><b>P0</b> — we can't operate without it. <b>P1</b> — we need it this week. <b>P2</b> — this month. <b>P3</b> — whenever it works.</p><p>We limit each organization to two open P0s a month. Otherwise everything becomes a P0 and the word stops helping anyone.</p></div></details>
+    <details><summary><span><span class="ttl">Things that repeat</span><span class="sub">Weekly produce. Monthly bookkeeping. A standing arrangement.</span></span></summary><div class="body"><p>A need or an offer can be one-time, weekly, monthly, quarterly, or ongoing. When a repeating pair is accepted it becomes a standing agreement: it has a next date, each delivery gets logged with one tap, and either side can end it whenever. "Monthly produce to Thurston County Food Bank since July — three deliveries so far."</p></div></details>
+    <details><summary><span><span class="ttl">Who can see what</span><span class="sub">Needs and offers are public. Conversations aren't.</span></span></summary><div class="body"><p>Needs and offers are meant to be seen — that's the whole point. Connections and messages are private to the two organizations in them. The IRS file lists a contact person for each organization; we never show that name.</p></div></details>
+    <div class="pager"><a href="#pieces">← How it works</a><a class="next" href="#matching">Next: Matching &amp; fairness <small>5 of 7</small></a></div>
   </section>
 
   <!-- ================================================================ 5 -->
   <section class="page" id="matching">
     <h1>Matching &amp; fairness</h1>
-    <p class="big">Every match comes with its reasons. Every listing gets its turn.</p>
-    <h2>How a match is scored</h2>
-    <p>For a need, every open offer gets points, and the points are explained. Ballard Food Bank needs twelve laptops; Computers 4 People in Need has fifteen:</p>
+    <p class="big">We always show our work, and everyone gets a turn at the top.</p>
+    <h2>How we decide who fits</h2>
+    <p>For a need, every open offer gets points, and we show the points. Ballard Food Bank needs twelve laptops; Computers 4 People in Need has fifteen:</p>
     <div class="score">
-      <span>Same category (Technology)</span><span class="n">+50</span>
+      <span>Same kind of thing (Technology)</span><span class="n">+50</span>
       <span>Same words: laptop, computer</span><span class="n">+35</span>
       <span>Different cities</span><span class="n">+0</span>
-      <span>The need is P0</span><span class="n">+10</span>
-      <span>The offer covers the whole quantity</span><span class="n">+10</span>
+      <span>The need is a P0</span><span class="n">+10</span>
+      <span>The offer covers the whole amount</span><span class="n">+10</span>
       <span>The offer is recent</span><span class="n">+5</span>
       <span class="tot">Match score</span><span class="n tot">110</span>
     </div>
-    <p>Weak matches (under 15) are not shown. Organizations are also alerted by their own profile tags — "we often have: laptops" — even before they post an offer.</p>
+    <p>Weak fits don't get shown. And an organization gets told about a fit even if it hasn't posted anything — as long as its page says "we often have laptops."</p>
+    <p><span class="lbl">Missing</span>Learning from what actually gets completed. Right now the points are fixed; over time we'd like the ones that lead to real hand-offs to count for more.</p>
 
-    <h2>How the board stays fair</h2>
-    <p>A board that rewards whoever is biggest or posts the most would quietly bury small organizations. So:</p>
+    <h2>How we keep the board fair</h2>
+    <p>A board that rewards whoever is biggest or posts the most would quietly bury the small organizations. So we don't do that.</p>
     <div class="cards">
-      <div class="card"><h3>Priority first, then the least-seen</h3><p>Within a priority level, the listing that has been shown to the fewest people rises to the top. It's a rotation, not a popularity contest.</p></div>
-      <div class="card"><h3>No crowding</h3><p>No organization holds more than two of the top six spots.</p></div>
-      <div class="card"><h3>A reserved seat</h3><p>One of the top spots always goes to the least-seen open listing, whoever posted it.</p></div>
-      <div class="card"><h3>Say why</h3><p>Every listing on the board says why it's there ("P1 · seen twice"). Every organization can see how often it's shown compared with average.</p></div>
-      <div class="card"><h3>Not for sale</h3><p>Sponsored content is labeled and lives outside this ranking. Placement can't be bought.</p></div>
-      <div class="card"><h3>Alerts follow rules, not size</h3><p>You're alerted because something fits your tags, category, and area — never because someone is big or popular.</p></div>
+      <div class="card"><h3>Most urgent first, then least-seen</h3><p>Among needs of the same urgency, the one fewer people have seen goes to the top. It rotates.</p></div>
+      <div class="card"><h3>No crowding</h3><p>No organization gets more than two of the top six spots.</p></div>
+      <div class="card"><h3>A reserved seat</h3><p>One of the top spots always goes to the listing that's been seen the least, whoever posted it.</p></div>
+      <div class="card"><h3>We say why</h3><p>Every listing says why it's where it is ("P1 · seen twice"). Every organization can see how often it's shown compared with average.</p></div>
+      <div class="card"><h3>Not for sale</h3><p>If we ever show sponsored content, it's labeled and it sits outside this list. Placement can't be bought.</p></div>
+      <div class="card"><h3>Alerts follow rules, not size</h3><p>You hear about something because it fits what you said you need or have, near you. Never because someone is big or popular.</p></div>
     </div>
-    <div class="pager"><a href="#handoff">← From a need to a hand-off</a><a class="next" href="#map">Next: The map <small>6 of 7</small></a></div>
+    <div class="pager"><a href="#handoff">← From a need to a hand-off</a><a class="next" href="#map">Next: Reading the map <small>6 of 7</small></a></div>
   </section>
 
   <!-- ================================================================ 6 -->
   <section class="page" id="map">
-    <h1>The map</h1>
-    <p class="big">Where help is, and where it's flowing.</p>
+    <h1>Reading the map</h1>
+    <p class="big">Pins are organizations. Threads are help.</p>
     <div class="legend-row"><div class="sw"><span class="dot" style="background:var(--offer)"></span></div><p><b>Green pin</b> — a nonprofit, placed at its ZIP code.</p></div>
     <div class="legend-row"><div class="sw"><span class="dot" style="background:#3B5BA9"></span></div><p><b>Blue pin</b> — a business that gives.</p></div>
-    <div class="legend-row"><div class="sw"><span class="dot" style="background:#7A5CA8"></span></div><p><b>Purple pin</b> — a community member who gives.</p></div>
-    <div class="legend-row"><div class="sw"><span class="dot" style="background:var(--offer);width:26px;height:26px;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:700">7</span></div><p><b>Numbered circle</b> — several organizations close together. Tap it to zoom in and they spread apart. The soft glow behind it is how active that place is.</p></div>
-    <div class="legend-row"><div class="sw"><span class="ln" style="border-color:var(--gold)"></span></div><p><b>Gold thread</b> — a completed hand-off between two organizations.</p></div>
-    <div class="legend-row"><div class="sw"><span class="ln" style="border-color:var(--offer)"></span></div><p><b>Green thread</b> — accepted and in progress.</p></div>
-    <div class="legend-row"><div class="sw"><span class="ln dashed" style="border-color:var(--need)"></span></div><p><b>Amber dashed</b> — proposed, waiting for an answer.</p></div>
-    <div class="legend-row"><div class="sw"><span class="ln dotted" style="border-color:var(--ink-3)"></span></div><p><b>Grey dotted</b> — suggested by matching; nobody has acted yet.</p></div>
-    <h2>Reading direction</h2>
-    <p>Threads are quiet until you choose one. Tap a thread — or pick it from the Connections list — and it lights up: the dashes drift and a small dot travels along it <b>from the giver to the receiver</b>. Everything else fades back so you can't lose it.</p>
+    <div class="legend-row"><div class="sw"><span class="dot" style="background:#7A5CA8"></span></div><p><b>Purple pin</b> — a person who gives.</p></div>
+    <div class="legend-row"><div class="sw"><span class="dot" style="background:var(--offer);width:26px;height:26px;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:700">7</span></div><p><b>Numbered circle</b> — several organizations close together. Tap it and they spread apart. The soft glow behind it is how active that place is.</p></div>
+    <div class="legend-row"><div class="sw"><span class="ln" style="border-color:var(--gold)"></span></div><p><b>Gold thread</b> — a finished hand-off between two organizations.</p></div>
+    <div class="legend-row"><div class="sw"><span class="ln" style="border-color:var(--offer)"></span></div><p><b>Green thread</b> — accepted, being worked out.</p></div>
+    <div class="legend-row"><div class="sw"><span class="ln dashed" style="border-color:var(--need)"></span></div><p><b>Amber dashed</b> — someone raised a hand; waiting on the other side.</p></div>
+    <div class="legend-row"><div class="sw"><span class="ln dotted" style="border-color:var(--ink-3)"></span></div><p><b>Grey dotted</b> — we think these two fit; nobody has acted yet.</p></div>
+    <h2>Which way is it going?</h2>
+    <p>Threads sit quietly until you pick one. Tap a thread — or choose it from the Connections list — and it lights up: the dashes drift and a small dot travels along it <b>from the giver to the receiver</b>. Everything else fades back so you can't lose the one you chose.</p>
     <h2>Filters</h2>
-    <p>Needs or offers, who's giving, category, and distance from you — plus which kinds of thread to show. The same filters drive the Board, so the list and the map always agree.</p>
+    <p>Needs or offers, who's giving, what kind of thing, and how far from you — plus which kinds of thread to show. The same filters run the Board, so the list and the map always agree.</p>
     <div class="pager"><a href="#matching">← Matching &amp; fairness</a><a class="next" href="#builders">Next: For builders <small>7 of 7</small></a></div>
   </section>
 
   <!-- ================================================================ 7 -->
   <section class="page" id="builders">
     <h1>For builders</h1>
-    <p class="big">The technical page. Everything the door can do, in one list.</p>
-    <p class="soft">If you're not building on this, you can stop here — the earlier pages are the whole story. This page documents the backend as it exists today.</p>
+    <p class="big">The technical page. If you're not building on this, you already have the whole story.</p>
+    <p class="soft">This documents the backend as it exists today. In the language of the earlier pages: "the rules" is an API, "where everything lives" is a SQL Server database, "being told the moment something happens" is SignalR.</p>
 
     <h2>Every endpoint</h2>
     <p>An endpoint is one web address with one job. <span class="verb get">GET</span> reads, <span class="verb post">POST</span> changes something. Reading organization data is open; changing anything requires naming the organization you act for (today a header <span class="ep">X-Org-Ein</span>; later a real login). Development address <span class="ep">http://localhost:5253</span>; interactive documentation at <span class="ep">/swagger</span>.</p>
@@ -366,13 +391,13 @@
       <dt>Acting organization</dt><dd>The organization a request is made for — today a header, later your login.</dd>
     </dl>
     <p class="soft">Companion pages: <a href="prototype.html">the prototype</a> · <a href="design.html">the design brief</a>.</p>
-    <div class="pager"><a href="#map">← The map</a></div>
+    <div class="pager"><a href="#map">← Reading the map</a></div>
   </section>
 </div>
 
 <script>
   (function () {
-    const ids = ['problem', 'solution', 'orgs', 'handoff', 'matching', 'map', 'builders'];
+    const ids = ['problem', 'building', 'pieces', 'handoff', 'matching', 'map', 'builders'];
     const links = [...document.querySelectorAll('#pages a')];
     function show() {
       const id = ids.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'problem';
