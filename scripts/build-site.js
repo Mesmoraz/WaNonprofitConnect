@@ -41,6 +41,7 @@ const mermaid = `<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/m
 
 fs.writeFileSync(path.join(out, 'prototype.html'), wrap('helpbook-prototype.html'));
 fs.writeFileSync(path.join(out, 'design.html'), wrap('helpbook-step2-design.html', { extraBody: mermaid }));
+fs.writeFileSync(path.join(out, 'how-it-works.html'), wrap('how-it-works.html', { extraBody: mermaid }));
 
 fs.writeFileSync(path.join(out, 'index.html'), `<!doctype html>
 <html lang="en">
@@ -72,6 +73,7 @@ fs.writeFileSync(path.join(out, 'index.html'), `<!doctype html>
   <h1>Name TBD</h1>
   <p>Where Washington's 35,000 nonprofits say what they need and what they have — and get connected. A working concept, not a product yet.</p>
   <a class="card primary" href="prototype.html"><b>Try the prototype →</b><span>Play the story from both sides: a food bank needs laptops, a refurbisher has them. Works on your phone.</span></a>
+  <a class="card" href="how-it-works.html"><b>How it works</b><span>Every part of the system explained in plain language — where the data comes from, how matching decides, what the map shows, and every endpoint.</span></a>
   <a class="card" href="design.html"><b>Read the design brief</b><span>Account types, verification, wireframes, data model, and the plan.</span></a>
   <small>Organizations are real WA 501(c)(3)s from the IRS Business Master File. People, listings and messages are invented. Nothing you do here is stored or sent anywhere.</small>
 </main>

@@ -62,6 +62,12 @@
   .topbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 14px 10px; border-bottom: 1px solid var(--line-2); background: var(--paper); }
   .topbar .logo { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.01em; }
   .topbar .back { font-weight: 600; color: var(--accent); }
+  .topbar .right { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .helpbtn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; font-weight: 700; font-size: 13px; color: var(--ink-2); flex: none; }
+  .help h4 { margin: 10px 0 2px; font-size: 14px; }
+  .help p { margin: 0 0 6px; font-size: 13px; color: var(--ink-2); }
+  .help ol { padding-left: 18px; margin: 4px 0; font-size: 13px; color: var(--ink-2); }
+  .help ol li { margin: 2px 0; }
   .who { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px 4px 6px; font-size: 12px; font-weight: 600; max-width: 60%; }
   .who .dot { width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-size: 10px; flex: none; }
   .who span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -584,7 +590,7 @@ function renderGuide(){
 function topbar(opts={}){
   const m = me();
   const who = m ? `<button class="who" data-a="sheet-who"><span class="dot">${esc(S.user.name[0])}</span><span>${esc(S.user.name)} · ${esc(m.name)}</span></button>` : '';
-  return `<div class="topbar">${opts.back?`<button class="back" data-a="go" data-s="${opts.back}">← ${esc(opts.title||'Back')}</button>`:`<span class="logo">Name TBD</span>`}${who}</div>`;
+  return `<div class="topbar">${opts.back?`<button class="back" data-a="go" data-s="${opts.back}">← ${esc(opts.title||'Back')}</button>`:`<span class="logo">Name TBD</span>`}<span class="right"><button class="helpbtn" data-a="sheet-help" aria-label="How this works">?</button>${who}</span></div>`;
 }
 function tabs(on){
   const unread = S.user ? S.notifs.filter(n=>n.ein===S.user.ein&&!n.read).length + S.matches.filter(m=>m.status==='Proposed'&&m.by!==S.user.ein&&[m.need,m.offer].some(id=>S.listings.find(l=>l.id===id).ein===S.user.ein)).length : 0;
@@ -720,6 +726,20 @@ function renderPhone(){
   let overlay = '';
   if (S.toast) overlay += `<div class="toast">${esc(S.toast)}</div>`;
   if (S.screen === 'map' && S.mapSheets && S.mapSheets[S.sheet]) overlay += `<div class="sheet-bg" data-a="sheet-close"><div class="sheet">${S.mapSheets[S.sheet]}</div></div>`;
+  if (S.sheet==='help') overlay += `<div class="sheet-bg" data-a="sheet-close"><div class="sheet help"><h3>How this works</h3>
+    <p>Every Washington 501(c)(3) is already here from the IRS. A person claims theirs, says what it <b>needs</b> or <b>has</b>, and the app finds who fits, lets the two sides talk, and records the hand-off.</p>
+    <h4>The tabs</h4>
+    <p><b>Board</b> — needs and offers, ranked by priority then by who’s been seen least (a rotation, not a popularity contest). Filters here and on the Map are the same.</p>
+    <p><b>Map</b> — organizations as pins, connections as threads. Zoomed out, pins group into numbered circles; tap one to zoom in. Tap a thread and it lights up: the dash and dot move from giver to receiver.</p>
+    <p><b>Orgs</b> — all organizations, filterable by cause, city, size, and whether they’ve joined. Each profile shows “we often need / have” tags that drive alerts.</p>
+    <p><b>+</b> — post a need (with P0–P3 priority) or an offer, one-time or recurring. Likely matches appear before you post.</p>
+    <p><b>Inbox</b> — alerts, and your connections with their private threads. Only the two organizations in a connection can see it.</p>
+    <p><b>Me</b> — your organization, your listings, how often they’re shown vs. average, and the perspective switcher.</p>
+    <h4>A connection, start to finish</h4>
+    <ol><li>Post a need or offer.</li><li>Matches are scored and the fits are alerted.</li><li>One side proposes (“I have this”).</li><li>The other side accepts.</li><li>They message and share contact details.</li><li>Either side marks it complete — or, for recurring pairs, logs each delivery.</li></ol>
+    <h4>What’s real here</h4>
+    <p>The organizations (real IRS records). The people, listings, messages and example businesses are invented, and everything you do stays on this device. <a href="how-it-works.html" target="_blank" rel="noopener">Read the full explanation →</a></p>
+    <button class="btn primary" data-a="sheet-close-btn">Got it</button></div></div>`;
   if (S.sheet==='who') overlay += `<div class="sheet-bg" data-a="sheet-close"><div class="sheet"><h3>Play as…</h3><p class="sub">Each person is a verified member of a real WA 501(c)(3). The story switches sides at steps 5 and 6.</p>${PEOPLE.map(p=>`<button class="card tap ${S.user&&S.user.id===p.id?'sel':''}" data-a="switch" data-id="${p.id}"><span class="t" style="margin-top:0">${p.name} · ${esc(ORG(p.ein).name)}</span><span class="m">${cap(ORG(p.ein).city)} · ${esc(p.email)}</span></button>`).join('')}</div></div>`;
   if (S.sheet && S.sheet.ihave) { const l = S.listings.find(x=>x.id===S.sheet.ihave); const mine = S.listings.filter(x=>x.ein===me().ein&&x.status==='Open'&&x.kind!==l.kind);
     overlay += `<div class="sheet-bg" data-a="sheet-close"><div class="sheet"><h3>${l.kind==='Need'?'Which offer fills this need?':'Which need does this fill?'}</h3>${mine.map(x=>`<button class="card tap" data-a="propose" data-need="${l.kind==='Need'?l.id:x.id}" data-offer="${l.kind==='Need'?x.id:l.id}"><span class="pill ${x.kind.toLowerCase()}">${x.kind.toUpperCase()}</span><span class="t">${esc(x.title)}</span><span class="m">score ${l.kind==='Need'?score(l,x).s:score(x,l).s}</span></button>`).join('')||`<div class="hint">You have no open ${l.kind==='Need'?'offers':'needs'} yet.</div>`}<button class="btn" data-a="new-for" data-id="${l.id}">+ Create a new ${l.kind==='Need'?'offer':'need'} for this</button></div></div>`; }
@@ -956,6 +976,7 @@ document.addEventListener('click', async e => {
     case 'claim-finish': finishClaim(); return;
     case 'sheet-who': read(); S.sheet = 'who'; render(); return;
     case 'sheet-close': if (e.target === el) { S.sheet = null; render(); } return;
+    case 'sheet-close-btn': S.sheet = null; render(); return;
     case 'switch': switchTo(id); return;
     case 'org-toggle': read(); S.orgFilter[el.dataset.k] = !S.orgFilter[el.dataset.k]; render(); return;
     case 'follow': S.follows.includes(id) ? S.follows.splice(S.follows.indexOf(id),1) : S.follows.push(id); render(); return;
@@ -984,6 +1005,7 @@ document.addEventListener('click', async e => {
     case 'sheet-filters': S.sheet = S.sheet === 'filters' ? null : 'filters'; render(); return;
     case 'sheet-conns': S.sheet = 'conns'; render(); return;
     case 'sheet-legend': S.sheet = 'legend'; render(); return;
+    case 'sheet-help': S.sheet = S.sheet === 'help' ? null : 'help'; render(); return;
     case 'map-clear': S.map.sel = null; S.map.selMatch = null; render(); return;
     case 'map-thread': if (gesture.moved) return; S.map.selMatch = S.map.selMatch === +id ? null : +id; S.map.sel = null; render(); return;
     case 'contact': toast(`Shared: ${S.user.name}, ${S.user.email}, (206) 555-0100`); return;
