@@ -1571,17 +1571,24 @@ async function playStep(){ if (playing) return; playing = true; try { const i = 
 function setStep(i){ S.step = Math.max(0, Math.min(STEPS.length-1, i)); STEPS[S.step].enter(); S.sheet=null; save(); render(); }
 // Called after every user action: if the action just completed the current step, move the guide forward.
 function syncStep(wasDone){ if (!wasDone && S.step < STEPS.length-1 && STEPS[S.step].done()) { S.step++; save(); } }
-const PLACES = () => [...new Set(ORGS.filter(o=>o.city).map(o => cap(o.city) + (o.zip ? ' ' + o.zip : '')))].sort();
+let PLACES_CACHE = null;
+const PLACES = () => PLACES_CACHE || (PLACES_CACHE = [...new Set(ORGS.filter(o=>o.city).map(o => cap(o.city) + (o.zip ? ' ' + o.zip : '')))].sort());
 function placeMatches(q){ const t = q.trim().toLowerCase(); const all = PLACES(); if (!t) return all.slice(0, 8);
   const starts = all.filter(x => x.toLowerCase().startsWith(t)), has = all.filter(x => !x.toLowerCase().startsWith(t) && x.toLowerCase().includes(t));
   return starts.concat(has).slice(0, 8); }
+let sugTimer = null, sugLast = null;
 function renderPlaceSug(){ const box = document.getElementById('a-sug'), inp = document.getElementById('a-place'); if (!box || !inp) return;
   const v = inp.value, hits = placeMatches(v);
-  box.innerHTML = (hits.length === 1 && hits[0].toLowerCase() === v.trim().toLowerCase()) ? ''
-    : hits.map(x => `<button class="sug-row" data-a="about-place" data-v="${esc(x)}">${esc(x)}</button>`).join(''); }
+  const html = (hits.length === 1 && hits[0].toLowerCase() === v.trim().toLowerCase()) ? ''
+    : hits.map(x => `<button class="sug-row" data-a="about-place" data-v="${esc(x)}">${esc(x)}</button>`).join('');
+  if (html === sugLast) return;              // nothing to redraw
+  sugLast = html; box.innerHTML = html; }
+// While keys are repeating, hold off until they stop: no layout work per keystroke.
+function queuePlaceSug(){ if (sugTimer) clearTimeout(sugTimer); sugTimer = setTimeout(() => { sugTimer = null; renderPlaceSug(); }, 140); }
+function clearPlaceSug(){ if (sugTimer) { clearTimeout(sugTimer); sugTimer = null; } sugLast = ''; const box = document.getElementById('a-sug'); if (box) box.innerHTML = ''; }
 function readAbout(){ const g = i => document.getElementById(i); if (!S.about || !g('a-name')) return; Object.assign(S.about, { name:g('a-name').value, place:g('a-place').value, extra:g('a-extra').value }); }
 function aboutReady(){ const a = S.about; return !!(a && a.name.trim() && a.place.trim() && (a.can.length || a.extra.trim())); }
-function syncAboutSave(){ const b = document.querySelector('[data-a="about-save"]'); if (!b) return; const ok = aboutReady(); b.disabled = !ok; b.textContent = ok ? 'Save and go to the board' : 'Fill in the top two'; }
+function syncAboutSave(){ const b = document.querySelector('[data-a="about-save"]'); if (!b) return; const ok = aboutReady(); if (b.disabled === !ok) return; b.disabled = !ok; b.textContent = ok ? 'Save and go to the board' : 'Fill in the top two'; }
 function finishClaim(){ const ein = S.claimPick || '911428805'; const o = ORG(ein);
   if (ein === '911428805') switchTo('casey'); else { const email = S.signup.email || 'you@example.org'; S.user = { id:'you', name: email.split('@')[0].replace(/[._-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase()), ein, email }; if (!S.joinedEins.includes(ein)) S.joinedEins.push(ein); S.sheet = null; }
   o.verified = true; go('feed'); toast('You’re in. Welcome, ' + o.name.replace(/\.$/, '') + '.'); }
@@ -2052,7 +2059,7 @@ document.addEventListener('click', async e => {
       if (k === 'can' && i >= 0 && S.about.custom.includes(v)) S.about.custom.splice(S.about.custom.indexOf(v), 1);
       render(); syncAboutSave(); return; }
     case 'about-place': { if (S.about) S.about.place = el.dataset.v; const inp = document.getElementById('a-place'); if (inp) inp.value = el.dataset.v;
-      const box = document.getElementById('a-sug'); if (box) box.innerHTML = ''; syncAboutSave(); return; }
+      clearPlaceSug(); syncAboutSave(); return; }
     case 'about-add': { readAbout(); const v = S.about.extra.trim(); if (!v) return;
       if (!S.about.custom.includes(v) && !S.about.can.includes(v)) S.about.custom.push(v);
       if (!S.about.can.includes(v)) S.about.can.push(v);
@@ -2115,15 +2122,15 @@ document.addEventListener('input', e => {
   if (e.target.id === 'flt-radius') { S.filter.radius = +e.target.value; const lbl = e.target.nextElementSibling; if (lbl) lbl.textContent = S.filter.radius ? S.filter.radius + ' mi' : 'any distance'; }
   if (e.target.id === 'claimq') { S.claimQuery = e.target.value; S.claimPick = null; const pos = e.target.selectionStart; render(); const el = document.getElementById('claimq'); el.focus(); el.setSelectionRange(pos,pos); }
   if (['b-name','b-city','b-website','b-ubi'].includes(e.target.id)) { const g = i => document.getElementById(i); S.biz = { name:g('b-name').value, city:g('b-city').value, website:g('b-website').value, ubi:g('b-ubi').value }; const id = e.target.id, pos = e.target.selectionStart; render(); const el = document.getElementById(id); el.focus(); el.setSelectionRange(pos,pos); }
-  if (['a-name','a-place','a-extra'].includes(e.target.id) && S.about) { readAbout(); syncAboutSave(); if (e.target.id === 'a-place') renderPlaceSug(); }
+  if (['a-name','a-place','a-extra'].includes(e.target.id) && S.about) { readAbout(); syncAboutSave(); if (e.target.id === 'a-place') queuePlaceSug(); }
   if (e.target.id === 'orgq') { S.orgFilter.q = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('orgq'); el.focus(); el.setSelectionRange(pos,pos); }
   if (e.target.id === 'd-title') { S.draft.title = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('d-title'); el.focus(); el.setSelectionRange(pos,pos); }
 });
 document.addEventListener('change', e => { if (e.target.id === 'flt-category') { S.filter.category = e.target.value; render(); } if (e.target.id === 'flt-radius') { S.filter.radius = +e.target.value; render(); } if (['cause','city'].includes(e.target.id)) { S.orgFilter[e.target.id] = e.target.value; render(); } if (['d-category','d-cadence','d-urgency','d-qty','d-unit','d-desc','d-tags'].includes(e.target.id)) { S.draft[e.target.id.slice(2)] = e.target.value; render(); } });
-document.addEventListener('focusin', e => { if (e.target.id === 'a-place') renderPlaceSug(); });
+document.addEventListener('focusin', e => { if (e.target.id === 'a-place') { sugLast = null; renderPlaceSug(); } });
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && e.target.id === 'a-extra') { e.preventDefault(); const b = document.querySelector('[data-a="about-add"]'); if (b) b.click(); return; }
-  if (e.key === 'Enter' && ['a-name','a-place'].includes(e.target.id)) { e.preventDefault(); e.target.blur(); readAbout(); syncAboutSave(); const box = document.getElementById('a-sug'); if (box && e.target.id === 'a-place') box.innerHTML = ''; return; }
+  if (e.key === 'Enter' && ['a-name','a-place'].includes(e.target.id)) { e.preventDefault(); e.target.blur(); readAbout(); syncAboutSave(); if (e.target.id === 'a-place') clearPlaceSug(); return; }
   if (e.key === 'Enter' && e.target.id === 'msg') { const id = +e.target.nextElementSibling.dataset.id; sendMsg(id, e.target.value); } });
 
 // ---- Map gestures: drag to pan, pinch / wheel / double-tap to zoom ----------
