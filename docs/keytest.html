@@ -44,6 +44,7 @@
 <div class="case"><b>5. Field with a list rebuilt on every keystroke</b><span>What the app did before, for comparison.</span>
   <input id="f5" value="Seattle 98115" autocomplete="off"><div class="grow" id="g5"></div><div class="res" id="r5"></div></div>
 
+<div class="row"><button id="shell">Test inside the app shell</button></div>
 <div class="row"><button id="clear">Clear log</button><button id="copy">Copy log</button></div>
 <div id="log">events appear here…</div>
 
@@ -93,6 +94,26 @@ f5.addEventListener('input', () => list(g5, f5.value));
 list(g5, f5.value);
 
 rec(`ua=${navigator.userAgent}`);
+
+// Cases 6 and 7 replicate the app shell: a 100dvh flex column with a scrolling middle,
+// a pinned bottom bar, and a fixed bar below that, which the plain page above does not have.
+document.getElementById("shell").onclick = () => {
+  document.body.innerHTML = `<div style="height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden"><div style="padding:10px 14px;border-bottom:1px solid var(--line)"><button id="back">Back to the plain page</button></div><div style="flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px"><b>6. Plain field inside the app shell</b><input id="s1" value="Seattle 98115" autocomplete="off"><div class="res" id="s1r"></div><b>7. Field with a list, inside the app shell</b><input id="s2" value="Seattle 98115" autocomplete="off"><div class="grow" id="s2box"></div><div class="res" id="s2r"></div><div id="log2" style="font-family:ui-monospace,monospace;font-size:11px;white-space:pre-wrap;color:var(--ink-2);margin-top:8px"></div></div><div style="border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:var(--paper)"><button style="width:100%">Pinned button</button></div><div style="position:fixed;left:0;right:0;bottom:0;background:var(--paper-2);border-top:1px solid var(--line);padding:10px 14px;font-size:13px">Fixed bar, like the story bar</div></div>`;
+  const back = document.getElementById("back"); back.onclick = () => location.reload();
+  const l2 = document.getElementById("log2");
+  let ls = [];
+  const rec2 = s => { ls.push(s); if (ls.length > 60) ls.shift(); l2.textContent = ls.join(String.fromCharCode(10)); };
+  for (const id of ["s1","s2"]) {
+    const el = document.getElementById(id), res = document.getElementById(id + "r");
+    let n = 0;
+    el.addEventListener("input", e => { n++; rec2(id + " " + e.inputType + " len=" + el.value.length); res.textContent = n + " events, " + el.value.length + " left"; });
+  }
+  const s2 = document.getElementById("s2"), box = document.getElementById("s2box");
+  let t = null;
+  const draw = () => { const q = s2.value.trim().toLowerCase(); box.innerHTML = PLACES.filter(p => p.toLowerCase().includes(q)).slice(0,8).map(p => "<div>" + p + "</div>").join(""); };
+  s2.addEventListener("input", () => { clearTimeout(t); t = setTimeout(draw, 140); });
+  draw();
+};
 </script>
 </body>
 </html>
