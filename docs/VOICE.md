@@ -24,9 +24,13 @@ One name per thing. The left column is the only word for it in the app.
 
 | Use | Not |
 | --- | --- |
-| organization (org only in tight labels like the tab) | nonprofit as a synonym; 501(c)(3) except where the legal term matters |
+| organization (org only in tight labels like the tab); means any of the five organization types in TAXONOMY.md | nonprofit as a synonym; 501(c)(3) except where the legal term matters |
 | need, offer | listing, except for the pair: "your needs and offers" |
-| connection (a need and an offer, at any stage) | match, thread, hand-off |
+| thread (a need and an offer, matched, in progress) | connection, match, hand-off |
+| golden thread (a thread that is done) | completed connection, fulfilled |
+| start a thread (the verb) | propose, connect |
+| kind of help (Time, Skills, Things, Partnership, For schools, Jobs and mentoring, Grants, Together) | category |
+| people (individuals); everyone here (all six kinds) | supporters, community members, users, members, participants |
 | message | reply, note |
 | P0 to P3, with its meaning beside it the first time on a screen | Critical, High, Normal, Low |
 | done | fulfilled, completed |
