@@ -79,6 +79,16 @@ node scripts/roadmap.js add story E-3 "Fetch schools from OSPI"
 node scripts/build-site.js                  # rebuilds the site, including roadmap.html
 ```
 
+## Change log and test cases
+
+**Every shipped change gets an entry in `roadmap/CHANGELOG.md`, newest first, and the same entry is given to Taylor in chat.** An entry has three parts and nothing else:
+
+1. **What changed** — one line per change, in plain words, saying what a person will notice. Not the code.
+2. **Why** — only when it is not obvious, or when it came from Taylor's feedback (say so).
+3. **Test cases** — numbered steps Taylor can run on a phone, each with the expected result. Cover the change itself, the thing it might have broken, and anything Claude could not verify in the browser pane (say which, and why).
+
+Rules for the test cases: write them for a phone, not a desktop. One action per step. Say the exact words to look for. Mark any step Claude already verified as **[verified]** and any step only Taylor can do as **[needs your phone]**. Keep the whole list short enough to run in a couple of minutes.
+
 ## Definition of done
 
 - The story's one action works on a phone with real taps.

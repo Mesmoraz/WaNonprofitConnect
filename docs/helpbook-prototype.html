@@ -113,6 +113,11 @@
   .chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
   .chip.tag { background: var(--paper-2); }
   .chip .x { opacity: 0.55; margin-left: 2px; }
+  .sug { display: flex; flex-direction: column; max-height: 190px; overflow: auto; }
+  .sug:not(:empty) { border: 1px solid var(--line); border-radius: 10px; background: var(--paper); margin-top: -4px; }
+  .sug-row { text-align: left; padding: 11px 13px; font-size: 14px; color: var(--ink); border-bottom: 1px solid var(--line-2); }
+  .sug-row:last-child { border-bottom: 0; }
+  .sug-row:active { background: var(--paper-2); }
   .row > .btn.sm { flex: none; align-self: stretch; }
   .label { font-size: 12px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 6px; }
   .kv { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; font-size: 13px; }
@@ -594,6 +599,14 @@ async function playStep(){ if (playing) return; playing = true; try { const i = 
 function setStep(i){ S.step = Math.max(0, Math.min(STEPS.length-1, i)); STEPS[S.step].enter(); S.sheet=null; save(); render(); }
 // Called after every user action: if the action just completed the current step, move the guide forward.
 function syncStep(wasDone){ if (!wasDone && S.step < STEPS.length-1 && STEPS[S.step].done()) { S.step++; save(); } }
+const PLACES = () => [...new Set(ORGS.filter(o=>o.city).map(o => cap(o.city) + (o.zip ? ' ' + o.zip : '')))].sort();
+function placeMatches(q){ const t = q.trim().toLowerCase(); const all = PLACES(); if (!t) return all.slice(0, 8);
+  const starts = all.filter(x => x.toLowerCase().startsWith(t)), has = all.filter(x => !x.toLowerCase().startsWith(t) && x.toLowerCase().includes(t));
+  return starts.concat(has).slice(0, 8); }
+function renderPlaceSug(){ const box = document.getElementById('a-sug'), inp = document.getElementById('a-place'); if (!box || !inp) return;
+  const v = inp.value, hits = placeMatches(v);
+  box.innerHTML = (hits.length === 1 && hits[0].toLowerCase() === v.trim().toLowerCase()) ? ''
+    : hits.map(x => `<button class="sug-row" data-a="about-place" data-v="${esc(x)}">${esc(x)}</button>`).join(''); }
 function readAbout(){ const g = i => document.getElementById(i); if (!S.about || !g('a-name')) return; Object.assign(S.about, { name:g('a-name').value, place:g('a-place').value, extra:g('a-extra').value }); }
 function aboutReady(){ const a = S.about; return !!(a && a.name.trim() && a.place.trim() && (a.can.length || a.extra.trim())); }
 function syncAboutSave(){ const b = document.querySelector('[data-a="about-save"]'); if (!b) return; const ok = aboutReady(); b.disabled = !ok; b.textContent = ok ? 'Save and go to the board' : 'Fill in the top two'; }
@@ -692,11 +705,10 @@ function renderPhone(){
       const CAUSE = [['K','Food'],['L','Housing'],['O','Youth'],['B','Education'],['D','Animals'],['C','Environment'],['E','Health'],['A','Arts'],['S','Community']];
       const chip = (v, t, key, extra='') => `<button class="chip ${a[key].includes(v)?'on':''}" data-a="about-chip" data-k="${key}" data-v="${esc(v)}">${esc(t)}${extra}</button>`;
       const chips = (list, key) => list.map(x => { const [v, t] = Array.isArray(x) ? x : [x, x]; return chip(v, t, key); }).join('');
-      const places = [...new Set(ORGS.filter(o=>o.city).map(o => cap(o.city) + (o.zip ? ' ' + o.zip : '')))].sort();
       body = `${topbar({back:'role',title:'Back',help:false})}<div class="screen"><h2 class="h">About you</h2><p class="sub">So the right needs find you. Change any of this later.</p>
         <input id="a-name" placeholder="Your name" value="${esc(a.name)}" autocomplete="name">
-        <input id="a-place" class="search" placeholder="City or ZIP" value="${esc(a.place)}" list="wa-places" autocomplete="off">
-        <datalist id="wa-places">${places.map(x=>`<option value="${esc(x)}">`).join('')}</datalist>
+        <input id="a-place" class="search" placeholder="City or ZIP" value="${esc(a.place)}" autocomplete="off" enterkeyhint="done">
+        <div class="sug" id="a-sug"></div>
         <div class="label">What you can do</div><div class="chips">${chips(CAN,'can')}${a.custom.map(v=>chip(v, v, 'can', ' <span class="x">×</span>')).join('')}</div>
         <div class="row"><input id="a-extra" placeholder="Something else?" value="${esc(a.extra)}" autocomplete="off"><button class="btn sm" data-a="about-add" style="flex:none">Add</button></div>
         <div class="label">Causes you care about</div><div class="chips">${chips(CAUSE,'causes')}</div></div>
@@ -1067,6 +1079,8 @@ document.addEventListener('click', async e => {
     case 'about-chip': { readAbout(); const k = el.dataset.k, v = el.dataset.v, arr = S.about[k]; const i = arr.indexOf(v); if (i >= 0) arr.splice(i, 1); else arr.push(v);
       if (k === 'can' && i >= 0 && S.about.custom.includes(v)) S.about.custom.splice(S.about.custom.indexOf(v), 1);
       render(); syncAboutSave(); return; }
+    case 'about-place': { if (S.about) S.about.place = el.dataset.v; const inp = document.getElementById('a-place'); if (inp) inp.value = el.dataset.v;
+      const box = document.getElementById('a-sug'); if (box) box.innerHTML = ''; syncAboutSave(); return; }
     case 'about-add': { readAbout(); const v = S.about.extra.trim(); if (!v) return;
       if (!S.about.custom.includes(v) && !S.about.can.includes(v)) S.about.custom.push(v);
       if (!S.about.can.includes(v)) S.about.can.push(v);
@@ -1129,14 +1143,15 @@ document.addEventListener('input', e => {
   if (e.target.id === 'flt-radius') { S.filter.radius = +e.target.value; const lbl = e.target.nextElementSibling; if (lbl) lbl.textContent = S.filter.radius ? S.filter.radius + ' mi' : 'any distance'; }
   if (e.target.id === 'claimq') { S.claimQuery = e.target.value; S.claimPick = null; const pos = e.target.selectionStart; render(); const el = document.getElementById('claimq'); el.focus(); el.setSelectionRange(pos,pos); }
   if (['b-name','b-city','b-website','b-ubi'].includes(e.target.id)) { const g = i => document.getElementById(i); S.biz = { name:g('b-name').value, city:g('b-city').value, website:g('b-website').value, ubi:g('b-ubi').value }; const id = e.target.id, pos = e.target.selectionStart; render(); const el = document.getElementById(id); el.focus(); el.setSelectionRange(pos,pos); }
-  if (['a-name','a-place','a-extra'].includes(e.target.id) && S.about) { readAbout(); syncAboutSave(); }
+  if (['a-name','a-place','a-extra'].includes(e.target.id) && S.about) { readAbout(); syncAboutSave(); if (e.target.id === 'a-place') renderPlaceSug(); }
   if (e.target.id === 'orgq') { S.orgFilter.q = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('orgq'); el.focus(); el.setSelectionRange(pos,pos); }
   if (e.target.id === 'd-title') { S.draft.title = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('d-title'); el.focus(); el.setSelectionRange(pos,pos); }
 });
 document.addEventListener('change', e => { if (e.target.id === 'flt-category') { S.filter.category = e.target.value; render(); } if (e.target.id === 'flt-radius') { S.filter.radius = +e.target.value; render(); } if (['cause','city'].includes(e.target.id)) { S.orgFilter[e.target.id] = e.target.value; render(); } if (['d-category','d-cadence','d-urgency','d-qty','d-unit','d-desc','d-tags'].includes(e.target.id)) { S.draft[e.target.id.slice(2)] = e.target.value; render(); } });
+document.addEventListener('focusin', e => { if (e.target.id === 'a-place') renderPlaceSug(); });
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && e.target.id === 'a-extra') { e.preventDefault(); const b = document.querySelector('[data-a="about-add"]'); if (b) b.click(); return; }
-  if (e.key === 'Enter' && ['a-name','a-place'].includes(e.target.id)) { e.preventDefault(); e.target.blur(); readAbout(); syncAboutSave(); return; }
+  if (e.key === 'Enter' && ['a-name','a-place'].includes(e.target.id)) { e.preventDefault(); e.target.blur(); readAbout(); syncAboutSave(); const box = document.getElementById('a-sug'); if (box && e.target.id === 'a-place') box.innerHTML = ''; return; }
   if (e.key === 'Enter' && e.target.id === 'msg') { const id = +e.target.nextElementSibling.dataset.id; sendMsg(id, e.target.value); } });
 
 // ---- Map gestures: drag to pan, pinch / wheel / double-tap to zoom ----------
