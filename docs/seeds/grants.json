@@ -1,0 +1,79 @@
+{
+  "source": "the funders' own program pages",
+  "fetched": "2026-09-21",
+  "note": "Real programs, copied from public pages on the date shown. Amounts and dates change; check the funder's page before relying on them.",
+  "grants": [
+    {
+      "id": "G-1",
+      "funder": "Seattle Foundation",
+      "funderEin": "916013536",
+      "program": "Neighbor to Neighbor (N2N)",
+      "summary": "Small grants for grassroots groups in South Seattle, White Center, Kent, and SeaTac/Tukwila that build community leadership. $10,000 per organization, once a year.",
+      "amountMin": null,
+      "amountMax": 10000,
+      "amountNote": "$10,000 per N2N grantee organization (raised in spring 2026)",
+      "geography": "South Seattle, White Center, Kent, and SeaTac/Tukwila (King County)",
+      "populationServed": "Community members affected by poverty and racial disparities. Priority to efforts led by people of color, Black, Native, immigrant and refugee, and low income communities.",
+      "programArea": "Community organizing and leadership",
+      "eligibility": "Community-based organizations with small budgets in the four areas above; one grant per calendar year",
+      "fundingPriorities": [
+        "Community members leading change in their own neighborhoods",
+        "Advocacy training",
+        "Direct organizing",
+        "Racial and economic equity"
+      ],
+      "deadline": "2026-10-30",
+      "deadlineNote": "Quarterly: Jan 30, Apr 30, Jul 30, Oct 30. The summer cycle is paused; the funder says the application is expected to reopen in the fall.",
+      "applyUrl": "https://www.seattlefoundation.org/current-grant-opportunities/"
+    },
+    {
+      "id": "G-2",
+      "funder": "Innovia Foundation",
+      "funderEin": "910941053",
+      "program": "Community Grant Program",
+      "summary": "Flexible grants from more than 90 donor funds for organizations in Eastern Washington and North Idaho. Most awards are $2,500 to $15,000.",
+      "amountMin": 2500,
+      "amountMax": 15000,
+      "amountNote": "Maximum $15,000; most grants $2,500 to $15,000",
+      "geography": "Eastern Washington (10 counties) and North Idaho (10 counties)",
+      "populationServed": null,
+      "programArea": "General (arts and culture, economic opportunity, education and youth development, health and wellbeing, quality of life)",
+      "eligibility": "Nonprofits serving Innovia's 20-county region. Not funded: academic research, debt retirement, lobbying, re-granting, litigation.",
+      "fundingPriorities": [
+        "2026 theme: Building Stability and Belonging",
+        "Arts and culture",
+        "Economic opportunity",
+        "Education and youth development",
+        "Health and wellbeing",
+        "Quality of life"
+      ],
+      "deadline": null,
+      "deadlineNote": "Closed for 2026. The last cycle opened Dec 1, 2025 and closed Feb 6, 2026, with awards May 25, 2026. The next cycle is not posted yet.",
+      "applyUrl": "https://innovia.org/nonprofits/apply-for-a-grant/"
+    },
+    {
+      "id": "G-3",
+      "funder": "Community Foundation of South Puget Sound",
+      "funderEin": "943121390",
+      "program": "Community Grants",
+      "summary": "Broad, flexible two-year grants for nonprofits working in Lewis, Mason, and Thurston counties. Awards are usually $1,500 to $7,500.",
+      "amountMin": 1500,
+      "amountMax": 7500,
+      "amountNote": "Typically $1,500 to $7,500; about $400,000 awarded in total in 2025",
+      "geography": "Lewis, Mason, and Thurston counties",
+      "populationServed": null,
+      "programArea": "General (arts and culture, civic engagement, environment, animal welfare, health and wellness, basic needs, economic opportunity)",
+      "eligibility": "501(c)(3) public charities or fiscally sponsored groups with at least 3 board members; all grant funds spent in Lewis, Mason, or Thurston counties",
+      "fundingPriorities": [
+        "Impact",
+        "Geography",
+        "Accountability",
+        "Community partnerships",
+        "Equity"
+      ],
+      "deadline": null,
+      "deadlineNote": "Closed. Grants are for two years, so the program opens again in 2027. The posted cycle runs Aug 4 (opens) to Aug 29 (due), with awards in November.",
+      "applyUrl": "https://www.thecommunityfoundation.com/grant/community-grants"
+    }
+  ]
+}
