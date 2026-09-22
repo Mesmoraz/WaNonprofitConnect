@@ -178,6 +178,9 @@
   .pin.nonprofit { fill: var(--offer); }
   .pin.business { fill: #3B5BA9; }
   .pin.person { fill: #7A5CA8; }
+  .pin.school { fill: #C08A2E; }
+  .pin.workforce { fill: #2E8C9A; }
+  .pin.foundation { fill: #A85C7A; }
   .pin.dim { opacity: 0.25; }
   .pin.me { stroke: var(--need); stroke-width: 3; }
   .pin.sel { stroke: var(--ink); stroke-width: 3; }
@@ -311,8 +314,31 @@ ORGS.push(
   { ein:'B-3', name:'Inland Tech Recyclers (example business)', city:'SPOKANE', zip:'99202', cause:'S', inc:'', rev:0, ruling:'', filing:'', needTags:[], haveTags:['monitors','laptops','cables'], type:'business' },
   { ein:'P-1', name:'Dana M. (community member)', city:'SEATTLE', zip:'98115', cause:'S', inc:'', rev:0, ruling:'', filing:'', needTags:[], haveTags:['folding tables','bikes'], type:'person' },
 );
+// Schools and districts (OSPI), workforce programs (WA Workforce Board), foundations (IRS list). Real organizations; tags are invented for the demo.
+const EX = { cause:'S', inc:'', rev:0, ruling:'', filing:'', needTags:[], haveTags:[] };
+ORGS.push(
+  { ...EX, ein:'D-1', name:'Seattle Public Schools', city:'SEATTLE', zip:'98134', type:'school', sub:'District', domain:'seattleschools.org', needTags:['guest speakers','mentors','laptops'] },
+  { ...EX, ein:'D-2', name:'Tacoma Public Schools', city:'TACOMA', zip:'98405', type:'school', sub:'District', domain:'tacomaschools.org', needTags:['internships','field trips'] },
+  { ...EX, ein:'D-3', name:'Spokane Public Schools', city:'SPOKANE', zip:'99201', type:'school', sub:'District', domain:'spokaneschools.org', needTags:['tutors','school supplies'] },
+  { ...EX, ein:'D-4', name:'Bellingham Public Schools', city:'BELLINGHAM', zip:'98225', type:'school', sub:'District', domain:'bellinghamschools.org', needTags:['guest speakers'] },
+  { ...EX, ein:'D-5', name:'Olympia School District', city:'OLYMPIA', zip:'98506', type:'school', sub:'District', domain:'osd.wednet.edu', needTags:['mentors','career day'] },
+  { ...EX, ein:'D-6', name:'Ballard High School', city:'SEATTLE', zip:'98107', type:'school', sub:'High school', domain:'seattleschools.org', needTags:['career day speakers','robotics mentors'] },
+  { ...EX, ein:'D-7', name:'Lincoln High School', city:'TACOMA', zip:'98418', type:'school', sub:'High school', domain:'tacomaschools.org', needTags:['internships','mock interviewers'] },
+  { ...EX, ein:'W-1', name:'Workforce Development Council of Seattle-King County', city:'SEATTLE', zip:'98121', type:'workforce', sub:'Workforce council', domain:'seakingwdc.org', needTags:['employers','mentors'] },
+  { ...EX, ein:'W-2', name:'WorkSource Seattle-King County', city:'SEATTLE', zip:'98121', type:'workforce', sub:'WorkSource center', domain:'worksourceskc.org', needTags:['mock interviewers','employers'] },
+  { ...EX, ein:'W-3', name:'Spokane Workforce Council', city:'SPOKANE', zip:'99202', type:'workforce', sub:'Workforce council', domain:'spokaneworkforce.org', needTags:['apprenticeships'] },
+  { ...EX, ein:'W-4', name:'Workforce Southwest Washington', city:'VANCOUVER', zip:'98660', type:'workforce', sub:'Workforce council', domain:'workforcesw.org', needTags:['employers'] },
+  { ...EX, ein:'W-5', name:'Pacific Mountain Workforce Development Council', city:'OLYMPIA', zip:'98512', type:'workforce', sub:'Workforce council', domain:'pacmtn.org', needTags:['mentors','employers'] },
+  { ...EX, ein:'916013536', name:'Seattle Foundation', city:'SEATTLE', zip:'98101', type:'foundation', sub:'Community foundation', domain:'seattlefoundation.org', ruling:1946, haveTags:['grants'] },
+  { ...EX, ein:'562618866', name:'Bill & Melinda Gates Foundation', city:'SEATTLE', zip:'98109', type:'foundation', sub:'Private foundation', domain:'gatesfoundation.org', ruling:2007, haveTags:['grants'] },
+  { ...EX, ein:'911726410', name:'Whatcom Community Foundation', city:'BELLINGHAM', zip:'98225', type:'foundation', sub:'Community foundation', domain:'whatcomcf.org', haveTags:['grants'] },
+  { ...EX, ein:'910941053', name:'Innovia Foundation', city:'SPOKANE', zip:'99201', type:'foundation', sub:'Community foundation', domain:'innovia.org', haveTags:['grants'] },
+  { ...EX, ein:'943121390', name:'Community Foundation of South Puget Sound', city:'OLYMPIA', zip:'98501', type:'foundation', sub:'Community foundation', domain:'thecommunityfoundation.com', haveTags:['grants'] },
+);
+ORGS.find(o => o.ein === '911428805').domain = 'ballardfoodbank.org';
+const KIND_LABEL = { nonprofit:'Nonprofit', school:'School', workforce:'Workforce program', business:'Business', foundation:'Foundation', person:'Person' };
 // City centers (lat, lon). Orgs in the same city are spread around the center so pins don't stack.
-const CITY = { SEATTLE:[47.61,-122.33], TACOMA:[47.25,-122.44], SPOKANE:[47.66,-117.43], BELLINGHAM:[48.75,-122.48], OLYMPIA:[47.04,-122.90], TUKWILA:[47.47,-122.26], REDMOND:[47.67,-122.12], TOPPENISH:[46.38,-120.31], CHEHALIS:[46.66,-122.96], PULLMAN:[46.73,-117.18], RENTON:[47.48,-122.22] };
+const CITY = { SEATTLE:[47.61,-122.33], TACOMA:[47.25,-122.44], SPOKANE:[47.66,-117.43], BELLINGHAM:[48.75,-122.48], OLYMPIA:[47.04,-122.90], TUKWILA:[47.47,-122.26], REDMOND:[47.67,-122.12], TOPPENISH:[46.38,-120.31], CHEHALIS:[46.66,-122.96], PULLMAN:[46.73,-117.18], RENTON:[47.48,-122.22], VANCOUVER:[45.64,-122.66] };
 // Approximate ZIP-code centroids (lat, lon). Orgs sharing a ZIP get a small offset so pins stay distinguishable.
 const ZIP = {
   '98107':[47.668,-122.378], '98126':[47.530,-122.375], '98118':[47.540,-122.270], '98102':[47.632,-122.322], '98144':[47.585,-122.300],
@@ -322,6 +348,7 @@ const ZIP = {
   '98225':[48.745,-122.490], '98226':[48.780,-122.440], '98501':[47.030,-122.890], '98506':[47.060,-122.860], '98507':[47.040,-122.900],
   '99217':[47.700,-117.350], '99202':[47.655,-117.390], '99220':[47.660,-117.420], '98052':[47.670,-122.120], '98948':[46.380,-120.310],
   '98532':[46.660,-122.960], '99163':[46.730,-117.180],
+  '98109':[47.624,-122.347], '98121':[47.615,-122.345], '98418':[47.222,-122.457], '98512':[46.990,-122.930], '98660':[45.632,-122.680], '99201':[47.660,-117.420],
 };
 (function placeOrgs(){ const n = {}; for (const o of ORGS) { const c = ZIP[o.zip] || CITY[o.city] || [47.3,-120.5]; const i = n[o.zip] = (n[o.zip]||0) + 1; const a = i * 2.1, r = i === 1 ? 0 : 0.009 + 0.004 * i; o.lat = c[0] + Math.sin(a) * r * 0.7; o.lon = c[1] + Math.cos(a) * r; } })();
 const MILES = (a, b) => { const R = 3959, toR = d => d * Math.PI / 180; const dLat = toR(b.lat - a.lat), dLon = toR(b.lon - a.lon); const h = Math.sin(dLat/2)**2 + Math.cos(toR(a.lat)) * Math.cos(toR(b.lat)) * Math.sin(dLon/2)**2; return 2 * R * Math.asin(Math.sqrt(h)); };
@@ -438,7 +465,7 @@ function suggestions(listing) {
 let S;
 function fresh() {
   const seeded = seedListings();
-  return { step:0, screen:'signup', signup:{}, user:null, listings:seeded, matches:seedMatches(seeded), filter:{ kind:'All', category:'', who:'All', radius:0, threads:{ Completed:true, Accepted:true, Proposed:true, suggested:false } }, filtersOpen:false, map:{ sel:null, selMatch:null, k:1, tx:0, ty:0 }, notifs:[], follows:[], nextId:30, feedFilter:'All', orgFilter:{ q:'', cause:'', city:'', joined:false, open:false }, draft:null, sel:null, toast:null, sheet:null, claimQuery:'', claimPick:null, verifyPick:null, guideMin:false, joinedEins:['822888626','581735531','911606330','465378620','811434757','910826037','223939593','237421892','911425676','911546757'] };
+  return { step:0, screen:'signup', signup:{}, user:null, listings:seeded, matches:seedMatches(seeded), filter:{ kind:'All', category:'', who:'All', radius:0, threads:{ Completed:true, Accepted:true, Proposed:true, suggested:false } }, filtersOpen:false, map:{ sel:null, selMatch:null, k:1, tx:0, ty:0 }, notifs:[], follows:[], nextId:30, feedFilter:'All', orgFilter:{ q:'', cause:'', city:'', joined:false, open:false }, draft:null, sel:null, toast:null, sheet:null, claimQuery:'', claimPick:null, verifyPick:null, biz:null, guideMin:false, joinedEins:['822888626','581735531','911606330','465378620','811434757','910826037','223939593','237421892','911425676','911546757'] };
 }
 function save(){ try { localStorage.setItem('helpbook-proto', JSON.stringify(S)); } catch(e){} }
 function load(){ try { const j = localStorage.getItem('helpbook-proto'); if (j) { S = JSON.parse(j); return true; } } catch(e){} return false; }
@@ -449,7 +476,7 @@ if (!S.map || !S.map.k) S.map = { sel:null, selMatch:null, k:1, tx:0, ty:0 };
 for (const l of S.listings) { if (!l.cadence) l.cadence = 'One-time'; if (l.views == null) l.views = 0; }
 S.matches = S.matches.filter(m => S.listings.some(l => l.id === m.need) && S.listings.some(l => l.id === m.offer));
 if (!S.listings.some(l => l.id === 29)) { const have = new Set(S.listings.map(l => l.id)); const extra = seedListings().filter(l => l.id >= 13 && !have.has(l.id)); S.listings.push(...extra); const pairs = new Set(S.matches.map(m => m.need + ':' + m.offer)); for (const m of seedMatches(S.listings)) if (!pairs.has(m.need + ':' + m.offer)) S.matches.push({ ...m, id: S.matches.length + 1 }); if (S.nextId < 30) S.nextId = 30; }
-const joined = ein => S.joinedEins.includes(ein) || (ORG(ein) && ORG(ein).type !== 'nonprofit');
+const joined = ein => S.joinedEins.includes(ein) || (ORG(ein) && ['business','person'].includes(ORG(ein).type));
 const me = () => S.user ? ORG(S.user.ein) : null;
 const cap = s => s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
 const ago = iso => { const m = Math.round((Date.now()-new Date(iso))/60000); return m<1?'just now':m<60?`${m}m ago`:m<1440?`${Math.round(m/60)}h ago`:`${Math.round(m/1440)}d ago`; };
@@ -525,7 +552,7 @@ function sendMsg(mid, text) {
 }
 function switchTo(personId) {
   const p = PEOPLE.find(x=>x.id===personId); S.user = { ...p }; if (!S.joinedEins.includes(p.ein)) S.joinedEins.push(p.ein);
-  S.sheet = null; if (['signup','role','claim','verify'].includes(S.screen)) S.screen = 'feed';
+  S.sheet = null; if (['signup','role','claim','verify','bizsetup'].includes(S.screen)) S.screen = 'feed';
   const unread = S.notifs.filter(n=>n.ein===p.ein&&!n.read).length;
   render(); if (unread) toast(`${p.name} · ${ORG(p.ein).name}: ${unread} new alert${unread===1?'':'s'} in Inbox`);
 }
@@ -565,7 +592,9 @@ async function playStep(){ if (playing) return; playing = true; try { const i = 
 function setStep(i){ S.step = Math.max(0, Math.min(STEPS.length-1, i)); STEPS[S.step].enter(); S.sheet=null; save(); render(); }
 // Called after every user action: if the action just completed the current step, move the guide forward.
 function syncStep(wasDone){ if (!wasDone && S.step < STEPS.length-1 && STEPS[S.step].done()) { S.step++; save(); } }
-function finishClaim(){ switchTo('casey'); ORG('911428805').verified = true; go('feed'); toast('You’re in. Welcome, Ballard Food Bank.'); }
+function finishClaim(){ const ein = S.claimPick || '911428805'; const o = ORG(ein);
+  if (ein === '911428805') switchTo('casey'); else { const email = S.signup.email || 'you@example.org'; S.user = { id:'you', name: email.split('@')[0].replace(/[._-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase()), ein, email }; if (!S.joinedEins.includes(ein)) S.joinedEins.push(ein); S.sheet = null; }
+  o.verified = true; go('feed'); toast('You’re in. Welcome, ' + o.name.replace(/\.$/, '') + '.'); }
 
 // =====================================================================
 // Rendering
@@ -620,7 +649,7 @@ function myMatches(){ return S.matches.filter(m => [m.need,m.offer].some(id => S
 function renderPhone(){
   let body = '';
   const s = S.screen;
-  if (!S.user && !['signup','role','claim','verify'].includes(s)) S.screen = 'signup';
+  if (!S.user && !['signup','role','claim','verify','bizsetup'].includes(s)) S.screen = 'signup';
   switch (S.screen) {
     case 'signup': { const em = !!S.signup.useEmail;
       body = `${topbar({help:false})}<div class="screen"><div style="height:8%"></div><h2 class="h center">Join Name TBD</h2><p class="sub center">Washington nonprofits, helping each other with what they have.</p><div style="height:10px"></div>
@@ -636,21 +665,46 @@ function renderPhone(){
       ${r&&r!=='np'?`<p class="demo">Demo: this path isn’t built yet. Pick A nonprofit to follow the story.</p>`:''}</div>
       <div class="cta-bar"><button class="btn primary" data-a="role-continue" ${kind?'':'disabled'}>${kind?kind[3]:'Pick one'}</button></div>`; break; }
     case 'claim': {
+      const role = S.signup.role || 'np';
+      const F = { np:['nonprofit','Which organization are you with?','Every Washington 501(c)(3) is already here, straight from the IRS.','Organization name or EIN','Ballard Food'],
+                  school:['school','Which school or district?','Every public school and district in Washington is here, from OSPI.','School or district name','Seattle'],
+                  workforce:['workforce','Which program are you with?','Workforce councils, WorkSource centers, and training programs in Washington.','Program name','WorkSource'],
+                  foundation:['foundation','Which foundation are you with?','Every Washington foundation is already here, straight from the IRS.','Foundation name or EIN','Seattle Foundation'] }[role] || ['nonprofit','Which organization are you with?','Every Washington 501(c)(3) is already here, straight from the IRS.','Organization name or EIN','Ballard Food'];
+      const [ktype, kh, ksub, kph, kdemo] = F;
       const q = S.claimQuery.trim().toLowerCase();
-      const digits = q.replace(/\D/g,''); const hits = q.length>=2 ? ORGS.filter(o => o.type==='nonprofit' && (o.name.toLowerCase().includes(q) || (digits.length>=2 && o.ein.includes(digits)))).slice(0,6) : [];
+      const digits = q.replace(/\D/g,''); const hits = q.length>=2 ? ORGS.filter(o => o.type===ktype && (o.name.toLowerCase().includes(q) || (digits.length>=2 && /^\d+$/.test(o.ein) && o.ein.includes(digits)))).slice(0,6) : [];
+      const line2 = o => /^\d{9}$/.test(o.ein) ? `${cap(o.city)} · EIN ${o.ein.slice(0,2)}-${o.ein.slice(2)} · ${o.sub||CAUSES[o.cause]}` : `${cap(o.city)} · ${o.sub||KIND_LABEL[o.type]}`;
       const pick = S.claimPick ? ORG(S.claimPick) : null;
-      body = `${topbar({back:'role',title:'Back',help:false})}<div class="screen"><h2 class="h">Which organization are you with?</h2><p class="sub">Every Washington 501(c)(3) is already here, straight from the IRS.</p>
-        <input id="claimq" class="search" placeholder="Organization name or EIN" value="${esc(S.claimQuery)}" autocomplete="off">
-        ${hits.map(o=>`<button class="card tap ${S.claimPick===o.ein?'sel':''}" data-a="claim-pick" data-id="${o.ein}"><span class="t" style="margin-top:0">${esc(o.name)}</span><span class="m">${cap(o.city)} · EIN ${o.ein.slice(0,2)}-${o.ein.slice(2)} · ${CAUSES[o.cause]}</span>${joined(o.ein)?'<span class="m verified">Already on Name TBD. Ask a member to invite you.</span>':''}</button>`).join('')}
-        ${q.length>=2&&!hits.length?`<div class="empty">Nothing by that name. Try the EIN instead.</div><p class="demo">Demo: 32 of Washington's 35,361 organizations are loaded.</p>`:''}
-        ${!q?`<p class="demo">Demo: try "Ballard Food".</p>`:''}</div>
+      body = `${topbar({back:'role',title:'Back',help:false})}<div class="screen"><h2 class="h">${kh}</h2><p class="sub">${ksub}</p>
+        <input id="claimq" class="search" placeholder="${kph}" value="${esc(S.claimQuery)}" autocomplete="off">
+        ${hits.map(o=>`<button class="card tap ${S.claimPick===o.ein?'sel':''}" data-a="claim-pick" data-id="${o.ein}"><span class="t" style="margin-top:0">${esc(o.name)}</span><span class="m">${line2(o)}</span>${joined(o.ein)?'<span class="m verified">Already on Name TBD. Ask a member to invite you.</span>':''}</button>`).join('')}
+        ${q.length>=2&&!hits.length?`<div class="empty">Nothing by that name.${ktype==='nonprofit'||ktype==='foundation'?' Try the EIN instead.':''}</div><p class="demo">Demo: only a few of Washington’s ${ktype==='nonprofit'?'35,361 organizations':ktype==='school'?'schools and districts':ktype==='workforce'?'workforce programs':'foundations'} are loaded.</p>`:''}
+        ${!q?`<p class="demo">Demo: try "${kdemo}".</p>`:''}</div>
         <div class="cta-bar"><button class="btn primary" data-a="claim-continue" ${pick?'':'disabled'}>${pick?'Join as '+esc(pick.name):'Pick your organization'}</button></div>`; break; }
+    case 'bizsetup': {
+      const b = S.biz || (S.biz = { name:'', city:'', website:'', ubi:'' });
+      const ok = b.name.trim() && b.city.trim() && /^\d{9}$/.test(b.ubi.replace(/\D/g,''));
+      body = `${topbar({back:'role',title:'Back',help:false})}<div class="screen"><h2 class="h">Your business</h2><p class="sub">We’ll check the name and UBI against the state’s business lookup.</p>
+        <input id="b-name" placeholder="Business name" value="${esc(b.name)}">
+        <input id="b-city" placeholder="City" value="${esc(b.city)}">
+        <input id="b-website" placeholder="Website" value="${esc(b.website)}" autocapitalize="off">
+        <input id="b-ubi" placeholder="UBI number (9 digits)" value="${esc(b.ubi)}" inputmode="numeric"><p class="hint" style="margin-top:-4px">It’s on your business license.</p></div>
+        <div class="cta-bar"><button class="btn primary" data-a="biz-confirm" ${ok?'':'disabled'}>Confirm my business</button></div>`; break; }
     case 'verify': {
-      const o = ORG(S.claimPick||'911428805'); const email = S.signup.email || 'casey@ballardfoodbank.org'; const domainOk = email.endsWith('@ballardfoodbank.org') && o.ein==='911428805';
-      const vp = S.verifyPick; const ways = [['mail','Get a code by mail','Sent to the address the IRS has. About a week.','Mail me a code'],['letter','Upload your IRS letter','Your determination letter.','Upload the letter'],['invite','Ask a member to invite you','Someone at your organization who’s already on Name TBD.','Ask for an invite']];
-      const way = ways.find(w=>w[0]===vp);
-      body = `${topbar({back:'claim',title:'Back',help:false})}<div class="screen"><h2 class="h">Confirm you’re with ${esc(o.name)}</h2>
-        ${domainOk?`<div class="card likely"><span class="t" style="margin-top:0">✓ Your email matches</span><span class="m"><b>ballardfoodbank.org</b> is the website the IRS has for this organization. You’re in.</span></div>`
+      const o = ORG(S.claimPick||'911428805'); const email = S.signup.email || 'casey@ballardfoodbank.org'; const edom = email.split('@')[1] || '';
+      const isBiz = o.type === 'business'; const ubi = (S.biz && S.biz.ubi || '').replace(/\D/g,'');
+      const domainOk = !!o.domain && edom.toLowerCase() === o.domain.toLowerCase() && (!isBiz || /^\d{9}$/.test(ubi));
+      const W = { mail:['mail','Get a code by mail', o.type==='school'?'Sent to the school office. About a week.':isBiz?'Sent to the address on your business license.':'Sent to the address the IRS has. About a week.','Mail me a code'],
+                  letter:['letter','Upload your IRS letter','Your determination letter.','Upload the letter'],
+                  invite:['invite','Ask a member to invite you','Someone at your organization who’s already on Name TBD.','Ask for an invite'] };
+      const ways = (o.type==='nonprofit'||o.type==='foundation' ? ['mail','letter','invite'] : ['mail','invite']).map(k=>W[k]);
+      const vp = S.verifyPick; const way = ways.find(w=>w[0]===vp);
+      const matchLine = isBiz ? `<b>${esc(o.domain)}</b> is the website you gave, and UBI ${ubi.slice(0,3)} ${ubi.slice(3,6)} ${ubi.slice(6)} is active with the state. You’re in.`
+        : o.type==='school' ? `<b>${esc(o.domain)}</b> is the district’s domain. You’re in.`
+        : o.type==='workforce' ? `<b>${esc(o.domain)}</b> is this program’s domain. You’re in.`
+        : `<b>${esc(o.domain||'')}</b> is the website the IRS has for this organization. You’re in.`;
+      body = `${topbar({back:isBiz?'bizsetup':'claim',title:'Back',help:false})}<div class="screen"><h2 class="h">Confirm ${isBiz?'':'you’re with '}${esc(o.name)}</h2>
+        ${domainOk?`<div class="card likely"><span class="t" style="margin-top:0">✓ Your email${isBiz?' and UBI':''} match${isBiz?'':'es'}</span><span class="m">${matchLine}</span></div>`
         :`<div class="card"><span class="t" style="margin-top:0">Your email doesn’t match</span><span class="m">Pick another way. A person checks each one.</span></div>
           ${ways.map(([k,t,d])=>`<button class="card tap ${vp===k?'sel':''}" data-a="verify-pick" data-k="${k}"><span class="role"><span class="r"></span><span><span class="t" style="margin:0">${t}</span><span class="m">${d}</span></span></span></button>`).join('')}
           <p class="demo">Demo: any of these confirms you right away.</p>`}</div>
@@ -976,7 +1030,7 @@ document.addEventListener('click', async e => {
   const guideAction = ['guide-toggle','step','prev','next','play','reset'].includes(a);
   const wasDone = guideAction ? true : STEPS[S.step].done();
   if (!guideAction) setTimeout(() => { syncStep(wasDone); render(); }, 0);
-  const read = () => { const g = i => document.getElementById(i); if (S.screen==='post' && g('d-title')) S.draft = { ...S.draft, title:g('d-title').value, category:g('d-category').value, cadence:g('d-cadence')?g('d-cadence').value:'One-time', urgency:g('d-urgency')?g('d-urgency').value:'Normal', qty:g('d-qty').value, unit:g('d-unit').value, desc:g('d-desc').value, tags:g('d-tags').value }; if (S.screen==='orgs' && g('orgq')) S.orgFilter = { ...S.orgFilter, q:g('orgq').value, cause:g('cause').value, city:g('city').value }; if (S.screen==='claim' && g('claimq')) S.claimQuery = g('claimq').value; if (S.screen==='signup' && g('email')) S.signup.email = g('email').value; };
+  const read = () => { const g = i => document.getElementById(i); if (S.screen==='post' && g('d-title')) S.draft = { ...S.draft, title:g('d-title').value, category:g('d-category').value, cadence:g('d-cadence')?g('d-cadence').value:'One-time', urgency:g('d-urgency')?g('d-urgency').value:'Normal', qty:g('d-qty').value, unit:g('d-unit').value, desc:g('d-desc').value, tags:g('d-tags').value }; if (S.screen==='orgs' && g('orgq')) S.orgFilter = { ...S.orgFilter, q:g('orgq').value, cause:g('cause').value, city:g('city').value }; if (S.screen==='claim' && g('claimq')) S.claimQuery = g('claimq').value; if (S.screen==='bizsetup' && g('b-name')) S.biz = { name:g('b-name').value, city:g('b-city').value, website:g('b-website').value, ubi:g('b-ubi').value }; if (S.screen==='signup' && g('email')) S.signup.email = g('email').value; };
   switch (a) {
     case 'guide-toggle': S.guideMin = !S.guideMin; document.getElementById('guide').classList.toggle('min', S.guideMin); render(); document.getElementById('guide').classList.toggle('min', S.guideMin); return;
     case 'step': setStep(+el.dataset.i); break;
@@ -989,8 +1043,12 @@ document.addEventListener('click', async e => {
     case 'signup-toggle': read(); S.signup.useEmail = !S.signup.useEmail; render(); return;
     case 'signup-email': read(); if (!S.signup.email) { toast('Enter your email first.'); return; } go('role'); return;
     case 'role': S.signup.role = el.dataset.k; render(); return;
-    case 'role-continue': if (S.signup.role==='np') go('claim'); else render(); return;
-    case 'claim-pick': read(); S.claimPick = id; render(); return;
+    case 'role-continue': { const r = S.signup.role; if (['np','school','workforce','foundation'].includes(r)) { S.claimQuery=''; S.claimPick=null; go('claim'); } else if (r==='biz') go('bizsetup'); else render(); return; }
+    case 'biz-confirm': { read(); const b = S.biz; if (!b) return; const host = (b.website||'').replace(/^https?:\/\//i,'').replace(/^www\./i,'').split('/')[0].toLowerCase(); const ein = 'B-you';
+      const existing = ORG(ein); const rec = { ...(existing||{}), ein, name:b.name.trim(), city:b.city.trim().toUpperCase(), zip:'', cause:'S', inc:'', rev:0, ruling:'', filing:'', needTags:[], haveTags:[], type:'business', sub:'Business', domain:host };
+      if (!existing) ORGS.push(rec); else Object.assign(existing, rec); const c = CITY[rec.city] || [47.3,-120.5]; rec.lat = c[0]; rec.lon = c[1];
+      S.claimPick = ein; S.verifyPick = null; go('verify'); return; }
+    case 'claim-pick': read(); S.claimPick = id; S.verifyPick = null; render(); return;
     case 'claim-continue': read(); if (S.claimPick) go('verify'); return;
     case 'verify-pick': S.verifyPick = el.dataset.k; render(); return;
     case 'claim-finish': finishClaim(); return;
@@ -1036,6 +1094,7 @@ document.addEventListener('click', async e => {
 document.addEventListener('input', e => {
   if (e.target.id === 'flt-radius') { S.filter.radius = +e.target.value; const lbl = e.target.nextElementSibling; if (lbl) lbl.textContent = S.filter.radius ? S.filter.radius + ' mi' : 'any distance'; }
   if (e.target.id === 'claimq') { S.claimQuery = e.target.value; S.claimPick = null; const pos = e.target.selectionStart; render(); const el = document.getElementById('claimq'); el.focus(); el.setSelectionRange(pos,pos); }
+  if (['b-name','b-city','b-website','b-ubi'].includes(e.target.id)) { const g = i => document.getElementById(i); S.biz = { name:g('b-name').value, city:g('b-city').value, website:g('b-website').value, ubi:g('b-ubi').value }; const id = e.target.id, pos = e.target.selectionStart; render(); const el = document.getElementById(id); el.focus(); el.setSelectionRange(pos,pos); }
   if (e.target.id === 'orgq') { S.orgFilter.q = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('orgq'); el.focus(); el.setSelectionRange(pos,pos); }
   if (e.target.id === 'd-title') { S.draft.title = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('d-title'); el.focus(); el.setSelectionRange(pos,pos); }
 });
