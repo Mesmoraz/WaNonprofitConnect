@@ -134,7 +134,8 @@
   .center { text-align: center; }
   .stack { display: flex; flex-direction: column; gap: 8px; }
   .hint { font-size: 12px; color: var(--ink-3); }
-  .demo { display: block; width: 100%; text-align: center; font-size: 12px; color: var(--ink-3); margin-top: auto; padding: 8px 0; }
+  .demo { display: block; width: 100%; text-align: center; font-size: 12px; color: var(--ink-3); padding: 4px 0; }
+  .demo.bottom { margin-top: auto; padding: 8px 0; }
   .link { display: block; width: 100%; text-align: center; font-size: 14px; font-weight: 600; color: var(--accent); padding: 6px 0; }
   .role { display: grid; grid-template-columns: 24px 1fr; gap: 10px; align-items: start; }
   .role .r { width: 20px; height: 20px; border: 2px solid var(--line); border-radius: 50%; margin-top: 2px; }
@@ -624,21 +625,21 @@ function renderPhone(){
       ${em?`<input id="email" placeholder="you@yourorganization.org" value="${esc(S.signup.email||'')}" autocomplete="off"><button class="btn primary" data-a="signup-email">Sign in with email</button><button class="link" data-a="signup-toggle">Use Google instead</button>`
           :`<button class="btn primary" data-a="signup-google">Sign in with Google</button><button class="link" data-a="signup-toggle">Use email instead</button>`}
       <p class="hint center" style="margin-top:20px">Free. No forms. Your organization is already here.</p>
-      <button class="demo" data-a="sheet-who">Demo: play as someone else</button></div>`; break; }
+      <button class="demo bottom" data-a="sheet-who">Demo: play as someone else</button></div>`; break; }
     case 'role': { const r = S.signup.role; const next = { np:'Find my organization', biz:'Sign up as a business', sup:'Sign up as a supporter' }[r] || 'Find my organization';
       body = `${topbar({back:'signup',title:'Back',help:false})}<div class="screen"><h2 class="h">Who are you here as?</h2><p class="sub">Signed in as ${esc(S.signup.email||'casey@ballardfoodbank.org')}</p>
       ${[['np','A nonprofit','I work or volunteer at a 501(c)(3). Free.'],['biz','A business','We have goods or services to give.'],['sup','A supporter','I want to follow and help causes near me.']].map(([k,t,d])=>`<button class="card tap ${r===k?'sel':''}" data-a="role" data-k="${k}"><span class="role"><span class="r"></span><span><span class="t" style="margin:0">${t}</span><span class="m">${d}</span></span></span></button>`).join('')}
-      <button class="btn primary" data-a="role-continue" ${r?'':'disabled'}>${next}</button>${r&&r!=='np'?`<p class="demo" style="margin-top:0">Demo: only the nonprofit path is built. Pick A nonprofit to follow the story.</p>`:''}</div>`; break; }
+      <button class="btn primary" data-a="role-continue" ${r?'':'disabled'}>${next}</button>${r&&r!=='np'?`<p class="demo">Demo: only the nonprofit path is built. Pick A nonprofit to follow the story.</p>`:''}</div>`; break; }
     case 'claim': {
       const q = S.claimQuery.trim().toLowerCase();
-      const hits = q.length>=2 ? ORGS.filter(o => o.name.toLowerCase().includes(q) || o.ein.includes(q.replace(/\D/g,''))).slice(0,6) : [];
-      body = `${topbar({back:'role',title:'Back'})}<div class="screen"><h2 class="h">Which organization are you with?</h2><p class="sub">Every WA 501(c)(3) is already here from the IRS. Just find yours.</p>
+      const digits = q.replace(/\D/g,''); const hits = q.length>=2 ? ORGS.filter(o => o.type==='nonprofit' && (o.name.toLowerCase().includes(q) || (digits.length>=2 && o.ein.includes(digits)))).slice(0,6) : [];
+      const pick = S.claimPick ? ORG(S.claimPick) : null;
+      body = `${topbar({back:'role',title:'Back',help:false})}<div class="screen"><h2 class="h">Which organization are you with?</h2><p class="sub">Every Washington 501(c)(3) is already here, straight from the IRS.</p>
         <input id="claimq" placeholder="Organization name or EIN" value="${esc(S.claimQuery)}" autocomplete="off">
-        ${hits.map(o=>`<button class="card tap ${S.claimPick===o.ein?'sel':''}" data-a="claim-pick" data-id="${o.ein}"><span class="t" style="margin-top:0">${esc(o.name)}</span><span class="m">${cap(o.city)} · EIN ${o.ein.slice(0,2)}-${o.ein.slice(2)} · ${CAUSES[o.cause]}</span><span class="m"><span class="pill grey">IRS-listed 501(c)(3)</span> ${joined(o.ein)?'<span class="verified">already on Name TBD — ask a member to invite you</span>':''}</span></button>`).join('')}
-        ${q.length>=2&&!hits.length?`<div class="empty">No match in this demo’s 32 sample orgs (the real app searches all 35,361).</div>`:''}
-        ${!q?`<p class="hint">Try "Ballard Food" or "91-1428805".</p>`:''}
-        <p class="hint center">Not a 501(c)(3)? <u>Join as a business or supporter</u></p></div>
-        <div class="cta-bar"><button class="btn primary" data-a="claim-continue" ${S.claimPick?'':'disabled'}>This is my organization</button></div>`; break; }
+        ${hits.map(o=>`<button class="card tap ${S.claimPick===o.ein?'sel':''}" data-a="claim-pick" data-id="${o.ein}"><span class="t" style="margin-top:0">${esc(o.name)}</span><span class="m">${cap(o.city)} · EIN ${o.ein.slice(0,2)}-${o.ein.slice(2)} · ${CAUSES[o.cause]}</span>${joined(o.ein)?'<span class="m verified">Already on Name TBD. Ask a member to invite you.</span>':''}</button>`).join('')}
+        ${q.length>=2&&!hits.length?`<div class="empty">Nothing by that name. Try the EIN instead.</div><p class="demo">Demo: 32 of Washington's 35,361 organizations are loaded.</p>`:''}
+        ${!q?`<p class="demo">Demo: try "Ballard Food".</p>`:''}</div>
+        <div class="cta-bar"><button class="btn primary" data-a="claim-continue" ${pick?'':'disabled'}>${pick?'Join as '+esc(pick.name):'Pick your organization'}</button></div>`; break; }
     case 'verify': {
       const o = ORG(S.claimPick||'911428805'); const email = S.signup.email || 'casey@ballardfoodbank.org'; const domainOk = email.endsWith('@ballardfoodbank.org') && o.ein==='911428805';
       body = `${topbar({back:'claim',title:'Back'})}<div class="screen"><h2 class="h">Verify you’re with ${esc(o.name)}</h2>
