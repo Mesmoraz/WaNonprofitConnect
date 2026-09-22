@@ -109,6 +109,10 @@
   .row { display: flex; gap: 8px; }
   .row > * { flex: 1; }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chips.scroller { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -14px; padding: 0 14px 2px; }
+  .chips.scroller::-webkit-scrollbar { display: none; }
+  .chips.scroller .chip { flex: none; }
+  .empty u { color: var(--accent); cursor: pointer; }
   .chip { border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 500; background: var(--paper); }
   .chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
   .chip.tag { background: var(--paper-2); }
@@ -241,8 +245,9 @@
   .legend b { display: inline-block; width: 18px; height: 0; border-top: 3px solid; vertical-align: 3px; margin-right: 4px; }
   .slider { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-2); }
   .slider input { flex: 1; padding: 0; border: 0; background: none; }
-  .tabs.six { grid-template-columns: repeat(6, 1fr); }
-  .tabs.six .tab { font-size: 10px; }
+  .tabs { grid-template-columns: repeat(5, 1fr); }
+  .tabs.four { grid-template-columns: repeat(4, 1fr); }
+  .tabs .tab { font-size: 10px; }
   .cta-bar { border-top: 1px solid var(--line-2); background: var(--paper); padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px)); }
   .cta-bar .btn { margin: 0; }
 
@@ -1443,12 +1448,12 @@ function suggestions(listing) {
 let S;
 function fresh() {
   const seeded = seedExtras(seedListings());
-  return { step:0, screen:'signup', signup:{}, user:null, listings:seeded, matches:seedMatches(seeded), filter:{ kind:'All', category:'', who:'All', radius:0, threads:{ Completed:true, Accepted:true, Proposed:true, suggested:false } }, filtersOpen:false, map:{ sel:null, selMatch:null, k:1, tx:0, ty:0 }, notifs:[], follows:[], nextId:30, feedFilter:'All', orgFilter:{ q:'', cause:'', city:'', joined:false, open:false }, draft:null, sel:null, toast:null, sheet:null, claimQuery:'', claimPick:null, verifyPick:null, biz:null, about:null, guideMin:false, joinedEins:['822888626','581735531','911606330','465378620','811434757','910826037','223939593','237421892','911425676','911546757'] };
+  return { step:0, screen:'signup', signup:{}, user:null, listings:seeded, matches:seedMatches(seeded), boardQuery:'', filter:{ kind:'All', help:'', who:'All', radius:0, threads:{ Completed:true, Accepted:true, Proposed:true, suggested:false } }, filtersOpen:false, map:{ sel:null, selMatch:null, k:1, tx:0, ty:0 }, notifs:[], follows:[], nextId:30, feedFilter:'All', orgFilter:{ q:'', cause:'', city:'', joined:false, open:false }, draft:null, sel:null, toast:null, sheet:null, claimQuery:'', claimPick:null, verifyPick:null, biz:null, about:null, guideMin:false, joinedEins:['822888626','581735531','911606330','465378620','811434757','910826037','223939593','237421892','911425676','911546757'] };
 }
 function save(){ try { localStorage.setItem('helpbook-proto', JSON.stringify(S)); } catch(e){} }
 function load(){ try { const j = localStorage.getItem('helpbook-proto'); if (j) { S = JSON.parse(j); return true; } } catch(e){} return false; }
 if (!load()) S = fresh();
-if (!S.filter) S.filter = { kind:'All', category:'', who:'All', radius:0, threads:{ Completed:true, Accepted:true, Proposed:true, suggested:false } };
+if (!S.filter) S.filter = { kind:'All', help:'', who:'All', radius:0, threads:{ Completed:true, Accepted:true, Proposed:true, suggested:false } };
 if (!S.filter.threads) S.filter.threads = { Completed:true, Accepted:true, Proposed:true, suggested:false };
 if (!S.map || !S.map.k) S.map = { sel:null, selMatch:null, k:1, tx:0, ty:0 };
 seedExtras(S.listings);
@@ -1625,14 +1630,16 @@ function renderGuide(){
 
 function topbar(opts={}){
   const m = me();
-  const who = m ? `<button class="who" data-a="sheet-who"><span class="dot">${esc(S.user.name[0])}</span><span>${esc(S.user.name)} · ${esc(m.name)}</span></button>` : '';
+  const who = m ? `<button class="who" data-a="go" data-s="me"><span class="dot">${esc(S.user.name[0])}</span><span>${esc(S.user.name)} · ${esc(m.name)}</span></button>` : '';
   return `<div class="topbar">${opts.back?`<button class="back" data-a="go" data-s="${opts.back}">← ${esc(opts.title||'Back')}</button>`:`<span class="logo">Name TBD</span>`}<span class="right">${opts.help===false?'':'<button class="helpbtn" data-a="sheet-help" aria-label="How this works">?</button>'}${who}</span></div>`;
 }
 function tabs(on){
   const unread = S.user ? S.notifs.filter(n=>n.ein===S.user.ein&&!n.read).length + S.matches.filter(m=>m.status==='Proposed'&&m.by!==S.user.ein&&[m.need,m.offer].some(id=>S.listings.find(l=>l.id===id).ein===S.user.ein)).length : 0;
   const t = (id,ic,lbl,cls='') => `<button class="tab ${on===id?'on':''} ${cls}" data-a="go" data-s="${id}"><span class="ic">${ic}</span>${lbl}${id==='inbox'&&unread?`<span class="badge">${unread}</span>`:''}</button>`;
-  return `<div class="tabs six">${t('feed','☷','Board')}${t('map','◎','Map')}${t('orgs','⌂','Orgs')}${t('post','+','Post','plus')}${t('inbox','✉','Inbox')}${t('me','☺','Me')}</div>`;
+  const canGrants = me() && me().type !== 'person';
+  return `<div class="tabs${canGrants?'':' four'}">${t('feed','☷','Board')}${t('map','◎','Map')}${t('post','+','Post','plus')}${canGrants?t('grants','◆','Grants'):''}${t('inbox','✉','Inbox')}</div>`;
 }
+function boardSearch(){ return `<input id="boardq" class="search" placeholder="Search everyone here" value="${esc(S.boardQuery||'')}" autocomplete="off">`; }
 function listingCard(l, extra=''){
   const o = ORG(l.ein); const q = l.qty ? ` · ${l.qty} ${esc(l.unit)}` : '';
   return `<button class="card tap" data-a="go" data-s="listing" data-id="${l.id}"><span class="pill ${l.kind.toLowerCase()}">${l.kind.toUpperCase()}${cadenceTag(l)}</span> ${priPill(l)} ${l.status!=='Open'?`<span class="pill grey">${l.status}</span>`:''}<span class="t">${esc(l.title)}</span><span class="m">${esc(o.name)} · ${cap(o.city)}${q} · ${ago(l.createdAt)}</span>${extra}</button>`;
@@ -1721,15 +1728,28 @@ function renderPhone(){
           <p class="demo">Demo: any of these confirms you right away.</p>`}</div>
         <div class="cta-bar"><button class="btn primary" data-a="claim-finish" ${domainOk||way?'':'disabled'}>${domainOk?'Go to the board':way?way[3]:'Pick a way to confirm'}</button></div>`; break; }
     case 'feed': {
+      const q = (S.boardQuery || '').trim().toLowerCase();
+      if (q.length >= 2) {
+        const digits = q.replace(/\D/g,'');
+        const hits = ORGS.filter(o => o.name.toLowerCase().includes(q) || (digits.length>=2 && /^\d+$/.test(o.ein) && o.ein.includes(digits))).slice(0,20);
+        body = `${topbar()}<div class="screen">${boardSearch()}
+          ${hits.map(o=>`<button class="card tap" data-a="go" data-s="org" data-id="${o.ein}"><span class="t" style="margin-top:0">${esc(o.name)}</span><span class="m">${cap(o.city)} · ${o.sub||KIND_LABEL[o.type]}${joined(o.ein)||o.verified?' · <span class="verified">on Name TBD</span>':''}</span></button>`).join('')
+            || '<div class="empty">No one by that name. Try an EIN.</div>'}</div>${tabs('feed')}`; break; }
       const ranked = rankFeed(S.listings.filter(l => listingPasses(l)));
-      const ls = ranked.map(r => r.l);
-      const n = activeFilterCount();
-      body = `${topbar()}<div class="screen"><div class="row"><button class="btn need sm" style="flex:1" data-a="new" data-k="Need">+ I need something</button><button class="btn primary sm" style="flex:1" data-a="new" data-k="Offer">+ I have something</button></div>
-        <div class="flt-head"><span>${ls.length} listing${ls.length===1?'':'s'}${n?' · filtered, same as the Map':''}</span><button data-a="flt-toggle">${S.filtersOpen?'Hide filters':'Filters'}</button></div>
-        ${n && !S.filtersOpen ? `<div class="chips">${activeFilterChips()}</div>` : ''}
+      const open = ranked.filter(r => r.l.status === 'Open').length, done = S.matches.filter(m => m.status === 'Completed').length;
+      const n = activeFilterCount() + (S.filter.help ? 1 : 0);
+      body = `${topbar()}<div class="screen">${boardSearch()}
+        <div class="chips scroller">${[['','All']].concat(HELPS.map(x=>[x,x])).map(([v,t])=>`<button class="chip ${(S.filter.help||'')===v?'on':''}" data-a="flt-help" data-v="${esc(v)}">${esc(t)}</button>`).join('')}</div>
+        <div class="flt-head"><span>${open} open · ${done} done</span><button data-a="flt-toggle">Filters${n?' · '+n:''}</button></div>
         ${S.filtersOpen ? filterBlock(false) : ''}
-        ${ranked.map(r=>listingCard(r.l, `<span class="why">${r.why}</span>`)).join('')||'<div class="empty">Nothing matches these filters.</div>'}
-        <p class="hint">Order: priority first, then whoever has been seen least. No org holds more than 2 of the top 6, and one top slot always goes to the least-seen listing.</p></div>${tabs('feed')}`; break; }
+        ${ranked.map(r=>listingCard(r.l, `<span class="why">${r.why}</span>`)).join('')
+          || (S.filter.help ? `<div class="empty">Nothing under ${esc(S.filter.help)} yet. <u data-a="new" data-k="Need">Post the first one?</u></div>`
+                            : '<div class="empty">Nothing here with those filters. <u data-a="flt-clear">Clear them?</u></div>')}
+        <p class="hint">Urgent first, then whoever’s been seen least.</p></div>${tabs('feed')}`; break; }
+    case 'grants': {
+      body = `${topbar()}<div class="screen"><h2 class="h">Grants</h2><p class="sub">Money your organization can apply for. We point you to it; you apply on the funder’s own site.</p>
+        <div class="empty">Nothing here yet.</div>
+        <p class="demo">Demo: ${GRANTS.length} real programs are loaded. The search is being built next.</p></div>${tabs('grants')}`; break; }
     case 'orgs': {
       const f = S.orgFilter; let os = ORGS.filter(o => o.type === 'nonprofit');
       if (f.q) os = os.filter(o=>o.name.toLowerCase().includes(f.q.toLowerCase())||o.ein.includes(f.q));
@@ -1859,20 +1879,21 @@ function countViews() { // called when the Board is opened: the first 6 shown ge
 }
 
 // ---- Shared filters (Board + Map) ------------------------------------------
-const activeFilterCount = () => { const f = S.filter; return (f.kind!=='All') + (!!f.category) + (f.who!=='All') + (!!f.radius); };
+const HELPS = ['Things','Time','Skills','For schools','Jobs and mentoring','Partnership','Together'];
+const activeFilterCount = () => { const f = S.filter; return (f.kind!=='All') + (f.who!=='All') + (!!f.radius); };
 function listingPasses(l, f = S.filter) {
   const mine = me();
   return (l.status==='Open' || l.status==='Matched')
     && (f.kind==='All' || l.kind===f.kind)
-    && (!f.category || l.category===f.category)
-    && (f.who==='All' || ORG(l.ein).type===f.who)
+    && (!f.help || l.help===f.help)
+    && (f.who==='All' || (f.who==='person' ? ORG(l.ein).type==='person' : ORG(l.ein).type!=='person'))
     && (!f.radius || !mine || MILES(mine, ORG(l.ein)) <= f.radius);
 }
 function activeFilterChips() {
   const f = S.filter, c = [];
   if (f.kind !== 'All') c.push(['kind', f.kind + 's']);
-  if (f.who !== 'All') c.push(['who', f.who === 'person' ? 'Community members' : f.who === 'business' ? 'Businesses' : 'Nonprofits']);
-  if (f.category) c.push(['category', f.category]);
+  if (f.who !== 'All') c.push(['who', f.who === 'person' ? 'People' : 'Organizations']);
+  if (f.help) c.push(['help', f.help]);
   if (f.radius) c.push(['radius', 'within ' + f.radius + ' mi']);
   return c.map(([k, l]) => `<button class="chip on" data-a="flt-off" data-k="${k}">${l} ×</button>`).join('');
 }
@@ -1880,8 +1901,7 @@ function filterBlock(showThreads) {
   const f = S.filter;
   return `<div class="flt">
     <div class="chips">${['All','Need','Offer'].map(k=>`<button class="chip ${f.kind===k?'on':''}" data-a="flt" data-k="kind" data-v="${k}">${k==='All'?'Needs + offers':k+'s'}</button>`).join('')}</div>
-    <div class="chips">${['All','nonprofit','business','person'].map(k=>`<button class="chip ${f.who===k?'on':''}" data-a="flt" data-k="who" data-v="${k}">${k==='All'?'Anyone':k==='person'?'Community members':k==='business'?'Businesses':'Nonprofits'}</button>`).join('')}</div>
-    <select id="flt-category"><option value="">Any category</option>${CATEGORIES.map(c=>`<option ${f.category===c?'selected':''}>${c}</option>`).join('')}</select>
+    <div class="chips">${['All','org','person'].map(k=>`<button class="chip ${f.who===k?'on':''}" data-a="flt" data-k="who" data-v="${k}">${k==='All'?'Anyone':k==='person'?'People':'Organizations'}</button>`).join('')}</div>
     <div class="slider"><span>Within</span><input id="flt-radius" type="range" min="0" max="300" step="10" value="${f.radius}"><span style="min-width:56px">${f.radius?f.radius+' mi':'any distance'}</span></div>
     ${showThreads ? `<div class="label">Connections</div><div class="chips">${[['Completed','Completed'],['Accepted','In progress'],['Proposed','Proposed'],['suggested','Suggested']].map(([k,l])=>`<button class="chip ${f.threads[k]?'on':''}" data-a="flt-thread" data-k="${k}">${l}</button>`).join('')}</div>` : ''}
     ${activeFilterCount() ? `<button class="btn sm quiet" data-a="flt-clear">Clear filters</button>` : ''}
@@ -1946,7 +1966,7 @@ function renderMap(){
   const inRadius = o => !f.radius || MILES(mine, o) <= f.radius;
   const matchOk = m => { const n=S.listings.find(l=>l.id===m.need), o=S.listings.find(l=>l.id===m.offer); if (!n||!o||m.status==='Declined'||m.status==='Cancelled') return false;
     if (!f.threads[m.status]) return false;
-    const ends=[ORG(n.ein),ORG(o.ein)]; return (!f.category || n.category===f.category) && (f.who==='All' || ends.some(e=>e.type===f.who)) && ends.some(inRadius); };
+    const ends=[ORG(n.ein),ORG(o.ein)]; return (!f.help || n.help===f.help) && (f.who==='All' || ends.some(e=>f.who==='person' ? e.type==='person' : e.type!=='person')) && ends.some(inRadius); };
   const threads = S.matches.filter(matchOk);
   const suggested = f.threads.suggested ? S.listings.filter(l=>l.kind==='Need'&&l.status==='Open'&&listingOk(l)).map(n=>{ const best=suggestions(n)[0]; return best ? { need:n, offer:best.l, s:best.s } : null; }).filter(Boolean) : [];
   const path = 'M' + WA_OUTLINE.map(([lon,lat]) => PROJ.x(lon).toFixed(1)+','+PROJ.y(lat).toFixed(1)).join(' L') + ' Z';
@@ -2102,8 +2122,9 @@ document.addEventListener('click', async e => {
     case 'flt': read(); S.filter[el.dataset.k] = el.dataset.v; S.map.sel = null; S.map.selMatch = null; render(); return;
     case 'flt-thread': S.filter.threads[el.dataset.k] = !S.filter.threads[el.dataset.k]; render(); return;
     case 'flt-toggle': S.filtersOpen = !S.filtersOpen; render(); return;
-    case 'flt-clear': S.filter = { ...S.filter, kind:'All', category:'', who:'All', radius:0 }; render(); return;
-    case 'flt-off': { const k = el.dataset.k; S.filter[k] = k === 'radius' ? 0 : k === 'category' ? '' : 'All'; render(); return; }
+    case 'flt-help': S.filter.help = el.dataset.v; S.map.sel = null; S.map.selMatch = null; render(); return;
+    case 'flt-clear': S.filter = { ...S.filter, kind:'All', help:'', who:'All', radius:0 }; render(); return;
+    case 'flt-off': { const k = el.dataset.k; S.filter[k] = k === 'radius' ? 0 : k === 'help' ? '' : 'All'; render(); return; }
     case 'map-focus': { const m = S.matches.find(x=>x.id===+id); if (!m) return; S.map.selMatch = m.id; S.map.sel = null; S.sheet = null; const t = { k:S.map.k, tx:S.map.tx, ty:S.map.ty }; fitView(t, [ORG(S.listings.find(l=>l.id===m.need).ein), ORG(S.listings.find(l=>l.id===m.offer).ein)], { separate:true }); render(); animateView(t); return; }
     case 'map-pin': if (gesture.moved) return; S.map.sel = S.map.sel === id ? null : id; S.map.selMatch = null; render(); return;
     case 'map-cluster': { if (gesture.moved) return; const members = (el.dataset.members || '').split(',').map(ORG).filter(Boolean); const before = S.map.k; const t = { k:S.map.k, tx:S.map.tx, ty:S.map.ty }; if (members.length) fitView(t, members); if (t.k < before * 1.8) { const c = members.reduce((a,o)=>[a[0]+PROJ.x(o.lon)/members.length, a[1]+PROJ.y(o.lat)/members.length],[0,0]); t.k = before; t.tx = MAP_W/2 - c[0]*before; t.ty = MAP_H/2 - c[1]*before; zoomAt(t, 2.2, MAP_W/2, MAP_H/2); } S.map.sel = null; S.map.selMatch = null; animateView(t); return; }
@@ -2124,10 +2145,11 @@ document.addEventListener('input', e => {
   if (e.target.id === 'claimq') { S.claimQuery = e.target.value; S.claimPick = null; const pos = e.target.selectionStart; render(); const el = document.getElementById('claimq'); el.focus(); el.setSelectionRange(pos,pos); }
   if (['b-name','b-city','b-website','b-ubi'].includes(e.target.id)) { const g = i => document.getElementById(i); S.biz = { name:g('b-name').value, city:g('b-city').value, website:g('b-website').value, ubi:g('b-ubi').value }; const id = e.target.id, pos = e.target.selectionStart; render(); const el = document.getElementById(id); el.focus(); el.setSelectionRange(pos,pos); }
   if (['a-name','a-place','a-extra'].includes(e.target.id) && S.about) { readAbout(); syncAboutSave(); if (e.target.id === 'a-place') queuePlaceSug(); }
+  if (e.target.id === 'boardq') { S.boardQuery = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('boardq'); if (el) { el.focus(); el.setSelectionRange(pos,pos); } }
   if (e.target.id === 'orgq') { S.orgFilter.q = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('orgq'); el.focus(); el.setSelectionRange(pos,pos); }
   if (e.target.id === 'd-title') { S.draft.title = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('d-title'); el.focus(); el.setSelectionRange(pos,pos); }
 });
-document.addEventListener('change', e => { if (e.target.id === 'flt-category') { S.filter.category = e.target.value; render(); } if (e.target.id === 'flt-radius') { S.filter.radius = +e.target.value; render(); } if (['cause','city'].includes(e.target.id)) { S.orgFilter[e.target.id] = e.target.value; render(); } if (['d-category','d-cadence','d-urgency','d-qty','d-unit','d-desc','d-tags'].includes(e.target.id)) { S.draft[e.target.id.slice(2)] = e.target.value; render(); } });
+document.addEventListener('change', e => { if (e.target.id === 'flt-radius') { S.filter.radius = +e.target.value; render(); } if (['cause','city'].includes(e.target.id)) { S.orgFilter[e.target.id] = e.target.value; render(); } if (['d-category','d-cadence','d-urgency','d-qty','d-unit','d-desc','d-tags'].includes(e.target.id)) { S.draft[e.target.id.slice(2)] = e.target.value; render(); } });
 document.addEventListener('focusin', e => { if (e.target.id === 'a-place') { sugLast = null; renderPlaceSug(); } });
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && e.target.id === 'a-extra') { e.preventDefault(); const b = document.querySelector('[data-a="about-add"]'); if (b) b.click(); return; }

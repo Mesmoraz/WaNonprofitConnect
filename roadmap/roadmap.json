@@ -481,7 +481,7 @@
       "id": "S-17",
       "epic": "E-4",
       "title": "Board: kind-of-help chips, fair ranking, directory search at the top",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-21",
       "round": "B5",
       "tasks": []
@@ -526,7 +526,7 @@
       "id": "S-22",
       "epic": "E-5",
       "title": "Grants tab shows only for confirmed organizations",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-21",
       "tasks": []
     },

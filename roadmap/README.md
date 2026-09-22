@@ -6,29 +6,27 @@ Generated from `roadmap.json` on 2026-09-22. Don't edit this file; run `node scr
 
 | Backlog | Ready | In progress | In review | Done |
 | --- | --- | --- | --- | --- |
-| S-13 Foundations flagged from the IRS list's foundation code |  |  |  | S-1 Mission statement saved and pointed at from the repo |
-| S-17 Board: kind-of-help chips, fair ranking, directory search at the top |  |  |  | S-2 Voice sheet: ten rules and a words list |
-| S-18 A need or offer: who it's from, how it fits you, I can help / I need this |  |  |  | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
-| S-19 Post: kind of help first, then the rest |  |  |  | S-4 App map: five tabs, sixteen screens, three stories, order of work |
-| S-20 Thread and inbox: accept, message, mark done, golden |  |  |  | S-5 Sign up: one green button, email behind a link |
-| S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder |  |  |  | S-6 Who are you here as: six kinds, button label follows the pick |
-| S-22 Grants tab shows only for confirmed organizations |  |  |  | S-7 Find yours: list, words, and search follow the kind |
-| S-23 Directory: all six kinds, filter by kind, cause, city |  |  |  | S-8 Confirm: email-domain match per kind, ways to confirm per kind |
-| S-24 Profile: one layout, six shapes |  |  |  | S-9 About you: a person says where they are, what they can do, and when |
-| S-25 Map: fewer controls at once |  |  |  | S-10 Phone fixes found along the way |
-| S-26 Legend and pin colors for six kinds |  |  |  | S-11 Schools and districts from OSPI's public feature service |
-| S-27 Golden threads for every kind of help; Together as a multi-ended thread |  |  |  | S-12 Workforce programs from the WA Workforce Board list |
-| S-28 You: behind your name in the top bar |  |  |  | S-14 Needs and offers for all six kinds of help, plus people |
-| S-29 Casey needs laptops, trimmed to five steps |  |  |  | S-15 Three grants from real WA foundations' public pages, labeled as examples |
-| S-30 Dana has Saturdays |  |  |  | S-16 One Together initiative |
-| S-31 Casey finds a grant |  |  |  | S-34 IRS Business Master File loaded |
-| S-32 Help sheet and story wrapper rewritten in the voice |  |  |  | S-35 OSPI schools loader into a Schools table |
-| S-33 Design page rewritten to the mission |  |  |  | S-53 Prototype, design brief, and how-it-works pages live |
-| S-36 Pub 78 and revocation list, so IsActive is real |  |  |  | S-54 Roadmap page generated from roadmap.json |
-| S-37 Workforce programs list |  |  |  | S-62 Washington higher education: universities, community and technical colleges, private nonprofits |
-| S-38 WA business lookup (UBI) for business confirmation |  |  |  | S-65 Diagnose held-backspace on Android with docs/keytest.html and fix the real cause |
-| S-39 ASP.NET Identity replaces the X-Org-Ein header |  |  |  |  |
-| S-40 Claim an organization by kind, with the confirm methods from the taxonomy |  |  |  |  |
+| S-13 Foundations flagged from the IRS list's foundation code |  |  | S-17 Board: kind-of-help chips, fair ranking, directory search at the top | S-1 Mission statement saved and pointed at from the repo |
+| S-18 A need or offer: who it's from, how it fits you, I can help / I need this |  |  | S-22 Grants tab shows only for confirmed organizations | S-2 Voice sheet: ten rules and a words list |
+| S-19 Post: kind of help first, then the rest |  |  |  | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
+| S-20 Thread and inbox: accept, message, mark done, golden |  |  |  | S-4 App map: five tabs, sixteen screens, three stories, order of work |
+| S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder |  |  |  | S-5 Sign up: one green button, email behind a link |
+| S-23 Directory: all six kinds, filter by kind, cause, city |  |  |  | S-6 Who are you here as: six kinds, button label follows the pick |
+| S-24 Profile: one layout, six shapes |  |  |  | S-7 Find yours: list, words, and search follow the kind |
+| S-25 Map: fewer controls at once |  |  |  | S-8 Confirm: email-domain match per kind, ways to confirm per kind |
+| S-26 Legend and pin colors for six kinds |  |  |  | S-9 About you: a person says where they are, what they can do, and when |
+| S-27 Golden threads for every kind of help; Together as a multi-ended thread |  |  |  | S-10 Phone fixes found along the way |
+| S-28 You: behind your name in the top bar |  |  |  | S-11 Schools and districts from OSPI's public feature service |
+| S-29 Casey needs laptops, trimmed to five steps |  |  |  | S-12 Workforce programs from the WA Workforce Board list |
+| S-30 Dana has Saturdays |  |  |  | S-14 Needs and offers for all six kinds of help, plus people |
+| S-31 Casey finds a grant |  |  |  | S-15 Three grants from real WA foundations' public pages, labeled as examples |
+| S-32 Help sheet and story wrapper rewritten in the voice |  |  |  | S-16 One Together initiative |
+| S-33 Design page rewritten to the mission |  |  |  | S-34 IRS Business Master File loaded |
+| S-36 Pub 78 and revocation list, so IsActive is real |  |  |  | S-35 OSPI schools loader into a Schools table |
+| S-37 Workforce programs list |  |  |  | S-53 Prototype, design brief, and how-it-works pages live |
+| S-38 WA business lookup (UBI) for business confirmation |  |  |  | S-54 Roadmap page generated from roadmap.json |
+| S-39 ASP.NET Identity replaces the X-Org-Ein header |  |  |  | S-62 Washington higher education: universities, community and technical colleges, private nonprofits |
+| S-40 Claim an organization by kind, with the confirm methods from the taxonomy |  |  |  | S-65 Diagnose held-backspace on Android with docs/keytest.html and fix the real cause |
 | S-41 Admin review queue |  |  |  |  |
 | S-42 Kind of help on every need and offer |  |  |  |  |
 | S-43 Cadence and standing agreements |  |  |  |  |
@@ -53,7 +51,7 @@ Generated from `roadmap.json` on 2026-09-22. Don't edit this file; run `node scr
 
 ## Roadmap
 
-### I-1 A prototype that shows the whole mission · Backlog · 17/39 stories done
+### I-1 A prototype that shows the whole mission · In progress · 17/39 stories done
 
 Every kind of participant and every kind of help, on a phone, in the approved voice. The thing to hand someone so they get it in a minute.
 
@@ -119,21 +117,21 @@ Schools, programs, foundations, people, needs, offers, grants, and one Together,
 - **S-62** Washington higher education: universities, community and technical colleges, private nonprofits · Done
 - **S-63** Decide whether WSU branch campuses become their own rows, as UW's are · Backlog
 
-#### E-4 The core loop · Backlog · 0/4
+#### E-4 The core loop · In progress · 0/4
 
 Board, a need or offer, post, thread, inbox: the same flow for six kinds of help.
 
-- **S-17** Board: kind-of-help chips, fair ranking, directory search at the top · Backlog · round B5
+- **S-17** Board: kind-of-help chips, fair ranking, directory search at the top · In review · round B5
 - **S-18** A need or offer: who it's from, how it fits you, I can help / I need this · Backlog · round B6
 - **S-19** Post: kind of help first, then the rest · Backlog · round B7
 - **S-20** Thread and inbox: accept, message, mark done, golden · Backlog · round B8
 
-#### E-5 Grants · Backlog · 0/3
+#### E-5 Grants · In progress · 0/3
 
 Confirmed organizations search grants and leave to apply on the funder's site.
 
 - **S-21** Grants screen: eight filters, a grant card, Apply leaves to the funder · Backlog · round B9
-- **S-22** Grants tab shows only for confirmed organizations · Backlog
+- **S-22** Grants tab shows only for confirmed organizations · In review
 - **S-60** Render a funder's stated priorities as their quoted words, not our copy · Backlog
 
 #### E-6 Directory and profiles · Backlog · 0/2
