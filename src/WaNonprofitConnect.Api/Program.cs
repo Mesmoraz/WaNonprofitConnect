@@ -20,6 +20,11 @@ builder.Services.AddHttpClient<BmfImporter>(c =>
     c.Timeout = TimeSpan.FromMinutes(10);
     c.DefaultRequestHeaders.UserAgent.ParseAdd("WaNonprofitConnect/0.1");
 });
+builder.Services.AddHttpClient<SchoolsImporter>(c =>
+{
+    c.Timeout = TimeSpan.FromMinutes(2);
+    c.DefaultRequestHeaders.UserAgent.ParseAdd("WaNonprofitConnect/0.1");
+});
 builder.Services.AddScoped<ExchangeService>();
 builder.Services.AddScoped<IExchangeNotifier, SignalRExchangeNotifier>();
 builder.Services.AddScoped<ExchangeExceptionFilter>();

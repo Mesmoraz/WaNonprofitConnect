@@ -651,6 +651,172 @@ namespace WaNonprofitConnect.Data.Migrations
                     b.ToTable("Organizations");
                 });
 
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.School", b =>
+                {
+                    b.Property<int>("SchoolCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("County")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FirstSeenImportRunId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("GradeCategory")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("HighestGrade")
+                        .HasMaxLength(3)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(3)");
+
+                    b.Property<int>("LastSeenImportRunId")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<int>("LeaCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LeaName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("LowestGrade")
+                        .HasMaxLength(3)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(3)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("NameNormalized")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("PhysicalAddress")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("SchoolCategory")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Street")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Zip")
+                        .HasMaxLength(10)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<string>("Zip5")
+                        .HasMaxLength(5)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(5)");
+
+                    b.HasKey("SchoolCode");
+
+                    b.HasIndex("City");
+
+                    b.HasIndex("FirstSeenImportRunId");
+
+                    b.HasIndex("GradeCategory");
+
+                    b.HasIndex("LastSeenImportRunId");
+
+                    b.HasIndex("LeaCode");
+
+                    b.HasIndex("NameNormalized");
+
+                    b.HasIndex("Zip5");
+
+                    b.ToTable("Schools");
+                });
+
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.SchoolDistrict", b =>
+                {
+                    b.Property<int>("LeaCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("County")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FirstSeenImportRunId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LastSeenImportRunId")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("NameNormalized")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("SchoolCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Zip5")
+                        .HasMaxLength(5)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(5)");
+
+                    b.HasKey("LeaCode");
+
+                    b.HasIndex("County");
+
+                    b.HasIndex("FirstSeenImportRunId");
+
+                    b.HasIndex("LastSeenImportRunId");
+
+                    b.HasIndex("NameNormalized");
+
+                    b.ToTable("SchoolDistricts");
+                });
+
             modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Listing", b =>
                 {
                     b.HasOne("WaNonprofitConnect.Data.Entities.Organization", "Org")
@@ -711,6 +877,52 @@ namespace WaNonprofitConnect.Data.Migrations
                     b.Navigation("LastSeenImportRun");
                 });
 
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.School", b =>
+                {
+                    b.HasOne("WaNonprofitConnect.Data.Entities.ImportRun", "FirstSeenImportRun")
+                        .WithMany()
+                        .HasForeignKey("FirstSeenImportRunId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("WaNonprofitConnect.Data.Entities.ImportRun", "LastSeenImportRun")
+                        .WithMany()
+                        .HasForeignKey("LastSeenImportRunId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("WaNonprofitConnect.Data.Entities.SchoolDistrict", "District")
+                        .WithMany("Schools")
+                        .HasForeignKey("LeaCode")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("District");
+
+                    b.Navigation("FirstSeenImportRun");
+
+                    b.Navigation("LastSeenImportRun");
+                });
+
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.SchoolDistrict", b =>
+                {
+                    b.HasOne("WaNonprofitConnect.Data.Entities.ImportRun", "FirstSeenImportRun")
+                        .WithMany()
+                        .HasForeignKey("FirstSeenImportRunId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("WaNonprofitConnect.Data.Entities.ImportRun", "LastSeenImportRun")
+                        .WithMany()
+                        .HasForeignKey("LastSeenImportRunId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FirstSeenImportRun");
+
+                    b.Navigation("LastSeenImportRun");
+                });
+
             modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Listing", b =>
                 {
                     b.Navigation("MatchesAsNeed");
@@ -721,6 +933,11 @@ namespace WaNonprofitConnect.Data.Migrations
             modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Match", b =>
                 {
                     b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.SchoolDistrict", b =>
+                {
+                    b.Navigation("Schools");
                 });
 #pragma warning restore 612, 618
         }

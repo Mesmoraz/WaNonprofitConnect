@@ -14,6 +14,8 @@ public class AppDbContext : DbContext
     public DbSet<Listing> Listings => Set<Listing>();
     public DbSet<Match> Matches => Set<Match>();
     public DbSet<Message> Messages => Set<Message>();
+    public DbSet<School> Schools => Set<School>();
+    public DbSet<SchoolDistrict> SchoolDistricts => Set<SchoolDistrict>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -111,6 +113,52 @@ public class AppDbContext : DbContext
             b.Property(m => m.Body).HasMaxLength(4000).IsRequired();
             b.HasOne(m => m.Match).WithMany(x => x.Messages).HasForeignKey(m => m.MatchId).OnDelete(DeleteBehavior.Cascade);
             b.HasIndex(m => new { m.MatchId, m.SentAt });
+        });
+
+        modelBuilder.Entity<SchoolDistrict>(b =>
+        {
+            b.HasKey(d => d.LeaCode);
+            b.Property(d => d.LeaCode).ValueGeneratedNever();
+            b.Property(d => d.Name).HasMaxLength(200).IsRequired();
+            b.Property(d => d.NameNormalized).HasMaxLength(200).IsRequired();
+            b.Property(d => d.County).HasMaxLength(50);
+            b.Property(d => d.City).HasMaxLength(100);
+            b.Property(d => d.Zip5).HasMaxLength(5).IsUnicode(false);
+
+            b.HasIndex(d => d.NameNormalized);
+            b.HasIndex(d => d.County);
+
+            b.HasOne(d => d.FirstSeenImportRun).WithMany().HasForeignKey(d => d.FirstSeenImportRunId).OnDelete(DeleteBehavior.Restrict);
+            b.HasOne(d => d.LastSeenImportRun).WithMany().HasForeignKey(d => d.LastSeenImportRunId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<School>(b =>
+        {
+            b.HasKey(s => s.SchoolCode);
+            b.Property(s => s.SchoolCode).ValueGeneratedNever();
+            b.Property(s => s.Name).HasMaxLength(200).IsRequired();
+            b.Property(s => s.NameNormalized).HasMaxLength(200).IsRequired();
+            b.Property(s => s.PhysicalAddress).HasMaxLength(200);
+            b.Property(s => s.Street).HasMaxLength(200);
+            b.Property(s => s.City).HasMaxLength(100);
+            b.Property(s => s.Zip).HasMaxLength(10).IsUnicode(false);
+            b.Property(s => s.Zip5).HasMaxLength(5).IsUnicode(false);
+            b.Property(s => s.LeaName).HasMaxLength(200).IsRequired();
+            b.Property(s => s.SchoolCategory).HasMaxLength(200);
+            b.Property(s => s.GradeCategory).HasMaxLength(50);
+            b.Property(s => s.LowestGrade).HasMaxLength(3).IsUnicode(false);
+            b.Property(s => s.HighestGrade).HasMaxLength(3).IsUnicode(false);
+            b.Property(s => s.County).HasMaxLength(50);
+
+            b.HasIndex(s => s.LeaCode);
+            b.HasIndex(s => s.City);
+            b.HasIndex(s => s.Zip5);
+            b.HasIndex(s => s.GradeCategory);
+            b.HasIndex(s => s.NameNormalized);
+
+            b.HasOne(s => s.District).WithMany(d => d.Schools).HasForeignKey(s => s.LeaCode).OnDelete(DeleteBehavior.Restrict);
+            b.HasOne(s => s.FirstSeenImportRun).WithMany().HasForeignKey(s => s.FirstSeenImportRunId).OnDelete(DeleteBehavior.Restrict);
+            b.HasOne(s => s.LastSeenImportRun).WithMany().HasForeignKey(s => s.LastSeenImportRunId).OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<NteeCategory>(b =>

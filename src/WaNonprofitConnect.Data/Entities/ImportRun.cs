@@ -6,6 +6,8 @@ public enum ImportSource
     Pub78 = 2,
     Revocation = 3,
     EPostcard = 4,
+    /// <summary>OSPI Washington State Public Schools feature service (schools + derived districts).</summary>
+    Schools = 5,
 }
 
 public enum ImportStatus

@@ -11,6 +11,7 @@ using WaNonprofitConnect.Cli;
 
 // Usage:
 //   wanc import bmf [--state WA|all] [--url <csv url>] [--file <local csv>] [--force]
+//   wanc import schools [--url <feature layer url>] [--file <local snapshot.json>] [--force]
 //   wanc stats [--state WA]
 //   wanc imports
 //
@@ -46,6 +47,11 @@ builder.Services.AddHttpClient<BmfImporter>(c =>
     c.Timeout = TimeSpan.FromMinutes(10);
     c.DefaultRequestHeaders.UserAgent.ParseAdd("WaNonprofitConnect/0.1");
 });
+builder.Services.AddHttpClient<SchoolsImporter>(c =>
+{
+    c.Timeout = TimeSpan.FromMinutes(2);
+    c.DefaultRequestHeaders.UserAgent.ParseAdd("WaNonprofitConnect/0.1");
+});
 
 using var host = builder.Build();
 using var scope = host.Services.CreateScope();
@@ -70,6 +76,27 @@ switch (argv.Positional[0].ToLowerInvariant())
 
         var run = await importer.RunAsync(options);
         PrintRun(run);
+        return run.Status is ImportStatus.Succeeded or ImportStatus.SkippedUnchanged ? 0 : 1;
+    }
+
+    case "import" when argv.Positional.Count > 1 && argv.Positional[1].Equals("schools", StringComparison.OrdinalIgnoreCase):
+    {
+        var importer = scope.ServiceProvider.GetRequiredService<SchoolsImporter>();
+        var options = new SchoolsImportOptions
+        {
+            DataDirectory = Path.Combine(repoRoot, "data", "raw"),
+            Force = argv.Has("--force"),
+        };
+        if (argv.Value("--url") is { } url) options.Url = url;
+        if (argv.Value("--file") is { } file) options.LocalFile = Path.GetFullPath(file);
+
+        var run = await importer.RunAsync(options);
+        PrintRun(run);
+        if (run.Status is ImportStatus.Succeeded)
+        {
+            var districts = await db.SchoolDistricts.CountAsync(d => d.LastSeenImportRunId == run.Id);
+            Console.WriteLine($"  districts seen this run: {districts}");
+        }
         return run.Status is ImportStatus.Succeeded or ImportStatus.SkippedUnchanged ? 0 : 1;
     }
 
@@ -101,6 +128,8 @@ static void PrintUsage()
 
           import bmf [--state WA|all] [--url <csv>] [--file <local.csv>] [--force]
               Download the IRS EO BMF extract (default: eo_wa.csv) and upsert organizations.
+          import schools [--url <feature layer>] [--file <local.json>] [--force]
+              Page through OSPI's Washington State Public Schools feature service and upsert schools + districts.
           stats [--state WA|all]
               Print counts: total, 501(c)(3), by NTEE, foundation type, filing requirement, cities.
           imports
