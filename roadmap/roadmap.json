@@ -936,6 +936,14 @@
           "status": "done"
         }
       ]
+    },
+    {
+      "id": "S-66",
+      "epic": "E-4",
+      "title": "Opening a search result crashed the app: EINs were coerced to numbers",
+      "status": "review",
+      "added": "2026-09-22",
+      "tasks": []
     }
   ]
 }

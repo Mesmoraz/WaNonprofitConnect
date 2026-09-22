@@ -139,7 +139,7 @@
   .notif { border-left: 3px solid var(--need); }
   .notif.read { border-left-color: var(--line); opacity: 0.8; }
   .empty { color: var(--ink-3); text-align: center; padding: 30px 10px; font-size: 14px; }
-  .toast { position: absolute; left: 14px; right: 14px; bottom: 74px; background: var(--ink); color: var(--paper); padding: 10px 14px; border-radius: 10px; font-size: 13px; box-shadow: var(--shadow); z-index: 5; }
+  .toast { position: absolute; left: 14px; right: 14px; bottom: 86px; cursor: pointer; background: var(--ink); color: var(--paper); padding: 10px 14px; border-radius: 10px; font-size: 13px; box-shadow: var(--shadow); z-index: 5; }
   .sheet-bg { position: absolute; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: flex-end; z-index: 6; }
   .sheet { background: var(--paper); width: 100%; border-radius: 18px 18px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 8px; max-height: 80%; overflow: auto; }
   .verified { color: var(--good); font-weight: 600; font-size: 12px; }
@@ -266,6 +266,7 @@
     .tabs { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
     .sheet { max-height: 92%; padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
     .cta-bar { padding-bottom: calc(82px + env(safe-area-inset-bottom, 0px)); }
+    .toast { bottom: calc(132px + env(safe-area-inset-bottom, 0px)); }
   }
   @media (min-width: 861px) { .guide .mini { display: none; } }
   @media (prefers-reduced-motion: reduce) { .guide { transition: none; } }
@@ -1603,7 +1604,9 @@ function finishClaim(){ const ein = S.claimPick || '911428805'; const o = ORG(ei
 // =====================================================================
 const guideEl = document.getElementById('guide'), phoneEl = document.getElementById('phone');
 let measuring = false;
-function render(){ guideEl.innerHTML = renderGuide(); phoneEl.innerHTML = renderPhone(); save();
+function render(){ guideEl.innerHTML = renderGuide();
+  let html; try { html = renderPhone(); } catch (e) { console.warn('Screen failed, going back to the board.', S.screen, e); S.screen = 'feed'; S.sel = null; html = renderPhone(); }
+  phoneEl.innerHTML = html; save();
   const svg = document.getElementById('mapsvg');
   if (svg && !measuring) { const r = svg.getBoundingClientRect(); if (r.width > 0) { const upp = MAP_W / r.width, h = Math.max(WA_H, Math.round(MAP_W * r.height / r.width));
     if (Math.abs(upp - mapUpp) > 0.02 || h !== MAP_H) { const first = (h !== MAP_H && S.map.k === 1); mapUpp = upp; MAP_H = h; if (first) clampView(S.map); measuring = true; try { render(); } finally { measuring = false; } } } }
@@ -1762,7 +1765,7 @@ function renderPhone(){
         <p class="hint">${os.length} result${os.length===1?'':'s'} · filters come from IRS data (cause, city, size) plus Name TBD (joined, tags, open listings)</p>
         ${os.map(orgCard).join('')}</div>${tabs('orgs')}`; break; }
     case 'org': {
-      const o = ORG(S.sel); const open = S.listings.filter(l=>l.ein===o.ein&&l.status!=='Fulfilled'&&l.status!=='Closed'); const done = S.matches.filter(m=>m.status==='Completed'&&[m.need,m.offer].some(id=>S.listings.find(l=>l.id===id).ein===o.ein));
+      const o = ORG(S.sel); if (!o) { S.screen = 'feed'; return renderPhone(); } const open = S.listings.filter(l=>l.ein===o.ein&&l.status!=='Fulfilled'&&l.status!=='Closed'); const done = S.matches.filter(m=>m.status==='Completed'&&[m.need,m.offer].some(id=>S.listings.find(l=>l.id===id).ein===o.ein));
       const isMe = me()&&me().ein===o.ein; const fol = S.follows.includes(o.ein);
       body = `${topbar({back:'orgs',title:'Orgs'})}<div class="screen"><h2 class="h">${esc(o.name)}</h2><p class="sub">${cap(o.city)}, WA · ${CAUSES[o.cause]} ${o.verified||joined(o.ein)?'· <span class="verified">✓ on Name TBD</span>':'· <span class="hint">not on Name TBD yet</span>'}</p>
         ${isMe?'':`<div class="row"><button class="btn sm" data-a="follow" data-id="${o.ein}">${fol?'Following':'Follow'}</button><button class="btn sm primary" data-a="collab" data-id="${o.ein}">Let’s collaborate</button></div>`}
@@ -1827,7 +1830,7 @@ function renderPhone(){
         <button class="btn" data-a="sheet-who">Switch perspective</button><button class="btn quiet" data-a="reset">Reset the demo</button></div>${tabs('me')}`; break; }
   }
   let overlay = '';
-  if (S.toast) overlay += `<div class="toast">${esc(S.toast)}</div>`;
+  if (S.toast) overlay += `<div class="toast" data-a="toast-close">${esc(S.toast)}</div>`;
   if (S.screen === 'map' && S.mapSheets && S.mapSheets[S.sheet]) overlay += `<div class="sheet-bg" data-a="sheet-close"><div class="sheet">${S.mapSheets[S.sheet]}</div></div>`;
   if (S.sheet==='help') overlay += `<div class="sheet-bg" data-a="sheet-close"><div class="sheet help"><h3>How this works</h3>
     <p>Every Washington 501(c)(3) is already here from the IRS. A person claims theirs, says what it <b>needs</b> or <b>has</b>, and the app finds who fits, lets the two sides talk, and records the hand-off.</p>
@@ -2070,7 +2073,7 @@ document.addEventListener('click', async e => {
     case 'next': setStep(S.step+1); return;
     case 'play': await playStep(); return;
     case 'reset': if (confirm('Reset the demo to the beginning?')) { S = fresh(); ORGS.forEach(o=>{o.verified=false;}); setStep(0); } return;
-    case 'go': read(); go(el.dataset.s, id ? (isNaN(+id)?id:+id) : undefined); return;
+    case 'go': { read(); const numeric = ['listing','match'].includes(el.dataset.s); go(el.dataset.s, id ? (numeric ? +id : id) : undefined); return; }
     case 'signup-google': S.signup = { google:true, email:'casey@ballardfoodbank.org' }; go('role'); return;
     case 'signup-toggle': read(); S.signup.useEmail = !S.signup.useEmail; render(); return;
     case 'signup-email': read(); if (!S.signup.email) { toast('Enter your email first.'); return; } go('role'); return;
@@ -2103,6 +2106,7 @@ document.addEventListener('click', async e => {
     case 'sheet-who': read(); S.sheet = 'who'; render(); return;
     case 'sheet-close': if (e.target === el) { S.sheet = null; render(); } return;
     case 'sheet-close-btn': S.sheet = null; render(); return;
+    case 'toast-close': S.toast = null; render(); return;
     case 'switch': switchTo(id); return;
     case 'org-toggle': read(); S.orgFilter[el.dataset.k] = !S.orgFilter[el.dataset.k]; render(); return;
     case 'follow': S.follows.includes(id) ? S.follows.splice(S.follows.indexOf(id),1) : S.follows.push(id); render(); return;
