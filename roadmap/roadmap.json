@@ -922,6 +922,14 @@
       "status": "backlog",
       "added": "2026-09-22",
       "tasks": []
+    },
+    {
+      "id": "S-65",
+      "epic": "E-2",
+      "title": "Diagnose held-backspace on Android with docs/keytest.html and fix the real cause",
+      "status": "in-progress",
+      "added": "2026-09-22",
+      "tasks": []
     }
   ]
 }

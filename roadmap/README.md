@@ -6,7 +6,7 @@ Generated from `roadmap.json` on 2026-09-22. Don't edit this file; run `node scr
 
 | Backlog | Ready | In progress | In review | Done |
 | --- | --- | --- | --- | --- |
-| S-13 Foundations flagged from the IRS list's foundation code |  |  | S-11 Schools and districts from OSPI's public feature service | S-1 Mission statement saved and pointed at from the repo |
+| S-13 Foundations flagged from the IRS list's foundation code |  | S-65 Diagnose held-backspace on Android with docs/keytest.html and fix the real cause | S-11 Schools and districts from OSPI's public feature service | S-1 Mission statement saved and pointed at from the repo |
 | S-17 Board: kind-of-help chips, fair ranking, directory search at the top |  |  | S-12 Workforce programs from the WA Workforce Board list | S-2 Voice sheet: ten rules and a words list |
 | S-18 A need or offer: who it's from, how it fits you, I can help / I need this |  |  | S-14 Needs and offers for all six kinds of help, plus people | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
 | S-19 Post: kind of help first, then the rest |  |  | S-15 Three grants from real WA foundations' public pages, labeled as examples | S-4 App map: five tabs, sixteen screens, three stories, order of work |
@@ -53,7 +53,7 @@ Generated from `roadmap.json` on 2026-09-22. Don't edit this file; run `node scr
 
 ## Roadmap
 
-### I-1 A prototype that shows the whole mission · In progress · 10/38 stories done
+### I-1 A prototype that shows the whole mission · In progress · 10/39 stories done
 
 Every kind of participant and every kind of help, on a phone, in the approved voice. The thing to hand someone so they get it in a minute.
 
@@ -74,7 +74,7 @@ Mission, voice, taxonomy, and app map written and approved before screens are bu
     - [x] T-7 Draft and approve
     - [x] T-8 Save as docs/APP-MAP.md
 
-#### E-2 The front door · Done · 6/6
+#### E-2 The front door · In progress · 6/7
 
 Sign up through confirm for all six kinds of participant.
 
@@ -99,6 +99,7 @@ Sign up through confirm for all six kinds of participant.
     - [x] T-21 Bottom sheets clear the fixed story bar
     - [x] T-22 Text fields look like fields, not cards
     - [x] T-23 Buttons have a visible disabled state
+- **S-65** Diagnose held-backspace on Android with docs/keytest.html and fix the real cause · In progress
 
 #### E-3 Seed data from real sources · In progress · 0/9
 
