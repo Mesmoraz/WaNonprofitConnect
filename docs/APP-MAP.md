@@ -24,7 +24,7 @@ Your profile is behind your name in the top bar. No Orgs tab, no Me tab.
 | 2 | Who are you here as | Pick one of six | Pick, then go | redo: six cards (TAXONOMY.md) |
 | 3 | Find yours | Pick your organization from the list for your type | Pick | redo: list depends on type; Just me skips |
 | 4 | Confirm | Prove you belong | Confirm | redo: methods per type |
-| 5 | About you | Just me only: where you are, what you can do, when | Save | new |
+| 5 | About you | Just me only: where you are and what you can do | Save | new |
 | 6 | Board | What's needed and offered, fairly ranked | Open a need or offer | redo: kind-of-help chips; directory search at top |
 | 7 | Directory | Find anyone here, joined or not | Open a profile | redo of Orgs: all six kinds |
 | 8 | Profile | One organization or person | Start a thread, or follow | redo of Org: six shapes, one layout |

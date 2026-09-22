@@ -112,6 +112,8 @@
   .chip { border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 500; background: var(--paper); }
   .chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
   .chip.tag { background: var(--paper-2); }
+  .chip .x { opacity: 0.55; margin-left: 2px; }
+  .row > .btn.sm { flex: none; align-self: stretch; }
   .label { font-size: 12px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 6px; }
   .kv { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; font-size: 13px; }
   .kv span:nth-child(odd) { color: var(--ink-3); }
@@ -592,6 +594,9 @@ async function playStep(){ if (playing) return; playing = true; try { const i = 
 function setStep(i){ S.step = Math.max(0, Math.min(STEPS.length-1, i)); STEPS[S.step].enter(); S.sheet=null; save(); render(); }
 // Called after every user action: if the action just completed the current step, move the guide forward.
 function syncStep(wasDone){ if (!wasDone && S.step < STEPS.length-1 && STEPS[S.step].done()) { S.step++; save(); } }
+function readAbout(){ const g = i => document.getElementById(i); if (!S.about || !g('a-name')) return; Object.assign(S.about, { name:g('a-name').value, place:g('a-place').value, extra:g('a-extra').value }); }
+function aboutReady(){ const a = S.about; return !!(a && a.name.trim() && a.place.trim() && (a.can.length || a.extra.trim())); }
+function syncAboutSave(){ const b = document.querySelector('[data-a="about-save"]'); if (!b) return; const ok = aboutReady(); b.disabled = !ok; b.textContent = ok ? 'Save and go to the board' : 'Fill in the top two'; }
 function finishClaim(){ const ein = S.claimPick || '911428805'; const o = ORG(ein);
   if (ein === '911428805') switchTo('casey'); else { const email = S.signup.email || 'you@example.org'; S.user = { id:'you', name: email.split('@')[0].replace(/[._-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase()), ein, email }; if (!S.joinedEins.includes(ein)) S.joinedEins.push(ein); S.sheet = null; }
   o.verified = true; go('feed'); toast('You’re in. Welcome, ' + o.name.replace(/\.$/, '') + '.'); }
@@ -682,20 +687,20 @@ function renderPhone(){
         <div class="cta-bar"><button class="btn primary" data-a="claim-continue" ${pick?'':'disabled'}>${pick?'Join as '+esc(pick.name):'Pick your organization'}</button></div>`; break; }
     case 'about': {
       const email = S.signup.email || 'dana@example.com';
-      const a = S.about || (S.about = { name: email.split('@')[0].replace(/[._-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase()), place:'', can:[], extra:'', when:[], causes:[] });
+      const a = S.about || (S.about = { name: email.split('@')[0].replace(/[._-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase()), place:'', can:[], custom:[], extra:'', causes:[] });
       const CAN = ['Driving','Cooking','Tutoring','Bookkeeping','Building and repairs','Design','Tech help','Legal','Writing','Translating','Mentoring','Fundraising','Events','Whatever’s needed'];
-      const WHEN = ['Weekdays','Weeknights','Weekends','A few hours a month','Not sure yet'];
       const CAUSE = [['K','Food'],['L','Housing'],['O','Youth'],['B','Education'],['D','Animals'],['C','Environment'],['E','Health'],['A','Arts'],['S','Community']];
-      const chips = (list, key, val) => list.map(x => { const [v, t] = Array.isArray(x) ? x : [x, x]; return `<button class="chip ${a[key].includes(v)?'on':''}" data-a="about-chip" data-k="${key}" data-v="${esc(v)}">${esc(t)}</button>`; }).join('');
-      const ok = a.name.trim() && a.place.trim() && a.can.length;
+      const chip = (v, t, key, extra='') => `<button class="chip ${a[key].includes(v)?'on':''}" data-a="about-chip" data-k="${key}" data-v="${esc(v)}">${esc(t)}${extra}</button>`;
+      const chips = (list, key) => list.map(x => { const [v, t] = Array.isArray(x) ? x : [x, x]; return chip(v, t, key); }).join('');
+      const places = [...new Set(ORGS.filter(o=>o.city).map(o => cap(o.city) + (o.zip ? ' ' + o.zip : '')))].sort();
       body = `${topbar({back:'role',title:'Back',help:false})}<div class="screen"><h2 class="h">About you</h2><p class="sub">So the right needs find you. Change any of this later.</p>
-        <input id="a-name" placeholder="Your name" value="${esc(a.name)}">
-        <input id="a-place" placeholder="City or ZIP" value="${esc(a.place)}">
-        <div class="label">What you can do</div><div class="chips">${chips(CAN,'can')}</div>
-        <input id="a-extra" placeholder="Something else?" value="${esc(a.extra)}">
-        <div class="label">When</div><div class="chips">${chips(WHEN,'when')}</div>
+        <input id="a-name" placeholder="Your name" value="${esc(a.name)}" autocomplete="name">
+        <input id="a-place" class="search" placeholder="City or ZIP" value="${esc(a.place)}" list="wa-places" autocomplete="off">
+        <datalist id="wa-places">${places.map(x=>`<option value="${esc(x)}">`).join('')}</datalist>
+        <div class="label">What you can do</div><div class="chips">${chips(CAN,'can')}${a.custom.map(v=>chip(v, v, 'can', ' <span class="x">×</span>')).join('')}</div>
+        <div class="row"><input id="a-extra" placeholder="Something else?" value="${esc(a.extra)}" autocomplete="off"><button class="btn sm" data-a="about-add" style="flex:none">Add</button></div>
         <div class="label">Causes you care about</div><div class="chips">${chips(CAUSE,'causes')}</div></div>
-        <div class="cta-bar"><button class="btn primary" data-a="about-save" ${ok?'':'disabled'}>${ok?'Save and go to the board':'Fill in the top three'}</button></div>`; break; }
+        <div class="cta-bar"><button class="btn primary" data-a="about-save" ${aboutReady()?'':'disabled'}>${aboutReady()?'Save and go to the board':'Fill in the top two'}</button></div>`; break; }
     case 'bizsetup': {
       const b = S.biz || (S.biz = { name:'', city:'', website:'', ubi:'' });
       const ok = b.name.trim() && b.city.trim() && /^\d{9}$/.test(b.ubi.replace(/\D/g,''));
@@ -1059,11 +1064,17 @@ document.addEventListener('click', async e => {
     case 'signup-email': read(); if (!S.signup.email) { toast('Enter your email first.'); return; } go('role'); return;
     case 'role': S.signup.role = el.dataset.k; render(); return;
     case 'role-continue': { const r = S.signup.role; if (['np','school','workforce','foundation'].includes(r)) { S.claimQuery=''; S.claimPick=null; go('claim'); } else if (r==='biz') go('bizsetup'); else if (r==='me') { S.about = null; go('about'); } else render(); return; }
-    case 'about-chip': { read(); const k = el.dataset.k, v = el.dataset.v, arr = S.about[k]; const i = arr.indexOf(v); if (i >= 0) arr.splice(i, 1); else arr.push(v); render(); return; }
-    case 'about-save': { read(); const a = S.about; if (!a) return; const extra = a.extra.trim(); const can = extra && !a.can.includes(extra) ? a.can.concat(extra) : a.can;
+    case 'about-chip': { readAbout(); const k = el.dataset.k, v = el.dataset.v, arr = S.about[k]; const i = arr.indexOf(v); if (i >= 0) arr.splice(i, 1); else arr.push(v);
+      if (k === 'can' && i >= 0 && S.about.custom.includes(v)) S.about.custom.splice(S.about.custom.indexOf(v), 1);
+      render(); syncAboutSave(); return; }
+    case 'about-add': { readAbout(); const v = S.about.extra.trim(); if (!v) return;
+      if (!S.about.custom.includes(v) && !S.about.can.includes(v)) S.about.custom.push(v);
+      if (!S.about.can.includes(v)) S.about.can.push(v);
+      S.about.extra = ''; render(); syncAboutSave(); return; }
+    case 'about-save': { readAbout(); const a = S.about; if (!a || !aboutReady()) return; const extra = a.extra.trim(); const can = extra && !a.can.includes(extra) ? a.can.concat(extra) : a.can;
       const place = a.place.trim(); const zip = (place.match(/\b\d{5}\b/) || [''])[0]; const city = (ZIP[zip] ? Object.keys(CITY).find(c => Math.hypot(CITY[c][0]-ZIP[zip][0], CITY[c][1]-ZIP[zip][1]) < 0.25) : null) || place.replace(/\d{5}/,'').trim().toUpperCase() || 'SEATTLE';
       const ein = 'P-you'; const existing = ORG(ein);
-      const rec = { ...(existing||{}), ein, name:a.name.trim(), city, zip, cause:a.causes[0] || 'S', inc:'', rev:0, ruling:'', filing:'', needTags:[], haveTags:can.map(x=>x.toLowerCase()), when:a.when.slice(), causes:a.causes.slice(), type:'person', sub:'Person' };
+      const rec = { ...(existing||{}), ein, name:a.name.trim(), city, zip, cause:a.causes[0] || 'S', inc:'', rev:0, ruling:'', filing:'', needTags:[], haveTags:can.map(x=>x.toLowerCase()), causes:a.causes.slice(), type:'person', sub:'Person' };
       if (!existing) ORGS.push(rec); else Object.assign(existing, rec); const c = ZIP[zip] || CITY[city] || [47.3,-120.5]; rec.lat = c[0]; rec.lon = c[1];
       S.user = { id:'you', name:rec.name, ein, email:S.signup.email || 'dana@example.com' }; if (!S.joinedEins.includes(ein)) S.joinedEins.push(ein); S.sheet = null;
       go('feed'); toast('You’re in. Welcome, ' + rec.name + '.'); return; }
@@ -1118,12 +1129,15 @@ document.addEventListener('input', e => {
   if (e.target.id === 'flt-radius') { S.filter.radius = +e.target.value; const lbl = e.target.nextElementSibling; if (lbl) lbl.textContent = S.filter.radius ? S.filter.radius + ' mi' : 'any distance'; }
   if (e.target.id === 'claimq') { S.claimQuery = e.target.value; S.claimPick = null; const pos = e.target.selectionStart; render(); const el = document.getElementById('claimq'); el.focus(); el.setSelectionRange(pos,pos); }
   if (['b-name','b-city','b-website','b-ubi'].includes(e.target.id)) { const g = i => document.getElementById(i); S.biz = { name:g('b-name').value, city:g('b-city').value, website:g('b-website').value, ubi:g('b-ubi').value }; const id = e.target.id, pos = e.target.selectionStart; render(); const el = document.getElementById(id); el.focus(); el.setSelectionRange(pos,pos); }
-  if (['a-name','a-place'].includes(e.target.id) && S.about) { const g = i => document.getElementById(i); Object.assign(S.about, { name:g('a-name').value, place:g('a-place').value, extra:g('a-extra').value }); const id = e.target.id, pos = e.target.selectionStart; render(); const el = document.getElementById(id); el.focus(); el.setSelectionRange(pos,pos); }
+  if (['a-name','a-place','a-extra'].includes(e.target.id) && S.about) { readAbout(); syncAboutSave(); }
   if (e.target.id === 'orgq') { S.orgFilter.q = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('orgq'); el.focus(); el.setSelectionRange(pos,pos); }
   if (e.target.id === 'd-title') { S.draft.title = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('d-title'); el.focus(); el.setSelectionRange(pos,pos); }
 });
 document.addEventListener('change', e => { if (e.target.id === 'flt-category') { S.filter.category = e.target.value; render(); } if (e.target.id === 'flt-radius') { S.filter.radius = +e.target.value; render(); } if (['cause','city'].includes(e.target.id)) { S.orgFilter[e.target.id] = e.target.value; render(); } if (['d-category','d-cadence','d-urgency','d-qty','d-unit','d-desc','d-tags'].includes(e.target.id)) { S.draft[e.target.id.slice(2)] = e.target.value; render(); } });
-document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'msg') { const id = +e.target.nextElementSibling.dataset.id; sendMsg(id, e.target.value); } });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.id === 'a-extra') { e.preventDefault(); const b = document.querySelector('[data-a="about-add"]'); if (b) b.click(); return; }
+  if (e.key === 'Enter' && ['a-name','a-place'].includes(e.target.id)) { e.preventDefault(); e.target.blur(); readAbout(); syncAboutSave(); return; }
+  if (e.key === 'Enter' && e.target.id === 'msg') { const id = +e.target.nextElementSibling.dataset.id; sendMsg(id, e.target.value); } });
 
 // ---- Map gestures: drag to pan, pinch / wheel / double-tap to zoom ----------
 const gesture = { pointers: new Map(), moved: false, last: null, pinchDist: 0, pinchMid: null, lastTap: 0 };
