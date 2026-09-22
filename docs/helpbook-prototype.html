@@ -29,7 +29,9 @@
   body { margin: 0; background: var(--ground); color: var(--ink); font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 15px; line-height: 1.45; }
   button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
   button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  input, select, textarea { font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; width: 100%; }
+  input, select, textarea { font: inherit; color: var(--ink); background: var(--paper-2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; width: 100%; box-shadow: inset 0 1px 2px rgba(0,0,0,0.12); }
+  input::placeholder, textarea::placeholder { color: var(--ink-3); }
+  input.search { padding-left: 38px; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2385908A' stroke-width='2.2' stroke-linecap='round'><circle cx='11' cy='11' r='7'/><line x1='16.5' y1='16.5' x2='21' y2='21'/></svg>"); background-repeat: no-repeat; background-position: 12px center; }
   textarea { min-height: 80px; resize: vertical; }
   h1, h2, h3 { font-family: "Bricolage Grotesque", "IBM Plex Sans", sans-serif; margin: 0; line-height: 1.15; text-wrap: balance; }
 
@@ -635,7 +637,7 @@ function renderPhone(){
       const digits = q.replace(/\D/g,''); const hits = q.length>=2 ? ORGS.filter(o => o.type==='nonprofit' && (o.name.toLowerCase().includes(q) || (digits.length>=2 && o.ein.includes(digits)))).slice(0,6) : [];
       const pick = S.claimPick ? ORG(S.claimPick) : null;
       body = `${topbar({back:'role',title:'Back',help:false})}<div class="screen"><h2 class="h">Which organization are you with?</h2><p class="sub">Every Washington 501(c)(3) is already here, straight from the IRS.</p>
-        <input id="claimq" placeholder="Organization name or EIN" value="${esc(S.claimQuery)}" autocomplete="off">
+        <input id="claimq" class="search" placeholder="Organization name or EIN" value="${esc(S.claimQuery)}" autocomplete="off">
         ${hits.map(o=>`<button class="card tap ${S.claimPick===o.ein?'sel':''}" data-a="claim-pick" data-id="${o.ein}"><span class="t" style="margin-top:0">${esc(o.name)}</span><span class="m">${cap(o.city)} · EIN ${o.ein.slice(0,2)}-${o.ein.slice(2)} · ${CAUSES[o.cause]}</span>${joined(o.ein)?'<span class="m verified">Already on Name TBD. Ask a member to invite you.</span>':''}</button>`).join('')}
         ${q.length>=2&&!hits.length?`<div class="empty">Nothing by that name. Try the EIN instead.</div><p class="demo">Demo: 32 of Washington's 35,361 organizations are loaded.</p>`:''}
         ${!q?`<p class="demo">Demo: try "Ballard Food".</p>`:''}</div>
@@ -664,7 +666,7 @@ function renderPhone(){
       if (f.cause) os = os.filter(o=>o.cause===f.cause); if (f.city) os = os.filter(o=>o.city===f.city); if (f.joined) os = os.filter(o=>joined(o.ein)||o.verified); if (f.open) os = os.filter(o=>S.listings.some(l=>l.ein===o.ein&&l.status==='Open'));
       const causes = [...new Set(ORGS.map(o=>o.cause))].sort(); const cities = [...new Set(ORGS.map(o=>o.city))].sort();
       body = `${topbar()}<div class="screen"><h2 class="h">Organizations</h2><p class="sub">${ORGS.length} of 35,361 WA 501(c)(3)s in this demo</p><p class="asof">Organization data: IRS Business Master File posted 2026-09-08 · refreshed monthly</p>
-        <input id="orgq" placeholder="Name or EIN" value="${esc(f.q)}" autocomplete="off">
+        <input id="orgq" class="search" placeholder="Name or EIN" value="${esc(f.q)}" autocomplete="off">
         <div class="row"><select id="cause"><option value="">Any cause</option>${causes.map(c=>`<option value="${c}" ${f.cause===c?'selected':''}>${CAUSES[c]}</option>`).join('')}</select><select id="city"><option value="">Any city</option>${cities.map(c=>`<option value="${c}" ${f.city===c?'selected':''}>${cap(c)}</option>`).join('')}</select></div>
         <div class="chips"><button class="chip ${f.joined?'on':''}" data-a="org-toggle" data-k="joined">On Name TBD</button><button class="chip ${f.open?'on':''}" data-a="org-toggle" data-k="open">Has open listings</button></div>
         <p class="hint">${os.length} result${os.length===1?'':'s'} · filters come from IRS data (cause, city, size) plus Name TBD (joined, tags, open listings)</p>
