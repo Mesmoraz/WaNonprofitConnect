@@ -7,8 +7,8 @@ Generated from `roadmap.json` on 2026-09-22. Don't edit this file; run `node scr
 | Backlog | Ready | In progress | In review | Done |
 | --- | --- | --- | --- | --- |
 | S-13 Foundations flagged from the IRS list's foundation code |  | S-12 Workforce programs from the WA Workforce Board list | S-9 About you: a person says where they are, what they can do, and when | S-1 Mission statement saved and pointed at from the repo |
-| S-14 Needs and offers for all six kinds of help, plus people |  | S-15 Three grants from real WA foundations' public pages, labeled as examples | S-11 Schools and districts from OSPI's public feature service | S-2 Voice sheet: ten rules and a words list |
-| S-16 One Together initiative |  | S-35 OSPI schools loader into a Schools table |  | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
+| S-14 Needs and offers for all six kinds of help, plus people |  | S-35 OSPI schools loader into a Schools table | S-11 Schools and districts from OSPI's public feature service | S-2 Voice sheet: ten rules and a words list |
+| S-16 One Together initiative |  |  | S-15 Three grants from real WA foundations' public pages, labeled as examples | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
 | S-17 Board: kind-of-help chips, fair ranking, directory search at the top |  |  |  | S-4 App map: five tabs, sixteen screens, three stories, order of work |
 | S-18 A need or offer: who it's from, how it fits you, I can help / I need this |  |  |  | S-5 Sign up: one green button, email behind a link |
 | S-19 Post: kind of help first, then the rest |  |  |  | S-6 Who are you here as: six kinds, button label follows the pick |
@@ -108,7 +108,7 @@ Schools, programs, foundations, people, needs, offers, grants, and one Together,
 - **S-12** Workforce programs from the WA Workforce Board list · In progress
 - **S-13** Foundations flagged from the IRS list's foundation code · Backlog
 - **S-14** Needs and offers for all six kinds of help, plus people · Backlog
-- **S-15** Three grants from real WA foundations' public pages, labeled as examples · In progress
+- **S-15** Three grants from real WA foundations' public pages, labeled as examples · In review
 - **S-16** One Together initiative · Backlog
 
 #### E-4 The core loop · Backlog · 0/4
