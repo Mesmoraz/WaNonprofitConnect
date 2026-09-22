@@ -410,14 +410,14 @@
       "id": "S-11",
       "epic": "E-3",
       "title": "Schools and districts from OSPI's public feature service",
-      "status": "in-progress",
+      "status": "review",
       "added": "2026-09-21",
       "source": "Discovery: OSPI ArcGIS service has 2,498 schools and 335 LEAs with lat/lon",
       "tasks": [
         {
           "id": "T-24",
           "title": "scripts/fetch-schools.js pulls the service and writes a normalized seed (districts plus high schools)",
-          "status": "ready"
+          "status": "done"
         },
         {
           "id": "T-25",
