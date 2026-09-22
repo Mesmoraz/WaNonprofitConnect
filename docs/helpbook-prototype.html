@@ -438,7 +438,7 @@ function suggestions(listing) {
 let S;
 function fresh() {
   const seeded = seedListings();
-  return { step:0, screen:'signup', signup:{}, user:null, listings:seeded, matches:seedMatches(seeded), filter:{ kind:'All', category:'', who:'All', radius:0, threads:{ Completed:true, Accepted:true, Proposed:true, suggested:false } }, filtersOpen:false, map:{ sel:null, selMatch:null, k:1, tx:0, ty:0 }, notifs:[], follows:[], nextId:30, feedFilter:'All', orgFilter:{ q:'', cause:'', city:'', joined:false, open:false }, draft:null, sel:null, toast:null, sheet:null, claimQuery:'', claimPick:null, guideMin:false, joinedEins:['822888626','581735531','911606330','465378620','811434757','910826037','223939593','237421892','911425676','911546757'] };
+  return { step:0, screen:'signup', signup:{}, user:null, listings:seeded, matches:seedMatches(seeded), filter:{ kind:'All', category:'', who:'All', radius:0, threads:{ Completed:true, Accepted:true, Proposed:true, suggested:false } }, filtersOpen:false, map:{ sel:null, selMatch:null, k:1, tx:0, ty:0 }, notifs:[], follows:[], nextId:30, feedFilter:'All', orgFilter:{ q:'', cause:'', city:'', joined:false, open:false }, draft:null, sel:null, toast:null, sheet:null, claimQuery:'', claimPick:null, verifyPick:null, guideMin:false, joinedEins:['822888626','581735531','911606330','465378620','811434757','910826037','223939593','237421892','911425676','911546757'] };
 }
 function save(){ try { localStorage.setItem('helpbook-proto', JSON.stringify(S)); } catch(e){} }
 function load(){ try { const j = localStorage.getItem('helpbook-proto'); if (j) { S = JSON.parse(j); return true; } } catch(e){} return false; }
@@ -565,7 +565,7 @@ async function playStep(){ if (playing) return; playing = true; try { const i = 
 function setStep(i){ S.step = Math.max(0, Math.min(STEPS.length-1, i)); STEPS[S.step].enter(); S.sheet=null; save(); render(); }
 // Called after every user action: if the action just completed the current step, move the guide forward.
 function syncStep(wasDone){ if (!wasDone && S.step < STEPS.length-1 && STEPS[S.step].done()) { S.step++; save(); } }
-function finishClaim(){ switchTo('casey'); ORG('911428805').verified = true; go('feed'); toast('Verified — welcome, Ballard Food Bank'); }
+function finishClaim(){ switchTo('casey'); ORG('911428805').verified = true; go('feed'); toast('You’re in. Welcome, Ballard Food Bank.'); }
 
 // =====================================================================
 // Rendering
@@ -644,12 +644,14 @@ function renderPhone(){
         <div class="cta-bar"><button class="btn primary" data-a="claim-continue" ${pick?'':'disabled'}>${pick?'Join as '+esc(pick.name):'Pick your organization'}</button></div>`; break; }
     case 'verify': {
       const o = ORG(S.claimPick||'911428805'); const email = S.signup.email || 'casey@ballardfoodbank.org'; const domainOk = email.endsWith('@ballardfoodbank.org') && o.ein==='911428805';
-      body = `${topbar({back:'claim',title:'Back'})}<div class="screen"><h2 class="h">Verify you’re with ${esc(o.name)}</h2>
-        ${domainOk?`<div class="card likely"><span class="t" style="margin-top:0">✓ Your email domain matches</span><span class="m"><b>ballardfoodbank.org</b> is this organization’s website on file with the IRS. You’re verified.</span></div>`
-        :`<div class="card"><span class="t" style="margin-top:0">Your email doesn’t match a domain on file</span><span class="m">Pick another way — each one is reviewed by a person.</span></div>
-          ${['Mail a code to the IRS-registered address (about a week)','Upload your IRS determination letter','Ask an existing member to invite you'].map(t=>`<button class="card tap"><span class="m">${t}</span></button>`).join('')}`}
-        <p class="hint">Verification methods are pluggable — we can add or remove ways without changing anything else.</p></div>
-        <div class="cta-bar"><button class="btn primary" data-a="claim-finish">${domainOk?'Go to my organization':'Continue (demo: verify instantly)'}</button></div>`; break; }
+      const vp = S.verifyPick; const ways = [['mail','Get a code by mail','Sent to the address the IRS has. About a week.','Mail me a code'],['letter','Upload your IRS letter','Your determination letter.','Upload the letter'],['invite','Ask a member to invite you','Someone at your organization who’s already on Name TBD.','Ask for an invite']];
+      const way = ways.find(w=>w[0]===vp);
+      body = `${topbar({back:'claim',title:'Back',help:false})}<div class="screen"><h2 class="h">Confirm you’re with ${esc(o.name)}</h2>
+        ${domainOk?`<div class="card likely"><span class="t" style="margin-top:0">✓ Your email matches</span><span class="m"><b>ballardfoodbank.org</b> is the website the IRS has for this organization. You’re in.</span></div>`
+        :`<div class="card"><span class="t" style="margin-top:0">Your email doesn’t match</span><span class="m">Pick another way. A person checks each one.</span></div>
+          ${ways.map(([k,t,d])=>`<button class="card tap ${vp===k?'sel':''}" data-a="verify-pick" data-k="${k}"><span class="role"><span class="r"></span><span><span class="t" style="margin:0">${t}</span><span class="m">${d}</span></span></span></button>`).join('')}
+          <p class="demo">Demo: any of these confirms you right away.</p>`}</div>
+        <div class="cta-bar"><button class="btn primary" data-a="claim-finish" ${domainOk||way?'':'disabled'}>${domainOk?'Go to the board':way?way[3]:'Pick a way to confirm'}</button></div>`; break; }
     case 'feed': {
       const ranked = rankFeed(S.listings.filter(l => listingPasses(l)));
       const ls = ranked.map(r => r.l);
@@ -987,6 +989,7 @@ document.addEventListener('click', async e => {
     case 'role-continue': if (S.signup.role==='np') go('claim'); else render(); return;
     case 'claim-pick': read(); S.claimPick = id; render(); return;
     case 'claim-continue': read(); if (S.claimPick) go('verify'); return;
+    case 'verify-pick': S.verifyPick = el.dataset.k; render(); return;
     case 'claim-finish': finishClaim(); return;
     case 'sheet-who': read(); S.sheet = 'who'; render(); return;
     case 'sheet-close': if (e.target === el) { S.sheet = null; render(); } return;
