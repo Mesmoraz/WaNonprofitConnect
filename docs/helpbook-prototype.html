@@ -133,6 +133,8 @@
   .center { text-align: center; }
   .stack { display: flex; flex-direction: column; gap: 8px; }
   .hint { font-size: 12px; color: var(--ink-3); }
+  .demo { display: block; width: 100%; text-align: center; font-size: 12px; color: var(--ink-3); margin-top: auto; padding: 8px 0; }
+  .link { display: block; width: 100%; text-align: center; font-size: 14px; font-weight: 600; color: var(--accent); padding: 6px 0; }
   .role { display: grid; grid-template-columns: 24px 1fr; gap: 10px; align-items: start; }
   .role .r { width: 20px; height: 20px; border: 2px solid var(--line); border-radius: 50%; margin-top: 2px; }
   .card.sel .role .r { border-color: var(--accent); background: radial-gradient(var(--accent) 45%, transparent 50%); }
@@ -527,7 +529,7 @@ function switchTo(personId) {
 // Story guide
 // =====================================================================
 const STEPS = [
-  { t:'Casey needs laptops', s:'Ballard Food Bank’s intake computers died.', n:'<b>Casey</b> runs client intake at Ballard Food Bank. Twelve laptops just died and nobody can register for services. Casey opens Name TBD. <b>Tap "Continue with Google".</b>', enter(){ S.user=null; S.screen='signup'; S.claimPick=null; S.claimQuery=''; }, auto(){ S.signup={google:true}; go('role'); } },
+  { t:'Casey needs laptops', s:'Ballard Food Bank’s intake computers died.', n:'<b>Casey</b> runs client intake at Ballard Food Bank. Twelve laptops just died and nobody can register for services. Casey opens Name TBD. <b>Tap "Sign in with Google".</b>', enter(){ S.user=null; S.screen='signup'; S.claimPick=null; S.claimQuery=''; }, auto(){ S.signup={google:true}; go('role'); } },
   { t:'Claim the org', s:'It’s already in the IRS data.', n:'Casey picks <b>"A nonprofit"</b>, types "Ballard Food" — and the org is already there, straight from the IRS file. Because casey@<b>ballardfoodbank.org</b> matches the org’s website, verification is instant. No forms.', enter(){ S.screen='role'; }, async auto(){ S.signup.role='np'; go('claim'); await wait(500); S.claimQuery='Ballard Food'; render(); await wait(600); S.claimPick='911428805'; render(); await wait(600); go('verify'); await wait(900); finishClaim(); } },
   { t:'Browse the board', s:'Needs and offers, and every org in WA.', n:'Casey lands on the board: what nearby groups need and have right now. The <b>Orgs</b> tab lists all 35,361 WA 501(c)(3)s with filters for cause, city, size, and self-declared tags — whether or not they’ve joined.', enter(){ if(!S.user) switchTo('casey'); S.filter.kind='All'; S.screen='feed'; }, async auto(){ go('feed'); await wait(900); S.orgFilter={q:'',cause:'K',city:'',joined:false,open:false}; go('orgs'); await wait(1200); go('org','911428805'); } },
   { t:'Post the need', s:'"12 laptops for client intake stations."', n:'Casey taps <b>+</b> and posts the need. Before it’s even submitted, Name TBD shows <b>likely matches</b> — Computers 4 People in Need has 15 refurbished laptops listed. Posting alerts every org whose listings or tags fit.', enter(){ if(!S.user) switchTo('casey'); S.draft={kind:'Need',category:'Technology',title:'Laptops for client intake stations',desc:'Our intake computers died; clients can’t register for services.',qty:12,unit:'laptops',urgency:'Critical',tags:'laptops,computers,intake'}; S.screen='post'; }, auto(){ if(!S.draft||!S.draft.title) this.enter(); if(!S.listings.some(l=>l.title==='Laptops for client intake stations')) postListing(S.draft); else go('feed'); } },
@@ -593,7 +595,7 @@ function renderGuide(){
 function topbar(opts={}){
   const m = me();
   const who = m ? `<button class="who" data-a="sheet-who"><span class="dot">${esc(S.user.name[0])}</span><span>${esc(S.user.name)} · ${esc(m.name)}</span></button>` : '';
-  return `<div class="topbar">${opts.back?`<button class="back" data-a="go" data-s="${opts.back}">← ${esc(opts.title||'Back')}</button>`:`<span class="logo">Name TBD</span>`}<span class="right"><button class="helpbtn" data-a="sheet-help" aria-label="How this works">?</button>${who}</span></div>`;
+  return `<div class="topbar">${opts.back?`<button class="back" data-a="go" data-s="${opts.back}">← ${esc(opts.title||'Back')}</button>`:`<span class="logo">Name TBD</span>`}<span class="right">${opts.help===false?'':'<button class="helpbtn" data-a="sheet-help" aria-label="How this works">?</button>'}${who}</span></div>`;
 }
 function tabs(on){
   const unread = S.user ? S.notifs.filter(n=>n.ein===S.user.ein&&!n.read).length + S.matches.filter(m=>m.status==='Proposed'&&m.by!==S.user.ein&&[m.need,m.offer].some(id=>S.listings.find(l=>l.id===id).ein===S.user.ein)).length : 0;
@@ -615,10 +617,12 @@ function renderPhone(){
   const s = S.screen;
   if (!S.user && !['signup','role','claim','verify'].includes(s)) S.screen = 'signup';
   switch (S.screen) {
-    case 'signup': body = `${topbar()}<div class="screen"><div style="height:8%"></div><h2 class="h center">Join Name TBD</h2><p class="sub center">Where Washington nonprofits find what they need — and share what they have.</p><div style="height:10px"></div>
-      <button class="btn" data-a="signup-google">Continue with Google</button><div class="center hint">or</div><input id="email" placeholder="you@yourorganization.org" value="${esc(S.signup.email||'')}"><button class="btn primary" data-a="signup-email">Continue with email</button>
-      <p class="hint center" style="margin-top:20px">Free for 501(c)(3)s. No card, no forms — your organization is already listed.</p>
-      <button class="btn quiet" data-a="sheet-who">Already playing? Switch perspective</button></div>`; break;
+    case 'signup': { const em = !!S.signup.useEmail;
+      body = `${topbar({help:false})}<div class="screen"><div style="height:8%"></div><h2 class="h center">Join Name TBD</h2><p class="sub center">Washington nonprofits, helping each other with what they have.</p><div style="height:10px"></div>
+      ${em?`<input id="email" placeholder="you@yourorganization.org" value="${esc(S.signup.email||'')}" autocomplete="off"><button class="btn primary" data-a="signup-email">Sign in with email</button><button class="link" data-a="signup-toggle">Use Google instead</button>`
+          :`<button class="btn primary" data-a="signup-google">Sign in with Google</button><button class="link" data-a="signup-toggle">Use email instead</button>`}
+      <p class="hint center" style="margin-top:20px">Free. No forms. Your organization is already here.</p>
+      <button class="demo" data-a="sheet-who">Demo: play as someone else</button></div>`; break; }
     case 'role': body = `${topbar({back:'signup',title:'Back'})}<div class="screen"><h2 class="h">I’m here as…</h2><p class="sub">Signed in as ${esc(S.signup.email||'casey@ballardfoodbank.org')}</p>
       ${[['np','A nonprofit','I work or volunteer with a 501(c)(3). Free, always.'],['biz','A business','We want to donate goods or services. Premium account.'],['sup','A supporter','I want to follow and help local causes.']].map(([k,t,d])=>`<button class="card tap ${S.signup.role===k?'sel':''}" data-a="role" data-k="${k}"><span class="role"><span class="r"></span><span><span class="t" style="margin:0">${t}</span><span class="m">${d}</span></span></span></button>`).join('')}
       <button class="btn primary" data-a="role-continue">Continue</button>${S.signup.role&&S.signup.role!=='np'?`<p class="hint">Business and supporter sign-up isn’t in this prototype yet — pick <b>A nonprofit</b> to follow the story.</p>`:''}</div>`; break;
@@ -971,6 +975,7 @@ document.addEventListener('click', async e => {
     case 'reset': if (confirm('Reset the demo to the beginning?')) { S = fresh(); ORGS.forEach(o=>{o.verified=false;}); setStep(0); } return;
     case 'go': read(); go(el.dataset.s, id ? (isNaN(+id)?id:+id) : undefined); return;
     case 'signup-google': S.signup = { google:true, email:'casey@ballardfoodbank.org' }; go('role'); return;
+    case 'signup-toggle': read(); S.signup.useEmail = !S.signup.useEmail; render(); return;
     case 'signup-email': read(); if (!S.signup.email) { toast('Enter an email (try casey@ballardfoodbank.org)'); return; } go('role'); return;
     case 'role': S.signup.role = el.dataset.k; render(); return;
     case 'role-continue': if (S.signup.role==='np') go('claim'); else if (!S.signup.role) toast('Pick one to continue'); else render(); return;

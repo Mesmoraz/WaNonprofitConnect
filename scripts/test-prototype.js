@@ -27,7 +27,7 @@ const assert = (cond, msg) => { if (!cond) { console.error('FAIL:', msg); proces
   x = boot();
   const s = () => x.S();
   const act = (label, fn) => { const was = x.STEPS[s().step].done(); fn(); x.syncStep(was); console.log(`     ${label} -> guide at step ${s().step + 1}`); };
-  act('tap Continue with Google', () => x.go('role')); assert(s().step === 1, 'sign-up tap advanced to step 2');
+  act('tap Sign in with Google', () => x.go('role')); assert(s().step === 1, 'sign-up tap advanced to step 2');
   act('finish claim', () => x.finishClaim()); assert(s().step === 2, 'claim advanced to step 3');
   act('open Orgs tab', () => x.go('orgs')); assert(s().step === 3, 'browsing advanced to step 4');
   act('post need', () => x.postListing({ kind: 'Need', category: 'Technology', title: 'Laptops for client intake stations', desc: '', qty: 12, unit: 'laptops', urgency: 'Critical', tags: 'laptops' }));
