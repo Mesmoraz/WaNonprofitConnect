@@ -100,6 +100,7 @@
   .occ { display: flex; gap: 4px; flex-wrap: wrap; } .occ span { font-size: 11px; background: var(--offer-bg); color: var(--offer); padding: 1px 6px; border-radius: 999px; }
   .btn { display: block; width: 100%; text-align: center; padding: 12px 14px; border-radius: 10px; font-weight: 600; border: 1px solid var(--line); background: var(--paper); }
   .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .btn:disabled { opacity: 0.45; cursor: default; }
   .btn.need { background: var(--need); color: #fff; border-color: var(--need); }
   .btn.quiet { color: var(--ink-2); }
   .btn.sm { padding: 8px 12px; font-size: 13px; width: auto; }
@@ -624,9 +625,10 @@ function renderPhone(){
           :`<button class="btn primary" data-a="signup-google">Sign in with Google</button><button class="link" data-a="signup-toggle">Use email instead</button>`}
       <p class="hint center" style="margin-top:20px">Free. No forms. Your organization is already here.</p>
       <button class="demo" data-a="sheet-who">Demo: play as someone else</button></div>`; break; }
-    case 'role': body = `${topbar({back:'signup',title:'Back'})}<div class="screen"><h2 class="h">I’m here as…</h2><p class="sub">Signed in as ${esc(S.signup.email||'casey@ballardfoodbank.org')}</p>
-      ${[['np','A nonprofit','I work or volunteer with a 501(c)(3). Free, always.'],['biz','A business','We want to donate goods or services. Premium account.'],['sup','A supporter','I want to follow and help local causes.']].map(([k,t,d])=>`<button class="card tap ${S.signup.role===k?'sel':''}" data-a="role" data-k="${k}"><span class="role"><span class="r"></span><span><span class="t" style="margin:0">${t}</span><span class="m">${d}</span></span></span></button>`).join('')}
-      <button class="btn primary" data-a="role-continue">Continue</button>${S.signup.role&&S.signup.role!=='np'?`<p class="hint">Business and supporter sign-up isn’t in this prototype yet — pick <b>A nonprofit</b> to follow the story.</p>`:''}</div>`; break;
+    case 'role': { const r = S.signup.role; const next = { np:'Find my organization', biz:'Sign up as a business', sup:'Sign up as a supporter' }[r] || 'Find my organization';
+      body = `${topbar({back:'signup',title:'Back',help:false})}<div class="screen"><h2 class="h">Who are you here as?</h2><p class="sub">Signed in as ${esc(S.signup.email||'casey@ballardfoodbank.org')}</p>
+      ${[['np','A nonprofit','I work or volunteer at a 501(c)(3). Free.'],['biz','A business','We have goods or services to give.'],['sup','A supporter','I want to follow and help causes near me.']].map(([k,t,d])=>`<button class="card tap ${r===k?'sel':''}" data-a="role" data-k="${k}"><span class="role"><span class="r"></span><span><span class="t" style="margin:0">${t}</span><span class="m">${d}</span></span></span></button>`).join('')}
+      <button class="btn primary" data-a="role-continue" ${r?'':'disabled'}>${next}</button>${r&&r!=='np'?`<p class="demo" style="margin-top:0">Demo: only the nonprofit path is built. Pick A nonprofit to follow the story.</p>`:''}</div>`; break; }
     case 'claim': {
       const q = S.claimQuery.trim().toLowerCase();
       const hits = q.length>=2 ? ORGS.filter(o => o.name.toLowerCase().includes(q) || o.ein.includes(q.replace(/\D/g,''))).slice(0,6) : [];
@@ -977,9 +979,9 @@ document.addEventListener('click', async e => {
     case 'go': read(); go(el.dataset.s, id ? (isNaN(+id)?id:+id) : undefined); return;
     case 'signup-google': S.signup = { google:true, email:'casey@ballardfoodbank.org' }; go('role'); return;
     case 'signup-toggle': read(); S.signup.useEmail = !S.signup.useEmail; render(); return;
-    case 'signup-email': read(); if (!S.signup.email) { toast('Enter an email (try casey@ballardfoodbank.org)'); return; } go('role'); return;
+    case 'signup-email': read(); if (!S.signup.email) { toast('Enter your email first.'); return; } go('role'); return;
     case 'role': S.signup.role = el.dataset.k; render(); return;
-    case 'role-continue': if (S.signup.role==='np') go('claim'); else if (!S.signup.role) toast('Pick one to continue'); else render(); return;
+    case 'role-continue': if (S.signup.role==='np') go('claim'); else render(); return;
     case 'claim-pick': read(); S.claimPick = id; render(); return;
     case 'claim-continue': read(); if (S.claimPick) go('verify'); return;
     case 'claim-finish': finishClaim(); return;
