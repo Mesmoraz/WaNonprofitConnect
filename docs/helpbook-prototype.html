@@ -465,7 +465,7 @@ function suggestions(listing) {
 let S;
 function fresh() {
   const seeded = seedListings();
-  return { step:0, screen:'signup', signup:{}, user:null, listings:seeded, matches:seedMatches(seeded), filter:{ kind:'All', category:'', who:'All', radius:0, threads:{ Completed:true, Accepted:true, Proposed:true, suggested:false } }, filtersOpen:false, map:{ sel:null, selMatch:null, k:1, tx:0, ty:0 }, notifs:[], follows:[], nextId:30, feedFilter:'All', orgFilter:{ q:'', cause:'', city:'', joined:false, open:false }, draft:null, sel:null, toast:null, sheet:null, claimQuery:'', claimPick:null, verifyPick:null, biz:null, guideMin:false, joinedEins:['822888626','581735531','911606330','465378620','811434757','910826037','223939593','237421892','911425676','911546757'] };
+  return { step:0, screen:'signup', signup:{}, user:null, listings:seeded, matches:seedMatches(seeded), filter:{ kind:'All', category:'', who:'All', radius:0, threads:{ Completed:true, Accepted:true, Proposed:true, suggested:false } }, filtersOpen:false, map:{ sel:null, selMatch:null, k:1, tx:0, ty:0 }, notifs:[], follows:[], nextId:30, feedFilter:'All', orgFilter:{ q:'', cause:'', city:'', joined:false, open:false }, draft:null, sel:null, toast:null, sheet:null, claimQuery:'', claimPick:null, verifyPick:null, biz:null, about:null, guideMin:false, joinedEins:['822888626','581735531','911606330','465378620','811434757','910826037','223939593','237421892','911425676','911546757'] };
 }
 function save(){ try { localStorage.setItem('helpbook-proto', JSON.stringify(S)); } catch(e){} }
 function load(){ try { const j = localStorage.getItem('helpbook-proto'); if (j) { S = JSON.parse(j); return true; } } catch(e){} return false; }
@@ -552,7 +552,7 @@ function sendMsg(mid, text) {
 }
 function switchTo(personId) {
   const p = PEOPLE.find(x=>x.id===personId); S.user = { ...p }; if (!S.joinedEins.includes(p.ein)) S.joinedEins.push(p.ein);
-  S.sheet = null; if (['signup','role','claim','verify','bizsetup'].includes(S.screen)) S.screen = 'feed';
+  S.sheet = null; if (['signup','role','claim','verify','bizsetup','about'].includes(S.screen)) S.screen = 'feed';
   const unread = S.notifs.filter(n=>n.ein===p.ein&&!n.read).length;
   render(); if (unread) toast(`${p.name} · ${ORG(p.ein).name}: ${unread} new alert${unread===1?'':'s'} in Inbox`);
 }
@@ -649,7 +649,7 @@ function myMatches(){ return S.matches.filter(m => [m.need,m.offer].some(id => S
 function renderPhone(){
   let body = '';
   const s = S.screen;
-  if (!S.user && !['signup','role','claim','verify','bizsetup'].includes(s)) S.screen = 'signup';
+  if (!S.user && !['signup','role','claim','verify','bizsetup','about'].includes(s)) S.screen = 'signup';
   switch (S.screen) {
     case 'signup': { const em = !!S.signup.useEmail;
       body = `${topbar({help:false})}<div class="screen"><div style="height:8%"></div><h2 class="h center">Join Name TBD</h2><p class="sub center">Washington nonprofits, helping each other with what they have.</p><div style="height:10px"></div>
@@ -661,8 +661,7 @@ function renderPhone(){
       const kinds = [['np','A nonprofit','I work or volunteer at a 501(c)(3) or other tax-exempt organization.','Find my organization'],['school','A school or district','I work at a public or private school, or a district office.','Find my school'],['workforce','A workforce program','I work at a job-training or workforce development program.','Find my program'],['biz','A business','We have goods, services, skills, or people to give.','Set up my business'],['foundation','A foundation','We fund organizations.','Find my foundation'],['me','Just me','I have time or skills to give.','Set up my profile']];
       const kind = kinds.find(k=>k[0]===r);
       body = `${topbar({back:'signup',title:'Back',help:false})}<div class="screen"><h2 class="h">Who are you here as?</h2><p class="sub">Signed in as ${esc(S.signup.email||'casey@ballardfoodbank.org')}</p>
-      ${kinds.map(([k,t,d])=>`<button class="card tap ${r===k?'sel':''}" data-a="role" data-k="${k}"><span class="role"><span class="r"></span><span><span class="t" style="margin:0">${t}</span><span class="m">${d}</span></span></span></button>`).join('')}
-      ${r&&r!=='np'?`<p class="demo">Demo: this path isn’t built yet. Pick A nonprofit to follow the story.</p>`:''}</div>
+      ${kinds.map(([k,t,d])=>`<button class="card tap ${r===k?'sel':''}" data-a="role" data-k="${k}"><span class="role"><span class="r"></span><span><span class="t" style="margin:0">${t}</span><span class="m">${d}</span></span></span></button>`).join('')}</div>
       <div class="cta-bar"><button class="btn primary" data-a="role-continue" ${kind?'':'disabled'}>${kind?kind[3]:'Pick one'}</button></div>`; break; }
     case 'claim': {
       const role = S.signup.role || 'np';
@@ -681,6 +680,22 @@ function renderPhone(){
         ${q.length>=2&&!hits.length?`<div class="empty">Nothing by that name.${ktype==='nonprofit'||ktype==='foundation'?' Try the EIN instead.':''}</div><p class="demo">Demo: only a few of Washington’s ${ktype==='nonprofit'?'35,361 organizations':ktype==='school'?'schools and districts':ktype==='workforce'?'workforce programs':'foundations'} are loaded.</p>`:''}
         ${!q?`<p class="demo">Demo: try "${kdemo}".</p>`:''}</div>
         <div class="cta-bar"><button class="btn primary" data-a="claim-continue" ${pick?'':'disabled'}>${pick?'Join as '+esc(pick.name):'Pick your organization'}</button></div>`; break; }
+    case 'about': {
+      const email = S.signup.email || 'dana@example.com';
+      const a = S.about || (S.about = { name: email.split('@')[0].replace(/[._-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase()), place:'', can:[], extra:'', when:[], causes:[] });
+      const CAN = ['Driving','Cooking','Tutoring','Bookkeeping','Building and repairs','Design','Tech help','Legal','Writing','Translating','Mentoring','Fundraising','Events','Whatever’s needed'];
+      const WHEN = ['Weekdays','Weeknights','Weekends','A few hours a month','Not sure yet'];
+      const CAUSE = [['K','Food'],['L','Housing'],['O','Youth'],['B','Education'],['D','Animals'],['C','Environment'],['E','Health'],['A','Arts'],['S','Community']];
+      const chips = (list, key, val) => list.map(x => { const [v, t] = Array.isArray(x) ? x : [x, x]; return `<button class="chip ${a[key].includes(v)?'on':''}" data-a="about-chip" data-k="${key}" data-v="${esc(v)}">${esc(t)}</button>`; }).join('');
+      const ok = a.name.trim() && a.place.trim() && a.can.length;
+      body = `${topbar({back:'role',title:'Back',help:false})}<div class="screen"><h2 class="h">About you</h2><p class="sub">So the right needs find you. Change any of this later.</p>
+        <input id="a-name" placeholder="Your name" value="${esc(a.name)}">
+        <input id="a-place" placeholder="City or ZIP" value="${esc(a.place)}">
+        <div class="label">What you can do</div><div class="chips">${chips(CAN,'can')}</div>
+        <input id="a-extra" placeholder="Something else?" value="${esc(a.extra)}">
+        <div class="label">When</div><div class="chips">${chips(WHEN,'when')}</div>
+        <div class="label">Causes you care about</div><div class="chips">${chips(CAUSE,'causes')}</div></div>
+        <div class="cta-bar"><button class="btn primary" data-a="about-save" ${ok?'':'disabled'}>${ok?'Save and go to the board':'Fill in the top three'}</button></div>`; break; }
     case 'bizsetup': {
       const b = S.biz || (S.biz = { name:'', city:'', website:'', ubi:'' });
       const ok = b.name.trim() && b.city.trim() && /^\d{9}$/.test(b.ubi.replace(/\D/g,''));
@@ -991,8 +1006,8 @@ function renderMap(){
   const labels = k >= 6 ? '' : Object.entries(CITY).filter(([c,[lat,lon]]) => bigCities.includes(c) && !nodes.some(n => Math.hypot(n.x - PROJ.x(lon), n.y - PROJ.y(lat)) < (n.single ? px(5.5 + Math.min(4, n.deg)) : px(9 + 3.5 * Math.sqrt(n.members.length))) + px(26))).map(([c,[lat,lon]]) => `<text class="citylbl" style="font-size:${px(10).toFixed(3)}px" x="${(PROJ.x(lon)+px(8)).toFixed(1)}" y="${(PROJ.y(lat)-px(8)).toFixed(1)}">${cap(c)}</text>`).join('');
   const svg = `<svg id="mapsvg" viewBox="0 0 ${MAP_W} ${MAP_H}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Map of Washington with organizations and connections">${defs}<rect class="water" width="${MAP_W}" height="${MAP_H}"/>
     <g id="mapg" class="${(v.selMatch || v.sel) ? 'has-sel' : ''}" transform="translate(${S.map.tx.toFixed(2)} ${S.map.ty.toFixed(2)}) scale(${k.toFixed(4)})"><path class="land" vector-effect="non-scaling-stroke" d="${path}"/>${radius}${labels}
-    ${suggested.map(x => thread(x.offer.ein, x.need.ein, 'suggested', '', `Suggested: ${ORG(x.offer.ein).name} \u2192 ${ORG(x.need.ein).name}`)).join('')}
-    ${threads.map(m => { const n=S.listings.find(l=>l.id===m.need), o=S.listings.find(l=>l.id===m.offer); return thread(o.ein, n.ein, m.status, `data-a="map-thread" data-id="${m.id}"${(v.selMatch===m.id || (v.sel && (o.ein===v.sel || n.ein===v.sel)))?' hi':''}`, `${ORG(o.ein).name} \u2192 ${ORG(n.ein).name} \u00b7 ${n.category} \u00b7 ${m.status}${m.agreement?' \u00b7 \u21bb '+m.agreement.cadence:''}`); }).join('')}
+    ${suggested.map(x => thread(x.offer.ein, x.need.ein, 'suggested', '', `Suggested: ${ORG(x.offer.ein).name} \→ ${ORG(x.need.ein).name}`)).join('')}
+    ${threads.map(m => { const n=S.listings.find(l=>l.id===m.need), o=S.listings.find(l=>l.id===m.offer); return thread(o.ein, n.ein, m.status, `data-a="map-thread" data-id="${m.id}"${(v.selMatch===m.id || (v.sel && (o.ein===v.sel || n.ein===v.sel)))?' hi':''}`, `${ORG(o.ein).name} \→ ${ORG(n.ein).name} \· ${n.category} \· ${m.status}${m.agreement?' \· \↻ '+m.agreement.cadence:''}`); }).join('')}
     ${pins}</g>${scaleBar(k)}</svg>
     <div class="zoomctl"><button data-a="map-zoom" data-v="in" aria-label="Zoom in">+</button><button data-a="map-zoom" data-v="out" aria-label="Zoom out">−</button><button class="fit" data-a="map-zoom" data-v="fit" aria-label="Fit whole state">WA</button></div>
     <div class="maphint">${k > 1.05 ? Math.round(k*10)/10 + '× · drag to pan' : 'pinch or scroll to zoom'}</div>`;
@@ -1030,7 +1045,7 @@ document.addEventListener('click', async e => {
   const guideAction = ['guide-toggle','step','prev','next','play','reset'].includes(a);
   const wasDone = guideAction ? true : STEPS[S.step].done();
   if (!guideAction) setTimeout(() => { syncStep(wasDone); render(); }, 0);
-  const read = () => { const g = i => document.getElementById(i); if (S.screen==='post' && g('d-title')) S.draft = { ...S.draft, title:g('d-title').value, category:g('d-category').value, cadence:g('d-cadence')?g('d-cadence').value:'One-time', urgency:g('d-urgency')?g('d-urgency').value:'Normal', qty:g('d-qty').value, unit:g('d-unit').value, desc:g('d-desc').value, tags:g('d-tags').value }; if (S.screen==='orgs' && g('orgq')) S.orgFilter = { ...S.orgFilter, q:g('orgq').value, cause:g('cause').value, city:g('city').value }; if (S.screen==='claim' && g('claimq')) S.claimQuery = g('claimq').value; if (S.screen==='bizsetup' && g('b-name')) S.biz = { name:g('b-name').value, city:g('b-city').value, website:g('b-website').value, ubi:g('b-ubi').value }; if (S.screen==='signup' && g('email')) S.signup.email = g('email').value; };
+  const read = () => { const g = i => document.getElementById(i); if (S.screen==='post' && g('d-title')) S.draft = { ...S.draft, title:g('d-title').value, category:g('d-category').value, cadence:g('d-cadence')?g('d-cadence').value:'One-time', urgency:g('d-urgency')?g('d-urgency').value:'Normal', qty:g('d-qty').value, unit:g('d-unit').value, desc:g('d-desc').value, tags:g('d-tags').value }; if (S.screen==='orgs' && g('orgq')) S.orgFilter = { ...S.orgFilter, q:g('orgq').value, cause:g('cause').value, city:g('city').value }; if (S.screen==='claim' && g('claimq')) S.claimQuery = g('claimq').value; if (S.screen==='bizsetup' && g('b-name')) S.biz = { name:g('b-name').value, city:g('b-city').value, website:g('b-website').value, ubi:g('b-ubi').value }; if (S.screen==='about' && g('a-name') && S.about) Object.assign(S.about, { name:g('a-name').value, place:g('a-place').value, extra:g('a-extra').value }); if (S.screen==='signup' && g('email')) S.signup.email = g('email').value; };
   switch (a) {
     case 'guide-toggle': S.guideMin = !S.guideMin; document.getElementById('guide').classList.toggle('min', S.guideMin); render(); document.getElementById('guide').classList.toggle('min', S.guideMin); return;
     case 'step': setStep(+el.dataset.i); break;
@@ -1043,7 +1058,15 @@ document.addEventListener('click', async e => {
     case 'signup-toggle': read(); S.signup.useEmail = !S.signup.useEmail; render(); return;
     case 'signup-email': read(); if (!S.signup.email) { toast('Enter your email first.'); return; } go('role'); return;
     case 'role': S.signup.role = el.dataset.k; render(); return;
-    case 'role-continue': { const r = S.signup.role; if (['np','school','workforce','foundation'].includes(r)) { S.claimQuery=''; S.claimPick=null; go('claim'); } else if (r==='biz') go('bizsetup'); else render(); return; }
+    case 'role-continue': { const r = S.signup.role; if (['np','school','workforce','foundation'].includes(r)) { S.claimQuery=''; S.claimPick=null; go('claim'); } else if (r==='biz') go('bizsetup'); else if (r==='me') { S.about = null; go('about'); } else render(); return; }
+    case 'about-chip': { read(); const k = el.dataset.k, v = el.dataset.v, arr = S.about[k]; const i = arr.indexOf(v); if (i >= 0) arr.splice(i, 1); else arr.push(v); render(); return; }
+    case 'about-save': { read(); const a = S.about; if (!a) return; const extra = a.extra.trim(); const can = extra && !a.can.includes(extra) ? a.can.concat(extra) : a.can;
+      const place = a.place.trim(); const zip = (place.match(/\b\d{5}\b/) || [''])[0]; const city = (ZIP[zip] ? Object.keys(CITY).find(c => Math.hypot(CITY[c][0]-ZIP[zip][0], CITY[c][1]-ZIP[zip][1]) < 0.25) : null) || place.replace(/\d{5}/,'').trim().toUpperCase() || 'SEATTLE';
+      const ein = 'P-you'; const existing = ORG(ein);
+      const rec = { ...(existing||{}), ein, name:a.name.trim(), city, zip, cause:a.causes[0] || 'S', inc:'', rev:0, ruling:'', filing:'', needTags:[], haveTags:can.map(x=>x.toLowerCase()), when:a.when.slice(), causes:a.causes.slice(), type:'person', sub:'Person' };
+      if (!existing) ORGS.push(rec); else Object.assign(existing, rec); const c = ZIP[zip] || CITY[city] || [47.3,-120.5]; rec.lat = c[0]; rec.lon = c[1];
+      S.user = { id:'you', name:rec.name, ein, email:S.signup.email || 'dana@example.com' }; if (!S.joinedEins.includes(ein)) S.joinedEins.push(ein); S.sheet = null;
+      go('feed'); toast('You’re in. Welcome, ' + rec.name + '.'); return; }
     case 'biz-confirm': { read(); const b = S.biz; if (!b) return; const host = (b.website||'').replace(/^https?:\/\//i,'').replace(/^www\./i,'').split('/')[0].toLowerCase(); const ein = 'B-you';
       const existing = ORG(ein); const rec = { ...(existing||{}), ein, name:b.name.trim(), city:b.city.trim().toUpperCase(), zip:'', cause:'S', inc:'', rev:0, ruling:'', filing:'', needTags:[], haveTags:[], type:'business', sub:'Business', domain:host };
       if (!existing) ORGS.push(rec); else Object.assign(existing, rec); const c = CITY[rec.city] || [47.3,-120.5]; rec.lat = c[0]; rec.lon = c[1];
@@ -1095,6 +1118,7 @@ document.addEventListener('input', e => {
   if (e.target.id === 'flt-radius') { S.filter.radius = +e.target.value; const lbl = e.target.nextElementSibling; if (lbl) lbl.textContent = S.filter.radius ? S.filter.radius + ' mi' : 'any distance'; }
   if (e.target.id === 'claimq') { S.claimQuery = e.target.value; S.claimPick = null; const pos = e.target.selectionStart; render(); const el = document.getElementById('claimq'); el.focus(); el.setSelectionRange(pos,pos); }
   if (['b-name','b-city','b-website','b-ubi'].includes(e.target.id)) { const g = i => document.getElementById(i); S.biz = { name:g('b-name').value, city:g('b-city').value, website:g('b-website').value, ubi:g('b-ubi').value }; const id = e.target.id, pos = e.target.selectionStart; render(); const el = document.getElementById(id); el.focus(); el.setSelectionRange(pos,pos); }
+  if (['a-name','a-place'].includes(e.target.id) && S.about) { const g = i => document.getElementById(i); Object.assign(S.about, { name:g('a-name').value, place:g('a-place').value, extra:g('a-extra').value }); const id = e.target.id, pos = e.target.selectionStart; render(); const el = document.getElementById(id); el.focus(); el.setSelectionRange(pos,pos); }
   if (e.target.id === 'orgq') { S.orgFilter.q = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('orgq'); el.focus(); el.setSelectionRange(pos,pos); }
   if (e.target.id === 'd-title') { S.draft.title = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('d-title'); el.focus(); el.setSelectionRange(pos,pos); }
 });

@@ -6,10 +6,10 @@ Generated from `roadmap.json` on 2026-09-22. Don't edit this file; run `node scr
 
 | Backlog | Ready | In progress | In review | Done |
 | --- | --- | --- | --- | --- |
-| S-13 Foundations flagged from the IRS list's foundation code |  | S-9 About you: a person says where they are, what they can do, and when | S-11 Schools and districts from OSPI's public feature service | S-1 Mission statement saved and pointed at from the repo |
-| S-14 Needs and offers for all six kinds of help, plus people |  | S-12 Workforce programs from the WA Workforce Board list |  | S-2 Voice sheet: ten rules and a words list |
-| S-16 One Together initiative |  | S-15 Three grants from real WA foundations' public pages, labeled as examples |  | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
-| S-17 Board: kind-of-help chips, fair ranking, directory search at the top |  | S-35 OSPI schools loader into a Schools table |  | S-4 App map: five tabs, sixteen screens, three stories, order of work |
+| S-13 Foundations flagged from the IRS list's foundation code |  | S-12 Workforce programs from the WA Workforce Board list | S-9 About you: a person says where they are, what they can do, and when | S-1 Mission statement saved and pointed at from the repo |
+| S-14 Needs and offers for all six kinds of help, plus people |  | S-15 Three grants from real WA foundations' public pages, labeled as examples | S-11 Schools and districts from OSPI's public feature service | S-2 Voice sheet: ten rules and a words list |
+| S-16 One Together initiative |  | S-35 OSPI schools loader into a Schools table |  | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
+| S-17 Board: kind-of-help chips, fair ranking, directory search at the top |  |  |  | S-4 App map: five tabs, sixteen screens, three stories, order of work |
 | S-18 A need or offer: who it's from, how it fits you, I can help / I need this |  |  |  | S-5 Sign up: one green button, email behind a link |
 | S-19 Post: kind of help first, then the rest |  |  |  | S-6 Who are you here as: six kinds, button label follows the pick |
 | S-20 Thread and inbox: accept, message, mark done, golden |  |  |  | S-7 Find yours: list, words, and search follow the kind |
@@ -86,11 +86,11 @@ Sign up through confirm for all six kinds of participant.
 - **S-8** Confirm: email-domain match per kind, ways to confirm per kind · Done · round B2
     - [x] T-14 Nonprofit version (round 4)
     - [x] T-15 All kinds, UBI check for businesses, anyone becomes the signed-in person (B2)
-- **S-9** About you: a person says where they are, what they can do, and when · In progress · round B3
-    - [ ] T-16 Brief: purpose, one action, every word (Ready)
-    - [ ] T-17 Build after approval (Backlog)
-    - [ ] T-18 Check on a phone with real taps (Backlog)
-    - [ ] T-19 Ship: artifact, site, both repos (Backlog)
+- **S-9** About you: a person says where they are, what they can do, and when · In review · round B3
+    - [x] T-16 Brief: purpose, one action, every word
+    - [x] T-17 Build after approval
+    - [x] T-18 Check on a phone with real taps
+    - [x] T-19 Ship: artifact, site, both repos
 - **S-10** Phone fixes found along the way · Done · _Taylor's phone checks_
     - [x] T-20 Continue buttons pinned below the scroll, not at the end of it
     - [x] T-21 Bottom sheets clear the fixed story bar

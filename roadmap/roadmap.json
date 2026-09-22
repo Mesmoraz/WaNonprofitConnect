@@ -350,29 +350,29 @@
       "id": "S-9",
       "epic": "E-2",
       "title": "About you: a person says where they are, what they can do, and when",
-      "status": "in-progress",
+      "status": "review",
       "added": "2026-09-21",
       "round": "B3",
       "tasks": [
         {
           "id": "T-16",
           "title": "Brief: purpose, one action, every word",
-          "status": "ready"
+          "status": "done"
         },
         {
           "id": "T-17",
           "title": "Build after approval",
-          "status": "backlog"
+          "status": "done"
         },
         {
           "id": "T-18",
           "title": "Check on a phone with real taps",
-          "status": "backlog"
+          "status": "done"
         },
         {
           "id": "T-19",
           "title": "Ship: artifact, site, both repos",
-          "status": "backlog"
+          "status": "done"
         }
       ]
     },
