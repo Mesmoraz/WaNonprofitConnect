@@ -54,7 +54,11 @@ Single-file vanilla JS. `S` = state (persisted to localStorage key `helpbook-pro
 
 `src/WaNonprofitConnect.Data` (entities, EF Core + migrations `InitialCreate`, `AddExchange`; `Import/BmfImporter` download→SHA-256→batched upsert; `Exchange/ExchangeService` + `MatchScorer` + shared DTOs; `Queries/`), `Api` (controllers under `/api/v1`, `X-Org-Ein` acting-org header until identity exists, `Realtime/ExchangeHub` at `/hubs/exchange`), `Cli` (import/stats direct to DB; listing/match/msg/watch/demo over HTTP). Demo EINs: Ballard Food Bank 911428805, Computers 4 People 822888626, Tacoma-Pierce Habitat 581735531, Rebuilding Together Seattle 911606330, SE Seattle Tool Library 465378620.
 
-## Backlog / next candidates
+## Roadmap
+
+The backlog below is superseded by `roadmap/roadmap.json` (rules in `roadmap/SDLC.md`, board in `roadmap/README.md`, public view at the site's roadmap.html). Direction docs: `docs/MISSION.md`, `docs/TAXONOMY.md`, `docs/APP-MAP.md`, `docs/VOICE.md`.
+
+## Backlog / next candidates (historical; see roadmap/)
 
 1. Backend phase 2a–2b: ASP.NET Identity + org claiming (replace `X-Org-Ein`), Pub 78 + revocation → `IsActive`, admin queue.
 2. Bring prototype features to the backend: cadence/agreements, P-levels + cap, fair ranking, org capability tags, alerts.

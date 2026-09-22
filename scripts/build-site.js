@@ -5,6 +5,7 @@
 //   node scripts/build-site.js [outDir]      default outDir: ../helpbook-site (sibling folder, its own git repo)
 const fs = require('fs');
 const path = require('path');
+const roadmap = require('./roadmap');
 
 const root = path.resolve(__dirname, '..');
 const out = path.resolve(process.argv[2] || path.join(root, '..', 'helpbook-site'));
@@ -43,6 +44,11 @@ fs.writeFileSync(path.join(out, 'prototype.html'), wrap('helpbook-prototype.html
 fs.writeFileSync(path.join(out, 'design.html'), wrap('helpbook-step2-design.html', { extraBody: mermaid }));
 fs.writeFileSync(path.join(out, 'how-it-works.html'), wrap('how-it-works.html'));
 
+// Roadmap page: generated from roadmap/roadmap.json (validated first; a bad file fails the build).
+{ const d = roadmap.load(); const errs = roadmap.validate(d);
+  if (errs.length) { console.error('roadmap.json has problems:\n  ' + errs.join('\n  ')); process.exit(1); }
+  fs.writeFileSync(path.join(out, 'roadmap.html'), roadmap.renderHtml(roadmap.model(d))); }
+
 fs.writeFileSync(path.join(out, 'index.html'), `<!doctype html>
 <html lang="en">
 <head>
@@ -75,6 +81,7 @@ fs.writeFileSync(path.join(out, 'index.html'), `<!doctype html>
   <a class="card primary" href="prototype.html"><b>Try the prototype →</b><span>Play the story from both sides: a food bank needs laptops, a refurbisher has them. Works on your phone.</span></a>
   <a class="card" href="how-it-works.html"><b>How it works</b><span>Every part of the system explained in plain language — where the data comes from, how matching decides, what the map shows, and every endpoint.</span></a>
   <a class="card" href="design.html"><b>Read the design brief</b><span>Account types, verification, wireframes, data model, and the plan.</span></a>
+  <a class="card" href="roadmap.html"><b>See the roadmap</b><span>What is done, what is next, and what is waiting. Updated as the work moves.</span></a>
   <small>Organizations are real WA 501(c)(3)s from the IRS Business Master File. People, listings and messages are invented. Nothing you do here is stored or sent anywhere.</small>
 </main>
 </body>
@@ -84,7 +91,7 @@ fs.writeFileSync(path.join(out, 'index.html'), `<!doctype html>
 fs.writeFileSync(path.join(out, '.nojekyll'), '');
 fs.writeFileSync(path.join(out, 'README.md'), `# Name TBD — prototype site
 
-Static pages only: the clickable prototype and the Step 2 design brief. Generated from the (private) WaNonprofitConnect repo by \`scripts/build-site.js\`; edit there, not here.
+Static pages only: the clickable prototype, the design brief, how it works, and the roadmap. Generated from the (private) WaNonprofitConnect repo by \`scripts/build-site.js\`; edit there, not here.
 `);
 console.log('Built site →', out);
 for (const f of fs.readdirSync(out)) console.log('  ', f, fs.statSync(path.join(out, f)).size, 'bytes');
