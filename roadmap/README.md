@@ -1,14 +1,14 @@
 # Name TBD roadmap
 
-Generated from `roadmap.json` on 2026-09-21. Don't edit this file; run `node scripts/roadmap.js`. Rules: [SDLC.md](SDLC.md).
+Generated from `roadmap.json` on 2026-09-22. Don't edit this file; run `node scripts/roadmap.js`. Rules: [SDLC.md](SDLC.md).
 
 ## Board
 
 | Backlog | Ready | In progress | In review | Done |
 | --- | --- | --- | --- | --- |
-| S-12 Workforce programs from the WA Workforce Board list | S-9 About you: a person says where they are, what they can do, and when |  | S-54 Roadmap page generated from roadmap.json | S-1 Mission statement saved and pointed at from the repo |
-| S-13 Foundations flagged from the IRS list's foundation code | S-11 Schools and districts from OSPI's public feature service |  |  | S-2 Voice sheet: ten rules and a words list |
-| S-14 Needs and offers for all six kinds of help, plus people | S-35 OSPI schools loader into a Schools table |  |  | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
+| S-12 Workforce programs from the WA Workforce Board list | S-11 Schools and districts from OSPI's public feature service | S-9 About you: a person says where they are, what they can do, and when |  | S-1 Mission statement saved and pointed at from the repo |
+| S-13 Foundations flagged from the IRS list's foundation code | S-35 OSPI schools loader into a Schools table |  |  | S-2 Voice sheet: ten rules and a words list |
+| S-14 Needs and offers for all six kinds of help, plus people |  |  |  | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
 | S-15 Three grants from real WA foundations' public pages, labeled as examples |  |  |  | S-4 App map: five tabs, sixteen screens, three stories, order of work |
 | S-16 One Together initiative |  |  |  | S-5 Sign up: one green button, email behind a link |
 | S-17 Board: kind-of-help chips, fair ranking, directory search at the top |  |  |  | S-6 Who are you here as: six kinds, button label follows the pick |
@@ -17,7 +17,7 @@ Generated from `roadmap.json` on 2026-09-21. Don't edit this file; run `node scr
 | S-20 Thread and inbox: accept, message, mark done, golden |  |  |  | S-10 Phone fixes found along the way |
 | S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder |  |  |  | S-34 IRS Business Master File loaded |
 | S-22 Grants tab shows only for confirmed organizations |  |  |  | S-53 Prototype, design brief, and how-it-works pages live |
-| S-23 Directory: all six kinds, filter by kind, cause, city |  |  |  |  |
+| S-23 Directory: all six kinds, filter by kind, cause, city |  |  |  | S-54 Roadmap page generated from roadmap.json |
 | S-24 Profile: one layout, six shapes |  |  |  |  |
 | S-25 Map: fewer controls at once |  |  |  |  |
 | S-26 Legend and pin colors for six kinds |  |  |  |  |
@@ -52,7 +52,7 @@ Generated from `roadmap.json` on 2026-09-21. Don't edit this file; run `node scr
 
 ## Roadmap
 
-### I-1 A prototype that shows the whole mission · Ready · 9/33 stories done
+### I-1 A prototype that shows the whole mission · In progress · 9/33 stories done
 
 Every kind of participant and every kind of help, on a phone, in the approved voice. The thing to hand someone so they get it in a minute.
 
@@ -73,7 +73,7 @@ Mission, voice, taxonomy, and app map written and approved before screens are bu
     - [x] T-7 Draft and approve
     - [x] T-8 Save as docs/APP-MAP.md
 
-#### E-2 The front door · Ready · 5/6
+#### E-2 The front door · In progress · 5/6
 
 Sign up through confirm for all six kinds of participant.
 
@@ -88,7 +88,7 @@ Sign up through confirm for all six kinds of participant.
 - **S-8** Confirm: email-domain match per kind, ways to confirm per kind · Done · round B2
     - [x] T-14 Nonprofit version (round 4)
     - [x] T-15 All kinds, UBI check for businesses, anyone becomes the signed-in person (B2)
-- **S-9** About you: a person says where they are, what they can do, and when · Ready · round B3
+- **S-9** About you: a person says where they are, what they can do, and when · In progress · round B3
     - [ ] T-16 Brief: purpose, one action, every word (Ready)
     - [ ] T-17 Build after approval (Backlog)
     - [ ] T-18 Check on a phone with real taps (Backlog)
@@ -227,20 +227,20 @@ Rate limits, a review queue, reporting, and revocation.
 
 - **S-52** Rate limits, reporting, and a review queue for posts · Backlog
 
-### I-4 The public site · In progress · 1/3 stories done
+### I-4 The public site · Backlog · 2/3 stories done
 
 Where the idea-giver and early partners see progress: prototype, design brief, how it works, this roadmap.
 
-#### E-18 GitHub Pages site · In progress · 1/2
+#### E-18 GitHub Pages site · Done · 2/2
 
 Prototype, design brief, how it works, and roadmap, phone-first, rebuilt from the repo.
 
 - **S-53** Prototype, design brief, and how-it-works pages live · Done
-- **S-54** Roadmap page generated from roadmap.json · In review
+- **S-54** Roadmap page generated from roadmap.json · Done
     - [x] T-27 roadmap/ directory with SDLC.md and roadmap.json
     - [x] T-28 scripts/roadmap.js: validate, render README, set status
     - [x] T-29 roadmap.html on the site, phone-first, board and roadmap views
-    - [ ] T-30 Taylor checks it on a phone (In review)
+    - [x] T-30 Taylor checks it on a phone
 
 #### E-19 Going public with the name · Backlog · 0/1
 

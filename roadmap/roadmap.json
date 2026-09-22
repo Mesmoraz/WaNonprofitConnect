@@ -1,143 +1,851 @@
 {
   "name": "Name TBD roadmap",
-  "updated": "2026-09-21",
-  "statuses": ["backlog", "ready", "in-progress", "review", "done"],
+  "updated": "2026-09-22",
+  "statuses": [
+    "backlog",
+    "ready",
+    "in-progress",
+    "review",
+    "done"
+  ],
   "initiatives": [
-    { "id": "I-1", "title": "A prototype that shows the whole mission", "why": "Every kind of participant and every kind of help, on a phone, in the approved voice. The thing to hand someone so they get it in a minute." },
-    { "id": "I-2", "title": "A backend that can run it for real", "why": "Real data, real accounts, real matching. The prototype's flows, made durable." },
-    { "id": "I-3", "title": "Trust", "why": "Everyone here is who they say they are. Grants only reach confirmed organizations. No spam, no fraud." },
-    { "id": "I-4", "title": "The public site", "why": "Where the idea-giver and early partners see progress: prototype, design brief, how it works, this roadmap." },
-    { "id": "I-5", "title": "The organization behind it", "why": "Decisions that aren't code: the name, the entity, the platform, the partners." }
+    {
+      "id": "I-1",
+      "title": "A prototype that shows the whole mission",
+      "why": "Every kind of participant and every kind of help, on a phone, in the approved voice. The thing to hand someone so they get it in a minute."
+    },
+    {
+      "id": "I-2",
+      "title": "A backend that can run it for real",
+      "why": "Real data, real accounts, real matching. The prototype's flows, made durable."
+    },
+    {
+      "id": "I-3",
+      "title": "Trust",
+      "why": "Everyone here is who they say they are. Grants only reach confirmed organizations. No spam, no fraud."
+    },
+    {
+      "id": "I-4",
+      "title": "The public site",
+      "why": "Where the idea-giver and early partners see progress: prototype, design brief, how it works, this roadmap."
+    },
+    {
+      "id": "I-5",
+      "title": "The organization behind it",
+      "why": "Decisions that aren't code: the name, the entity, the platform, the partners."
+    }
   ],
   "epics": [
-    { "id": "E-1", "initiative": "I-1", "order": 1, "title": "Direction on paper", "goal": "Mission, voice, taxonomy, and app map written and approved before screens are built." },
-    { "id": "E-2", "initiative": "I-1", "order": 2, "title": "The front door", "goal": "Sign up through confirm for all six kinds of participant." },
-    { "id": "E-3", "initiative": "I-1", "order": 3, "title": "Seed data from real sources", "goal": "Schools, programs, foundations, people, needs, offers, grants, and one Together, generated from public data where it exists." },
-    { "id": "E-4", "initiative": "I-1", "order": 4, "title": "The core loop", "goal": "Board, a need or offer, post, thread, inbox: the same flow for six kinds of help." },
-    { "id": "E-5", "initiative": "I-1", "order": 5, "title": "Grants", "goal": "Confirmed organizations search grants and leave to apply on the funder's site." },
-    { "id": "E-6", "initiative": "I-1", "order": 6, "title": "Directory and profiles", "goal": "Find anyone here, joined or not; one profile layout for six shapes." },
-    { "id": "E-7", "initiative": "I-1", "order": 7, "title": "The map", "goal": "The picture of threads and golden threads, with fewer controls and a legend for six kinds." },
-    { "id": "E-8", "initiative": "I-1", "order": 8, "title": "You", "goal": "Your profile, your posts, how often you're seen." },
-    { "id": "E-9", "initiative": "I-1", "order": 9, "title": "The story guide", "goal": "Three short stories that each end on the map." },
-    { "id": "E-10", "initiative": "I-1", "order": 10, "title": "The design page", "goal": "The mission, the six kinds, the eight threads, and the decisions, in the voice, on one page." },
-
-    { "id": "E-11", "initiative": "I-2", "order": 1, "title": "Data loads", "goal": "Every list the app relies on arrives through a loader that produces one shape." },
-    { "id": "E-12", "initiative": "I-2", "order": 2, "title": "Accounts and claiming", "goal": "Real sign-in, one account per person, claiming an organization by kind." },
-    { "id": "E-13", "initiative": "I-2", "order": 3, "title": "Mission features in the backend", "goal": "Kinds of help, cadence, priority levels, fair ranking, tags, alerts, threads." },
-    { "id": "E-14", "initiative": "I-2", "order": 4, "title": "Grants in the backend", "goal": "Grant records, the eight filters, gating, and the hand-off link." },
-    { "id": "E-15", "initiative": "I-2", "order": 5, "title": "A real map", "goal": "Base map tiles and street-level geocoding of every address." },
-
-    { "id": "E-16", "initiative": "I-3", "order": 1, "title": "Confirmation per kind", "goal": "Each of the six kinds has at least one way to prove they belong, and a person reviews the rest." },
-    { "id": "E-17", "initiative": "I-3", "order": 2, "title": "Spam and fraud", "goal": "Rate limits, a review queue, reporting, and revocation." },
-
-    { "id": "E-18", "initiative": "I-4", "order": 1, "title": "GitHub Pages site", "goal": "Prototype, design brief, how it works, and roadmap, phone-first, rebuilt from the repo." },
-    { "id": "E-19", "initiative": "I-4", "order": 2, "title": "Going public with the name", "goal": "Replace Name TBD everywhere when the name is announced." },
-
-    { "id": "E-20", "initiative": "I-5", "order": 1, "title": "Form the 501(c)(3)", "goal": "The entity that runs this as a community-impact organization." },
-    { "id": "E-21", "initiative": "I-5", "order": 2, "title": "Pick the web framework", "goal": "After wireframe sign-off, choose what the real app is built in." },
-    { "id": "E-22", "initiative": "I-5", "order": 3, "title": "Integrations", "goal": "Corporate giving and volunteering platforms, once there's something to integrate with." }
+    {
+      "id": "E-1",
+      "initiative": "I-1",
+      "order": 1,
+      "title": "Direction on paper",
+      "goal": "Mission, voice, taxonomy, and app map written and approved before screens are built."
+    },
+    {
+      "id": "E-2",
+      "initiative": "I-1",
+      "order": 2,
+      "title": "The front door",
+      "goal": "Sign up through confirm for all six kinds of participant."
+    },
+    {
+      "id": "E-3",
+      "initiative": "I-1",
+      "order": 3,
+      "title": "Seed data from real sources",
+      "goal": "Schools, programs, foundations, people, needs, offers, grants, and one Together, generated from public data where it exists."
+    },
+    {
+      "id": "E-4",
+      "initiative": "I-1",
+      "order": 4,
+      "title": "The core loop",
+      "goal": "Board, a need or offer, post, thread, inbox: the same flow for six kinds of help."
+    },
+    {
+      "id": "E-5",
+      "initiative": "I-1",
+      "order": 5,
+      "title": "Grants",
+      "goal": "Confirmed organizations search grants and leave to apply on the funder's site."
+    },
+    {
+      "id": "E-6",
+      "initiative": "I-1",
+      "order": 6,
+      "title": "Directory and profiles",
+      "goal": "Find anyone here, joined or not; one profile layout for six shapes."
+    },
+    {
+      "id": "E-7",
+      "initiative": "I-1",
+      "order": 7,
+      "title": "The map",
+      "goal": "The picture of threads and golden threads, with fewer controls and a legend for six kinds."
+    },
+    {
+      "id": "E-8",
+      "initiative": "I-1",
+      "order": 8,
+      "title": "You",
+      "goal": "Your profile, your posts, how often you're seen."
+    },
+    {
+      "id": "E-9",
+      "initiative": "I-1",
+      "order": 9,
+      "title": "The story guide",
+      "goal": "Three short stories that each end on the map."
+    },
+    {
+      "id": "E-10",
+      "initiative": "I-1",
+      "order": 10,
+      "title": "The design page",
+      "goal": "The mission, the six kinds, the eight threads, and the decisions, in the voice, on one page."
+    },
+    {
+      "id": "E-11",
+      "initiative": "I-2",
+      "order": 1,
+      "title": "Data loads",
+      "goal": "Every list the app relies on arrives through a loader that produces one shape."
+    },
+    {
+      "id": "E-12",
+      "initiative": "I-2",
+      "order": 2,
+      "title": "Accounts and claiming",
+      "goal": "Real sign-in, one account per person, claiming an organization by kind."
+    },
+    {
+      "id": "E-13",
+      "initiative": "I-2",
+      "order": 3,
+      "title": "Mission features in the backend",
+      "goal": "Kinds of help, cadence, priority levels, fair ranking, tags, alerts, threads."
+    },
+    {
+      "id": "E-14",
+      "initiative": "I-2",
+      "order": 4,
+      "title": "Grants in the backend",
+      "goal": "Grant records, the eight filters, gating, and the hand-off link."
+    },
+    {
+      "id": "E-15",
+      "initiative": "I-2",
+      "order": 5,
+      "title": "A real map",
+      "goal": "Base map tiles and street-level geocoding of every address."
+    },
+    {
+      "id": "E-16",
+      "initiative": "I-3",
+      "order": 1,
+      "title": "Confirmation per kind",
+      "goal": "Each of the six kinds has at least one way to prove they belong, and a person reviews the rest."
+    },
+    {
+      "id": "E-17",
+      "initiative": "I-3",
+      "order": 2,
+      "title": "Spam and fraud",
+      "goal": "Rate limits, a review queue, reporting, and revocation."
+    },
+    {
+      "id": "E-18",
+      "initiative": "I-4",
+      "order": 1,
+      "title": "GitHub Pages site",
+      "goal": "Prototype, design brief, how it works, and roadmap, phone-first, rebuilt from the repo."
+    },
+    {
+      "id": "E-19",
+      "initiative": "I-4",
+      "order": 2,
+      "title": "Going public with the name",
+      "goal": "Replace Name TBD everywhere when the name is announced."
+    },
+    {
+      "id": "E-20",
+      "initiative": "I-5",
+      "order": 1,
+      "title": "Form the 501(c)(3)",
+      "goal": "The entity that runs this as a community-impact organization."
+    },
+    {
+      "id": "E-21",
+      "initiative": "I-5",
+      "order": 2,
+      "title": "Pick the web framework",
+      "goal": "After wireframe sign-off, choose what the real app is built in."
+    },
+    {
+      "id": "E-22",
+      "initiative": "I-5",
+      "order": 3,
+      "title": "Integrations",
+      "goal": "Corporate giving and volunteering platforms, once there's something to integrate with."
+    }
   ],
   "stories": [
-    { "id": "S-1", "epic": "E-1", "title": "Mission statement saved and pointed at from the repo", "status": "done", "added": "2026-09-21", "tasks": [
-      { "id": "T-1", "title": "Save the mission as written", "status": "done" },
-      { "id": "T-2", "title": "CLAUDE.md points every session at it", "status": "done" } ] },
-    { "id": "S-2", "epic": "E-1", "title": "Voice sheet: ten rules and a words list", "status": "done", "added": "2026-09-21", "round": "0", "tasks": [
-      { "id": "T-3", "title": "Draft and approve", "status": "done" },
-      { "id": "T-4", "title": "Save as docs/VOICE.md", "status": "done" } ] },
-    { "id": "S-3", "epic": "E-1", "title": "Taxonomy: six kinds of participant, eight kinds of help, words", "status": "done", "added": "2026-09-21", "round": "A1", "tasks": [
-      { "id": "T-5", "title": "Draft and approve, with the three decisions (money off, grants one-way, Together seeded)", "status": "done" },
-      { "id": "T-6", "title": "Save as docs/TAXONOMY.md and update the words list", "status": "done" } ] },
-    { "id": "S-4", "epic": "E-1", "title": "App map: five tabs, sixteen screens, three stories, order of work", "status": "done", "added": "2026-09-21", "round": "A2", "tasks": [
-      { "id": "T-7", "title": "Draft and approve", "status": "done" },
-      { "id": "T-8", "title": "Save as docs/APP-MAP.md", "status": "done" } ] },
-
-    { "id": "S-5", "epic": "E-2", "title": "Sign up: one green button, email behind a link", "status": "done", "added": "2026-09-21", "round": "1", "tasks": [
-      { "id": "T-9", "title": "Brief, approve, build, check, ship", "status": "done" } ] },
-    { "id": "S-6", "epic": "E-2", "title": "Who are you here as: six kinds, button label follows the pick", "status": "done", "added": "2026-09-21", "round": "B1", "tasks": [
-      { "id": "T-10", "title": "Three-card version (round 2)", "status": "done" },
-      { "id": "T-11", "title": "Six-card version with pinned button (B1)", "status": "done" } ] },
-    { "id": "S-7", "epic": "E-2", "title": "Find yours: list, words, and search follow the kind", "status": "done", "added": "2026-09-21", "round": "B2", "tasks": [
-      { "id": "T-12", "title": "Nonprofit version with pinned button and fixed search (round 3)", "status": "done" },
-      { "id": "T-13", "title": "School, workforce, and foundation lists; business set-up form (B2)", "status": "done" } ] },
-    { "id": "S-8", "epic": "E-2", "title": "Confirm: email-domain match per kind, ways to confirm per kind", "status": "done", "added": "2026-09-21", "round": "B2", "tasks": [
-      { "id": "T-14", "title": "Nonprofit version (round 4)", "status": "done" },
-      { "id": "T-15", "title": "All kinds, UBI check for businesses, anyone becomes the signed-in person (B2)", "status": "done" } ] },
-    { "id": "S-9", "epic": "E-2", "title": "About you: a person says where they are, what they can do, and when", "status": "ready", "added": "2026-09-21", "round": "B3", "tasks": [
-      { "id": "T-16", "title": "Brief: purpose, one action, every word", "status": "ready" },
-      { "id": "T-17", "title": "Build after approval", "status": "backlog" },
-      { "id": "T-18", "title": "Check on a phone with real taps", "status": "backlog" },
-      { "id": "T-19", "title": "Ship: artifact, site, both repos", "status": "backlog" } ] },
-    { "id": "S-10", "epic": "E-2", "title": "Phone fixes found along the way", "status": "done", "added": "2026-09-21", "source": "Taylor's phone checks", "tasks": [
-      { "id": "T-20", "title": "Continue buttons pinned below the scroll, not at the end of it", "status": "done" },
-      { "id": "T-21", "title": "Bottom sheets clear the fixed story bar", "status": "done" },
-      { "id": "T-22", "title": "Text fields look like fields, not cards", "status": "done" },
-      { "id": "T-23", "title": "Buttons have a visible disabled state", "status": "done" } ] },
-
-    { "id": "S-11", "epic": "E-3", "title": "Schools and districts from OSPI's public feature service", "status": "ready", "added": "2026-09-21", "source": "Discovery: OSPI ArcGIS service has 2,498 schools and 335 LEAs with lat/lon", "tasks": [
-      { "id": "T-24", "title": "scripts/fetch-schools.js pulls the service and writes a normalized seed (districts plus high schools)", "status": "ready" },
-      { "id": "T-25", "title": "District website domains from OSPI's directory download, for the email-domain confirm", "status": "backlog" },
-      { "id": "T-26", "title": "Replace the seven hand-typed school rows", "status": "backlog" } ] },
-    { "id": "S-12", "epic": "E-3", "title": "Workforce programs from the WA Workforce Board list", "status": "backlog", "added": "2026-09-21", "tasks": [] },
-    { "id": "S-13", "epic": "E-3", "title": "Foundations flagged from the IRS list's foundation code", "status": "backlog", "added": "2026-09-21", "tasks": [] },
-    { "id": "S-14", "epic": "E-3", "title": "Needs and offers for all six kinds of help, plus people", "status": "backlog", "added": "2026-09-21", "tasks": [] },
-    { "id": "S-15", "epic": "E-3", "title": "Three grants from real WA foundations' public pages, labeled as examples", "status": "backlog", "added": "2026-09-21", "tasks": [] },
-    { "id": "S-16", "epic": "E-3", "title": "One Together initiative", "status": "backlog", "added": "2026-09-21", "tasks": [] },
-
-    { "id": "S-17", "epic": "E-4", "title": "Board: kind-of-help chips, fair ranking, directory search at the top", "status": "backlog", "added": "2026-09-21", "round": "B5", "tasks": [] },
-    { "id": "S-18", "epic": "E-4", "title": "A need or offer: who it's from, how it fits you, I can help / I need this", "status": "backlog", "added": "2026-09-21", "round": "B6", "tasks": [] },
-    { "id": "S-19", "epic": "E-4", "title": "Post: kind of help first, then the rest", "status": "backlog", "added": "2026-09-21", "round": "B7", "tasks": [] },
-    { "id": "S-20", "epic": "E-4", "title": "Thread and inbox: accept, message, mark done, golden", "status": "backlog", "added": "2026-09-21", "round": "B8", "tasks": [] },
-
-    { "id": "S-21", "epic": "E-5", "title": "Grants screen: eight filters, a grant card, Apply leaves to the funder", "status": "backlog", "added": "2026-09-21", "round": "B9", "tasks": [] },
-    { "id": "S-22", "epic": "E-5", "title": "Grants tab shows only for confirmed organizations", "status": "backlog", "added": "2026-09-21", "tasks": [] },
-
-    { "id": "S-23", "epic": "E-6", "title": "Directory: all six kinds, filter by kind, cause, city", "status": "backlog", "added": "2026-09-21", "round": "B10", "tasks": [] },
-    { "id": "S-24", "epic": "E-6", "title": "Profile: one layout, six shapes", "status": "backlog", "added": "2026-09-21", "round": "B10", "tasks": [] },
-
-    { "id": "S-25", "epic": "E-7", "title": "Map: fewer controls at once", "status": "backlog", "added": "2026-09-21", "round": "B11", "source": "Taylor: too many buttons on screen at the same time", "tasks": [] },
-    { "id": "S-26", "epic": "E-7", "title": "Legend and pin colors for six kinds", "status": "backlog", "added": "2026-09-21", "round": "B11", "tasks": [] },
-    { "id": "S-27", "epic": "E-7", "title": "Golden threads for every kind of help; Together as a multi-ended thread", "status": "backlog", "added": "2026-09-21", "round": "B11", "tasks": [] },
-
-    { "id": "S-28", "epic": "E-8", "title": "You: behind your name in the top bar", "status": "backlog", "added": "2026-09-21", "round": "B12", "tasks": [] },
-
-    { "id": "S-29", "epic": "E-9", "title": "Casey needs laptops, trimmed to five steps", "status": "backlog", "added": "2026-09-21", "round": "B13", "tasks": [] },
-    { "id": "S-30", "epic": "E-9", "title": "Dana has Saturdays", "status": "backlog", "added": "2026-09-21", "round": "B13", "tasks": [] },
-    { "id": "S-31", "epic": "E-9", "title": "Casey finds a grant", "status": "backlog", "added": "2026-09-21", "round": "B13", "tasks": [] },
-    { "id": "S-32", "epic": "E-9", "title": "Help sheet and story wrapper rewritten in the voice", "status": "backlog", "added": "2026-09-21", "round": "B13", "tasks": [] },
-
-    { "id": "S-33", "epic": "E-10", "title": "Design page rewritten to the mission", "status": "backlog", "added": "2026-09-21", "round": "B14", "tasks": [] },
-
-    { "id": "S-34", "epic": "E-11", "title": "IRS Business Master File loaded", "status": "done", "added": "2026-09-20", "tasks": [] },
-    { "id": "S-35", "epic": "E-11", "title": "OSPI schools loader into a Schools table", "status": "ready", "added": "2026-09-21", "source": "Discovery: OSPI ArcGIS feature service", "tasks": [] },
-    { "id": "S-36", "epic": "E-11", "title": "Pub 78 and revocation list, so IsActive is real", "status": "backlog", "added": "2026-09-20", "tasks": [] },
-    { "id": "S-37", "epic": "E-11", "title": "Workforce programs list", "status": "backlog", "added": "2026-09-21", "tasks": [] },
-    { "id": "S-38", "epic": "E-11", "title": "WA business lookup (UBI) for business confirmation", "status": "backlog", "added": "2026-09-21", "tasks": [] },
-    { "id": "S-39", "epic": "E-12", "title": "ASP.NET Identity replaces the X-Org-Ein header", "status": "backlog", "added": "2026-09-20", "tasks": [] },
-    { "id": "S-40", "epic": "E-12", "title": "Claim an organization by kind, with the confirm methods from the taxonomy", "status": "backlog", "added": "2026-09-21", "tasks": [] },
-    { "id": "S-41", "epic": "E-12", "title": "Admin review queue", "status": "backlog", "added": "2026-09-20", "tasks": [] },
-    { "id": "S-42", "epic": "E-13", "title": "Kind of help on every need and offer", "status": "backlog", "added": "2026-09-21", "tasks": [] },
-    { "id": "S-43", "epic": "E-13", "title": "Cadence and standing agreements", "status": "backlog", "added": "2026-09-20", "tasks": [] },
-    { "id": "S-44", "epic": "E-13", "title": "P0 to P3 with the monthly P0 cap", "status": "backlog", "added": "2026-09-20", "tasks": [] },
-    { "id": "S-45", "epic": "E-13", "title": "Fair ranking: priority, then least seen, with the org cap", "status": "backlog", "added": "2026-09-20", "tasks": [] },
-    { "id": "S-46", "epic": "E-13", "title": "Capability tags and rule-driven alerts", "status": "backlog", "added": "2026-09-20", "tasks": [] },
-    { "id": "S-47", "epic": "E-14", "title": "Grant model with the eight filter fields and a hand-off URL", "status": "backlog", "added": "2026-09-21", "tasks": [] },
-    { "id": "S-48", "epic": "E-15", "title": "Leaflet and OpenStreetMap base map", "status": "backlog", "added": "2026-09-20", "tasks": [] },
-    { "id": "S-49", "epic": "E-15", "title": "Geocode IRS and OSPI addresses to street level", "status": "backlog", "added": "2026-09-20", "tasks": [] },
-
-    { "id": "S-50", "epic": "E-16", "title": "Confirm methods per kind, as designed in the taxonomy", "status": "backlog", "added": "2026-09-21", "tasks": [] },
-    { "id": "S-51", "epic": "E-16", "title": "Grants gated to confirmed organizations", "status": "backlog", "added": "2026-09-21", "tasks": [] },
-    { "id": "S-52", "epic": "E-17", "title": "Rate limits, reporting, and a review queue for posts", "status": "backlog", "added": "2026-09-21", "tasks": [] },
-
-    { "id": "S-53", "epic": "E-18", "title": "Prototype, design brief, and how-it-works pages live", "status": "done", "added": "2026-09-20", "tasks": [] },
-    { "id": "S-54", "epic": "E-18", "title": "Roadmap page generated from roadmap.json", "status": "review", "added": "2026-09-21", "tasks": [
-      { "id": "T-27", "title": "roadmap/ directory with SDLC.md and roadmap.json", "status": "done" },
-      { "id": "T-28", "title": "scripts/roadmap.js: validate, render README, set status", "status": "done" },
-      { "id": "T-29", "title": "roadmap.html on the site, phone-first, board and roadmap views", "status": "done" },
-      { "id": "T-30", "title": "Taylor checks it on a phone", "status": "review" } ] },
-    { "id": "S-55", "epic": "E-19", "title": "Replace Name TBD when the name goes public", "status": "backlog", "added": "2026-09-21", "blocked": "Taylor decides when the name is public", "tasks": [] },
-
-    { "id": "S-56", "epic": "E-20", "title": "File for 501(c)(3) status", "status": "backlog", "added": "2026-09-21", "tasks": [] },
-    { "id": "S-57", "epic": "E-21", "title": "Blazor or React, decided after wireframe sign-off", "status": "backlog", "added": "2026-09-20", "tasks": [] },
-    { "id": "S-58", "epic": "E-22", "title": "Corporate giving platforms (Benevity and others), subject to APIs and agreements", "status": "backlog", "added": "2026-09-21", "tasks": [] }
+    {
+      "id": "S-1",
+      "epic": "E-1",
+      "title": "Mission statement saved and pointed at from the repo",
+      "status": "done",
+      "added": "2026-09-21",
+      "tasks": [
+        {
+          "id": "T-1",
+          "title": "Save the mission as written",
+          "status": "done"
+        },
+        {
+          "id": "T-2",
+          "title": "CLAUDE.md points every session at it",
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "id": "S-2",
+      "epic": "E-1",
+      "title": "Voice sheet: ten rules and a words list",
+      "status": "done",
+      "added": "2026-09-21",
+      "round": "0",
+      "tasks": [
+        {
+          "id": "T-3",
+          "title": "Draft and approve",
+          "status": "done"
+        },
+        {
+          "id": "T-4",
+          "title": "Save as docs/VOICE.md",
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "id": "S-3",
+      "epic": "E-1",
+      "title": "Taxonomy: six kinds of participant, eight kinds of help, words",
+      "status": "done",
+      "added": "2026-09-21",
+      "round": "A1",
+      "tasks": [
+        {
+          "id": "T-5",
+          "title": "Draft and approve, with the three decisions (money off, grants one-way, Together seeded)",
+          "status": "done"
+        },
+        {
+          "id": "T-6",
+          "title": "Save as docs/TAXONOMY.md and update the words list",
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "id": "S-4",
+      "epic": "E-1",
+      "title": "App map: five tabs, sixteen screens, three stories, order of work",
+      "status": "done",
+      "added": "2026-09-21",
+      "round": "A2",
+      "tasks": [
+        {
+          "id": "T-7",
+          "title": "Draft and approve",
+          "status": "done"
+        },
+        {
+          "id": "T-8",
+          "title": "Save as docs/APP-MAP.md",
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "id": "S-5",
+      "epic": "E-2",
+      "title": "Sign up: one green button, email behind a link",
+      "status": "done",
+      "added": "2026-09-21",
+      "round": "1",
+      "tasks": [
+        {
+          "id": "T-9",
+          "title": "Brief, approve, build, check, ship",
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "id": "S-6",
+      "epic": "E-2",
+      "title": "Who are you here as: six kinds, button label follows the pick",
+      "status": "done",
+      "added": "2026-09-21",
+      "round": "B1",
+      "tasks": [
+        {
+          "id": "T-10",
+          "title": "Three-card version (round 2)",
+          "status": "done"
+        },
+        {
+          "id": "T-11",
+          "title": "Six-card version with pinned button (B1)",
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "id": "S-7",
+      "epic": "E-2",
+      "title": "Find yours: list, words, and search follow the kind",
+      "status": "done",
+      "added": "2026-09-21",
+      "round": "B2",
+      "tasks": [
+        {
+          "id": "T-12",
+          "title": "Nonprofit version with pinned button and fixed search (round 3)",
+          "status": "done"
+        },
+        {
+          "id": "T-13",
+          "title": "School, workforce, and foundation lists; business set-up form (B2)",
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "id": "S-8",
+      "epic": "E-2",
+      "title": "Confirm: email-domain match per kind, ways to confirm per kind",
+      "status": "done",
+      "added": "2026-09-21",
+      "round": "B2",
+      "tasks": [
+        {
+          "id": "T-14",
+          "title": "Nonprofit version (round 4)",
+          "status": "done"
+        },
+        {
+          "id": "T-15",
+          "title": "All kinds, UBI check for businesses, anyone becomes the signed-in person (B2)",
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "id": "S-9",
+      "epic": "E-2",
+      "title": "About you: a person says where they are, what they can do, and when",
+      "status": "in-progress",
+      "added": "2026-09-21",
+      "round": "B3",
+      "tasks": [
+        {
+          "id": "T-16",
+          "title": "Brief: purpose, one action, every word",
+          "status": "ready"
+        },
+        {
+          "id": "T-17",
+          "title": "Build after approval",
+          "status": "backlog"
+        },
+        {
+          "id": "T-18",
+          "title": "Check on a phone with real taps",
+          "status": "backlog"
+        },
+        {
+          "id": "T-19",
+          "title": "Ship: artifact, site, both repos",
+          "status": "backlog"
+        }
+      ]
+    },
+    {
+      "id": "S-10",
+      "epic": "E-2",
+      "title": "Phone fixes found along the way",
+      "status": "done",
+      "added": "2026-09-21",
+      "source": "Taylor's phone checks",
+      "tasks": [
+        {
+          "id": "T-20",
+          "title": "Continue buttons pinned below the scroll, not at the end of it",
+          "status": "done"
+        },
+        {
+          "id": "T-21",
+          "title": "Bottom sheets clear the fixed story bar",
+          "status": "done"
+        },
+        {
+          "id": "T-22",
+          "title": "Text fields look like fields, not cards",
+          "status": "done"
+        },
+        {
+          "id": "T-23",
+          "title": "Buttons have a visible disabled state",
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "id": "S-11",
+      "epic": "E-3",
+      "title": "Schools and districts from OSPI's public feature service",
+      "status": "ready",
+      "added": "2026-09-21",
+      "source": "Discovery: OSPI ArcGIS service has 2,498 schools and 335 LEAs with lat/lon",
+      "tasks": [
+        {
+          "id": "T-24",
+          "title": "scripts/fetch-schools.js pulls the service and writes a normalized seed (districts plus high schools)",
+          "status": "ready"
+        },
+        {
+          "id": "T-25",
+          "title": "District website domains from OSPI's directory download, for the email-domain confirm",
+          "status": "backlog"
+        },
+        {
+          "id": "T-26",
+          "title": "Replace the seven hand-typed school rows",
+          "status": "backlog"
+        }
+      ]
+    },
+    {
+      "id": "S-12",
+      "epic": "E-3",
+      "title": "Workforce programs from the WA Workforce Board list",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "tasks": []
+    },
+    {
+      "id": "S-13",
+      "epic": "E-3",
+      "title": "Foundations flagged from the IRS list's foundation code",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "tasks": []
+    },
+    {
+      "id": "S-14",
+      "epic": "E-3",
+      "title": "Needs and offers for all six kinds of help, plus people",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "tasks": []
+    },
+    {
+      "id": "S-15",
+      "epic": "E-3",
+      "title": "Three grants from real WA foundations' public pages, labeled as examples",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "tasks": []
+    },
+    {
+      "id": "S-16",
+      "epic": "E-3",
+      "title": "One Together initiative",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "tasks": []
+    },
+    {
+      "id": "S-17",
+      "epic": "E-4",
+      "title": "Board: kind-of-help chips, fair ranking, directory search at the top",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "round": "B5",
+      "tasks": []
+    },
+    {
+      "id": "S-18",
+      "epic": "E-4",
+      "title": "A need or offer: who it's from, how it fits you, I can help / I need this",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "round": "B6",
+      "tasks": []
+    },
+    {
+      "id": "S-19",
+      "epic": "E-4",
+      "title": "Post: kind of help first, then the rest",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "round": "B7",
+      "tasks": []
+    },
+    {
+      "id": "S-20",
+      "epic": "E-4",
+      "title": "Thread and inbox: accept, message, mark done, golden",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "round": "B8",
+      "tasks": []
+    },
+    {
+      "id": "S-21",
+      "epic": "E-5",
+      "title": "Grants screen: eight filters, a grant card, Apply leaves to the funder",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "round": "B9",
+      "tasks": []
+    },
+    {
+      "id": "S-22",
+      "epic": "E-5",
+      "title": "Grants tab shows only for confirmed organizations",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "tasks": []
+    },
+    {
+      "id": "S-23",
+      "epic": "E-6",
+      "title": "Directory: all six kinds, filter by kind, cause, city",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "round": "B10",
+      "tasks": []
+    },
+    {
+      "id": "S-24",
+      "epic": "E-6",
+      "title": "Profile: one layout, six shapes",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "round": "B10",
+      "tasks": []
+    },
+    {
+      "id": "S-25",
+      "epic": "E-7",
+      "title": "Map: fewer controls at once",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "round": "B11",
+      "source": "Taylor: too many buttons on screen at the same time",
+      "tasks": []
+    },
+    {
+      "id": "S-26",
+      "epic": "E-7",
+      "title": "Legend and pin colors for six kinds",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "round": "B11",
+      "tasks": []
+    },
+    {
+      "id": "S-27",
+      "epic": "E-7",
+      "title": "Golden threads for every kind of help; Together as a multi-ended thread",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "round": "B11",
+      "tasks": []
+    },
+    {
+      "id": "S-28",
+      "epic": "E-8",
+      "title": "You: behind your name in the top bar",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "round": "B12",
+      "tasks": []
+    },
+    {
+      "id": "S-29",
+      "epic": "E-9",
+      "title": "Casey needs laptops, trimmed to five steps",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "round": "B13",
+      "tasks": []
+    },
+    {
+      "id": "S-30",
+      "epic": "E-9",
+      "title": "Dana has Saturdays",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "round": "B13",
+      "tasks": []
+    },
+    {
+      "id": "S-31",
+      "epic": "E-9",
+      "title": "Casey finds a grant",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "round": "B13",
+      "tasks": []
+    },
+    {
+      "id": "S-32",
+      "epic": "E-9",
+      "title": "Help sheet and story wrapper rewritten in the voice",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "round": "B13",
+      "tasks": []
+    },
+    {
+      "id": "S-33",
+      "epic": "E-10",
+      "title": "Design page rewritten to the mission",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "round": "B14",
+      "tasks": []
+    },
+    {
+      "id": "S-34",
+      "epic": "E-11",
+      "title": "IRS Business Master File loaded",
+      "status": "done",
+      "added": "2026-09-20",
+      "tasks": []
+    },
+    {
+      "id": "S-35",
+      "epic": "E-11",
+      "title": "OSPI schools loader into a Schools table",
+      "status": "ready",
+      "added": "2026-09-21",
+      "source": "Discovery: OSPI ArcGIS feature service",
+      "tasks": []
+    },
+    {
+      "id": "S-36",
+      "epic": "E-11",
+      "title": "Pub 78 and revocation list, so IsActive is real",
+      "status": "backlog",
+      "added": "2026-09-20",
+      "tasks": []
+    },
+    {
+      "id": "S-37",
+      "epic": "E-11",
+      "title": "Workforce programs list",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "tasks": []
+    },
+    {
+      "id": "S-38",
+      "epic": "E-11",
+      "title": "WA business lookup (UBI) for business confirmation",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "tasks": []
+    },
+    {
+      "id": "S-39",
+      "epic": "E-12",
+      "title": "ASP.NET Identity replaces the X-Org-Ein header",
+      "status": "backlog",
+      "added": "2026-09-20",
+      "tasks": []
+    },
+    {
+      "id": "S-40",
+      "epic": "E-12",
+      "title": "Claim an organization by kind, with the confirm methods from the taxonomy",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "tasks": []
+    },
+    {
+      "id": "S-41",
+      "epic": "E-12",
+      "title": "Admin review queue",
+      "status": "backlog",
+      "added": "2026-09-20",
+      "tasks": []
+    },
+    {
+      "id": "S-42",
+      "epic": "E-13",
+      "title": "Kind of help on every need and offer",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "tasks": []
+    },
+    {
+      "id": "S-43",
+      "epic": "E-13",
+      "title": "Cadence and standing agreements",
+      "status": "backlog",
+      "added": "2026-09-20",
+      "tasks": []
+    },
+    {
+      "id": "S-44",
+      "epic": "E-13",
+      "title": "P0 to P3 with the monthly P0 cap",
+      "status": "backlog",
+      "added": "2026-09-20",
+      "tasks": []
+    },
+    {
+      "id": "S-45",
+      "epic": "E-13",
+      "title": "Fair ranking: priority, then least seen, with the org cap",
+      "status": "backlog",
+      "added": "2026-09-20",
+      "tasks": []
+    },
+    {
+      "id": "S-46",
+      "epic": "E-13",
+      "title": "Capability tags and rule-driven alerts",
+      "status": "backlog",
+      "added": "2026-09-20",
+      "tasks": []
+    },
+    {
+      "id": "S-47",
+      "epic": "E-14",
+      "title": "Grant model with the eight filter fields and a hand-off URL",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "tasks": []
+    },
+    {
+      "id": "S-48",
+      "epic": "E-15",
+      "title": "Leaflet and OpenStreetMap base map",
+      "status": "backlog",
+      "added": "2026-09-20",
+      "tasks": []
+    },
+    {
+      "id": "S-49",
+      "epic": "E-15",
+      "title": "Geocode IRS and OSPI addresses to street level",
+      "status": "backlog",
+      "added": "2026-09-20",
+      "tasks": []
+    },
+    {
+      "id": "S-50",
+      "epic": "E-16",
+      "title": "Confirm methods per kind, as designed in the taxonomy",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "tasks": []
+    },
+    {
+      "id": "S-51",
+      "epic": "E-16",
+      "title": "Grants gated to confirmed organizations",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "tasks": []
+    },
+    {
+      "id": "S-52",
+      "epic": "E-17",
+      "title": "Rate limits, reporting, and a review queue for posts",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "tasks": []
+    },
+    {
+      "id": "S-53",
+      "epic": "E-18",
+      "title": "Prototype, design brief, and how-it-works pages live",
+      "status": "done",
+      "added": "2026-09-20",
+      "tasks": []
+    },
+    {
+      "id": "S-54",
+      "epic": "E-18",
+      "title": "Roadmap page generated from roadmap.json",
+      "status": "done",
+      "added": "2026-09-21",
+      "tasks": [
+        {
+          "id": "T-27",
+          "title": "roadmap/ directory with SDLC.md and roadmap.json",
+          "status": "done"
+        },
+        {
+          "id": "T-28",
+          "title": "scripts/roadmap.js: validate, render README, set status",
+          "status": "done"
+        },
+        {
+          "id": "T-29",
+          "title": "roadmap.html on the site, phone-first, board and roadmap views",
+          "status": "done"
+        },
+        {
+          "id": "T-30",
+          "title": "Taylor checks it on a phone",
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "id": "S-55",
+      "epic": "E-19",
+      "title": "Replace Name TBD when the name goes public",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "blocked": "Taylor decides when the name is public",
+      "tasks": []
+    },
+    {
+      "id": "S-56",
+      "epic": "E-20",
+      "title": "File for 501(c)(3) status",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "tasks": []
+    },
+    {
+      "id": "S-57",
+      "epic": "E-21",
+      "title": "Blazor or React, decided after wireframe sign-off",
+      "status": "backlog",
+      "added": "2026-09-20",
+      "tasks": []
+    },
+    {
+      "id": "S-58",
+      "epic": "E-22",
+      "title": "Corporate giving platforms (Benevity and others), subject to APIs and agreements",
+      "status": "backlog",
+      "added": "2026-09-21",
+      "tasks": []
+    }
   ]
 }
