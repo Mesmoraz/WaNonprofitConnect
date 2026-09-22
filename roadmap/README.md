@@ -6,21 +6,19 @@ Generated from `roadmap.json` on 2026-09-22. Don't edit this file; run `node scr
 
 | Backlog | Ready | In progress | In review | Done |
 | --- | --- | --- | --- | --- |
-| S-13 Foundations flagged from the IRS list's foundation code |  |  | S-9 About you: a person says where they are, what they can do, and when | S-1 Mission statement saved and pointed at from the repo |
-| S-14 Needs and offers for all six kinds of help, plus people |  |  | S-11 Schools and districts from OSPI's public feature service | S-2 Voice sheet: ten rules and a words list |
-| S-16 One Together initiative |  |  | S-12 Workforce programs from the WA Workforce Board list | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
-| S-17 Board: kind-of-help chips, fair ranking, directory search at the top |  |  | S-15 Three grants from real WA foundations' public pages, labeled as examples | S-4 App map: five tabs, sixteen screens, three stories, order of work |
-| S-18 A need or offer: who it's from, how it fits you, I can help / I need this |  |  | S-35 OSPI schools loader into a Schools table | S-5 Sign up: one green button, email behind a link |
-| S-19 Post: kind of help first, then the rest |  |  |  | S-6 Who are you here as: six kinds, button label follows the pick |
-| S-20 Thread and inbox: accept, message, mark done, golden |  |  |  | S-7 Find yours: list, words, and search follow the kind |
-| S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder |  |  |  | S-8 Confirm: email-domain match per kind, ways to confirm per kind |
-| S-22 Grants tab shows only for confirmed organizations |  |  |  | S-10 Phone fixes found along the way |
-| S-23 Directory: all six kinds, filter by kind, cause, city |  |  |  | S-34 IRS Business Master File loaded |
-| S-24 Profile: one layout, six shapes |  |  |  | S-53 Prototype, design brief, and how-it-works pages live |
-| S-25 Map: fewer controls at once |  |  |  | S-54 Roadmap page generated from roadmap.json |
-| S-26 Legend and pin colors for six kinds |  |  |  |  |
-| S-27 Golden threads for every kind of help; Together as a multi-ended thread |  |  |  |  |
-| S-28 You: behind your name in the top bar |  |  |  |  |
+| S-13 Foundations flagged from the IRS list's foundation code |  |  | S-11 Schools and districts from OSPI's public feature service | S-1 Mission statement saved and pointed at from the repo |
+| S-17 Board: kind-of-help chips, fair ranking, directory search at the top |  |  | S-12 Workforce programs from the WA Workforce Board list | S-2 Voice sheet: ten rules and a words list |
+| S-18 A need or offer: who it's from, how it fits you, I can help / I need this |  |  | S-14 Needs and offers for all six kinds of help, plus people | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
+| S-19 Post: kind of help first, then the rest |  |  | S-15 Three grants from real WA foundations' public pages, labeled as examples | S-4 App map: five tabs, sixteen screens, three stories, order of work |
+| S-20 Thread and inbox: accept, message, mark done, golden |  |  | S-16 One Together initiative | S-5 Sign up: one green button, email behind a link |
+| S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder |  |  | S-35 OSPI schools loader into a Schools table | S-6 Who are you here as: six kinds, button label follows the pick |
+| S-22 Grants tab shows only for confirmed organizations |  |  |  | S-7 Find yours: list, words, and search follow the kind |
+| S-23 Directory: all six kinds, filter by kind, cause, city |  |  |  | S-8 Confirm: email-domain match per kind, ways to confirm per kind |
+| S-24 Profile: one layout, six shapes |  |  |  | S-9 About you: a person says where they are, what they can do, and when |
+| S-25 Map: fewer controls at once |  |  |  | S-10 Phone fixes found along the way |
+| S-26 Legend and pin colors for six kinds |  |  |  | S-34 IRS Business Master File loaded |
+| S-27 Golden threads for every kind of help; Together as a multi-ended thread |  |  |  | S-53 Prototype, design brief, and how-it-works pages live |
+| S-28 You: behind your name in the top bar |  |  |  | S-54 Roadmap page generated from roadmap.json |
 | S-29 Casey needs laptops, trimmed to five steps |  |  |  |  |
 | S-30 Dana has Saturdays |  |  |  |  |
 | S-31 Casey finds a grant |  |  |  |  |
@@ -49,10 +47,11 @@ Generated from `roadmap.json` on 2026-09-22. Don't edit this file; run `node scr
 | S-58 Corporate giving platforms (Benevity and others), subject to APIs and agreements |  |  |  |  |
 | S-59 Relabel non-district LEAs (ESDs, technical colleges, charters, tribal compacts) with their own sub |  |  |  |  |
 | S-60 Render a funder's stated priorities as their quoted words, not our copy |  |  |  |  |
+| S-61 Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) |  |  |  |  |
 
 ## Roadmap
 
-### I-1 A prototype that shows the whole mission · In progress · 9/35 stories done
+### I-1 A prototype that shows the whole mission · In progress · 10/36 stories done
 
 Every kind of participant and every kind of help, on a phone, in the approved voice. The thing to hand someone so they get it in a minute.
 
@@ -73,7 +72,7 @@ Mission, voice, taxonomy, and app map written and approved before screens are bu
     - [x] T-7 Draft and approve
     - [x] T-8 Save as docs/APP-MAP.md
 
-#### E-2 The front door · In progress · 5/6
+#### E-2 The front door · Done · 6/6
 
 Sign up through confirm for all six kinds of participant.
 
@@ -88,7 +87,7 @@ Sign up through confirm for all six kinds of participant.
 - **S-8** Confirm: email-domain match per kind, ways to confirm per kind · Done · round B2
     - [x] T-14 Nonprofit version (round 4)
     - [x] T-15 All kinds, UBI check for businesses, anyone becomes the signed-in person (B2)
-- **S-9** About you: a person says where they are, what they can do, and when · In review · round B3
+- **S-9** About you: a person says where they are, what they can do, and when · Done · round B3
     - [x] T-16 Brief: purpose, one action, every word
     - [x] T-17 Build after approval
     - [x] T-18 Check on a phone with real taps
@@ -109,9 +108,9 @@ Schools, programs, foundations, people, needs, offers, grants, and one Together,
     - [ ] T-26 Replace the seven hand-typed school rows (Backlog)
 - **S-12** Workforce programs from the WA Workforce Board list · In review
 - **S-13** Foundations flagged from the IRS list's foundation code · Backlog
-- **S-14** Needs and offers for all six kinds of help, plus people · Backlog
+- **S-14** Needs and offers for all six kinds of help, plus people · In review
 - **S-15** Three grants from real WA foundations' public pages, labeled as examples · In review
-- **S-16** One Together initiative · Backlog
+- **S-16** One Together initiative · In review
 - **S-59** Relabel non-district LEAs (ESDs, technical colleges, charters, tribal compacts) with their own sub · Backlog
 
 #### E-4 The core loop · Backlog · 0/4
@@ -138,13 +137,14 @@ Find anyone here, joined or not; one profile layout for six shapes.
 - **S-23** Directory: all six kinds, filter by kind, cause, city · Backlog · round B10
 - **S-24** Profile: one layout, six shapes · Backlog · round B10
 
-#### E-7 The map · Backlog · 0/3
+#### E-7 The map · Backlog · 0/4
 
 The picture of threads and golden threads, with fewer controls and a legend for six kinds.
 
 - **S-25** Map: fewer controls at once · Backlog · round B11 · _Taylor: too many buttons on screen at the same time_
 - **S-26** Legend and pin colors for six kinds · Backlog · round B11
 - **S-27** Golden threads for every kind of help; Together as a multi-ended thread · Backlog · round B11
+- **S-61** Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) · Backlog
 
 #### E-8 You · Backlog · 0/1
 
