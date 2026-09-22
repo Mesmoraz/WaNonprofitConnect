@@ -6,11 +6,11 @@ Generated from `roadmap.json` on 2026-09-22. Don't edit this file; run `node scr
 
 | Backlog | Ready | In progress | In review | Done |
 | --- | --- | --- | --- | --- |
-| S-13 Foundations flagged from the IRS list's foundation code |  | S-35 OSPI schools loader into a Schools table | S-9 About you: a person says where they are, what they can do, and when | S-1 Mission statement saved and pointed at from the repo |
+| S-13 Foundations flagged from the IRS list's foundation code |  |  | S-9 About you: a person says where they are, what they can do, and when | S-1 Mission statement saved and pointed at from the repo |
 | S-14 Needs and offers for all six kinds of help, plus people |  |  | S-11 Schools and districts from OSPI's public feature service | S-2 Voice sheet: ten rules and a words list |
 | S-16 One Together initiative |  |  | S-12 Workforce programs from the WA Workforce Board list | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
 | S-17 Board: kind-of-help chips, fair ranking, directory search at the top |  |  | S-15 Three grants from real WA foundations' public pages, labeled as examples | S-4 App map: five tabs, sixteen screens, three stories, order of work |
-| S-18 A need or offer: who it's from, how it fits you, I can help / I need this |  |  |  | S-5 Sign up: one green button, email behind a link |
+| S-18 A need or offer: who it's from, how it fits you, I can help / I need this |  |  | S-35 OSPI schools loader into a Schools table | S-5 Sign up: one green button, email behind a link |
 | S-19 Post: kind of help first, then the rest |  |  |  | S-6 Who are you here as: six kinds, button label follows the pick |
 | S-20 Thread and inbox: accept, message, mark done, golden |  |  |  | S-7 Find yours: list, words, and search follow the kind |
 | S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder |  |  |  | S-8 Confirm: email-domain match per kind, ways to confirm per kind |
@@ -47,10 +47,12 @@ Generated from `roadmap.json` on 2026-09-22. Don't edit this file; run `node scr
 | S-56 File for 501(c)(3) status |  |  |  |  |
 | S-57 Blazor or React, decided after wireframe sign-off |  |  |  |  |
 | S-58 Corporate giving platforms (Benevity and others), subject to APIs and agreements |  |  |  |  |
+| S-59 Relabel non-district LEAs (ESDs, technical colleges, charters, tribal compacts) with their own sub |  |  |  |  |
+| S-60 Render a funder's stated priorities as their quoted words, not our copy |  |  |  |  |
 
 ## Roadmap
 
-### I-1 A prototype that shows the whole mission · In progress · 9/33 stories done
+### I-1 A prototype that shows the whole mission · In progress · 9/35 stories done
 
 Every kind of participant and every kind of help, on a phone, in the approved voice. The thing to hand someone so they get it in a minute.
 
@@ -97,7 +99,7 @@ Sign up through confirm for all six kinds of participant.
     - [x] T-22 Text fields look like fields, not cards
     - [x] T-23 Buttons have a visible disabled state
 
-#### E-3 Seed data from real sources · In progress · 0/6
+#### E-3 Seed data from real sources · In progress · 0/7
 
 Schools, programs, foundations, people, needs, offers, grants, and one Together, generated from public data where it exists.
 
@@ -110,6 +112,7 @@ Schools, programs, foundations, people, needs, offers, grants, and one Together,
 - **S-14** Needs and offers for all six kinds of help, plus people · Backlog
 - **S-15** Three grants from real WA foundations' public pages, labeled as examples · In review
 - **S-16** One Together initiative · Backlog
+- **S-59** Relabel non-district LEAs (ESDs, technical colleges, charters, tribal compacts) with their own sub · Backlog
 
 #### E-4 The core loop · Backlog · 0/4
 
@@ -120,12 +123,13 @@ Board, a need or offer, post, thread, inbox: the same flow for six kinds of help
 - **S-19** Post: kind of help first, then the rest · Backlog · round B7
 - **S-20** Thread and inbox: accept, message, mark done, golden · Backlog · round B8
 
-#### E-5 Grants · Backlog · 0/2
+#### E-5 Grants · Backlog · 0/3
 
 Confirmed organizations search grants and leave to apply on the funder's site.
 
 - **S-21** Grants screen: eight filters, a grant card, Apply leaves to the funder · Backlog · round B9
 - **S-22** Grants tab shows only for confirmed organizations · Backlog
+- **S-60** Render a funder's stated priorities as their quoted words, not our copy · Backlog
 
 #### E-6 Directory and profiles · Backlog · 0/2
 
@@ -172,7 +176,7 @@ Real data, real accounts, real matching. The prototype's flows, made durable.
 Every list the app relies on arrives through a loader that produces one shape.
 
 - **S-34** IRS Business Master File loaded · Done
-- **S-35** OSPI schools loader into a Schools table · In progress · _Discovery: OSPI ArcGIS feature service_
+- **S-35** OSPI schools loader into a Schools table · In review · _Discovery: OSPI ArcGIS feature service_
 - **S-36** Pub 78 and revocation list, so IsActive is real · Backlog
 - **S-37** Workforce programs list · Backlog
 - **S-38** WA business lookup (UBI) for business confirmation · Backlog

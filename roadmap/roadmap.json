@@ -643,7 +643,7 @@
       "id": "S-35",
       "epic": "E-11",
       "title": "OSPI schools loader into a Schools table",
-      "status": "in-progress",
+      "status": "review",
       "added": "2026-09-21",
       "source": "Discovery: OSPI ArcGIS feature service",
       "tasks": [],
@@ -873,6 +873,22 @@
       "title": "Corporate giving platforms (Benevity and others), subject to APIs and agreements",
       "status": "backlog",
       "added": "2026-09-21",
+      "tasks": []
+    },
+    {
+      "id": "S-59",
+      "epic": "E-3",
+      "title": "Relabel non-district LEAs (ESDs, technical colleges, charters, tribal compacts) with their own sub",
+      "status": "backlog",
+      "added": "2026-09-22",
+      "tasks": []
+    },
+    {
+      "id": "S-60",
+      "epic": "E-5",
+      "title": "Render a funder's stated priorities as their quoted words, not our copy",
+      "status": "backlog",
+      "added": "2026-09-22",
       "tasks": []
     }
   ]
