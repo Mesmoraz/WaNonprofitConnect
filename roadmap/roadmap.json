@@ -898,6 +898,30 @@
       "status": "backlog",
       "added": "2026-09-22",
       "tasks": []
+    },
+    {
+      "id": "S-62",
+      "epic": "E-3",
+      "title": "Washington higher education: universities, community and technical colleges, private nonprofits",
+      "status": "review",
+      "added": "2026-09-22",
+      "tasks": []
+    },
+    {
+      "id": "S-63",
+      "epic": "E-3",
+      "title": "Decide whether WSU branch campuses become their own rows, as UW's are",
+      "status": "backlog",
+      "added": "2026-09-22",
+      "tasks": []
+    },
+    {
+      "id": "S-64",
+      "epic": "E-16",
+      "title": "A separate email-domain field for confirming, where it differs from the website host",
+      "status": "backlog",
+      "added": "2026-09-22",
+      "tasks": []
     }
   ]
 }

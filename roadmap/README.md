@@ -12,7 +12,7 @@ Generated from `roadmap.json` on 2026-09-22. Don't edit this file; run `node scr
 | S-19 Post: kind of help first, then the rest |  |  | S-15 Three grants from real WA foundations' public pages, labeled as examples | S-4 App map: five tabs, sixteen screens, three stories, order of work |
 | S-20 Thread and inbox: accept, message, mark done, golden |  |  | S-16 One Together initiative | S-5 Sign up: one green button, email behind a link |
 | S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder |  |  | S-35 OSPI schools loader into a Schools table | S-6 Who are you here as: six kinds, button label follows the pick |
-| S-22 Grants tab shows only for confirmed organizations |  |  |  | S-7 Find yours: list, words, and search follow the kind |
+| S-22 Grants tab shows only for confirmed organizations |  |  | S-62 Washington higher education: universities, community and technical colleges, private nonprofits | S-7 Find yours: list, words, and search follow the kind |
 | S-23 Directory: all six kinds, filter by kind, cause, city |  |  |  | S-8 Confirm: email-domain match per kind, ways to confirm per kind |
 | S-24 Profile: one layout, six shapes |  |  |  | S-9 About you: a person says where they are, what they can do, and when |
 | S-25 Map: fewer controls at once |  |  |  | S-10 Phone fixes found along the way |
@@ -48,10 +48,12 @@ Generated from `roadmap.json` on 2026-09-22. Don't edit this file; run `node scr
 | S-59 Relabel non-district LEAs (ESDs, technical colleges, charters, tribal compacts) with their own sub |  |  |  |  |
 | S-60 Render a funder's stated priorities as their quoted words, not our copy |  |  |  |  |
 | S-61 Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) |  |  |  |  |
+| S-63 Decide whether WSU branch campuses become their own rows, as UW's are |  |  |  |  |
+| S-64 A separate email-domain field for confirming, where it differs from the website host |  |  |  |  |
 
 ## Roadmap
 
-### I-1 A prototype that shows the whole mission · In progress · 10/36 stories done
+### I-1 A prototype that shows the whole mission · In progress · 10/38 stories done
 
 Every kind of participant and every kind of help, on a phone, in the approved voice. The thing to hand someone so they get it in a minute.
 
@@ -98,7 +100,7 @@ Sign up through confirm for all six kinds of participant.
     - [x] T-22 Text fields look like fields, not cards
     - [x] T-23 Buttons have a visible disabled state
 
-#### E-3 Seed data from real sources · In progress · 0/7
+#### E-3 Seed data from real sources · In progress · 0/9
 
 Schools, programs, foundations, people, needs, offers, grants, and one Together, generated from public data where it exists.
 
@@ -112,6 +114,8 @@ Schools, programs, foundations, people, needs, offers, grants, and one Together,
 - **S-15** Three grants from real WA foundations' public pages, labeled as examples · In review
 - **S-16** One Together initiative · In review
 - **S-59** Relabel non-district LEAs (ESDs, technical colleges, charters, tribal compacts) with their own sub · Backlog
+- **S-62** Washington higher education: universities, community and technical colleges, private nonprofits · In review
+- **S-63** Decide whether WSU branch campuses become their own rows, as UW's are · Backlog
 
 #### E-4 The core loop · Backlog · 0/4
 
@@ -212,16 +216,17 @@ Base map tiles and street-level geocoding of every address.
 - **S-48** Leaflet and OpenStreetMap base map · Backlog
 - **S-49** Geocode IRS and OSPI addresses to street level · Backlog
 
-### I-3 Trust · Backlog · 0/3 stories done
+### I-3 Trust · Backlog · 0/4 stories done
 
 Everyone here is who they say they are. Grants only reach confirmed organizations. No spam, no fraud.
 
-#### E-16 Confirmation per kind · Backlog · 0/2
+#### E-16 Confirmation per kind · Backlog · 0/3
 
 Each of the six kinds has at least one way to prove they belong, and a person reviews the rest.
 
 - **S-50** Confirm methods per kind, as designed in the taxonomy · Backlog
 - **S-51** Grants gated to confirmed organizations · Backlog
+- **S-64** A separate email-domain field for confirming, where it differs from the website host · Backlog
 
 #### E-17 Spam and fraud · Backlog · 0/1
 
