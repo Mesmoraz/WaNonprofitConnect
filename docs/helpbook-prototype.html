@@ -2128,18 +2128,6 @@ document.addEventListener('input', e => {
   if (e.target.id === 'd-title') { S.draft.title = e.target.value; const pos = e.target.selectionStart; render(); const el = document.getElementById('d-title'); el.focus(); el.setSelectionRange(pos,pos); }
 });
 document.addEventListener('change', e => { if (e.target.id === 'flt-category') { S.filter.category = e.target.value; render(); } if (e.target.id === 'flt-radius') { S.filter.radius = +e.target.value; render(); } if (['cause','city'].includes(e.target.id)) { S.orgFilter[e.target.id] = e.target.value; render(); } if (['d-category','d-cadence','d-urgency','d-qty','d-unit','d-desc','d-tags'].includes(e.target.id)) { S.draft[e.target.id.slice(2)] = e.target.value; render(); } });
-// Temporary: open with ?keys=1 to record what happens while a key is held (roadmap S-65).
-if (typeof location !== 'undefined' && location.search.includes('keys')) {
-  const box = document.createElement('div');
-  box.style.cssText = 'position:fixed;left:0;right:0;top:0;z-index:99;max-height:38vh;overflow:auto;background:rgba(0,0,0,0.85);color:#9f9;font:11px ui-monospace,monospace;white-space:pre-wrap;padding:6px';
-  document.body.appendChild(box);
-  const ls = []; const scr = () => { const s = document.querySelector('.screen'); return s ? s.scrollTop + '/' + s.scrollHeight : '-'; };
-  window.klog = m => { ls.push(m); if (ls.length > 40) ls.shift(); box.textContent = ls.join(String.fromCharCode(10)); box.scrollTop = box.scrollHeight; };
-  for (const t of ['keydown','beforeinput','input']) document.addEventListener(t, e => { const id = e.target.id || e.target.tagName; if (!/^(a-|claimq|orgq|d-)/.test(id)) return; klog(t + ' ' + id + ' ' + (e.inputType || e.key || '') + ' len=' + (e.target.value || '').length + ' scroll=' + scr()); }, true);
-  const _r = render; render = function(){ klog('RENDER (full redraw)'); return _r.apply(this, arguments); };
-  const _s = renderPlaceSug; renderPlaceSug = function(){ klog('suggestion list redraw'); return _s.apply(this, arguments); };
-  klog('recording. hold backspace in a field.');
-}
 document.addEventListener('focusin', e => { if (e.target.id === 'a-place') { sugLast = null; renderPlaceSug(); } });
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && e.target.id === 'a-extra') { e.preventDefault(); const b = document.querySelector('[data-a="about-add"]'); if (b) b.click(); return; }

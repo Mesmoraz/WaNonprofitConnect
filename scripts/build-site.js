@@ -44,7 +44,6 @@ const mermaid = `<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/m
 fs.writeFileSync(path.join(out, 'prototype.html'), wrap('helpbook-prototype.html'));
 fs.writeFileSync(path.join(out, 'design.html'), wrap('helpbook-step2-design.html', { extraBody: mermaid }));
 fs.writeFileSync(path.join(out, 'how-it-works.html'), wrap('how-it-works.html'));
-fs.copyFileSync(path.join(root, 'docs', 'keytest.html'), path.join(out, 'keytest.html'));  // temporary diagnostic, see roadmap S-63
 
 // Roadmap page: generated from roadmap/roadmap.json (validated first; a bad file fails the build).
 { const d = roadmap.load(); const errs = roadmap.validate(d);

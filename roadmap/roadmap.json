@@ -410,7 +410,7 @@
       "id": "S-11",
       "epic": "E-3",
       "title": "Schools and districts from OSPI's public feature service",
-      "status": "review",
+      "status": "done",
       "added": "2026-09-21",
       "source": "Discovery: OSPI ArcGIS service has 2,498 schools and 335 LEAs with lat/lon",
       "tasks": [
@@ -436,7 +436,7 @@
       "id": "S-12",
       "epic": "E-3",
       "title": "Workforce programs from the WA Workforce Board list",
-      "status": "review",
+      "status": "done",
       "added": "2026-09-21",
       "tasks": [],
       "lane": "research"
@@ -454,7 +454,7 @@
       "id": "S-14",
       "epic": "E-3",
       "title": "Needs and offers for all six kinds of help, plus people",
-      "status": "review",
+      "status": "done",
       "added": "2026-09-21",
       "tasks": [],
       "lane": "data"
@@ -463,7 +463,7 @@
       "id": "S-15",
       "epic": "E-3",
       "title": "Three grants from real WA foundations' public pages, labeled as examples",
-      "status": "review",
+      "status": "done",
       "added": "2026-09-21",
       "tasks": [],
       "lane": "grants"
@@ -472,7 +472,7 @@
       "id": "S-16",
       "epic": "E-3",
       "title": "One Together initiative",
-      "status": "review",
+      "status": "done",
       "added": "2026-09-21",
       "tasks": [],
       "lane": "data"
@@ -643,7 +643,7 @@
       "id": "S-35",
       "epic": "E-11",
       "title": "OSPI schools loader into a Schools table",
-      "status": "review",
+      "status": "done",
       "added": "2026-09-21",
       "source": "Discovery: OSPI ArcGIS feature service",
       "tasks": [],
@@ -903,7 +903,7 @@
       "id": "S-62",
       "epic": "E-3",
       "title": "Washington higher education: universities, community and technical colleges, private nonprofits",
-      "status": "review",
+      "status": "done",
       "added": "2026-09-22",
       "tasks": []
     },
@@ -927,13 +927,13 @@
       "id": "S-65",
       "epic": "E-2",
       "title": "Diagnose held-backspace on Android with docs/keytest.html and fix the real cause",
-      "status": "review",
+      "status": "done",
       "added": "2026-09-22",
       "tasks": [
         {
           "id": "T-31",
           "title": "Remove keytest.html and the ?keys=1 logging once the fix is confirmed on the plain URL",
-          "status": "ready"
+          "status": "done"
         }
       ]
     }
