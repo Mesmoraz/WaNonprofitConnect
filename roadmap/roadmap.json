@@ -410,7 +410,7 @@
       "id": "S-11",
       "epic": "E-3",
       "title": "Schools and districts from OSPI's public feature service",
-      "status": "ready",
+      "status": "in-progress",
       "added": "2026-09-21",
       "source": "Discovery: OSPI ArcGIS service has 2,498 schools and 335 LEAs with lat/lon",
       "tasks": [
@@ -429,15 +429,17 @@
           "title": "Replace the seven hand-typed school rows",
           "status": "backlog"
         }
-      ]
+      ],
+      "lane": "data"
     },
     {
       "id": "S-12",
       "epic": "E-3",
       "title": "Workforce programs from the WA Workforce Board list",
-      "status": "backlog",
+      "status": "in-progress",
       "added": "2026-09-21",
-      "tasks": []
+      "tasks": [],
+      "lane": "research"
     },
     {
       "id": "S-13",
@@ -445,7 +447,8 @@
       "title": "Foundations flagged from the IRS list's foundation code",
       "status": "backlog",
       "added": "2026-09-21",
-      "tasks": []
+      "tasks": [],
+      "lane": "data"
     },
     {
       "id": "S-14",
@@ -453,15 +456,17 @@
       "title": "Needs and offers for all six kinds of help, plus people",
       "status": "backlog",
       "added": "2026-09-21",
-      "tasks": []
+      "tasks": [],
+      "lane": "data"
     },
     {
       "id": "S-15",
       "epic": "E-3",
       "title": "Three grants from real WA foundations' public pages, labeled as examples",
-      "status": "backlog",
+      "status": "in-progress",
       "added": "2026-09-21",
-      "tasks": []
+      "tasks": [],
+      "lane": "grants"
     },
     {
       "id": "S-16",
@@ -469,7 +474,8 @@
       "title": "One Together initiative",
       "status": "backlog",
       "added": "2026-09-21",
-      "tasks": []
+      "tasks": [],
+      "lane": "data"
     },
     {
       "id": "S-17",
@@ -630,16 +636,18 @@
       "title": "IRS Business Master File loaded",
       "status": "done",
       "added": "2026-09-20",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-35",
       "epic": "E-11",
       "title": "OSPI schools loader into a Schools table",
-      "status": "ready",
+      "status": "in-progress",
       "added": "2026-09-21",
       "source": "Discovery: OSPI ArcGIS feature service",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-36",
@@ -647,7 +655,8 @@
       "title": "Pub 78 and revocation list, so IsActive is real",
       "status": "backlog",
       "added": "2026-09-20",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-37",
@@ -655,7 +664,8 @@
       "title": "Workforce programs list",
       "status": "backlog",
       "added": "2026-09-21",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-38",
@@ -663,7 +673,8 @@
       "title": "WA business lookup (UBI) for business confirmation",
       "status": "backlog",
       "added": "2026-09-21",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-39",
@@ -671,7 +682,8 @@
       "title": "ASP.NET Identity replaces the X-Org-Ein header",
       "status": "backlog",
       "added": "2026-09-20",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-40",
@@ -679,7 +691,8 @@
       "title": "Claim an organization by kind, with the confirm methods from the taxonomy",
       "status": "backlog",
       "added": "2026-09-21",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-41",
@@ -687,7 +700,8 @@
       "title": "Admin review queue",
       "status": "backlog",
       "added": "2026-09-20",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-42",
@@ -695,7 +709,8 @@
       "title": "Kind of help on every need and offer",
       "status": "backlog",
       "added": "2026-09-21",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-43",
@@ -703,7 +718,8 @@
       "title": "Cadence and standing agreements",
       "status": "backlog",
       "added": "2026-09-20",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-44",
@@ -711,7 +727,8 @@
       "title": "P0 to P3 with the monthly P0 cap",
       "status": "backlog",
       "added": "2026-09-20",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-45",
@@ -719,7 +736,8 @@
       "title": "Fair ranking: priority, then least seen, with the org cap",
       "status": "backlog",
       "added": "2026-09-20",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-46",
@@ -727,7 +745,8 @@
       "title": "Capability tags and rule-driven alerts",
       "status": "backlog",
       "added": "2026-09-20",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-47",
@@ -735,7 +754,8 @@
       "title": "Grant model with the eight filter fields and a hand-off URL",
       "status": "backlog",
       "added": "2026-09-21",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-48",
@@ -743,7 +763,8 @@
       "title": "Leaflet and OpenStreetMap base map",
       "status": "backlog",
       "added": "2026-09-20",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-49",
@@ -751,7 +772,8 @@
       "title": "Geocode IRS and OSPI addresses to street level",
       "status": "backlog",
       "added": "2026-09-20",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-50",
@@ -759,7 +781,8 @@
       "title": "Confirm methods per kind, as designed in the taxonomy",
       "status": "backlog",
       "added": "2026-09-21",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-51",
@@ -767,7 +790,8 @@
       "title": "Grants gated to confirmed organizations",
       "status": "backlog",
       "added": "2026-09-21",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-52",
@@ -775,7 +799,8 @@
       "title": "Rate limits, reporting, and a review queue for posts",
       "status": "backlog",
       "added": "2026-09-21",
-      "tasks": []
+      "tasks": [],
+      "lane": "backend"
     },
     {
       "id": "S-53",
@@ -783,7 +808,8 @@
       "title": "Prototype, design brief, and how-it-works pages live",
       "status": "done",
       "added": "2026-09-20",
-      "tasks": []
+      "tasks": [],
+      "lane": "site"
     },
     {
       "id": "S-54",
@@ -812,7 +838,8 @@
           "title": "Taylor checks it on a phone",
           "status": "done"
         }
-      ]
+      ],
+      "lane": "site"
     },
     {
       "id": "S-55",
@@ -821,7 +848,8 @@
       "status": "backlog",
       "added": "2026-09-21",
       "blocked": "Taylor decides when the name is public",
-      "tasks": []
+      "tasks": [],
+      "lane": "site"
     },
     {
       "id": "S-56",

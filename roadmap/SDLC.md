@@ -27,7 +27,7 @@ Any item can also carry `blocked: "reason"`. Blocked items stay in their column 
 
 Epic and initiative status is derived from their children: done when all are done, in progress when any is in progress or in review, ready when any is ready, otherwise backlog.
 
-**Work-in-progress limit: one story in `in-progress` at a time.** Finish it or park it back to `ready` before starting another.
+**Work-in-progress limit: one story in `in-progress` per lane.** Lanes: `screens` (the prototype, one file, so strictly one at a time), `data` (seed scripts and seed files), `backend` (the .NET project), `research` (finding and verifying sources), `site` (the public site). A story's `lane` field says which; screens is the default. Work in different lanes runs in parallel; finish or park a story before starting another in the same lane.
 
 ## The round (how a story moves)
 
@@ -48,6 +48,7 @@ A round fits in one sitting. If it doesn't, the story is too big: split it.
 - **Only `ready` gets detail.** Backlog items stay one line until they're next. Detail written early is detail rewritten later.
 - **Order is a suggestion, not a promise.** `order` on epics is the current plan; Taylor can reorder any time. Dates are not tracked; the roadmap shows sequence and status.
 - **Small and shipped beats big and pending.** Every round ends with something live.
+- **Parallel where files don't collide.** Data, backend, and research stories can run side by side with a screen round. Agents working in parallel never commit; the person running them commits once each piece is checked.
 - **Decisions are written where they're used.** A product decision goes in `docs/TAXONOMY.md` or `docs/APP-MAP.md`; a copy decision in `docs/VOICE.md`; a process decision here. The roadmap item links to it rather than repeating it.
 
 ## Keeping designs uncoupled

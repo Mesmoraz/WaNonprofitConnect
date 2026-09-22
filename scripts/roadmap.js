@@ -36,8 +36,10 @@ function validate(d) {
     if (/helpbook/i.test(JSON.stringify(s))) errs.push(`${s.id}: the roadmap is public; say Name TBD, not the real name`);
   }
   if (/helpbook/i.test(JSON.stringify([d.name, d.initiatives, d.epics]))) errs.push('the roadmap is public; say Name TBD, not the real name');
-  const inProgress = d.stories.filter(s => s.status === 'in-progress');
-  if (inProgress.length > 1) errs.push(`WIP limit: ${inProgress.length} stories in progress (${inProgress.map(s => s.id).join(', ')}); the limit is 1`);
+  // WIP limit: one story in progress per lane (screens, data, backend, research, site). Screens share one file.
+  const lanes = {};
+  for (const s of d.stories.filter(s => s.status === 'in-progress')) (lanes[s.lane || 'screens'] = lanes[s.lane || 'screens'] || []).push(s.id);
+  for (const [lane, ids] of Object.entries(lanes)) if (ids.length > 1) errs.push(`WIP limit: ${ids.length} stories in progress in the ${lane} lane (${ids.join(', ')}); the limit is 1 per lane`);
   return errs;
 }
 

@@ -6,20 +6,18 @@ Generated from `roadmap.json` on 2026-09-22. Don't edit this file; run `node scr
 
 | Backlog | Ready | In progress | In review | Done |
 | --- | --- | --- | --- | --- |
-| S-12 Workforce programs from the WA Workforce Board list | S-11 Schools and districts from OSPI's public feature service | S-9 About you: a person says where they are, what they can do, and when |  | S-1 Mission statement saved and pointed at from the repo |
-| S-13 Foundations flagged from the IRS list's foundation code | S-35 OSPI schools loader into a Schools table |  |  | S-2 Voice sheet: ten rules and a words list |
-| S-14 Needs and offers for all six kinds of help, plus people |  |  |  | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
-| S-15 Three grants from real WA foundations' public pages, labeled as examples |  |  |  | S-4 App map: five tabs, sixteen screens, three stories, order of work |
-| S-16 One Together initiative |  |  |  | S-5 Sign up: one green button, email behind a link |
-| S-17 Board: kind-of-help chips, fair ranking, directory search at the top |  |  |  | S-6 Who are you here as: six kinds, button label follows the pick |
-| S-18 A need or offer: who it's from, how it fits you, I can help / I need this |  |  |  | S-7 Find yours: list, words, and search follow the kind |
-| S-19 Post: kind of help first, then the rest |  |  |  | S-8 Confirm: email-domain match per kind, ways to confirm per kind |
-| S-20 Thread and inbox: accept, message, mark done, golden |  |  |  | S-10 Phone fixes found along the way |
-| S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder |  |  |  | S-34 IRS Business Master File loaded |
-| S-22 Grants tab shows only for confirmed organizations |  |  |  | S-53 Prototype, design brief, and how-it-works pages live |
-| S-23 Directory: all six kinds, filter by kind, cause, city |  |  |  | S-54 Roadmap page generated from roadmap.json |
-| S-24 Profile: one layout, six shapes |  |  |  |  |
-| S-25 Map: fewer controls at once |  |  |  |  |
+| S-13 Foundations flagged from the IRS list's foundation code |  | S-9 About you: a person says where they are, what they can do, and when |  | S-1 Mission statement saved and pointed at from the repo |
+| S-14 Needs and offers for all six kinds of help, plus people |  | S-11 Schools and districts from OSPI's public feature service |  | S-2 Voice sheet: ten rules and a words list |
+| S-16 One Together initiative |  | S-12 Workforce programs from the WA Workforce Board list |  | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
+| S-17 Board: kind-of-help chips, fair ranking, directory search at the top |  | S-15 Three grants from real WA foundations' public pages, labeled as examples |  | S-4 App map: five tabs, sixteen screens, three stories, order of work |
+| S-18 A need or offer: who it's from, how it fits you, I can help / I need this |  | S-35 OSPI schools loader into a Schools table |  | S-5 Sign up: one green button, email behind a link |
+| S-19 Post: kind of help first, then the rest |  |  |  | S-6 Who are you here as: six kinds, button label follows the pick |
+| S-20 Thread and inbox: accept, message, mark done, golden |  |  |  | S-7 Find yours: list, words, and search follow the kind |
+| S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder |  |  |  | S-8 Confirm: email-domain match per kind, ways to confirm per kind |
+| S-22 Grants tab shows only for confirmed organizations |  |  |  | S-10 Phone fixes found along the way |
+| S-23 Directory: all six kinds, filter by kind, cause, city |  |  |  | S-34 IRS Business Master File loaded |
+| S-24 Profile: one layout, six shapes |  |  |  | S-53 Prototype, design brief, and how-it-works pages live |
+| S-25 Map: fewer controls at once |  |  |  | S-54 Roadmap page generated from roadmap.json |
 | S-26 Legend and pin colors for six kinds |  |  |  |  |
 | S-27 Golden threads for every kind of help; Together as a multi-ended thread |  |  |  |  |
 | S-28 You: behind your name in the top bar |  |  |  |  |
@@ -99,18 +97,18 @@ Sign up through confirm for all six kinds of participant.
     - [x] T-22 Text fields look like fields, not cards
     - [x] T-23 Buttons have a visible disabled state
 
-#### E-3 Seed data from real sources · Ready · 0/6
+#### E-3 Seed data from real sources · In progress · 0/6
 
 Schools, programs, foundations, people, needs, offers, grants, and one Together, generated from public data where it exists.
 
-- **S-11** Schools and districts from OSPI's public feature service · Ready · _Discovery: OSPI ArcGIS service has 2,498 schools and 335 LEAs with lat/lon_
+- **S-11** Schools and districts from OSPI's public feature service · In progress · _Discovery: OSPI ArcGIS service has 2,498 schools and 335 LEAs with lat/lon_
     - [ ] T-24 scripts/fetch-schools.js pulls the service and writes a normalized seed (districts plus high schools) (Ready)
     - [ ] T-25 District website domains from OSPI's directory download, for the email-domain confirm (Backlog)
     - [ ] T-26 Replace the seven hand-typed school rows (Backlog)
-- **S-12** Workforce programs from the WA Workforce Board list · Backlog
+- **S-12** Workforce programs from the WA Workforce Board list · In progress
 - **S-13** Foundations flagged from the IRS list's foundation code · Backlog
 - **S-14** Needs and offers for all six kinds of help, plus people · Backlog
-- **S-15** Three grants from real WA foundations' public pages, labeled as examples · Backlog
+- **S-15** Three grants from real WA foundations' public pages, labeled as examples · In progress
 - **S-16** One Together initiative · Backlog
 
 #### E-4 The core loop · Backlog · 0/4
@@ -165,16 +163,16 @@ The mission, the six kinds, the eight threads, and the decisions, in the voice, 
 
 - **S-33** Design page rewritten to the mission · Backlog · round B14
 
-### I-2 A backend that can run it for real · Ready · 1/16 stories done
+### I-2 A backend that can run it for real · In progress · 1/16 stories done
 
 Real data, real accounts, real matching. The prototype's flows, made durable.
 
-#### E-11 Data loads · Ready · 1/5
+#### E-11 Data loads · In progress · 1/5
 
 Every list the app relies on arrives through a loader that produces one shape.
 
 - **S-34** IRS Business Master File loaded · Done
-- **S-35** OSPI schools loader into a Schools table · Ready · _Discovery: OSPI ArcGIS feature service_
+- **S-35** OSPI schools loader into a Schools table · In progress · _Discovery: OSPI ArcGIS feature service_
 - **S-36** Pub 78 and revocation list, so IsActive is real · Backlog
 - **S-37** Workforce programs list · Backlog
 - **S-38** WA business lookup (UBI) for business confirmation · Backlog
