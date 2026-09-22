@@ -6,14 +6,14 @@ Generated from `roadmap.json` on 2026-09-22. Don't edit this file; run `node scr
 
 | Backlog | Ready | In progress | In review | Done |
 | --- | --- | --- | --- | --- |
-| S-13 Foundations flagged from the IRS list's foundation code |  | S-65 Diagnose held-backspace on Android with docs/keytest.html and fix the real cause | S-11 Schools and districts from OSPI's public feature service | S-1 Mission statement saved and pointed at from the repo |
+| S-13 Foundations flagged from the IRS list's foundation code |  |  | S-11 Schools and districts from OSPI's public feature service | S-1 Mission statement saved and pointed at from the repo |
 | S-17 Board: kind-of-help chips, fair ranking, directory search at the top |  |  | S-12 Workforce programs from the WA Workforce Board list | S-2 Voice sheet: ten rules and a words list |
 | S-18 A need or offer: who it's from, how it fits you, I can help / I need this |  |  | S-14 Needs and offers for all six kinds of help, plus people | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
 | S-19 Post: kind of help first, then the rest |  |  | S-15 Three grants from real WA foundations' public pages, labeled as examples | S-4 App map: five tabs, sixteen screens, three stories, order of work |
 | S-20 Thread and inbox: accept, message, mark done, golden |  |  | S-16 One Together initiative | S-5 Sign up: one green button, email behind a link |
 | S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder |  |  | S-35 OSPI schools loader into a Schools table | S-6 Who are you here as: six kinds, button label follows the pick |
 | S-22 Grants tab shows only for confirmed organizations |  |  | S-62 Washington higher education: universities, community and technical colleges, private nonprofits | S-7 Find yours: list, words, and search follow the kind |
-| S-23 Directory: all six kinds, filter by kind, cause, city |  |  |  | S-8 Confirm: email-domain match per kind, ways to confirm per kind |
+| S-23 Directory: all six kinds, filter by kind, cause, city |  |  | S-65 Diagnose held-backspace on Android with docs/keytest.html and fix the real cause | S-8 Confirm: email-domain match per kind, ways to confirm per kind |
 | S-24 Profile: one layout, six shapes |  |  |  | S-9 About you: a person says where they are, what they can do, and when |
 | S-25 Map: fewer controls at once |  |  |  | S-10 Phone fixes found along the way |
 | S-26 Legend and pin colors for six kinds |  |  |  | S-34 IRS Business Master File loaded |
@@ -99,7 +99,8 @@ Sign up through confirm for all six kinds of participant.
     - [x] T-21 Bottom sheets clear the fixed story bar
     - [x] T-22 Text fields look like fields, not cards
     - [x] T-23 Buttons have a visible disabled state
-- **S-65** Diagnose held-backspace on Android with docs/keytest.html and fix the real cause · In progress
+- **S-65** Diagnose held-backspace on Android with docs/keytest.html and fix the real cause · In review
+    - [ ] T-31 Remove keytest.html and the ?keys=1 logging once the fix is confirmed on the plain URL (Ready)
 
 #### E-3 Seed data from real sources · In progress · 0/9
 

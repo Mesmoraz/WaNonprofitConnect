@@ -14,7 +14,8 @@ fs.mkdirSync(out, { recursive: true });
 function wrap(srcFile, { extraHead = '', extraBody = '' } = {}) {
   const src = fs.readFileSync(path.join(root, 'docs', srcFile), 'utf8');
   const cut = src.indexOf('</style>') + '</style>'.length;      // title + fonts + style live before this
-  const head = src.slice(0, cut), body = src.slice(cut);
+  const stamp = new Date().toISOString().slice(0,16).replace('T',' ') + ' UTC';
+  const head = src.slice(0, cut), body = src.slice(cut).replace('>working copy<', '>' + stamp + '<');
   return `<!doctype html>
 <html lang="en">
 <head>

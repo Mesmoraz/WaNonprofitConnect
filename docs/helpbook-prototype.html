@@ -1822,6 +1822,7 @@ function renderPhone(){
     <ol><li>Post a need or offer.</li><li>Matches are scored and the fits are alerted.</li><li>One side proposes (“I have this”).</li><li>The other side accepts.</li><li>They message and share contact details.</li><li>Either side marks it complete — or, for recurring pairs, logs each delivery.</li></ol>
     <h4>What’s real here</h4>
     <p>The organizations (real IRS records). The people, listings, messages and example businesses are invented, and everything you do stays on this device. <a href="how-it-works.html" target="_blank" rel="noopener">Read the full explanation →</a></p>
+    <p class="hint">Build <b>working copy</b>. If something looks wrong after an update, check this against the change log before reporting it.</p>
     <button class="btn primary" data-a="sheet-close-btn">Got it</button></div></div>`;
   if (S.sheet==='who') overlay += `<div class="sheet-bg" data-a="sheet-close"><div class="sheet"><h3>Play as…</h3><p class="sub">Each person is a verified member of a real WA 501(c)(3). The story switches sides at steps 5 and 6.</p>${PEOPLE.map(p=>`<button class="card tap ${S.user&&S.user.id===p.id?'sel':''}" data-a="switch" data-id="${p.id}"><span class="t" style="margin-top:0">${p.name} · ${esc(ORG(p.ein).name)}</span><span class="m">${cap(ORG(p.ein).city)} · ${esc(p.email)}</span></button>`).join('')}</div></div>`;
   if (S.sheet && S.sheet.ihave) { const l = S.listings.find(x=>x.id===S.sheet.ihave); const mine = S.listings.filter(x=>x.ein===me().ein&&x.status==='Open'&&x.kind!==l.kind);

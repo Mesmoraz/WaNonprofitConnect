@@ -927,9 +927,15 @@
       "id": "S-65",
       "epic": "E-2",
       "title": "Diagnose held-backspace on Android with docs/keytest.html and fix the real cause",
-      "status": "in-progress",
+      "status": "review",
       "added": "2026-09-22",
-      "tasks": []
+      "tasks": [
+        {
+          "id": "T-31",
+          "title": "Remove keytest.html and the ?keys=1 logging once the fix is confirmed on the plain URL",
+          "status": "ready"
+        }
+      ]
     }
   ]
 }
