@@ -144,7 +144,7 @@ public sealed class ZipCentroidTests : IDisposable
     }
 
     [Fact]
-    public async Task Map_points_endpoint_is_public_compact_and_cached_a_day()
+    public async Task Map_points_endpoint_is_public_compact_and_cached_an_hour()
     {
         using var factory = new ApiFactory();
         factory.NewClient().Dispose();
@@ -159,7 +159,7 @@ public sealed class ZipCentroidTests : IDisposable
         var resp = await http.GetAsync("/api/v1/map/points");
         resp.StatusCode.Should().Be(HttpStatusCode.OK);
         resp.Headers.CacheControl!.Public.Should().BeTrue();
-        resp.Headers.CacheControl.MaxAge.Should().Be(TimeSpan.FromDays(1));
+        resp.Headers.CacheControl.MaxAge.Should().Be(TimeSpan.FromHours(1));
         (await resp.Content.ReadAsStringAsync()).Should().Be("[[\"000000001\",47.61079,-122.33442]]");
 
         (await http.GetAsync("/api/v1/map")).StatusCode.Should().Be(HttpStatusCode.Unauthorized);
