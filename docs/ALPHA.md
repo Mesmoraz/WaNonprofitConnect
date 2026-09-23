@@ -99,7 +99,7 @@ Locations: the IRS list has addresses but no coordinates. Every org is placed at
 
 ## Recruiting the cohort (runs alongside the build)
 
-Aim for **8 to 12 organizations in two or three clusters** where trades are likely: for example, a food bank, a tool library and a tech-refurb nonprofit in the same city. A thread needs two sides.
+**Cohort (Taylor, 2026-09-23): urban Seattle only; Mario's contacts first. Mario's guide: `docs/ALPHA-RECRUITING.md`.** Aim for **8 to 12 organizations in two or three clusters** where trades are likely: for example, a food bank, a tool library and a tech-refurb nonprofit in the same city. A thread needs two sides.
 
 1. Taylor picks the clusters and the first names. The idea-giver's contacts come first.
 2. Claude drafts a short invite (what it is, what we ask of them: 20 minutes to post one need and one offer, a 15-minute call after two weeks). Taylor approves it and sends it himself.

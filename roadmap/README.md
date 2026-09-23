@@ -9,7 +9,7 @@ Generated from `roadmap.json` on 2026-09-23. Don't edit this file; run `node scr
 | S-13 Foundations flagged from the IRS list's foundation code |  | S-68 Google sign-in, invite codes tied to one organization, claims that wait for review | S-17 Board: kind-of-help chips, fair ranking, directory search at the top | S-1 Mission statement saved and pointed at from the repo |
 | S-18 A need or offer: who it's from, how it fits you, I can help / I need this |  | S-70 App shell and front door on the approved copy | S-22 Grants tab shows only for confirmed organizations | S-2 Voice sheet: ten rules and a words list |
 | S-19 Post: kind of help first, then the rest |  | S-73 Map: base map, clusters, four thread states, golden glow, tap for details | S-66 Opening a search result crashed the app: EINs were coerced to numbers | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
-| S-20 Thread and inbox: accept, message, mark done, golden |  |  | S-67 Board card and filters: plain-word priority, three-line card, filters grouped | S-4 App map: five tabs, sixteen screens, three stories, order of work |
+| S-20 Thread and inbox: accept, message, mark done, golden |  | S-79 Invite message drafted, approved, and sent by Taylor | S-67 Board card and filters: plain-word priority, three-line card, filters grouped | S-4 App map: five tabs, sixteen screens, three stories, order of work |
 | S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder ⛔ |  |  |  | S-5 Sign up: one green button, email behind a link |
 | S-23 Directory: all six kinds, filter by kind, cause, city |  |  |  | S-6 Who are you here as: six kinds, button label follows the pick |
 | S-24 Profile: one layout, six shapes ⛔ |  |  |  | S-7 Find yours: list, words, and search follow the kind |
@@ -55,9 +55,9 @@ Generated from `roadmap.json` on 2026-09-23. Don't edit this file; run `node scr
 | S-76 Installable to the home screen; phone, tablet and desktop layouts |  |  |  |  |
 | S-77 Privacy and terms pages |  |  |  |  |
 | S-78 Recruit 8 to 12 organizations in two or three clusters |  |  |  |  |
-| S-79 Invite message drafted, approved, and sent by Taylor |  |  |  |  |
 | S-81 Apple developer account, for TestFlight in Beta |  |  |  |  |
 | S-82 Pick and buy a domain, for email sign-in and store listings |  |  |  |  |
+| S-83 Microsoft sign-in, since many nonprofits run on Microsoft 365 |  |  |  |  |
 
 ## Roadmap
 
@@ -286,16 +286,17 @@ Corporate giving and volunteering platforms, once there's something to integrate
 
 - **S-58** Corporate giving platforms (Benevity and others), subject to APIs and agreements · Backlog
 
-### I-6 A working alpha for invited nonprofits · In progress · 1/18 stories done
+### I-6 A working alpha for invited nonprofits · In progress · 1/19 stories done
 
 Real organizations post real needs and offers, start threads, and make golden threads, on the map, on any phone or desktop. Target: live Sep 30.
 
-#### E-23 Accounts and invites · In progress · 0/2
+#### E-23 Accounts and invites · In progress · 0/3
 
 Sign in with Google; an invite code confirms you for one organization; anyone else waits for review.
 
 - **S-68** Google sign-in, invite codes tied to one organization, claims that wait for review · In progress · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-69** Admin page: make invite codes, approve or reject claims · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
+- **S-83** Microsoft sign-in, since many nonprofits run on Microsoft 365 · Backlog
 
 #### E-24 The core loop, working · In progress · 1/7
 
@@ -318,7 +319,7 @@ A real base map, every nonprofit as a dot, clusters, and threads that drift and 
 - **S-73** Map: base map, clusters, four thread states, golden glow, tap for details · In progress · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-74** Map data: ZIP centroids from the Census gazetteer, map and points endpoints · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 
-#### E-26 Live and invited · Backlog · 0/5
+#### E-26 Live and invited · In progress · 0/5
 
 Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
 
@@ -326,5 +327,5 @@ Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
 - **S-76** Installable to the home screen; phone, tablet and desktop layouts · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-77** Privacy and terms pages · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-78** Recruit 8 to 12 organizations in two or three clusters · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
-- **S-79** Invite message drafted, approved, and sent by Taylor · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
+- **S-79** Invite message drafted, approved, and sent by Taylor · In progress · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 
