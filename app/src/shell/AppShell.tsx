@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { useExchangeHub, useThreads } from '../api'
+import { useExchangeHub, useMe, useThreads } from '../api'
 import { BRAND } from '../brand'
 import { BoardIcon, InboxIcon, MapIcon, PlusIcon } from './icons'
 import { WhoButton } from './WhoButton'
@@ -7,7 +7,8 @@ import './shell.css'
 
 /** The signed-in, confirmed app: top bar and bottom tabs on a phone, a left rail from 900px. Alpha tabs only; no Grants. */
 export function AppShell() {
-  useExchangeHub(true)
+  const { data: me } = useMe()
+  useExchangeHub(true, me?.membership?.ein)
   const { data: threads } = useThreads()
   const unread = threads?.reduce((n, t) => n + t.unread, 0) ?? 0
   const cls = ({ isActive }: { isActive: boolean }) => `tab${isActive ? ' active' : ''}`

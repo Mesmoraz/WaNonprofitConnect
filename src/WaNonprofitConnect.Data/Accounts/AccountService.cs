@@ -59,11 +59,11 @@ public sealed class AccountService
         return account;
     }
 
-    /// <summary>Development sign-in only: confirm the account for an EIN without an invite. The API never calls this outside Development.</summary>
-    public async Task ConfirmWithoutInviteAsync(Guid accountId, string ein, CancellationToken ct = default)
+    /// <summary>Confirm the account for an EIN without an invite. Development sign-in, and admins switching organization to test.</summary>
+    public async Task ConfirmWithoutInviteAsync(Guid accountId, string ein, CancellationToken ct = default, string code = "DEV")
     {
         var org = await RequireOrgAsync(ein, ct);
-        await SetMembershipAsync(accountId, org.Ein, MembershipStatus.Confirmed, MembershipVia.Invite, "DEV", ct);
+        await SetMembershipAsync(accountId, org.Ein, MembershipStatus.Confirmed, MembershipVia.Invite, code, ct);
     }
 
     public async Task<MeDto?> GetMeAsync(Guid accountId, CancellationToken ct = default)

@@ -69,12 +69,14 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
       extensions: [glowPointExt],
     }),
     new PathLayer<GlowArc, Seat>({
-      id: 'wm-glow', beforeId: f.under, data: f.glows, pickable: false,
+      // Threads and their glow draw above the whole base map, labels included (Taylor, Sep 23: roads and
+      // town names were cutting through golden threads). Dots and heat stay under the labels.
+      id: 'wm-glow', data: f.glows, pickable: false,
       widthUnits: 'pixels', getPath: d => d.path, getWidth: d => d.width, getColor: d => d.color,
       capRounded: true, jointRounded: true, extensions: [glowPathExt],
     }),
     new PathLayer<ThreadArc, Seat & { flowShift: number; getDashArray: (d: ThreadArc) => [number, number]; dashUnits: 'pixels'; dashGapPickable: boolean }>({
-      id: 'wm-threads', beforeId: f.under, data: f.arcs, pickable: true,
+      id: 'wm-threads', data: f.arcs, pickable: true,
       widthUnits: 'pixels', getPath: d => d.path, getWidth: d => d.width, getColor: d => d.color,
       capRounded: true, jointRounded: true,
       getDashArray: d => d.dash, dashUnits: 'pixels', dashGapPickable: true,
@@ -207,7 +209,7 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, c
     // to the incoming style, which may not have it. They go on top until the new style has loaded.
     swappingRef.current = true
     const overlay = overlayRef.current
-    if (overlay && frameRef.current) overlay.setProps({ layers: buildLayers({ ...frameRef.current, under: undefined }, performance.now(), !reduced) })
+    if (overlay && frameRef.current) overlay.setProps({ layers: buildLayers({ ...frameRef.current, under: undefined }, performance.now(), true) })
     map.setStyle(theme.dark ? STYLE_DARK : STYLE_LIGHT, {
       diff: false,
       transformStyle: (_prev, next) => {
@@ -264,11 +266,12 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, c
   // ---- Drawing: static redraw on change, plus a light animation loop when motion is allowed --------
   useEffect(() => {
     const overlay = overlayRef.current
-    if (overlay && frameRef.current) { frameRef.current.under = under(); overlay.setProps({ layers: buildLayers(frameRef.current, performance.now(), !reduced) }) }
+    if (overlay && frameRef.current) { frameRef.current.under = under(); overlay.setProps({ layers: buildLayers(frameRef.current, performance.now(), true) }) }
   })
 
   useEffect(() => {
-    if (reduced) return
+    // The dash drift always runs: it is slow, and it is how you read which way help flows (Taylor, Sep 23).
+    // Reduced motion still drops the movers racing along a selected thread (see `movers`).
     let raf = 0, last = 0, slowFrames = 0, minGap = 0
     const tick = (now: number) => {
       raf = requestAnimationFrame(tick)
@@ -282,7 +285,7 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, c
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
-  }, [reduced])
+  }, [])
 
   // ---- Selection set from outside: bring both ends into view if they aren't -----------------------
   useEffect(() => {

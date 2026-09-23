@@ -130,6 +130,11 @@ export function useRejectClaim() {
   const qc = useQueryClient()
   return useMutation({ mutationFn: api.rejectClaim, onSuccess: () => qc.invalidateQueries({ queryKey: keys.adminClaims }) })
 }
+/** Admins only: become any organization at once, to test both sides of a thread. Everything org-specific refetches. */
+export function useActAs() {
+  const qc = useQueryClient()
+  return useMutation({ mutationFn: api.actAs, onSuccess: (me: Me) => { qc.setQueryData(keys.me, me); qc.invalidateQueries({ predicate: q => q.queryKey !== keys.me }) } })
+}
 export function useCreateInvite() {
   const qc = useQueryClient()
   return useMutation({ mutationFn: (v: { ein: string; uses: number }) => api.createInvite(v.ein, v.uses), onSuccess: () => qc.invalidateQueries({ queryKey: keys.adminInvites }) })

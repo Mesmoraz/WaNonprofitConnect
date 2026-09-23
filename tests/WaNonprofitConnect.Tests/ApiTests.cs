@@ -114,6 +114,24 @@ public sealed class ApiTests : IDisposable
     }
 
     [Fact]
+    public async Task Admin_can_switch_organization_to_test_and_no_one_else_can()
+    {
+        using var admin = _factory.NewClient();
+        using var person = _factory.NewClient();
+        await PostOk<JsonElement>(admin, "/api/v1/auth/dev", new { email = ApiFactory.AdminEmail, name = "Admin" });
+        await PostOk<JsonElement>(person, "/api/v1/auth/dev", new { email = "rae@example.org", name = "Rae" });
+
+        (await person.PostAsJsonAsync("/api/v1/admin/act-as", new { ein = B })).StatusCode.Should().Be(HttpStatusCode.Forbidden);
+
+        var me = await PostOk<JsonElement>(admin, "/api/v1/admin/act-as", new { ein = B });
+        me.GetProperty("membership").GetProperty("ein").GetString().Should().Be(B);
+        me.GetProperty("membership").GetProperty("status").GetString().Should().Be("confirmed");
+
+        me = await PostOk<JsonElement>(admin, "/api/v1/admin/act-as", new { ein = A });
+        me.GetProperty("membership").GetProperty("ein").GetString().Should().Be(A);
+    }
+
+    [Fact]
     public async Task Google_sign_in_without_a_client_id_is_503()
     {
         using var http = _factory.NewClient();

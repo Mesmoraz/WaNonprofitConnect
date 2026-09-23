@@ -9,7 +9,8 @@ import type { Listing, Message, Thread } from './types'
  * Keeps the cache live over SignalR at /hubs/exchange (cookie-authenticated; the hub joins the caller's org group).
  * Mount once, inside the signed-in, confirmed part of the app. In mock mode there is no hub; mutations invalidate directly.
  */
-export function useExchangeHub(enabled: boolean) {
+/** `org` restarts the connection when you switch organization, so the hub puts you in the right group. */
+export function useExchangeHub(enabled: boolean, org?: string) {
   const qc = useQueryClient()
   useEffect(() => {
     if (!enabled || MOCK) return
@@ -44,5 +45,5 @@ export function useExchangeHub(enabled: boolean) {
     // Start on the next tick, so a mount that is torn down at once (React's dev double-mount) never opens a connection.
     const first = setTimeout(start, 0)
     return () => { stopped = true; clearTimeout(first); conn.stop() }
-  }, [enabled, qc])
+  }, [enabled, org, qc])
 }

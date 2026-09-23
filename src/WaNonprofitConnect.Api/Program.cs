@@ -23,6 +23,14 @@ builder.Services.AddHttpClient<BmfImporter>(c =>
     c.Timeout = TimeSpan.FromMinutes(10);
     c.DefaultRequestHeaders.UserAgent.ParseAdd("WaNonprofitConnect/0.1");
 });
+builder.Services.AddHttpClient<ZipCentroidImporter>(c =>
+{
+    c.Timeout = TimeSpan.FromMinutes(5);
+    c.DefaultRequestHeaders.UserAgent.ParseAdd("WaNonprofitConnect/0.1");
+});
+// A fresh database (Azure) loads the ZIP centroids and the IRS list itself. Off in Development and tests.
+if (builder.Configuration.GetValue("Data:LoadOnStartup", builder.Environment.IsProduction()))
+    builder.Services.AddHostedService<WaNonprofitConnect.Api.Data.StartupDataLoader>();
 builder.Services.AddHttpClient<SchoolsImporter>(c =>
 {
     c.Timeout = TimeSpan.FromMinutes(2);

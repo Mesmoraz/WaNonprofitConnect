@@ -103,4 +103,5 @@ export const api = {
   rejectClaim: (id: number) => call<Claim>('POST', `${V1}/admin/claims/${id}/reject`),
   adminInvites: () => call<Invite[]>('GET', `${V1}/admin/invites`),
   createInvite: (ein: string, uses: number) => call<Invite>('POST', `${V1}/admin/invites`, { ein, uses }),
+  actAs: (ein: string) => call<Me>('POST', `${V1}/admin/act-as`, { ein }),
 }

@@ -120,5 +120,15 @@ public sealed class AdminController : AppControllerBase
     public Task<InviteDto> CreateInvite([FromBody] CreateInviteRequest request, CancellationToken ct)
         => _accounts.CreateInviteAsync(request.Ein, request.Uses, Email, ct);
 
+    /// <summary>Admins only: act as any organization straight away, no invite. For testing both sides of a thread.</summary>
+    [HttpPost("act-as")]
+    public async Task<MeDto> ActAs([FromBody] ActAsRequest request, CancellationToken ct)
+    {
+        await _accounts.ConfirmWithoutInviteAsync(AccountId, request.Ein, ct, code: "ADMIN");
+        return (await _accounts.GetMeAsync(AccountId, ct))!;
+    }
+
     private string Email => User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "admin";
 }
+
+public sealed record ActAsRequest(string Ein);

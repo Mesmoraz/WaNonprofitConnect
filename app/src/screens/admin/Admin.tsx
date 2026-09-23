@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { useAdminClaims, useAdminInvites, useApproveClaim, useCreateInvite, useOrgs, useRejectClaim, type OrgSummary } from '../../api'
+import { useActAs, useAdminClaims, useAdminInvites, useApproveClaim, useCreateInvite, useOrgs, useRejectClaim, type OrgSummary } from '../../api'
+import { useNavigate } from 'react-router-dom'
 import { cap } from '../../lib/words'
 import { Door } from '../../shell/Door'
 import { useToast } from '../../shell/Toast'
@@ -20,6 +21,8 @@ export function Admin() {
   const { data: invites = [] } = useAdminInvites()
   const { data: claims = [] } = useAdminClaims()
   const make = useCreateInvite()
+  const actAs = useActAs()
+  const navigate = useNavigate()
   const approve = useApproveClaim()
   const reject = useRejectClaim()
   const n = Math.max(1, Math.min(50, Number(uses) || 0))
@@ -29,6 +32,14 @@ export function Admin() {
     setFailed(false)
     make.mutate({ ein: pick.ein, uses: n }, {
       onSuccess: () => { setPick(null); setQ('') },
+      onError: () => setFailed(true),
+    })
+  }
+  const testAs = () => {
+    if (!pick) return
+    setFailed(false)
+    actAs.mutate(pick.ein, {
+      onSuccess: me => { toast(`You're now ${me.membership?.orgName ?? pick.name}.`); navigate('/') },
       onError: () => setFailed(true),
     })
   }
@@ -50,6 +61,7 @@ export function Admin() {
           <span className="m">{cap(o.city)}</span>
         </button>
       ))}
+      {pick && <button className="btn quiet" disabled={actAs.isPending} onClick={testAs}>Test as this organization</button>}
       <label className="field-label" htmlFor="uses">How many people</label>
       <input id="uses" type="number" inputMode="numeric" min={1} max={50} value={uses} onChange={e => setUses(e.target.value)} />
       {failed && <p className="error" role="alert">That didn’t work. Try again.</p>}
