@@ -21,7 +21,7 @@ Generated from `roadmap.json` on 2026-09-23. Don't edit this file; run `node scr
 | S-33 Design page rewritten to the mission |  |  | S-73 Map: base map, clusters, four thread states, golden glow, tap for details | S-14 Needs and offers for all six kinds of help, plus people |
 | S-36 Pub 78 and revocation list, so IsActive is real |  |  | S-74 Map data: ZIP centroids from the Census gazetteer, map and points endpoints | S-15 Three grants from real WA foundations' public pages, labeled as examples |
 | S-37 Workforce programs list |  |  | S-75 Hosted on Azure: API, hub and app from one address, no domain needed | S-16 One Together initiative |
-| S-38 WA business lookup (UBI) for business confirmation |  |  |  | S-34 IRS Business Master File loaded |
+| S-38 WA business lookup (UBI) for business confirmation |  |  | S-76 Installable to the home screen; phone, tablet and desktop layouts | S-34 IRS Business Master File loaded |
 | S-39 ASP.NET Identity replaces the X-Org-Ein header |  |  |  | S-35 OSPI schools loader into a Schools table |
 | S-40 Claim an organization by kind, with the confirm methods from the taxonomy |  |  |  | S-53 Prototype, design brief, and how-it-works pages live |
 | S-41 Admin review queue |  |  |  | S-54 Roadmap page generated from roadmap.json |
@@ -44,7 +44,6 @@ Generated from `roadmap.json` on 2026-09-23. Don't edit this file; run `node scr
 | S-61 Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) |  |  |  |  |
 | S-63 Decide whether WSU branch campuses become their own rows, as UW's are |  |  |  |  |
 | S-64 A separate email-domain field for confirming, where it differs from the website host |  |  |  |  |
-| S-76 Installable to the home screen; phone, tablet and desktop layouts |  |  |  |  |
 | S-77 Privacy and terms pages |  |  |  |  |
 | S-78 Recruit 8 to 12 organizations in two or three clusters |  |  |  |  |
 | S-81 Apple developer account, for TestFlight in Beta |  |  |  |  |
@@ -318,7 +317,7 @@ Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
 
 - **S-75** Hosted on Azure: API, hub and app from one address, no domain needed · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
     - [ ] T-32 Google client ID in the app build and in App Service (Ready)
-- **S-76** Installable to the home screen; phone, tablet and desktop layouts · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
+- **S-76** Installable to the home screen; phone, tablet and desktop layouts · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-77** Privacy and terms pages · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-78** Recruit 8 to 12 organizations in two or three clusters · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-79** Invite message drafted, approved, and sent by Taylor · In progress · _Taylor, 2026-09-23: skip prototyping, build a working alpha_

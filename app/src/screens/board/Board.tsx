@@ -79,7 +79,7 @@ export function Board() {
           <p className="empty">That didn’t work. <button className="inline-link" onClick={() => board.refetch()}>Try again</button></p>
         )}
 
-        {listings.map(l => <ListingCard key={l.id} l={l} />)}
+        {listings.length > 0 && <div className="board-grid">{listings.map(l => <ListingCard key={l.id} l={l} />)}</div>}
 
         {board.data && !listings.length && (help
           ? <p className="empty">Nothing under {HELP_LABEL[help]} yet. <Link className="inline-link" to="/post">Post the first one?</Link></p>

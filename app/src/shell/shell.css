@@ -76,9 +76,10 @@
   .tab.plus .ic svg { width: 18px; height: 18px; }
   .badge { position: static; margin-left: auto; }
   .app-who { border-bottom: 0; justify-content: flex-start; max-width: none; padding: 12px 14px calc(16px + var(--safe-bottom)); }
-  .who-wrap { width: 100%; }
-  .who { width: 100%; }
-  .who-menu { top: auto; bottom: calc(100% + 6px); left: 0; right: auto; }
+  .app-who .who-wrap { width: 100%; }
+  .app-who .who { width: 100%; }
+  /* In the rail your name is at the bottom, so its menu opens upward. Elsewhere it drops down. */
+  .app-who .who-menu { top: auto; bottom: calc(100% + 6px); left: 0; right: auto; }
   .app-content { background: var(--ground); }
   .screen { padding-top: 24px; }
 }
@@ -89,7 +90,7 @@
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
   padding: calc(10px + var(--safe-top)) 10px 8px 14px; border-bottom: 1px solid var(--line-2); min-height: calc(60px + var(--safe-top));
 }
-.door-top .back { margin-left: -2px; }
+.door-top .back { margin-left: -2px; white-space: nowrap; }
 .door-body { flex: 1; padding: 16px var(--gutter) 24px; display: flex; flex-direction: column; gap: 10px; }
 .door-body > * { flex-shrink: 0; }
 .door-space { height: 8vh; }
@@ -98,8 +99,19 @@
   padding: 10px var(--gutter) calc(10px + var(--safe-bottom));
 }
 @media (min-width: 900px) {
-  .door { max-width: 480px; margin: 0 auto; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
-  .door-body { padding-top: 32px; }
+  /* Desktop: a full-width top bar, and the screen as a card centered on the ground. */
+  .door { background: var(--ground); }
+  .door-top { background: var(--paper); padding-left: 24px; padding-right: 16px; }
+  .door-space { height: 0; }
+  .door-body {
+    flex: none; width: calc(100% - 48px); max-width: 520px; margin: 56px auto 0; padding: 32px 32px 20px;
+    background: var(--paper); border: 1px solid var(--line-2); border-bottom: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  .door-body:last-child { border-bottom: 1px solid var(--line-2); border-radius: var(--radius-lg); padding-bottom: 32px; margin-bottom: 56px; }
+  .door > .cta-bar {
+    position: static; width: calc(100% - 48px); max-width: 520px; margin: 0 auto 56px; padding: 4px 32px 32px;
+    border: 1px solid var(--line-2); border-top: 0; border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  }
 }
 
 /* ---- A screen with a pinned action, inside the shell ---- */
