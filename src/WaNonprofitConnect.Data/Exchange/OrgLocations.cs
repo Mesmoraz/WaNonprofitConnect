@@ -9,20 +9,23 @@ namespace WaNonprofitConnect.Data.Exchange;
 /// </summary>
 public static class OrgLocations
 {
-    private static readonly Lazy<IReadOnlyDictionary<string, (double Lat, double Lon)>> Table = new(Load);
+    private static IReadOnlyDictionary<string, (double Lat, double Lon)>? _table;
 
-    /// <summary>Where to look for the file; tests point it elsewhere.</summary>
-    public static string FilePath { get; set; } = Path.Combine(AppContext.BaseDirectory, "geo", "wa-orgs-geo.csv");
+    private static IReadOnlyDictionary<string, (double Lat, double Lon)> Table
+        => _table ??= Read(Path.Combine(AppContext.BaseDirectory, "geo", "wa-orgs-geo.csv"));
 
-    public static int Count => Table.Value.Count;
+    public static int Count => Table.Count;
 
-    public static bool TryGet(string ein, out (double Lat, double Lon) at) => Table.Value.TryGetValue(ein, out at);
+    public static bool TryGet(string ein, out (double Lat, double Lon) at) => Table.TryGetValue(ein, out at);
 
-    private static IReadOnlyDictionary<string, (double Lat, double Lon)> Load()
+    /// <summary>Use this file instead (tests). A path that doesn't exist means no street addresses at all.</summary>
+    public static void LoadFrom(string path) => _table = Read(path);
+
+    private static IReadOnlyDictionary<string, (double Lat, double Lon)> Read(string path)
     {
         var map = new Dictionary<string, (double, double)>(StringComparer.Ordinal);
-        if (!File.Exists(FilePath)) return map;
-        foreach (var line in File.ReadLines(FilePath).Skip(1))
+        if (!File.Exists(path)) return map;
+        foreach (var line in File.ReadLines(path).Skip(1))
         {
             var c = line.Split(',');
             if (c.Length < 3) continue;

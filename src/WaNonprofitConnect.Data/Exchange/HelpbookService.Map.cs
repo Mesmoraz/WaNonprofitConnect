@@ -54,7 +54,8 @@ public sealed partial class HelpbookService
     /// <summary>Every Washington 501(c)(3) that has a ZIP centroid, as (ein, lat, lon). Projects only those columns: ~35k rows.</summary>
     public async Task<IReadOnlyList<(string Ein, double Lat, double Lon)>> MapPointsAsync(CancellationToken ct = default)
     {
-        // Street address when the geocoder matched it, otherwise the ZIP's center; neither, and it's left off.
+        // Street address when the geocoder matched it. Without the file (tests, a fresh clone), the ZIP's center.
+        // With it, unmatched ones (mostly PO boxes) are left off: a ZIP center piles 100+ dots on one spot.
         var orgs = await _db.Organizations.AsNoTracking()
             .Where(o => o.State == "WA" && o.Is501c3)
             .OrderBy(o => o.Ein)
@@ -65,7 +66,7 @@ public sealed partial class HelpbookService
         foreach (var o in orgs)
         {
             if (OrgLocations.TryGet(o.Ein, out var at)) points.Add((o.Ein, at.Lat, at.Lon));
-            else if (o.Zip5 is not null && centroids.TryGetValue(o.Zip5, out var c)) points.Add((o.Ein, c.Lat, c.Lon));
+            else if (OrgLocations.Count == 0 && o.Zip5 is not null && centroids.TryGetValue(o.Zip5, out var c)) points.Add((o.Ein, c.Lat, c.Lon));
         }
         return points;
     }

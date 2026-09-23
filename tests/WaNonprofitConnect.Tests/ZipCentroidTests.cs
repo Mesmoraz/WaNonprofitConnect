@@ -144,6 +144,34 @@ public sealed class ZipCentroidTests : IDisposable
     }
 
     [Fact]
+    public async Task With_street_addresses_orgs_sit_there_and_unmatched_ones_leave_the_dots()
+    {
+        using var db = _fx.CreateContext();
+        foreach (var (zip, lat, lon) in new[] { ("98101", 47.61, -122.33), ("98402", 47.25, -122.44) })
+            if (!await db.ZipCentroids.AnyAsync(z => z.Zip5 == zip)) db.ZipCentroids.Add(new ZipCentroid { Zip5 = zip, Lat = lat, Lon = lon });
+        await db.SaveChangesAsync();
+        var file = Path.Combine(Path.GetTempPath(), $"geo-{Guid.NewGuid():N}.csv");
+        await File.WriteAllTextAsync(file, $"ein,lat,lon\n{A},47.60123,-122.33456\n");
+        try
+        {
+            OrgLocations.LoadFrom(file);
+            var svc = new HelpbookService(db);
+            var points = await svc.MapPointsAsync();
+            points.Should().ContainSingle(p => p.Ein == A).Which.Should().Be((A, 47.60123, -122.33456));
+            points.Should().NotContain(p => p.Ein == B); // no street match: no dot on its ZIP center
+
+            var summaries = await svc.OrgSummariesAsync(db.Organizations.Where(o => o.Ein == A || o.Ein == B).ToList());
+            summaries[A].Lat.Should().Be(47.60123);
+            summaries[B].Lat.Should().Be(47.25); // cards and pins still fall back to the ZIP center
+        }
+        finally
+        {
+            OrgLocations.LoadFrom("none");
+            File.Delete(file);
+        }
+    }
+
+    [Fact]
     public async Task Map_points_endpoint_is_public_compact_and_cached_an_hour()
     {
         using var factory = new ApiFactory();
