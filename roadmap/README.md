@@ -6,7 +6,7 @@ Generated from `roadmap.json` on 2026-09-23. Don't edit this file; run `node scr
 
 | Backlog | Ready | In progress | In review | Done |
 | --- | --- | --- | --- | --- |
-| S-13 Foundations flagged from the IRS list's foundation code |  | S-79 Invite message drafted, approved, and sent by Taylor | S-17 Board: kind-of-help chips, fair ranking, directory search at the top | S-1 Mission statement saved and pointed at from the repo |
+| S-13 Foundations flagged from the IRS list's foundation code | S-69 Admin page: make invite codes, approve or reject claims | S-79 Invite message drafted, approved, and sent by Taylor | S-17 Board: kind-of-help chips, fair ranking, directory search at the top | S-1 Mission statement saved and pointed at from the repo |
 | S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder ⛔ |  |  | S-18 A need or offer: who it's from, how it fits you, I can help / I need this | S-2 Voice sheet: ten rules and a words list |
 | S-23 Directory: all six kinds, filter by kind, cause, city |  |  | S-19 Post: kind of help first, then the rest | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
 | S-24 Profile: one layout, six shapes ⛔ |  |  | S-20 Thread and inbox: accept, message, mark done, golden | S-4 App map: five tabs, sixteen screens, three stories, order of work |
@@ -44,7 +44,6 @@ Generated from `roadmap.json` on 2026-09-23. Don't edit this file; run `node scr
 | S-61 Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) |  |  |  |  |
 | S-63 Decide whether WSU branch campuses become their own rows, as UW's are |  |  |  |  |
 | S-64 A separate email-domain field for confirming, where it differs from the website host |  |  |  |  |
-| S-69 Admin page: make invite codes, approve or reject claims |  |  |  |  |
 | S-76 Installable to the home screen; phone, tablet and desktop layouts |  |  |  |  |
 | S-77 Privacy and terms pages |  |  |  |  |
 | S-78 Recruit 8 to 12 organizations in two or three clusters |  |  |  |  |
@@ -289,7 +288,7 @@ Sign in with Google; an invite code confirms you for one organization; anyone el
 
 - **S-68** Google sign-in, invite codes tied to one organization, claims that wait for review · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
     - [ ] T-33 Admin emails read from one comma-separated App Service setting too (Ready)
-- **S-69** Admin page: make invite codes, approve or reject claims · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
+- **S-69** Admin page: make invite codes, approve or reject claims · Ready · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-83** Microsoft sign-in, since many nonprofits run on Microsoft 365 · Backlog
 
 #### E-24 The core loop, working · In progress · 1/7
