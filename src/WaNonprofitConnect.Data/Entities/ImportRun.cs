@@ -8,6 +8,8 @@ public enum ImportSource
     EPostcard = 4,
     /// <summary>OSPI Washington State Public Schools feature service (schools + derived districts).</summary>
     Schools = 5,
+    /// <summary>Census Bureau 2020 ZCTA gazetteer: one centroid per ZIP, for placing organizations on the map.</summary>
+    ZipGazetteer = 6,
 }
 
 public enum ImportStatus

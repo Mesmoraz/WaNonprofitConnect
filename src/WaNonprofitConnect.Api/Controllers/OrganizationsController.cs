@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WaNonprofitConnect.Api.Contracts;
 using WaNonprofitConnect.Data;
+using WaNonprofitConnect.Data.Exchange;
 using WaNonprofitConnect.Data.Import;
 using WaNonprofitConnect.Data.Queries;
 
@@ -14,10 +15,28 @@ public sealed class OrganizationsController : ControllerBase
 {
     private readonly AppDbContext _db;
 
-    public OrganizationsController(AppDbContext db) => _db = db;
+    private readonly HelpbookService _helpbook;
 
-    /// <summary>Search organizations. Defaults to 501(c)(3)s only; pass only501c3=false to include every subsection.</summary>
+    public OrganizationsController(AppDbContext db, HelpbookService helpbook)
+    {
+        _db = db;
+        _helpbook = helpbook;
+    }
+
+    /// <summary>Find a Washington 501(c)(3) by name or EIN (for claiming, and the app's search). Returns the contract's OrgSummary[].</summary>
     [HttpGet]
+    [ProducesResponseType(typeof(IReadOnlyList<OrgSummaryDto>), StatusCodes.Status200OK)]
+    public async Task<IReadOnlyList<OrgSummaryDto>> Find([FromQuery] string? q, [FromQuery] int limit = 20, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(q)) return Array.Empty<OrgSummaryDto>();
+        var request = new OrganizationSearchRequest { Q = q, State = "WA", Only501c3 = true, PageSize = Math.Clamp(limit, 1, 50) };
+        var result = await OrganizationQueries.SearchAsync(_db, request, ct);
+        var summaries = await _helpbook.OrgSummariesAsync(result.Items, ct);
+        return result.Items.Select(o => summaries[o.Ein]).ToList();
+    }
+
+    /// <summary>Older paged search with every IRS filter. Defaults to 501(c)(3)s only; pass only501c3=false to include every subsection.</summary>
+    [HttpGet("search")]
     [ProducesResponseType(typeof(PagedResponse<OrganizationSummaryDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<PagedResponse<OrganizationSummaryDto>>> Search([FromQuery] OrganizationSearchRequest request, CancellationToken ct)
     {

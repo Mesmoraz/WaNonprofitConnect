@@ -1,29 +1,31 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using WaNonprofitConnect.Api.Security;
+using WaNonprofitConnect.Data.Accounts;
 using WaNonprofitConnect.Data.Exchange;
-using WaNonprofitConnect.Data.Import;
 
 namespace WaNonprofitConnect.Api.Realtime;
 
 /// <summary>
-/// Real-time feed of exchange activity. Clients receive <c>exchange</c> events carrying an <see cref="ExchangeEvent"/>.
-/// Everyone gets listing broadcasts; match/message events additionally go to the two orgs' groups.
-/// (Prototype: no auth, so any client may join any org group. Identity phase will bind this to the login.)
+/// Real-time feed. Cookie-authenticated: on connect the caller joins their confirmed organization's group
+/// (<c>org-{ein}</c>); nobody can join another org's group. Everyone signed in gets <c>listingAdded</c>;
+/// <c>threadChanged</c> and <c>messageAdded</c> go only to the two organizations in the thread.
+/// The older <c>exchange</c> envelope events (used by the CLI watcher and the /matches routes) go to the same groups.
 /// </summary>
+[Authorize]
 public sealed class ExchangeHub : Hub
 {
     public const string EventName = "exchange";
-    public static string OrgGroup(string ein) => $"org:{ein}";
+    public static string OrgGroup(string ein) => $"org-{ein}";
 
-    public async Task JoinOrg(string ein)
-    {
-        var normalized = BmfRowParser.NormalizeEin(ein) ?? throw new HubException("EIN must be 9 digits.");
-        await Groups.AddToGroupAsync(Context.ConnectionId, OrgGroup(normalized));
-    }
+    private readonly AccountService _accounts;
+    public ExchangeHub(AccountService accounts) => _accounts = accounts;
 
-    public Task LeaveOrg(string ein)
+    public override async Task OnConnectedAsync()
     {
-        var normalized = BmfRowParser.NormalizeEin(ein) ?? throw new HubException("EIN must be 9 digits.");
-        return Groups.RemoveFromGroupAsync(Context.ConnectionId, OrgGroup(normalized));
+        if (Context.User?.AccountId() is { } accountId && await _accounts.FindActingEinAsync(accountId) is { } ein)
+            await Groups.AddToGroupAsync(Context.ConnectionId, OrgGroup(ein));
+        await base.OnConnectedAsync();
     }
 }
 
@@ -64,5 +66,33 @@ public sealed class SignalRExchangeNotifier : IExchangeNotifier
     {
         try { await target.SendAsync(ExchangeHub.EventName, evt, ct); }
         catch (Exception ex) { _logger.LogWarning(ex, "SignalR send failed for {Type}", evt.Type); }
+    }
+}
+
+/// <summary>The app's events: <c>listingAdded(Listing)</c> to everyone, <c>threadChanged(Thread)</c> and <c>messageAdded(Message)</c> to the two orgs.</summary>
+public sealed class SignalRHelpbookNotifier : IHelpbookNotifier
+{
+    private readonly IHubContext<ExchangeHub> _hub;
+    private readonly ILogger<SignalRHelpbookNotifier> _logger;
+
+    public SignalRHelpbookNotifier(IHubContext<ExchangeHub> hub, ILogger<SignalRHelpbookNotifier> logger)
+    {
+        _hub = hub;
+        _logger = logger;
+    }
+
+    public Task ListingAddedAsync(ListingViewDto listing, CancellationToken ct = default)
+        => Send(_hub.Clients.All, "listingAdded", listing, ct);
+
+    public Task ThreadChangedAsync(string ein, ThreadDto thread, CancellationToken ct = default)
+        => Send(_hub.Clients.Group(ExchangeHub.OrgGroup(ein)), "threadChanged", thread, ct);
+
+    public Task MessageAddedAsync(IReadOnlyCollection<string> eins, ThreadMessageDto message, CancellationToken ct = default)
+        => Send(_hub.Clients.Groups(eins.Distinct().Select(ExchangeHub.OrgGroup).ToList()), "messageAdded", message, ct);
+
+    private async Task Send(IClientProxy target, string method, object payload, CancellationToken ct)
+    {
+        try { await target.SendAsync(method, payload, ct); }
+        catch (Exception ex) { _logger.LogWarning(ex, "SignalR send failed for {Method}", method); }
     }
 }

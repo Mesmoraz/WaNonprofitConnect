@@ -12,6 +12,7 @@ using WaNonprofitConnect.Cli;
 // Usage:
 //   wanc import bmf [--state WA|all] [--url <csv url>] [--file <local csv>] [--force]
 //   wanc import schools [--url <feature layer url>] [--file <local snapshot.json>] [--force]
+//   wanc import-zips [--url <gazetteer zip>] [--file <local .zip/.txt>] [--force]
 //   wanc stats [--state WA]
 //   wanc imports
 //
@@ -45,6 +46,11 @@ builder.Services.AddDbContext<AppDbContext>(o => o.UseSqlServer(connection));
 builder.Services.AddHttpClient<BmfImporter>(c =>
 {
     c.Timeout = TimeSpan.FromMinutes(10);
+    c.DefaultRequestHeaders.UserAgent.ParseAdd("WaNonprofitConnect/0.1");
+});
+builder.Services.AddHttpClient<ZipCentroidImporter>(c =>
+{
+    c.Timeout = TimeSpan.FromMinutes(5);
     c.DefaultRequestHeaders.UserAgent.ParseAdd("WaNonprofitConnect/0.1");
 });
 builder.Services.AddHttpClient<SchoolsImporter>(c =>
@@ -100,6 +106,24 @@ switch (argv.Positional[0].ToLowerInvariant())
         return run.Status is ImportStatus.Succeeded or ImportStatus.SkippedUnchanged ? 0 : 1;
     }
 
+    case "import-zips":
+    case "import" when argv.Positional.Count > 1 && argv.Positional[1].Equals("zips", StringComparison.OrdinalIgnoreCase):
+    {
+        var importer = scope.ServiceProvider.GetRequiredService<ZipCentroidImporter>();
+        var options = new ZipCentroidImportOptions
+        {
+            DataDirectory = Path.Combine(repoRoot, "data", "raw"),
+            Force = argv.Has("--force"),
+        };
+        if (argv.Value("--url") is { } url) options.Url = url;
+        if (argv.Value("--file") is { } file) options.LocalFile = Path.GetFullPath(file);
+
+        var run = await importer.RunAsync(options);
+        PrintRun(run);
+        Console.WriteLine($"  WA ZIP centroids in the table: {await db.ZipCentroids.CountAsync()}");
+        return run.Status is ImportStatus.Succeeded or ImportStatus.SkippedUnchanged ? 0 : 1;
+    }
+
     case "stats":
     {
         var state = argv.Value("--state") ?? "WA";
@@ -130,6 +154,8 @@ static void PrintUsage()
               Download the IRS EO BMF extract (default: eo_wa.csv) and upsert organizations.
           import schools [--url <feature layer>] [--file <local.json>] [--force]
               Page through OSPI's Washington State Public Schools feature service and upsert schools + districts.
+          import-zips [--url <zip>] [--file <local .zip or .txt>] [--force]
+              Load Washington ZIP centroids (Census 2020 ZCTA gazetteer) for the map.
           stats [--state WA|all]
               Print counts: total, 501(c)(3), by NTEE, foundation type, filing requirement, cities.
           imports

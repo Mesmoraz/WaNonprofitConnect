@@ -49,7 +49,14 @@ public static class MatchScorer
         var reasons = new List<string>();
         var score = 0;
 
-        if (need.Category == offer.Category)
+        // Same kind of help is the primary signal (+50). The older category still earns the same 50 when kinds of
+        // help differ or aren't set, but never for the catch-all Other (every alpha listing carries it). They never stack.
+        if (need.Help != 0 && need.Help == offer.Help)
+        {
+            score += 50;
+            reasons.Add($"same kind of help ({need.Help})");
+        }
+        else if (need.Category == offer.Category && need.Category != ListingCategory.Other)
         {
             score += 50;
             reasons.Add($"same category ({need.Category})");

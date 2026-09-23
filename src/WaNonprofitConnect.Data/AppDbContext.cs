@@ -16,6 +16,10 @@ public class AppDbContext : DbContext
     public DbSet<Message> Messages => Set<Message>();
     public DbSet<School> Schools => Set<School>();
     public DbSet<SchoolDistrict> SchoolDistricts => Set<SchoolDistrict>();
+    public DbSet<Account> Accounts => Set<Account>();
+    public DbSet<Membership> Memberships => Set<Membership>();
+    public DbSet<Invite> Invites => Set<Invite>();
+    public DbSet<ZipCentroid> ZipCentroids => Set<ZipCentroid>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -80,6 +84,8 @@ public class AppDbContext : DbContext
         {
             b.Property(l => l.Kind).HasConversion<string>().HasMaxLength(10);
             b.Property(l => l.Category).HasConversion<string>().HasMaxLength(20);
+            b.Property(l => l.Help).HasConversion<string>().HasMaxLength(20).HasDefaultValue(KindOfHelp.Things).HasSentinel((KindOfHelp)0);
+            b.Property(l => l.Cadence).HasConversion<string>().HasMaxLength(10).HasDefaultValue(Cadence.OneTime).HasSentinel((Cadence)0);
             // Urgency stays numeric so ORDER BY ranks Critical > High > Normal > Low.
             b.Property(l => l.Status).HasConversion<string>().HasMaxLength(10);
             b.Property(l => l.OrgEin).HasMaxLength(9).IsUnicode(false).IsRequired();
@@ -93,6 +99,7 @@ public class AppDbContext : DbContext
             b.Property(l => l.Zip5).HasMaxLength(5).IsUnicode(false);
             b.HasOne(l => l.Org).WithMany().HasForeignKey(l => l.OrgEin).OnDelete(DeleteBehavior.Restrict);
             b.HasIndex(l => new { l.Kind, l.Status, l.Category });
+            b.HasIndex(l => new { l.Status, l.Help });
             b.HasIndex(l => l.OrgEin);
             b.HasIndex(l => l.City);
         });
@@ -111,8 +118,47 @@ public class AppDbContext : DbContext
         {
             b.Property(m => m.SenderEin).HasMaxLength(9).IsUnicode(false).IsRequired();
             b.Property(m => m.Body).HasMaxLength(4000).IsRequired();
+            b.Property(m => m.SenderName).HasMaxLength(200);
             b.HasOne(m => m.Match).WithMany(x => x.Messages).HasForeignKey(m => m.MatchId).OnDelete(DeleteBehavior.Cascade);
             b.HasIndex(m => new { m.MatchId, m.SentAt });
+        });
+
+        modelBuilder.Entity<ZipCentroid>(b =>
+        {
+            b.HasKey(z => z.Zip5);
+            b.Property(z => z.Zip5).HasMaxLength(5).IsUnicode(false);
+        });
+
+        modelBuilder.Entity<Account>(b =>
+        {
+            b.Property(a => a.Email).HasMaxLength(320).IsRequired();
+            b.Property(a => a.Name).HasMaxLength(200).IsRequired();
+            b.Property(a => a.GoogleSubject).HasMaxLength(100).IsUnicode(false);
+            b.HasIndex(a => a.Email).IsUnique();
+            b.HasIndex(a => a.GoogleSubject);
+        });
+
+        modelBuilder.Entity<Membership>(b =>
+        {
+            b.Property(m => m.Ein).HasMaxLength(9).IsUnicode(false).IsRequired();
+            b.Property(m => m.Status).HasConversion<string>().HasMaxLength(10);
+            b.Property(m => m.Via).HasConversion<string>().HasMaxLength(10);
+            b.Property(m => m.InviteCode).HasMaxLength(8).IsUnicode(false);
+            b.Property(m => m.DecidedBy).HasMaxLength(320);
+            b.HasOne(m => m.Account).WithOne(a => a.Membership).HasForeignKey<Membership>(m => m.AccountId).OnDelete(DeleteBehavior.Cascade);
+            b.HasOne(m => m.Org).WithMany().HasForeignKey(m => m.Ein).OnDelete(DeleteBehavior.Restrict);
+            b.HasIndex(m => m.AccountId).IsUnique(); // one membership per account in the alpha
+            b.HasIndex(m => new { m.Ein, m.Status });
+        });
+
+        modelBuilder.Entity<Invite>(b =>
+        {
+            b.HasKey(i => i.Code);
+            b.Property(i => i.Code).HasMaxLength(8).IsUnicode(false);
+            b.Property(i => i.Ein).HasMaxLength(9).IsUnicode(false).IsRequired();
+            b.Property(i => i.CreatedBy).HasMaxLength(320).IsRequired();
+            b.HasOne(i => i.Org).WithMany().HasForeignKey(i => i.Ein).OnDelete(DeleteBehavior.Restrict);
+            b.HasIndex(i => i.Ein);
         });
 
         modelBuilder.Entity<SchoolDistrict>(b =>

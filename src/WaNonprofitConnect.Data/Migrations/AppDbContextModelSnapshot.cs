@@ -22,6 +22,43 @@ namespace WaNonprofitConnect.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Account", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("GoogleSubject")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime?>("LastSignInAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("GoogleSubject");
+
+                    b.ToTable("Accounts");
+                });
+
             modelBuilder.Entity("WaNonprofitConnect.Data.Entities.ImportRun", b =>
                 {
                     b.Property<int>("Id")
@@ -88,6 +125,40 @@ namespace WaNonprofitConnect.Data.Migrations
                     b.ToTable("ImportRuns");
                 });
 
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Invite", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasMaxLength(8)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(8)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("Ein")
+                        .IsRequired()
+                        .HasMaxLength(9)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(9)");
+
+                    b.Property<int>("Used")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Uses")
+                        .HasColumnType("int");
+
+                    b.HasKey("Code");
+
+                    b.HasIndex("Ein");
+
+                    b.ToTable("Invites");
+                });
+
             modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Listing", b =>
                 {
                     b.Property<int>("Id")
@@ -95,6 +166,13 @@ namespace WaNonprofitConnect.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Cadence")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
+                        .HasDefaultValue("OneTime");
 
                     b.Property<string>("Category")
                         .IsRequired()
@@ -114,6 +192,13 @@ namespace WaNonprofitConnect.Data.Migrations
 
                     b.Property<DateTime?>("ExpiresAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Help")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Things");
 
                     b.Property<string>("Kind")
                         .IsRequired()
@@ -159,6 +244,9 @@ namespace WaNonprofitConnect.Data.Migrations
                     b.Property<int>("Urgency")
                         .HasColumnType("int");
 
+                    b.Property<int>("Views")
+                        .HasColumnType("int");
+
                     b.Property<string>("Zip5")
                         .HasMaxLength(5)
                         .IsUnicode(false)
@@ -169,6 +257,8 @@ namespace WaNonprofitConnect.Data.Migrations
                     b.HasIndex("City");
 
                     b.HasIndex("OrgEin");
+
+                    b.HasIndex("Status", "Help");
 
                     b.HasIndex("Kind", "Status", "Category");
 
@@ -192,12 +282,18 @@ namespace WaNonprofitConnect.Data.Migrations
                     b.Property<int>("NeedListingId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("NeedSideReadAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Note")
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
                     b.Property<int>("OfferListingId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("OfferSideReadAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ProposedByEin")
                         .IsRequired()
@@ -226,6 +322,58 @@ namespace WaNonprofitConnect.Data.Migrations
                     b.ToTable("Matches");
                 });
 
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Membership", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DecidedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DecidedBy")
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("Ein")
+                        .IsRequired()
+                        .HasMaxLength(9)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(9)");
+
+                    b.Property<string>("InviteCode")
+                        .HasMaxLength(8)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(8)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Via")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId")
+                        .IsUnique();
+
+                    b.HasIndex("Ein", "Status");
+
+                    b.ToTable("Memberships");
+                });
+
             modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Message", b =>
                 {
                     b.Property<int>("Id")
@@ -247,6 +395,10 @@ namespace WaNonprofitConnect.Data.Migrations
                         .HasMaxLength(9)
                         .IsUnicode(false)
                         .HasColumnType("varchar(9)");
+
+                    b.Property<string>("SenderName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime>("SentAt")
                         .HasColumnType("datetime2");
@@ -817,6 +969,38 @@ namespace WaNonprofitConnect.Data.Migrations
                     b.ToTable("SchoolDistricts");
                 });
 
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.ZipCentroid", b =>
+                {
+                    b.Property<string>("Zip5")
+                        .HasMaxLength(5)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(5)");
+
+                    b.Property<int>("LastSeenImportRunId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Lat")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Lon")
+                        .HasColumnType("float");
+
+                    b.HasKey("Zip5");
+
+                    b.ToTable("ZipCentroids");
+                });
+
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Invite", b =>
+                {
+                    b.HasOne("WaNonprofitConnect.Data.Entities.Organization", "Org")
+                        .WithMany()
+                        .HasForeignKey("Ein")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Org");
+                });
+
             modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Listing", b =>
                 {
                     b.HasOne("WaNonprofitConnect.Data.Entities.Organization", "Org")
@@ -845,6 +1029,25 @@ namespace WaNonprofitConnect.Data.Migrations
                     b.Navigation("NeedListing");
 
                     b.Navigation("OfferListing");
+                });
+
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Membership", b =>
+                {
+                    b.HasOne("WaNonprofitConnect.Data.Entities.Account", "Account")
+                        .WithOne("Membership")
+                        .HasForeignKey("WaNonprofitConnect.Data.Entities.Membership", "AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WaNonprofitConnect.Data.Entities.Organization", "Org")
+                        .WithMany()
+                        .HasForeignKey("Ein")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+
+                    b.Navigation("Org");
                 });
 
             modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Message", b =>
@@ -921,6 +1124,11 @@ namespace WaNonprofitConnect.Data.Migrations
                     b.Navigation("FirstSeenImportRun");
 
                     b.Navigation("LastSeenImportRun");
+                });
+
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Account", b =>
+                {
+                    b.Navigation("Membership");
                 });
 
             modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Listing", b =>

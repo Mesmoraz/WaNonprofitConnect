@@ -118,3 +118,29 @@ Locations: the IRS list has addresses but no coordinates. Every org is placed at
 | Mon 28 | Privacy and terms pages | Phone, tablet, desktop pass | |
 | Tue 29 | Seed nothing fake: the board starts empty except for the cohort's own posts | Taylor's phone check, an iPhone, a desktop | |
 | Wed 30 | **Alpha live. Invite codes go out as each organization says yes.** | | |
+
+## Backend notes
+
+Added by the backend lane on Sep 23 (S-68, S-71, S-72, S-74, serving). The contract above holds; these are the places the API adds to it or pins down something it left open.
+
+**Additions**
+
+- `Me.membership.urgentLeft: number` (0 to 2). Approved by Taylor (B7). An organization can post 2 urgent (Critical) needs in any rolling 30 days, closed or done ones included. The next one gets `409` with the title "Urgent is 2 a month. Pick This week instead."
+- `POST /api/v1/auth/dev` also takes an optional `ein` (Development only). It confirms you for that organization straight away, with no invite. It's for local work and the CLI demo.
+- `GET /api/v1/listings/{id}` also returns `myThreadId: number` when you already have a live thread on that post (for B6's "Open your thread"). The field is left out when there isn't one. On your own post, `fits` lists other organizations' posts that could fit (B6's "Could fit").
+- `GET /api/v1/admin/claims` returns `{ id, ein, orgName, city, accountId, email, name, status, createdAt, decidedAt }[]`, pending ones only, oldest first. `?all=true` includes decided ones. Approve and reject return the same shape. `status` is lower case.
+- The old `/api/v1/matches` routes and `GET /api/v1/listings` (the paged search) are still there for the CLI. They use the same records as `/threads`. The old paged org search moved to `GET /api/v1/orgs/search`.
+
+**Pinned down**
+
+- Status codes: `POST /listings`, `POST /threads` and `POST /threads/{id}/messages` return `201` with the body. `POST /listings/{id}/close` returns `204`. Every error is a problem document, and its `title` is the plain sentence to show. Without the cookie you get `401` (never a redirect). Without a confirmed membership, anything that acts for an organization gets `403`.
+- Nulls are written as `null`, not left out. Only `fits`, `myThreadId` and `messages` are left out where they don't apply.
+- Who can read: the board, a post, threads and `/map` need you to be signed in. The board, a post and the map work before you're confirmed (`fits` is then empty). `/orgs` and `/map/points` are public. `/orgs` only searches Washington 501(c)(3)s, needs `q`, and takes `limit` up to 50.
+- `why`: "Urgent" (Critical), "This week" (High), otherwise "New" (under 7 days old), otherwise "Seen least". The same rule applies to posts inside threads.
+- Board: up to 200 open, unexpired posts. Views are counted for the top 12, but never for your own posts. `help`, `kind` and `q` filter the list, and the filters combine.
+- `Message.senderName` is the person's name from their account ("Casey"). Messages from before accounts show the organization's name.
+- "How soon" applies to needs only. An offer sent with an urgency is saved as Normal.
+- Starting a thread with no `myListingId` needs a `message`. It makes your matching post from the other one's title, kind of help, quantity, unit and how often, with your message as the details. That post is a normal open post: it shows on the board and sends `listingAdded`.
+- `MapData.threads[].help` and `.title` come from the need. `members` also includes any organization in a thread.
+- SignalR: you join `org-{ein}` when you connect. After redeeming an invite or getting approved, reconnect to receive `threadChanged` and `messageAdded`. `threadChanged` carries that organization's own `unread`. A new message sends `messageAdded`, then `threadChanged`.
+- Unknown paths fall back to `index.html`, except `/api`, `/hubs` and `/swagger`, which 404. The app is served from `wwwroot` next to the published binaries, or the project's `wwwroot` in dev.

@@ -2,12 +2,15 @@ using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using WaNonprofitConnect.Data;
+using WaNonprofitConnect.Data.Accounts;
 using WaNonprofitConnect.Data.Exchange;
 using WaNonprofitConnect.Data.Import;
 using WaNonprofitConnect.Api.Controllers;
 using WaNonprofitConnect.Api.Realtime;
+using WaNonprofitConnect.Api.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,19 +28,22 @@ builder.Services.AddHttpClient<SchoolsImporter>(c =>
     c.Timeout = TimeSpan.FromMinutes(2);
     c.DefaultRequestHeaders.UserAgent.ParseAdd("WaNonprofitConnect/0.1");
 });
+builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<ExchangeService>();
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<HelpbookService>();
+builder.Services.AddScoped<IHelpbookNotifier, SignalRHelpbookNotifier>();
 builder.Services.AddScoped<IExchangeNotifier, SignalRExchangeNotifier>();
 builder.Services.AddScoped<ExchangeExceptionFilter>();
 builder.Services.AddSignalR().AddJsonProtocol(o => o.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
+// --- Identity -------------------------------------------------------------
+builder.Services.AddHelpbookAuth(builder.Configuration, builder.Environment);
+
 // --- API surface ----------------------------------------------------------
-// Stateless JSON over HTTPS with a published OpenAPI document: every client
-// (web, .NET MAUI, React Native, Flutter, desktop) talks to the same contract.
-builder.Services.AddControllers().AddJsonOptions(o =>
-{
-    o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    o.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-});
+// JSON, camelCase, enums as strings, nulls written as null (the app's contract types use `T | null`).
+builder.Services.AddControllers(o => o.Filters.Add<ExchangeExceptionFilter>())
+    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(o =>
 {
@@ -66,6 +72,7 @@ builder.Services.AddRateLimiter(o =>
         }));
 });
 
+// Same origin in the alpha, so CORS is only for a dev server on another port (Vite proxies, so usually unused).
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
 builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
 {
@@ -74,25 +81,44 @@ builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
 
 var app = builder.Build();
 
+// The alpha runs one instance, so it migrates on startup in every environment.
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    if (db.Database.IsSqlServer()) await db.Database.MigrateAsync();
+    else await db.Database.EnsureCreatedAsync(); // tests run on SQLite, which can't apply SQL Server migrations
+}
+
 if (app.Environment.IsDevelopment())
 {
-    using (var scope = app.Services.CreateScope())
-    {
-        await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
-    }
-
     app.UseSwagger();
     app.UseSwaggerUI(o => o.SwaggerEndpoint("/swagger/v1/swagger.json", "WaNonprofitConnect v1"));
 }
 
 app.UseHttpsRedirection();
+// The built app (app/ -> npm run build) is served from wwwroot next to the published binaries (Azure deploy);
+// in local dev it's the project's wwwroot. With neither, the API still runs without the app.
+var staticRoot = new[] { Path.Combine(AppContext.BaseDirectory, "wwwroot"), app.Environment.WebRootPath }
+    .FirstOrDefault(p => !string.IsNullOrEmpty(p) && Directory.Exists(p));
+StaticFileOptions? staticFiles = null;
+if (staticRoot is not null)
+{
+    var staticFileProvider = new PhysicalFileProvider(staticRoot);
+    staticFiles = new StaticFileOptions { FileProvider = staticFileProvider };
+    app.UseDefaultFiles(new DefaultFilesOptions { FileProvider = staticFileProvider });
+    app.UseStaticFiles(staticFiles);
+}
 app.UseCors();
 app.UseRateLimiter();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapHealthChecks("/health");
 app.MapControllers().RequireRateLimiting("public");
 app.MapHub<ExchangeHub>("/hubs/exchange");
+// Unknown paths fall back to the app's index.html so client routes work, except /api and /hubs, which 404 as usual.
+if (staticFiles is not null)
+    app.MapFallbackToFile("{*path:regex(^(?!api/|api$|hubs/|hubs$|swagger).*$)}", "index.html", staticFiles);
 
 app.Run();
 

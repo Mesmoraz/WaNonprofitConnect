@@ -7,7 +7,10 @@ namespace WaNonprofitConnect.Data.Exchange;
 public sealed class CreateListingRequest
 {
     public ListingKind Kind { get; set; }
-    public ListingCategory Category { get; set; }
+    /// <summary>Required by the alpha app. Older clients that leave it unset get Things.</summary>
+    public KindOfHelp Help { get; set; }
+    public ListingCategory Category { get; set; } = ListingCategory.Other;
+    public Cadence Cadence { get; set; } = Cadence.OneTime;
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
     public decimal? Quantity { get; set; }

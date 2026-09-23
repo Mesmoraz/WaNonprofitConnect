@@ -197,18 +197,16 @@ public static class ExchangeCommands
 
     private static async Task<int> WatchAsync(Args a, ExchangeClient api)
     {
-        var hub = api.CreateHub();
+        // Signing in as the org (dev sign-in) puts the connection in that org's group; there is no JoinOrg any more.
+        var ein = a.Value("--as");
+        var hub = await api.CreateHubAsync(ein is null ? null : NormalizeEin(ein));
         hub.On<JsonElement>(ExchangeHubNames.EventName, evt => Console.WriteLine(FormatEvent(evt)));
         hub.Reconnected += _ => { Console.WriteLine("  (reconnected)"); return Task.CompletedTask; };
         hub.Closed += ex => { Console.WriteLine($"  (connection closed{(ex is null ? "" : ": " + ex.Message)})"); return Task.CompletedTask; };
 
         await hub.StartAsync();
         Console.WriteLine($"Watching {api.BaseUrl}/hubs/exchange — Ctrl+C to stop");
-        if (a.Value("--as") is { } ein)
-        {
-            await hub.InvokeAsync("JoinOrg", ein);
-            Console.WriteLine($"Joined private channel for org {NormalizeEin(ein)} (match + message events)");
-        }
+        if (ein is not null) Console.WriteLine($"Signed in for org {NormalizeEin(ein)} (match + message events)");
 
         var stop = new TaskCompletionSource();
         Console.CancelKeyPress += (_, e) => { e.Cancel = true; stop.TrySetResult(); };

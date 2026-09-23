@@ -7,8 +7,8 @@ namespace WaNonprofitConnect.Data.Exchange;
 
 /// <summary>
 /// The org-to-org exchange: post Needs/Offers, find matches, connect, and message.
-/// Every mutating call takes the acting org's EIN; until real identity exists (roadmap phase 3)
-/// the API trusts an <c>X-Org-Ein</c> header, so authorization rules live here, not in controllers.
+/// Every mutating call takes the acting org's EIN. The API resolves it from the signed-in person's confirmed membership
+/// (<see cref="Accounts.AccountService"/>); the rules about who may do what to a listing or thread live here.
 /// </summary>
 public sealed class ExchangeService
 {
@@ -34,19 +34,29 @@ public sealed class ExchangeService
         if (req.Quantity is < 0) throw ExchangeException.Invalid("Quantity cannot be negative.");
         if (!Enum.IsDefined(req.Kind)) throw ExchangeException.Invalid("Kind must be Need or Offer.");
         if (!Enum.IsDefined(req.Category)) throw ExchangeException.Invalid("Unknown category.");
+        var help = req.Help == 0 ? KindOfHelp.Things : req.Help;
+        if (!Enum.IsDefined(help)) throw ExchangeException.Invalid("Pick a kind of help.");
+        var cadence = Enum.IsDefined(req.Cadence) ? req.Cadence : Cadence.OneTime;
+        // "How soon" is for needs only; an offer never jumps the board.
+        var urgency = req.Kind == ListingKind.Offer || !Enum.IsDefined(req.Urgency) ? Urgency.Normal : req.Urgency;
 
         var now = DateTime.UtcNow;
+        if (urgency == Urgency.Critical && await UrgentCap.LeftAsync(_db, org.Ein, now, ct) <= 0)
+            throw ExchangeException.Conflict(UrgentCap.Message);
+
         var listing = new Listing
         {
             Kind = req.Kind,
             OrgEin = org.Ein,
             Org = org,
+            Help = help,
+            Cadence = cadence,
             Category = req.Category,
             Title = title,
             Description = BmfRowParser.Clean(req.Description),
             Quantity = req.Quantity,
             Unit = BmfRowParser.Clean(req.Unit),
-            Urgency = Enum.IsDefined(req.Urgency) ? req.Urgency : Urgency.Normal,
+            Urgency = urgency,
             Status = ListingStatus.Open,
             Tags = BmfRowParser.Clean(req.Tags),
             SearchText = MatchScorer.BuildSearchText(title, req.Description, req.Tags),
@@ -189,7 +199,7 @@ public sealed class ExchangeService
         var ein = await RequireEinAsync(actingEin, ct);
         var match = await LoadMatchAsync(matchId, ct);
         RequireParty(match, ein);
-        if (match.ProposedByEin == ein) throw ExchangeException.Forbidden("The proposing organization cannot accept its own proposal; the other party must respond.");
+        if (match.ProposedByEin == ein) throw ExchangeException.Forbidden("The other organization answers this one.");
         if (match.Status != MatchStatus.Proposed) throw ExchangeException.Conflict($"Match is already {match.Status}.");
 
         var now = DateTime.UtcNow;
@@ -213,7 +223,7 @@ public sealed class ExchangeService
         var ein = await RequireEinAsync(actingEin, ct);
         var match = await LoadMatchAsync(matchId, ct);
         RequireParty(match, ein);
-        if (match.Status != MatchStatus.Accepted) throw ExchangeException.Conflict($"Only an Accepted match can be completed (current: {match.Status}).");
+        if (match.Status != MatchStatus.Accepted) throw ExchangeException.Conflict("Accept it first, then mark it done.");
 
         var now = DateTime.UtcNow;
         match.Status = MatchStatus.Completed;
@@ -280,17 +290,17 @@ public sealed class ExchangeService
 
     // ---- Messaging ---------------------------------------------------------
 
-    public async Task<MessageDto> SendMessageAsync(int matchId, string actingEin, SendMessageRequest req, CancellationToken ct = default)
+    public async Task<MessageDto> SendMessageAsync(int matchId, string actingEin, SendMessageRequest req, CancellationToken ct = default, string? senderName = null)
     {
         var ein = await RequireEinAsync(actingEin, ct);
-        var body = BmfRowParser.Clean(req.Body) ?? throw ExchangeException.Invalid("Message body is required.");
+        var body = BmfRowParser.Clean(req.Body) ?? throw ExchangeException.Invalid("Write a message first.");
         if (body.Length > 4000) throw ExchangeException.Invalid("Message must be 4000 characters or fewer.");
         var match = await LoadMatchAsync(matchId, ct);
         RequireParty(match, ein);
         if (match.Status is MatchStatus.Declined or MatchStatus.Cancelled)
-            throw ExchangeException.Conflict($"Cannot message on a {match.Status} match.");
+            throw ExchangeException.Conflict("This thread is closed. Start a new one to keep talking.");
 
-        var msg = new Message { Match = match, SenderEin = ein, Body = body, SentAt = DateTime.UtcNow };
+        var msg = new Message { Match = match, SenderEin = ein, SenderName = BmfRowParser.Clean(senderName), Body = body, SentAt = DateTime.UtcNow };
         _db.Messages.Add(msg);
         await _db.SaveChangesAsync(ct);
 
@@ -327,7 +337,7 @@ public sealed class ExchangeService
     private static void RequireParty(Match m, string ein)
     {
         if (m.NeedListing!.OrgEin != ein && m.OfferListing!.OrgEin != ein)
-            throw ExchangeException.Forbidden("Only the two organizations in this match can access it.");
+            throw ExchangeException.Forbidden("Only the two organizations in this thread can see it.");
     }
 
     private async Task<IReadOnlyDictionary<string, Organization>> OrgMapAsync(Match m, CancellationToken ct)
