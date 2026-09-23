@@ -109,9 +109,13 @@
   .row { display: flex; gap: 8px; }
   .row > * { flex: 1; }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-  .chips.scroller { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -14px; padding: 0 14px 2px; }
-  .chips.scroller::-webkit-scrollbar { display: none; }
-  .chips.scroller .chip { flex: none; }
+  .seg { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; margin: 2px -14px 0; padding: 0 14px; border-bottom: 1px solid var(--line-2); }
+  .seg::-webkit-scrollbar { display: none; }
+  .seg-item { flex: none; padding: 8px 10px 9px; font-size: 14px; font-weight: 600; color: var(--ink-3); border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+  .seg-item.on { color: var(--ink); border-bottom-color: var(--accent); }
+  .card .pills { display: block; margin-bottom: 6px; }
+  .card .who-line { display: block; font-size: 13px; color: var(--ink-2); font-weight: 500; }
+  .card .t { margin: 0 0 3px; font-size: 15px; line-height: 1.3; }
   .empty u { color: var(--accent); cursor: pointer; }
   .chip { border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 500; background: var(--paper); }
   .chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
@@ -1344,12 +1348,15 @@ const PEOPLE = [
 const CATEGORIES = ['Materials','Equipment','Technology','Furniture','Food','Clothing','Vehicles','Services','Volunteers','Space','Other'];
 const URG = ['Low','Normal','High','Critical'];
 // Priority vocabulary shown to people. Internally the four levels stay as they were.
-const PRI = { Critical:['P0','can’t operate without it'], High:['P1','needed this week'], Normal:['P2','needed this month'], Low:['P3','whenever it works'] };
+const PRI = { Critical:['Urgent','can’t operate without it'], High:['This week','needed this week'], Normal:['','needed this month'], Low:['','whenever it works'] };
 const CADENCE = ['One-time','Weekly','Monthly','Quarterly','Ongoing'];
 const isRecurring = l => l.cadence && l.cadence !== 'One-time';
 const P0_CAP = 2;
 const p0Used = ein => S.listings.filter(l => l.ein === ein && l.kind === 'Need' && l.urgency === 'Critical' && Date.now() - new Date(l.createdAt) < 30 * 864e5).length;
-const priPill = l => l.kind==='Need' ? `<span class="pill ${PRI[l.urgency][0].toLowerCase()}" title="${PRI[l.urgency][1]}">${PRI[l.urgency][0]}</span>` : '';
+const PRI_CLASS = { Critical:'p0', High:'p1' };
+const priWhen = u => PRI[u][0] ? `${PRI[u][0]} · ${PRI[u][1]}` : U_CAP(PRI[u][1]);
+const U_CAP = s => s.charAt(0).toUpperCase() + s.slice(1);
+const priPill = l => (l.kind==='Need' && PRI[l.urgency][0]) ? `<span class="pill ${PRI_CLASS[l.urgency]}" title="${PRI[l.urgency][1]}">${PRI[l.urgency][0]}</span>` : '';
 const cadenceTag = l => isRecurring(l) ? ` ↻ ${l.cadence}` : '';
 
 function seedListings() {
@@ -1464,6 +1471,7 @@ if (!S.listings.some(l => l.id === 29)) { const have = new Set(S.listings.map(l 
 const joined = ein => S.joinedEins.includes(ein) || (ORG(ein) && ['business','person'].includes(ORG(ein).type));
 const me = () => S.user ? ORG(S.user.ein) : null;
 const cap = s => s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+const shortAgo = iso => { const m = Math.round((Date.now()-new Date(iso))/60000); return m<60?`${Math.max(1,m)}m`:m<1440?`${Math.round(m/60)}h`:`${Math.round(m/1440)}d`; };
 const ago = iso => { const m = Math.round((Date.now()-new Date(iso))/60000); return m<1?'just now':m<60?`${m}m ago`:m<1440?`${Math.round(m/60)}h ago`:`${Math.round(m/1440)}d ago`; };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function toast(t){ S.toast = t; render(); setTimeout(()=>{ if (S.toast===t){ S.toast=null; render(); } }, 2600); }
@@ -1644,8 +1652,9 @@ function tabs(on){
 }
 function boardSearch(){ return `<input id="boardq" class="search" placeholder="Search everyone here" value="${esc(S.boardQuery||'')}" autocomplete="off">`; }
 function listingCard(l, extra=''){
-  const o = ORG(l.ein); const q = l.qty ? ` · ${l.qty} ${esc(l.unit)}` : '';
-  return `<button class="card tap" data-a="go" data-s="listing" data-id="${l.id}"><span class="pill ${l.kind.toLowerCase()}">${l.kind.toUpperCase()}${cadenceTag(l)}</span> ${priPill(l)} ${l.status!=='Open'?`<span class="pill grey">${l.status}</span>`:''}<span class="t">${esc(l.title)}</span><span class="m">${esc(o.name)} · ${cap(o.city)}${q} · ${ago(l.createdAt)}</span>${extra}</button>`;
+  const o = ORG(l.ein);
+  const facts = [cap(o.city), l.qty ? `${l.qty} ${esc(l.unit)}` : '', isRecurring(l) ? l.cadence.toLowerCase() : '', shortAgo(l.createdAt)].filter(Boolean).join(' · ');
+  return `<button class="card tap" data-a="go" data-s="listing" data-id="${l.id}"><span class="pills"><span class="pill ${l.kind.toLowerCase()}">${l.kind.toUpperCase()}</span> ${priPill(l)} ${l.status!=='Open'?`<span class="pill grey">${l.status}</span>`:''}</span><span class="t">${esc(l.title)}</span><span class="who-line">${esc(o.name)}</span><span class="m">${facts}</span>${extra}</button>`;
 }
 function orgCard(o){
   const open = S.listings.filter(l=>l.ein===o.ein&&l.status==='Open').length;
@@ -1740,12 +1749,12 @@ function renderPhone(){
             || '<div class="empty">No one by that name. Try an EIN.</div>'}</div>${tabs('feed')}`; break; }
       const ranked = rankFeed(S.listings.filter(l => listingPasses(l)));
       const open = ranked.filter(r => r.l.status === 'Open').length, done = S.matches.filter(m => m.status === 'Completed').length;
-      const n = activeFilterCount() + (S.filter.help ? 1 : 0);
+      const n = activeFilterCount();
       body = `${topbar()}<div class="screen">${boardSearch()}
-        <div class="chips scroller">${[['','All']].concat(HELPS.map(x=>[x,x])).map(([v,t])=>`<button class="chip ${(S.filter.help||'')===v?'on':''}" data-a="flt-help" data-v="${esc(v)}">${esc(t)}</button>`).join('')}</div>
+        <div class="seg">${[['','All']].concat(HELPS.map(x=>[x,x])).map(([v,t])=>`<button class="seg-item ${(S.filter.help||'')===v?'on':''}" data-a="flt-help" data-v="${esc(v)}">${esc(t)}</button>`).join('')}</div>
         <div class="flt-head"><span>${open} open · ${done} done</span><button data-a="flt-toggle">Filters${n?' · '+n:''}</button></div>
         ${S.filtersOpen ? filterBlock(false) : ''}
-        ${ranked.map(r=>listingCard(r.l, `<span class="why">${r.why}</span>`)).join('')
+        ${ranked.map(r=>listingCard(r.l, /fair-rotation|below the/.test(r.why) ? `<span class="why">${r.why}</span>` : '')).join('')
           || (S.filter.help ? `<div class="empty">Nothing under ${esc(S.filter.help)} yet. <u data-a="new" data-k="Need">Post the first one?</u></div>`
                             : '<div class="empty">Nothing here with those filters. <u data-a="flt-clear">Clear them?</u></div>')}
         <p class="hint">Urgent first, then whoever’s been seen least.</p></div>${tabs('feed')}`; break; }
@@ -1781,7 +1790,7 @@ function renderPhone(){
         <div class="chips"><button class="chip ${d.kind==='Need'?'on':''}" data-a="d" data-k="kind" data-v="Need">We need</button><button class="chip ${d.kind==='Offer'?'on':''}" data-a="d" data-k="kind" data-v="Offer">We have</button></div>
         <input id="d-title" placeholder="${d.kind==='Need'?'e.g. Laptops for client intake stations':'e.g. 40 sheets of plywood'}" value="${esc(d.title)}">
         <div class="row"><select id="d-category">${CATEGORIES.map(c=>`<option ${d.category===c?'selected':''}>${c}</option>`).join('')}</select><select id="d-cadence">${CADENCE.map(c=>`<option ${(d.cadence||'One-time')===c?'selected':''}>${c}</option>`).join('')}</select></div>
-        ${d.kind==='Need'?`<select id="d-urgency">${['Critical','High','Normal','Low'].map(u=>`<option value="${u}" ${d.urgency===u?'selected':''} ${u==='Critical'&&p0Used(S.user.ein)>=P0_CAP?'disabled':''}>${PRI[u][0]} — ${PRI[u][1]}${u==='Critical'?` (${p0Used(S.user.ein)} of ${P0_CAP} used this month)`:''}</option>`).join('')}</select><p class="hint">P0 is limited to ${P0_CAP} per organization per month so it keeps meaning "we can’t operate".</p>`:''}
+        ${d.kind==='Need'?`<select id="d-urgency">${['Critical','High','Normal','Low'].map(u=>`<option value="${u}" ${d.urgency===u?'selected':''} ${u==='Critical'&&p0Used(S.user.ein)>=P0_CAP?'disabled':''}>${priWhen(u)}${u==='Critical'?` (${p0Used(S.user.ein)} of ${P0_CAP} used this month)`:''}</option>`).join('')}</select><p class="hint">Urgent is limited to ${P0_CAP} a month per organization, so it keeps meaning we can’t operate.</p>`:''}
         ${(d.cadence||'One-time')!=='One-time'?`<p class="hint">${d.cadence==='Ongoing'?'An ongoing arrangement (a contract or standing gig). When accepted it becomes a standing agreement you can log against and end at any time.':`Recurs ${d.cadence.toLowerCase()}. When accepted it becomes a standing agreement with a next date; each delivery gets logged.`}</p>`:''}
         <div class="row"><input id="d-qty" type="number" placeholder="Qty" value="${esc(d.qty)}"><input id="d-unit" placeholder="Unit (laptops, sheets…)" value="${esc(d.unit)}"></div>
         <textarea id="d-desc" placeholder="Details: condition, pickup or delivery, deadline…">${esc(d.desc)}</textarea>
@@ -1794,7 +1803,7 @@ function renderPhone(){
       const myOpp = S.listings.filter(x=>x.ein===me().ein&&x.status==='Open'&&x.kind!==l.kind);
       const existing = S.matches.find(m=>(m.need===l.id||m.offer===l.id)&&[m.need,m.offer].some(id=>S.listings.find(z=>z.id===id).ein===me().ein));
       body = `${topbar({back:'feed',title:'Board'})}<div class="screen"><span><span class="pill ${l.kind.toLowerCase()}">${l.kind.toUpperCase()}${cadenceTag(l)}</span> ${priPill(l)} <span class="pill grey">${l.status}</span></span><h2 class="h">${esc(l.title)}</h2>
-        ${isRecurring(l)?`<p class="sub">${l.cadence==='Ongoing'?'Ongoing arrangement':'Recurs '+l.cadence.toLowerCase()} — accepting this creates a standing agreement.</p>`:''}${l.kind==='Need'?`<p class="sub">${PRI[l.urgency][0]}: ${PRI[l.urgency][1]}</p>`:''}
+        ${isRecurring(l)?`<p class="sub">${l.cadence==='Ongoing'?'Ongoing arrangement':'Recurs '+l.cadence.toLowerCase()} — accepting this creates a standing agreement.</p>`:''}${l.kind==='Need'?`<p class="sub">${U_CAP(PRI[l.urgency][1])}</p>`:''}
         <button class="card tap" data-a="go" data-s="org" data-id="${o.ein}"><span class="t" style="margin-top:0">${esc(o.name)}</span><span class="m">${cap(o.city)} · ${CAUSES[o.cause]} · posted ${ago(l.createdAt)}</span></button>
         <div class="kv">${l.qty?`<span>Quantity</span><span>${l.qty} ${esc(l.unit)}</span>`:''}<span>Category</span><span>${l.category}</span>${l.desc?`<span>Details</span><span>${esc(l.desc)}</span>`:''}${l.tags?`<span>Tags</span><span>${esc(l.tags)}</span>`:''}</div>
         ${existing?`<button class="btn primary" data-a="go" data-s="match" data-id="${existing.id}">Open your connection (${existing.status})</button>`:
@@ -1870,10 +1879,10 @@ function rankFeed(list) {
     const v = l.views || 0; let why;
     if (l.status !== 'Open') why = l.status === 'Matched' ? 'matched — shown for context' : '';
     else if (i === 2 && l === leastSeen) why = 'fair-rotation slot: seen least of anything open';
-    else if (l.kind === 'Need' && l.urgency === 'Critical') why = 'P0 — always on top';
+    else if (l.kind === 'Need' && l.urgency === 'Critical') why = 'Urgent, so it stays on top';
     else if (v < avg * 0.6) why = `seen ${v}× — below the ${Math.round(avg)}× average, so it rises`;
     else if (deferred.includes(l)) why = 'org already has 2 in the top 6';
-    else why = `${l.kind === 'Need' ? PRI[l.urgency][0] : 'offer'} · seen ${v}×`;
+    else why = `${l.kind === 'Need' ? (PRI[l.urgency][0] || 'need') : 'offer'} · seen ${v}×`;
     return { l, why };
   });
 }
@@ -1903,8 +1912,11 @@ function activeFilterChips() {
 function filterBlock(showThreads) {
   const f = S.filter;
   return `<div class="flt">
+    <div class="label">What</div>
     <div class="chips">${['All','Need','Offer'].map(k=>`<button class="chip ${f.kind===k?'on':''}" data-a="flt" data-k="kind" data-v="${k}">${k==='All'?'Needs + offers':k+'s'}</button>`).join('')}</div>
+    <div class="label">Who</div>
     <div class="chips">${['All','org','person'].map(k=>`<button class="chip ${f.who===k?'on':''}" data-a="flt" data-k="who" data-v="${k}">${k==='All'?'Anyone':k==='person'?'People':'Organizations'}</button>`).join('')}</div>
+    <div class="label">How far</div>
     <div class="slider"><span>Within</span><input id="flt-radius" type="range" min="0" max="300" step="10" value="${f.radius}"><span style="min-width:56px">${f.radius?f.radius+' mi':'any distance'}</span></div>
     ${showThreads ? `<div class="label">Connections</div><div class="chips">${[['Completed','Completed'],['Accepted','In progress'],['Proposed','Proposed'],['suggested','Suggested']].map(([k,l])=>`<button class="chip ${f.threads[k]?'on':''}" data-a="flt-thread" data-k="${k}">${l}</button>`).join('')}</div>` : ''}
     ${activeFilterCount() ? `<button class="btn sm quiet" data-a="flt-clear">Clear filters</button>` : ''}

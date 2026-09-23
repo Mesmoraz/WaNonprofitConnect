@@ -1,6 +1,6 @@
 # Name TBD roadmap
 
-Generated from `roadmap.json` on 2026-09-22. Don't edit this file; run `node scripts/roadmap.js`. Rules: [SDLC.md](SDLC.md).
+Generated from `roadmap.json` on 2026-09-23. Don't edit this file; run `node scripts/roadmap.js`. Rules: [SDLC.md](SDLC.md).
 
 ## Board
 
@@ -9,7 +9,7 @@ Generated from `roadmap.json` on 2026-09-22. Don't edit this file; run `node scr
 | S-13 Foundations flagged from the IRS list's foundation code |  |  | S-17 Board: kind-of-help chips, fair ranking, directory search at the top | S-1 Mission statement saved and pointed at from the repo |
 | S-18 A need or offer: who it's from, how it fits you, I can help / I need this |  |  | S-22 Grants tab shows only for confirmed organizations | S-2 Voice sheet: ten rules and a words list |
 | S-19 Post: kind of help first, then the rest |  |  | S-66 Opening a search result crashed the app: EINs were coerced to numbers | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
-| S-20 Thread and inbox: accept, message, mark done, golden |  |  |  | S-4 App map: five tabs, sixteen screens, three stories, order of work |
+| S-20 Thread and inbox: accept, message, mark done, golden |  |  | S-67 Board card and filters: plain-word priority, three-line card, filters grouped | S-4 App map: five tabs, sixteen screens, three stories, order of work |
 | S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder |  |  |  | S-5 Sign up: one green button, email behind a link |
 | S-23 Directory: all six kinds, filter by kind, cause, city |  |  |  | S-6 Who are you here as: six kinds, button label follows the pick |
 | S-24 Profile: one layout, six shapes |  |  |  | S-7 Find yours: list, words, and search follow the kind |
@@ -51,7 +51,7 @@ Generated from `roadmap.json` on 2026-09-22. Don't edit this file; run `node scr
 
 ## Roadmap
 
-### I-1 A prototype that shows the whole mission · In progress · 17/40 stories done
+### I-1 A prototype that shows the whole mission · In progress · 17/41 stories done
 
 Every kind of participant and every kind of help, on a phone, in the approved voice. The thing to hand someone so they get it in a minute.
 
@@ -117,7 +117,7 @@ Schools, programs, foundations, people, needs, offers, grants, and one Together,
 - **S-62** Washington higher education: universities, community and technical colleges, private nonprofits · Done
 - **S-63** Decide whether WSU branch campuses become their own rows, as UW's are · Backlog
 
-#### E-4 The core loop · In progress · 0/5
+#### E-4 The core loop · In progress · 0/6
 
 Board, a need or offer, post, thread, inbox: the same flow for six kinds of help.
 
@@ -126,6 +126,7 @@ Board, a need or offer, post, thread, inbox: the same flow for six kinds of help
 - **S-19** Post: kind of help first, then the rest · Backlog · round B7
 - **S-20** Thread and inbox: accept, message, mark done, golden · Backlog · round B8
 - **S-66** Opening a search result crashed the app: EINs were coerced to numbers · In review
+- **S-67** Board card and filters: plain-word priority, three-line card, filters grouped · In review
 
 #### E-5 Grants · In progress · 0/3
 

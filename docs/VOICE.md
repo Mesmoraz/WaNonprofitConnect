@@ -32,7 +32,7 @@ One name per thing. The left column is the only word for it in the app.
 | kind of help (Time, Skills, Things, Partnership, For schools, Jobs and mentoring, Grants, Together) | category |
 | people (individuals); everyone here (all six kinds) | supporters, community members, users, members, participants |
 | message | reply, note |
-| P0 to P3, with its meaning beside it the first time on a screen | Critical, High, Normal, Low |
+| Urgent, This week (and nothing at all for the two lower levels) | P0 to P3, Critical, High, Normal, Low |
 | done | fulfilled, completed |
 | confirmed (or just the check mark) | verified |
 | fair | equitable |

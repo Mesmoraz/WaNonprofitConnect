@@ -34,6 +34,19 @@ Everything anyone posts is a **need** or an **offer**, and each is one kind of h
 
 Kinds 1 to 6 share one need/offer/thread flow with a "kind of help" field. Grants is its own screen; "Apply" leaves to the funder's site. Together is shown as a seeded example only, for now.
 
+## How soon something is needed
+
+Needs carry one of four levels. Only the two most urgent are marked on a card; the rest show nothing, so a mark means something.
+
+| Level | On a card | In full |
+|---|---|---|
+| Critical | **Urgent** | Can't operate without it |
+| High | **This week** | Needed this week |
+| Normal | nothing | Needed this month |
+| Low | nothing | Whenever it works |
+
+Urgent stays capped at 2 a month per organization.
+
 ## Decisions
 
 - **Money** stays off the app except through Grants. No cash offers as Things.
