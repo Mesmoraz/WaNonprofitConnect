@@ -14,7 +14,7 @@ Decided 2026-09-23 with Taylor. This is the scope, the stack, and the contract b
 | Sign in | Google sign-in. A development-only sign-in by email for local work. | Screen 1 is already approved as "Sign in with Google". Email links need a domain to send reliably; they come with the domain. |
 | Trust | **Invite codes are tied to one organization.** Taylor makes the code for an org he recruited, so redeeming it confirms you. Anyone else can claim an org, and it waits for Taylor in the admin page. | The IRS list has no email domains, so a domain match can't confirm anyone yet. |
 | Who | Nonprofits only. The other five kinds come in Beta. | Smallest loop that can make a real golden thread. |
-| Cohort | **None lined up yet.** Recruiting runs alongside the build (see below). | The alpha only proves something if two organizations actually trade. |
+| Cohort | **Urban Seattle, Mario's contacts first.** Recruiting runs alongside the build (see below). | The alpha only proves something if two organizations actually trade. |
 
 ## What's in
 
@@ -30,7 +30,7 @@ Decided 2026-09-23 with Taylor. This is the scope, the stack, and the contract b
 
 ## What's out (Beta or later)
 
-Businesses, schools, workforce programs, foundations, Just me. Grants. Together. Standing agreements and the monthly urgent cap. Alerts and email notices. Push notifications. Store apps. The story guide. A domain and email sign-in.
+Businesses, schools, workforce programs, foundations, Just me. Grants. Together. Standing agreements. (The Urgent cap of 2 a month is in, per the approved B7 brief.) Alerts and email notices. Push notifications. Store apps. The story guide. A domain and email sign-in.
 
 ## Layout
 
