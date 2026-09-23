@@ -546,7 +546,8 @@
       "status": "backlog",
       "added": "2026-09-21",
       "round": "B10",
-      "tasks": []
+      "tasks": [],
+      "blocked": "after the freeze: profile layout belongs to the real app"
     },
     {
       "id": "S-25",
@@ -556,7 +557,8 @@
       "added": "2026-09-21",
       "round": "B11",
       "source": "Taylor: too many buttons on screen at the same time",
-      "tasks": []
+      "tasks": [],
+      "blocked": "after the freeze: the map works; polish moves to the real app"
     },
     {
       "id": "S-26",
@@ -565,7 +567,8 @@
       "status": "backlog",
       "added": "2026-09-21",
       "round": "B11",
-      "tasks": []
+      "tasks": [],
+      "blocked": "after the freeze"
     },
     {
       "id": "S-27",
@@ -574,7 +577,8 @@
       "status": "backlog",
       "added": "2026-09-21",
       "round": "B11",
-      "tasks": []
+      "tasks": [],
+      "blocked": "after the freeze"
     },
     {
       "id": "S-28",
@@ -583,7 +587,8 @@
       "status": "backlog",
       "added": "2026-09-21",
       "round": "B12",
-      "tasks": []
+      "tasks": [],
+      "blocked": "after the freeze"
     },
     {
       "id": "S-29",
@@ -592,7 +597,8 @@
       "status": "backlog",
       "added": "2026-09-21",
       "round": "B13",
-      "tasks": []
+      "tasks": [],
+      "blocked": "after the freeze"
     },
     {
       "id": "S-30",
@@ -601,7 +607,8 @@
       "status": "backlog",
       "added": "2026-09-21",
       "round": "B13",
-      "tasks": []
+      "tasks": [],
+      "blocked": "after the freeze"
     },
     {
       "id": "S-31",
@@ -610,7 +617,8 @@
       "status": "backlog",
       "added": "2026-09-21",
       "round": "B13",
-      "tasks": []
+      "tasks": [],
+      "blocked": "after the freeze"
     },
     {
       "id": "S-32",
@@ -619,7 +627,8 @@
       "status": "backlog",
       "added": "2026-09-21",
       "round": "B13",
-      "tasks": []
+      "tasks": [],
+      "blocked": "after the freeze"
     },
     {
       "id": "S-33",
@@ -897,7 +906,8 @@
       "title": "Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap)",
       "status": "backlog",
       "added": "2026-09-22",
-      "tasks": []
+      "tasks": [],
+      "blocked": "after the freeze"
     },
     {
       "id": "S-62",

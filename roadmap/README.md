@@ -12,15 +12,15 @@ Generated from `roadmap.json` on 2026-09-23. Don't edit this file; run `node scr
 | S-20 Thread and inbox: accept, message, mark done, golden |  |  | S-67 Board card and filters: plain-word priority, three-line card, filters grouped | S-4 App map: five tabs, sixteen screens, three stories, order of work |
 | S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder |  |  |  | S-5 Sign up: one green button, email behind a link |
 | S-23 Directory: all six kinds, filter by kind, cause, city |  |  |  | S-6 Who are you here as: six kinds, button label follows the pick |
-| S-24 Profile: one layout, six shapes |  |  |  | S-7 Find yours: list, words, and search follow the kind |
-| S-25 Map: fewer controls at once |  |  |  | S-8 Confirm: email-domain match per kind, ways to confirm per kind |
-| S-26 Legend and pin colors for six kinds |  |  |  | S-9 About you: a person says where they are, what they can do, and when |
-| S-27 Golden threads for every kind of help; Together as a multi-ended thread |  |  |  | S-10 Phone fixes found along the way |
-| S-28 You: behind your name in the top bar |  |  |  | S-11 Schools and districts from OSPI's public feature service |
-| S-29 Casey needs laptops, trimmed to five steps |  |  |  | S-12 Workforce programs from the WA Workforce Board list |
-| S-30 Dana has Saturdays |  |  |  | S-14 Needs and offers for all six kinds of help, plus people |
-| S-31 Casey finds a grant |  |  |  | S-15 Three grants from real WA foundations' public pages, labeled as examples |
-| S-32 Help sheet and story wrapper rewritten in the voice |  |  |  | S-16 One Together initiative |
+| S-24 Profile: one layout, six shapes ⛔ |  |  |  | S-7 Find yours: list, words, and search follow the kind |
+| S-25 Map: fewer controls at once ⛔ |  |  |  | S-8 Confirm: email-domain match per kind, ways to confirm per kind |
+| S-26 Legend and pin colors for six kinds ⛔ |  |  |  | S-9 About you: a person says where they are, what they can do, and when |
+| S-27 Golden threads for every kind of help; Together as a multi-ended thread ⛔ |  |  |  | S-10 Phone fixes found along the way |
+| S-28 You: behind your name in the top bar ⛔ |  |  |  | S-11 Schools and districts from OSPI's public feature service |
+| S-29 Casey needs laptops, trimmed to five steps ⛔ |  |  |  | S-12 Workforce programs from the WA Workforce Board list |
+| S-30 Dana has Saturdays ⛔ |  |  |  | S-14 Needs and offers for all six kinds of help, plus people |
+| S-31 Casey finds a grant ⛔ |  |  |  | S-15 Three grants from real WA foundations' public pages, labeled as examples |
+| S-32 Help sheet and story wrapper rewritten in the voice ⛔ |  |  |  | S-16 One Together initiative |
 | S-33 Design page rewritten to the mission |  |  |  | S-34 IRS Business Master File loaded |
 | S-36 Pub 78 and revocation list, so IsActive is real |  |  |  | S-35 OSPI schools loader into a Schools table |
 | S-37 Workforce programs list |  |  |  | S-53 Prototype, design brief, and how-it-works pages live |
@@ -45,7 +45,7 @@ Generated from `roadmap.json` on 2026-09-23. Don't edit this file; run `node scr
 | S-58 Corporate giving platforms (Benevity and others), subject to APIs and agreements |  |  |  |  |
 | S-59 Relabel non-district LEAs (ESDs, technical colleges, charters, tribal compacts) with their own sub |  |  |  |  |
 | S-60 Render a funder's stated priorities as their quoted words, not our copy |  |  |  |  |
-| S-61 Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) |  |  |  |  |
+| S-61 Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) ⛔ |  |  |  |  |
 | S-63 Decide whether WSU branch campuses become their own rows, as UW's are |  |  |  |  |
 | S-64 A separate email-domain field for confirming, where it differs from the website host |  |  |  |  |
 
@@ -141,31 +141,31 @@ Confirmed organizations search grants and leave to apply on the funder's site.
 Find anyone here, joined or not; one profile layout for six shapes.
 
 - **S-23** Directory: all six kinds, filter by kind, cause, city · Backlog · round B10
-- **S-24** Profile: one layout, six shapes · Backlog · round B10
+- **S-24** Profile: one layout, six shapes · Backlog · round B10 · ⛔ after the freeze: profile layout belongs to the real app
 
 #### E-7 The map · Backlog · 0/4
 
 The picture of threads and golden threads, with fewer controls and a legend for six kinds.
 
-- **S-25** Map: fewer controls at once · Backlog · round B11 · _Taylor: too many buttons on screen at the same time_
-- **S-26** Legend and pin colors for six kinds · Backlog · round B11
-- **S-27** Golden threads for every kind of help; Together as a multi-ended thread · Backlog · round B11
-- **S-61** Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) · Backlog
+- **S-25** Map: fewer controls at once · Backlog · round B11 · ⛔ after the freeze: the map works; polish moves to the real app · _Taylor: too many buttons on screen at the same time_
+- **S-26** Legend and pin colors for six kinds · Backlog · round B11 · ⛔ after the freeze
+- **S-27** Golden threads for every kind of help; Together as a multi-ended thread · Backlog · round B11 · ⛔ after the freeze
+- **S-61** Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) · Backlog · ⛔ after the freeze
 
 #### E-8 You · Backlog · 0/1
 
 Your profile, your posts, how often you're seen.
 
-- **S-28** You: behind your name in the top bar · Backlog · round B12
+- **S-28** You: behind your name in the top bar · Backlog · round B12 · ⛔ after the freeze
 
 #### E-9 The story guide · Backlog · 0/4
 
 Three short stories that each end on the map.
 
-- **S-29** Casey needs laptops, trimmed to five steps · Backlog · round B13
-- **S-30** Dana has Saturdays · Backlog · round B13
-- **S-31** Casey finds a grant · Backlog · round B13
-- **S-32** Help sheet and story wrapper rewritten in the voice · Backlog · round B13
+- **S-29** Casey needs laptops, trimmed to five steps · Backlog · round B13 · ⛔ after the freeze
+- **S-30** Dana has Saturdays · Backlog · round B13 · ⛔ after the freeze
+- **S-31** Casey finds a grant · Backlog · round B13 · ⛔ after the freeze
+- **S-32** Help sheet and story wrapper rewritten in the voice · Backlog · round B13 · ⛔ after the freeze
 
 #### E-10 The design page · Backlog · 0/1
 

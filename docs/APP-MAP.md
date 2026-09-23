@@ -59,6 +59,21 @@ Three short stories; the guide offers them as a choice. Each ends on the map.
 
 The mission in full, the six participant types and how each is confirmed, the eight threads, why money stays off, why Grants is one-directional, integrations (Benevity and the like) as a later phase, the 501(c)(3) model and funding, the flywheel as a diagram, what Together will be.
 
+## The prototype freezes after the flow screens
+
+Decided 2026-09-23. The prototype is a single HTML file whose UI code does not survive the real build, so it earns its keep only by showing the idea and exposing gaps in the flows. Four rounds remain:
+
+| Round | Screen | Why it still matters |
+|---|---|---|
+| B6 | A need or offer | Where "I can help" starts a thread. The heart of the loop. |
+| B7 | Post | The one form. Kind of help, urgency, cadence. |
+| B8 | Thread and inbox | Accept, message, mark done, golden. Completes the loop. |
+| B9 | Grants | Search, then leave to the funder. The one flow nothing else covers. |
+
+Then the prototype is **frozen**: bugs only, no polish, no new screens. The map, the directory, your own page and the story guide stay as they are. Built at rough fidelity from here; the specification is these docs, not the pixels.
+
+Everything after the freeze goes into the real app and the backend.
+
 ## Order of work (Phase B)
 
 B1 Who are you here as · B2 Find yours + Confirm · B3 About you · B4 Seed data · B5 Board + directory search · B6 A need or offer · B7 Post · B8 Thread + Inbox · B9 Grants · B10 Directory + Profile · B11 Map · B12 You · B13 Story guide + help · B14 Design page.
