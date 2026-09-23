@@ -48,7 +48,7 @@ export function useThread(id: number) {
 
 export const useMapData = (enabled = true) => useQuery({ queryKey: keys.map, queryFn: api.map, enabled, staleTime: 60_000 })
 
-export const useMapPoints = () => useQuery({ queryKey: keys.mapPoints, queryFn: api.mapPoints, staleTime: 24 * 3600_000 })
+export const useMapPoints = () => useQuery({ queryKey: keys.mapPoints, queryFn: api.mapPoints, staleTime: 3600_000 })
 
 export const useAdminClaims = () => useQuery({ queryKey: keys.adminClaims, queryFn: api.adminClaims })
 export const useAdminInvites = () => useQuery({ queryKey: keys.adminInvites, queryFn: api.adminInvites })

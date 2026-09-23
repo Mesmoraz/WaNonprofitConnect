@@ -11,7 +11,7 @@ namespace WaNonprofitConnect.Api.Controllers;
 [Produces("application/json")]
 public sealed class MapController : ControllerBase
 {
-    private const string PointsCacheKey = "map:points";
+    public const string PointsCacheKey = "map:points";
     private readonly HelpbookService _helpbook;
     private readonly IMemoryCache _cache;
 
@@ -28,7 +28,7 @@ public sealed class MapController : ControllerBase
 
     /// <summary>
     /// <c>[ein, lat, lon][]</c> for every Washington 501(c)(3) with a ZIP centroid: the faint dots.
-    /// Public IRS and Census data, so no sign-in; cached a day by the browser and an hour in memory here.
+    /// Public IRS and Census data, so no sign-in; cached an hour by the browser and in memory here.
     /// </summary>
     [HttpGet("points")]
     [AllowAnonymous]
@@ -56,7 +56,7 @@ public sealed class MapController : ControllerBase
             return buffer.ToArray();
         });
 
-        Response.Headers.CacheControl = "public, max-age=86400";
+        Response.Headers.CacheControl = "public, max-age=3600";
         return File(bytes!, "application/json");
     }
 }
