@@ -117,8 +117,9 @@ app.MapHealthChecks("/health");
 app.MapControllers().RequireRateLimiting("public");
 app.MapHub<ExchangeHub>("/hubs/exchange");
 // Unknown paths fall back to the app's index.html so client routes work, except /api and /hubs, which 404 as usual.
+// nonfile: paths that look like files (/assets/x.js) are left to the static files, never answered with index.html.
 if (staticFiles is not null)
-    app.MapFallbackToFile("{*path:regex(^(?!api/|api$|hubs/|hubs$|swagger).*$)}", "index.html", staticFiles);
+    app.MapFallbackToFile("{*path:nonfile:regex(^(?!api/|api$|hubs/|hubs$|swagger).*$)}", "index.html", staticFiles);
 
 app.Run();
 

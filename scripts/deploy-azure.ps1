@@ -11,7 +11,8 @@ Push-Location "$root\app"; npm run build; if ($LASTEXITCODE) { throw 'app build 
 if (Test-Path $out) { Remove-Item -Recurse -Force $out }
 dotnet publish "$root\src\WaNonprofitConnect.Api" -c Release -o $out; if ($LASTEXITCODE) { throw 'publish failed' }
 if (Test-Path $zip) { Remove-Item -Force $zip }
-Compress-Archive -Path "$out\*" -DestinationPath $zip
+# Not Compress-Archive: PowerShell 5.1 writes backslashes into zip paths, which Linux App Service rejects.
+tar.exe -a -c -f $zip -C $out @((Get-ChildItem $out).Name); if ($LASTEXITCODE) { throw 'zip failed' }
 & $az webapp deploy -g $rg -n $app --src-path $zip --type zip --async false
 $code = (Invoke-WebRequest "https://$app.azurewebsites.net/health" -UseBasicParsing).StatusCode
 Write-Output "health: $code"

@@ -175,6 +175,12 @@ public sealed class ApiTests : IDisposable
         var page = await http.GetAsync("/inbox/42");
         page.StatusCode.Should().Be(HttpStatusCode.OK);
         page.Content.Headers.ContentType!.MediaType.Should().Be("text/html");
+
+        // Files are served as themselves: a missing one 404s, a real one keeps its own type.
+        (await http.GetAsync("/assets/missing-abc123.js")).StatusCode.Should().Be(HttpStatusCode.NotFound);
+        var icon = await http.GetAsync("/favicon.svg");
+        icon.StatusCode.Should().Be(HttpStatusCode.OK);
+        icon.Content.Headers.ContentType!.MediaType.Should().Be("image/svg+xml");
     }
     internal static async Task<T> PostOk<T>(HttpClient http, string path, object? body)
     {
