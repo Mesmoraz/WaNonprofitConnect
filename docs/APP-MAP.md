@@ -79,3 +79,7 @@ Everything after the freeze goes into the real app and the backend.
 B1 Who are you here as · B2 Find yours + Confirm · B3 About you · B4 Seed data · B5 Board + directory search · B6 A need or offer · B7 Post · B8 Thread + Inbox · B9 Grants · B10 Directory + Profile · B11 Map · B12 You · B13 Story guide + help · B14 Design page.
 
 Each round: brief (purpose, the one action, every word, what stays and goes), Taylor approves line by line, build exactly that, check on a phone, ship.
+
+## Prototyping stops; the alpha is the real app
+
+Decided 2026-09-23, superseding the four remaining rounds above. The prototype is frozen now (bugs only). B6 to B8 (a need or offer, post, thread and inbox) are briefed, approved, and built in the real app in `app/`; B9 Grants moves to Beta. The same brief, approve, build, phone-check loop applies. Scope, stack, and the API contract: `docs/ALPHA.md`.

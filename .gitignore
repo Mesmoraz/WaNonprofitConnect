@@ -11,3 +11,6 @@ TestResults/
 *.db
 *.db-*
 appsettings.*.local.json
+src/WaNonprofitConnect.Api/wwwroot/
+node_modules/
+app/dist/

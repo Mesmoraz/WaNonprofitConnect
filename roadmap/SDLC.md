@@ -27,7 +27,7 @@ Any item can also carry `blocked: "reason"`. Blocked items stay in their column 
 
 Epic and initiative status is derived from their children: done when all are done, in progress when any is in progress or in review, ready when any is ready, otherwise backlog.
 
-**Work-in-progress limit: one story in `in-progress` per lane.** Lanes: `screens` (the prototype, one file, so strictly one at a time), `data` (seed scripts and seed files), `backend` (the .NET project), `research` (finding and verifying sources), `site` (the public site). A story's `lane` field says which; screens is the default. Work in different lanes runs in parallel; finish or park a story before starting another in the same lane.
+**Work-in-progress limit: one story in `in-progress` per lane.** Lanes: `app` (screens in the real app, `app/src/screens`), `map` (`app/src/map` only), `screens` (the frozen prototype, bugs only), `data` (seed scripts and seed files), `backend` (the .NET project), `research` (finding and verifying sources), `site` (the public site). A story's `lane` field says which; screens is the default. Work in different lanes runs in parallel; finish or park a story before starting another in the same lane.
 
 ## The round (how a story moves)
 
@@ -60,7 +60,7 @@ So one part can change without dragging the others:
 - **Seeds are generated, not typed.** Prototype data comes from `scripts/fetch-*.js` against public sources, with anything invented labeled as such. Hand-typed rows are temporary and get replaced.
 - **Screens depend on the taxonomy and the shared state, not on each other.** Each screen's copy lives in that screen's code. No screen assumes another screen's layout. Cross-screen behavior (pins, chips, labels) keys off `type` and `kind`, not off which screen drew it.
 - **Style is tokens.** Colors, spacing, and type live in `:root`; screens use tokens, never raw values. A theme change touches one block.
-- **The framework decision stays open.** The prototype is plain HTML/JS; the backend is .NET; the API between them is the seam. Nothing in the prototype should be hard to redo in whatever framework is picked after the wireframes are signed off.
+- **The framework is React (decided 2026-09-23, `docs/ALPHA.md`).** The API between the app and the backend is still the seam: the app never reaches past `/api/v1`, and the map never reaches past the `MapData` shape.
 - **The roadmap is data.** `roadmap.json` renders to Markdown and to the site page; neither view is edited directly, and the roadmap doesn't depend on the app.
 
 ## Public vs private
