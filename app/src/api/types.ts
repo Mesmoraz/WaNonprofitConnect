@@ -38,7 +38,7 @@ export interface MapSuggested { needId: number; offerId: number; fromEin: string
 export interface MapData { members: OrgSummary[]; threads: MapThread[]; suggested: MapSuggested[] }
 export type MapPoint = [ein: string, lat: number, lon: number]
 
-export interface Claim { id: number; ein: string; orgName: string; accountEmail: string; accountName: string; createdAt: string }
+export interface Claim { id: number; ein: string; orgName: string; city: string | null; accountId: string; email: string; name: string; status: string; createdAt: string; decidedAt: string | null }
 export interface Invite { code: string; ein: string; orgName: string; uses: number; used: number }
 
 export interface BoardQuery { help?: KindOfHelp; kind?: ListingKind; q?: string }

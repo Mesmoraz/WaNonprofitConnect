@@ -99,8 +99,8 @@ export const api = {
 
   // Admin
   adminClaims: () => call<Claim[]>('GET', `${V1}/admin/claims`),
-  approveClaim: (id: number) => call<void>('POST', `${V1}/admin/claims/${id}/approve`),
-  rejectClaim: (id: number) => call<void>('POST', `${V1}/admin/claims/${id}/reject`),
+  approveClaim: (id: number) => call<Claim>('POST', `${V1}/admin/claims/${id}/approve`),
+  rejectClaim: (id: number) => call<Claim>('POST', `${V1}/admin/claims/${id}/reject`),
   adminInvites: () => call<Invite[]>('GET', `${V1}/admin/invites`),
   createInvite: (ein: string, uses: number) => call<Invite>('POST', `${V1}/admin/invites`, { ein, uses }),
 }

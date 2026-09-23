@@ -78,7 +78,7 @@ export function ListingScreen() {
         <div className="label">Yours that fit</div>
         {l.fits.length
           ? l.fits.map(f => <FitCard key={f.id} l={f} selected={pick === f.id} onPick={() => setPick(p => p === f.id ? null : f.id)} />)
-          : <p className="hint">Nothing of yours fits yet. You can still help.</p>}
+          : <p className="hint">{`Nothing of yours fits yet. You can still ${l.kind === 'Offer' ? 'ask' : 'help'}.`}</p>}
         <label className="field-label listing-msg-label" htmlFor="msg">Message to {l.org.name}</label>
         <textarea id="msg" rows={3} placeholder="Say what you can do and when." value={message} onChange={e => setMessage(e.target.value)} />
       </>}

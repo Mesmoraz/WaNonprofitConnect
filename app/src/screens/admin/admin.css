@@ -1,0 +1,2 @@
+.admin-code .code { display: block; font-family: var(--font-display); font-size: 24px; font-weight: 600; letter-spacing: 0.08em; }
+.admin-actions { display: flex; gap: 8px; margin-top: 10px; }

@@ -4,6 +4,24 @@ Newest first. Every shipped change lands here with test cases Taylor can run on 
 
 ---
 
+## 2026-09-23 · Admin page
+
+**Story:** S-69. Brief approved by Taylor today.
+
+### What changed
+
+- A new **Admin** page, reached from your name menu. It makes invite codes and approves or turns down people who claimed an organization.
+- On an offer with nothing of yours to pair, the line now reads "You can still ask" instead of "You can still help" (Taylor).
+
+### Test cases
+
+1. **[verified]** Sign in as an admin with no organization and tap your name. → The menu shows **Admin** and **Sign out**.
+2. **[verified]** Tap **Admin**, find "ballard food", pick it, tap **Make code**. → A large 8-letter code with "BALLARD FOOD BANK · 0 of 3 used".
+3. **[verified]** Someone else redeems that code. → They're confirmed for that organization.
+4. **[verified]** Tap **Approve** on a waiting claim. → "No one is waiting." and that person is confirmed.
+5. **[needs your phone]** Tap a code. → "Copied." and the code pastes into a message.
+6. **[needs your phone]** Open an offer from another organization. → "Nothing of yours fits yet. You can still ask."
+
 ## 2026-09-23 · Alpha app joined to the backend and the map
 
 **Stories:** S-70, S-73, S-18, S-19, S-20. Built on the approved briefs in `docs/ALPHA-BRIEFS.md`.

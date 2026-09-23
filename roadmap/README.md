@@ -6,7 +6,7 @@ Generated from `roadmap.json` on 2026-09-23. Don't edit this file; run `node scr
 
 | Backlog | Ready | In progress | In review | Done |
 | --- | --- | --- | --- | --- |
-| S-13 Foundations flagged from the IRS list's foundation code | S-69 Admin page: make invite codes, approve or reject claims | S-79 Invite message drafted, approved, and sent by Taylor | S-17 Board: kind-of-help chips, fair ranking, directory search at the top | S-1 Mission statement saved and pointed at from the repo |
+| S-13 Foundations flagged from the IRS list's foundation code |  | S-79 Invite message drafted, approved, and sent by Taylor | S-17 Board: kind-of-help chips, fair ranking, directory search at the top | S-1 Mission statement saved and pointed at from the repo |
 | S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder ⛔ |  |  | S-18 A need or offer: who it's from, how it fits you, I can help / I need this | S-2 Voice sheet: ten rules and a words list |
 | S-23 Directory: all six kinds, filter by kind, cause, city |  |  | S-19 Post: kind of help first, then the rest | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
 | S-24 Profile: one layout, six shapes ⛔ |  |  | S-20 Thread and inbox: accept, message, mark done, golden | S-4 App map: five tabs, sixteen screens, three stories, order of work |
@@ -14,13 +14,13 @@ Generated from `roadmap.json` on 2026-09-23. Don't edit this file; run `node scr
 | S-26 Legend and pin colors for six kinds ⛔ |  |  | S-66 Opening a search result crashed the app: EINs were coerced to numbers | S-6 Who are you here as: six kinds, button label follows the pick |
 | S-27 Golden threads for every kind of help; Together as a multi-ended thread ⛔ |  |  | S-67 Board card and filters: plain-word priority, three-line card, filters grouped | S-7 Find yours: list, words, and search follow the kind |
 | S-28 You: behind your name in the top bar ⛔ |  |  | S-68 Google sign-in, invite codes tied to one organization, claims that wait for review | S-8 Confirm: email-domain match per kind, ways to confirm per kind |
-| S-29 Casey needs laptops, trimmed to five steps ⛔ |  |  | S-70 App shell and front door on the approved copy | S-9 About you: a person says where they are, what they can do, and when |
-| S-30 Dana has Saturdays ⛔ |  |  | S-71 Board and listings API: kind of help, fair ranking, views counted | S-10 Phone fixes found along the way |
-| S-31 Casey finds a grant ⛔ |  |  | S-72 Threads API: start, message, accept, mark done, live over SignalR | S-11 Schools and districts from OSPI's public feature service |
-| S-32 Help sheet and story wrapper rewritten in the voice ⛔ |  |  | S-73 Map: base map, clusters, four thread states, golden glow, tap for details | S-12 Workforce programs from the WA Workforce Board list |
-| S-33 Design page rewritten to the mission |  |  | S-74 Map data: ZIP centroids from the Census gazetteer, map and points endpoints | S-14 Needs and offers for all six kinds of help, plus people |
-| S-36 Pub 78 and revocation list, so IsActive is real |  |  | S-75 Hosted on Azure: API, hub and app from one address, no domain needed | S-15 Three grants from real WA foundations' public pages, labeled as examples |
-| S-37 Workforce programs list |  |  |  | S-16 One Together initiative |
+| S-29 Casey needs laptops, trimmed to five steps ⛔ |  |  | S-69 Admin page: make invite codes, approve or reject claims | S-9 About you: a person says where they are, what they can do, and when |
+| S-30 Dana has Saturdays ⛔ |  |  | S-70 App shell and front door on the approved copy | S-10 Phone fixes found along the way |
+| S-31 Casey finds a grant ⛔ |  |  | S-71 Board and listings API: kind of help, fair ranking, views counted | S-11 Schools and districts from OSPI's public feature service |
+| S-32 Help sheet and story wrapper rewritten in the voice ⛔ |  |  | S-72 Threads API: start, message, accept, mark done, live over SignalR | S-12 Workforce programs from the WA Workforce Board list |
+| S-33 Design page rewritten to the mission |  |  | S-73 Map: base map, clusters, four thread states, golden glow, tap for details | S-14 Needs and offers for all six kinds of help, plus people |
+| S-36 Pub 78 and revocation list, so IsActive is real |  |  | S-74 Map data: ZIP centroids from the Census gazetteer, map and points endpoints | S-15 Three grants from real WA foundations' public pages, labeled as examples |
+| S-37 Workforce programs list |  |  | S-75 Hosted on Azure: API, hub and app from one address, no domain needed | S-16 One Together initiative |
 | S-38 WA business lookup (UBI) for business confirmation |  |  |  | S-34 IRS Business Master File loaded |
 | S-39 ASP.NET Identity replaces the X-Org-Ein header |  |  |  | S-35 OSPI schools loader into a Schools table |
 | S-40 Claim an organization by kind, with the confirm methods from the taxonomy |  |  |  | S-53 Prototype, design brief, and how-it-works pages live |
@@ -288,7 +288,7 @@ Sign in with Google; an invite code confirms you for one organization; anyone el
 
 - **S-68** Google sign-in, invite codes tied to one organization, claims that wait for review · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
     - [ ] T-33 Admin emails read from one comma-separated App Service setting too (Ready)
-- **S-69** Admin page: make invite codes, approve or reject claims · Ready · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
+- **S-69** Admin page: make invite codes, approve or reject claims · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-83** Microsoft sign-in, since many nonprofits run on Microsoft 365 · Backlog
 
 #### E-24 The core loop, working · In progress · 1/7

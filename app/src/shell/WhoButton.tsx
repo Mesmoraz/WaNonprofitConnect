@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useMe, useSignOut } from '../api'
 
 /** Your name, with your organization behind it. Opens a small menu; your own page comes in a later round. */
 export function WhoButton() {
   const { data: me } = useMe()
   const signOut = useSignOut()
+  const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -27,6 +29,7 @@ export function WhoButton() {
       </button>
       {open && (
         <div className="who-menu" role="menu">
+          {me.account.isAdmin && <button role="menuitem" onClick={() => { setOpen(false); navigate('/admin') }}>Admin</button>}
           <button role="menuitem" onClick={() => signOut.mutate()} disabled={signOut.isPending}>Sign out</button>
         </div>
       )}

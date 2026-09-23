@@ -1,6 +1,7 @@
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { MOCK, useMe, type Me } from './api'
 import { AppShell } from './shell/AppShell'
+import { Admin } from './screens/admin/Admin'
 import { Board } from './screens/board/Board'
 import { FindYours } from './screens/find/FindYours'
 import { Inbox } from './screens/inbox/Inbox'
@@ -61,6 +62,7 @@ export function App() {
           {(import.meta.env.DEV || MOCK) && <Route path="/dev/map-card" element={<MapCardPreview />} />}
         </Route>
       </Route>
+      {me?.account.isAdmin && <Route path="/admin" element={<Admin />} />}
       <Route path="*" element={<Navigate to={HOME[stageOf(me)]} replace />} />
     </Routes>
   )

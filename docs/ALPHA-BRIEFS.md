@@ -20,7 +20,7 @@ Approved by Taylor 2026-09-23, as written. Build exactly this. Anything else a s
 - Top line: "Need · Things" (kind and kind of help). Add "Urgent" or "This week" if set. For repeating posts add "Every week", "Every month", "Every quarter", or "Ongoing"; nothing for one-time.
 - Headline: the post's title. Under it: the organization's name, then "Seattle · Posted 2 days ago".
 - Quantity ("12 laptops"), then the details.
-- Label "Yours that fit": your open posts of the opposite kind that pair with this one; tap one to use it. None: "Nothing of yours fits yet. You can still help."
+- Label "Yours that fit": your open posts of the opposite kind that pair with this one; tap one to use it. None: "Nothing of yours fits yet. You can still help." On an offer: "Nothing of yours fits yet. You can still ask." (Taylor, 2026-09-23)
 - Field "Message to {org}", placeholder "Say what you can do and when."
 - Pinned button: **I can help** (on a need) or **I need this** (on an offer). Afterwards toast "Thread started. {org} will see it in their inbox." and open the thread.
 - Already a thread with you on this post: button **Open your thread**.
@@ -65,3 +65,12 @@ Approved by Taylor 2026-09-23, as written. Build exactly this. Anything else a s
 
 - An organization: name, then "Seattle · 3 threads".
 - A thread: "{giver} → {receiver}", then "Things · In progress". If it's yours, **Open thread**.
+
+## Admin
+
+Approved by Taylor 2026-09-23.
+
+- Opens from your name menu as **Admin**. Only admins see it, and it works before you belong to an organization.
+- Headline "Admin".
+- Invite codes: field "Find the organization", field "How many people" (3 by default), button **Make code**. Each code shows large, with "{org} · 1 of 3 used". Tap a code to copy it: toast "Copied."
+- Waiting for you: each claim shows "{name} · {email}", the organization, then "Seattle · Sep 23", with **Approve** and "Not this one". None: "No one is waiting."

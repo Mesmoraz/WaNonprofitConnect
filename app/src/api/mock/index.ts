@@ -38,7 +38,7 @@ const messages: Message[] = SEED_MESSAGES.map(([threadId, senderEin, senderName,
 for (const t of threads) for (const lid of [t.needId, t.offerId]) { const l = listings.find(x => x.id === lid); const o = l && orgByEin(l.ein); if (o) o.isMember = true }
 
 const invites: Invite[] = Object.entries(SEED_INVITES).map(([code, ein]) => ({ code, ein, orgName: orgByEin(ein)?.name ?? ein, uses: 5, used: 0 }))
-const claims: (Claim & { accountId: string })[] = []
+const claims: Claim[] = []
 
 let nextId = 1000
 const id = () => ++nextId
@@ -144,7 +144,7 @@ const routes: [string, RegExp, Handler][] = [
   ['POST', /^\/claims$/, (_m, b: { ein?: string }) => {
     const me = requireMe()
     const o = orgByEin(b.ein ?? '') ?? fail(404, 'Not found.')
-    claims.push({ id: id(), ein: o.ein, orgName: o.name, accountId: me.account.id, accountEmail: me.account.email, accountName: me.account.name, createdAt: now() })
+    claims.push({ id: id(), ein: o.ein, orgName: o.name, city: o.city, accountId: me.account.id, email: me.account.email, name: me.account.name, status: 'pending', createdAt: now(), decidedAt: null })
     session = { ...me, membership: { ein: o.ein, orgName: o.name, status: 'pending' } }
     saveSession(session)
     return meOut(session)
