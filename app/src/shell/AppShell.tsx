@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { useExchangeHub, useMe, useThreads } from '../api'
+import { DEMO, leaveDemo, useExchangeHub, useMe, useThreads } from '../api'
 import { BRAND } from '../brand'
 import { BoardIcon, InboxIcon, MapIcon, PlusIcon } from './icons'
 import { WhoButton } from './WhoButton'
@@ -17,7 +17,10 @@ export function AppShell() {
     <div className="app">
       <div className="app-brand"><NavLink to="/" className="logo">{BRAND.name}</NavLink></div>
       <div className="app-who"><WhoButton /></div>
-      <main className="app-content" id="content"><Outlet /></main>
+      <main className="app-content" id="content">
+        {DEMO && <p className="demo demo-bar">Demo: sample organizations. Nothing here is saved. <button className="inline-link" onClick={leaveDemo}>Leave the demo</button></p>}
+        <Outlet />
+      </main>
       <nav className="tabs" aria-label="Main">
         <NavLink to="/" end className={cls}><span className="ic"><BoardIcon /></span>Board</NavLink>
         <NavLink to="/map" className={cls}><span className="ic"><MapIcon /></span>Map</NavLink>

@@ -16,8 +16,9 @@ export function Admin() {
   const [uses, setUses] = useState('3')
   const [failed, setFailed] = useState(false)
   const term = q.trim()
-  const { data: hits = [] } = useOrgs(term)
-  const shown = term.length >= 2 && !pick ? hits.slice(0, 5) : []
+  const { data: hits = [], isFetching } = useOrgs(term)
+  const open = term.length >= 2 && !pick
+  const shown = open ? hits.slice(0, 6) : []
   const { data: invites = [] } = useAdminInvites()
   const { data: claims = [] } = useAdminClaims()
   const make = useCreateInvite()
@@ -53,14 +54,32 @@ export function Admin() {
 
       <div className="label">Invite codes</div>
       <label className="field-label" htmlFor="adminq">Find the organization</label>
-      <input id="adminq" type="search" autoComplete="off" value={pick ? pick.name : q}
-        onChange={e => { setQ(e.target.value); setPick(null) }} />
-      {shown.map(o => (
-        <button key={o.ein} className="card tap" onClick={() => setPick(o)}>
-          <span className="t">{o.name}</span>
-          <span className="m">{cap(o.city)}</span>
-        </button>
-      ))}
+      {pick ? (
+        <div className="admin-picked">
+          <span className="admin-check" aria-hidden>✓</span>
+          <span className="admin-picked-text"><span className="t">{pick.name}</span><span className="m">{cap(pick.city)}</span></span>
+          <button className="admin-clear" aria-label="Clear" onClick={() => { setPick(null); setQ('') }}>×</button>
+        </div>
+      ) : (
+        <div className="admin-search">
+          <span className="search-wrap">
+            <input id="adminq" type="search" autoComplete="off" placeholder="Name or EIN" value={q}
+              role="combobox" aria-expanded={open} aria-controls="adminq-list" onChange={e => setQ(e.target.value)} />
+          </span>
+          {open && (
+            <div className="admin-drop" id="adminq-list" role="listbox">
+              {shown.map(o => (
+                <button key={o.ein} role="option" aria-selected={false} className="admin-opt" onClick={() => setPick(o)}>
+                  <span className="t">{o.name}</span>
+                  <span className="m">{cap(o.city)}</span>
+                </button>
+              ))}
+              {isFetching && !shown.length && <p className="admin-drop-note">Searching</p>}
+              {!isFetching && !shown.length && <p className="admin-drop-note">Nothing by that name. Try the EIN.</p>}
+            </div>
+          )}
+        </div>
+      )}
       {pick && <button className="btn quiet" disabled={actAs.isPending} onClick={testAs}>Test as this organization</button>}
       <label className="field-label" htmlFor="uses">How many people</label>
       <input id="uses" type="number" inputMode="numeric" min={1} max={50} value={uses} onChange={e => setUses(e.target.value)} />

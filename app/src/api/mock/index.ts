@@ -1,6 +1,6 @@
 // In-memory fake of the /api/v1 contract, for `npm run dev:mock`. Same routes, same shapes, same errors.
 // The signed-in person survives a reload (localStorage); everything else resets to the seed.
-import { ApiError, type Transport } from '../client'
+import { ApiError, DEMO, httpTransport, type Transport } from '../client'
 import type {
   Claim, Invite, Listing, ListingDetail, MapData, MapPoint, Me, Message, NewListing, NewThread, OrgSummary,
   Thread, ThreadAction, ThreadDetail, ThreadStatus,
@@ -248,7 +248,14 @@ const routes: [string, RegExp, Handler][] = [
       .map(o => ({ needId: n.id, offerId: o.id, fromEin: o.ein, toEin: n.ein })))
     return { members, threads: mapThreads, suggested } satisfies MapData
   }],
-  ['GET', /^\/map\/points$/, () => orgs.filter(o => o.lat !== null).map(o => [o.ein, o.lat!, o.lon!] as MapPoint)],
+  // The demo shows the real faint dots (public data) so the whole state looks alive; dev:mock stays offline.
+  ['GET', /^\/map\/points$/, () => DEMO ? httpTransport('GET', '/api/v1/map/points') : orgs.filter(o => o.lat !== null).map(o => [o.ein, o.lat!, o.lon!] as MapPoint)],
+  ['POST', /^\/admin\/act-as$/, (_m, b: { ein?: string }) => {
+    const me = requireMe(); if (!me.account.isAdmin) fail(403, 'Admins only.')
+    const o = orgByEin(b.ein ?? '') ?? fail(404, 'Not found.')
+    session = { ...me, membership: { ein: o.ein, orgName: o.name, status: 'confirmed' } }; saveSession(session)
+    return meOut(session)
+  }],
 
   ['GET', /^\/admin\/claims$/, () => { if (!requireMe().account.isAdmin) fail(403, 'Admins only.'); return claims.map(({ accountId: _a, ...c }) => c) }],
   ['POST', /^\/admin\/claims\/(\d+)\/(approve|reject)$/, m => {
@@ -276,7 +283,7 @@ export const mockTransport: Transport = async (method, path, body) => {
   for (const [m, re, handler] of routes) {
     if (m !== method) continue
     const match = sub.match(re)
-    if (match) return structuredClone(handler(match, body ?? {}, url.searchParams))
+    if (match) return structuredClone(await handler(match, body ?? {}, url.searchParams))
   }
   return fail(404, `No mock route for ${method} ${url.pathname}`)
 }

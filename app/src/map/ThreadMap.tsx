@@ -59,8 +59,10 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
   const layers: LayersList = [
     f.dots && new ScatterplotLayer<unknown, Seat>({
       id: 'wm-dots', beforeId: f.under, data: f.dots, pickable: false,
-      radiusUnits: 'meters', getRadius: 90, radiusMinPixels: 1.1, radiusMaxPixels: 2.2,
-      getFillColor: withAlpha(t.ink3, t.dark ? 0.36 : 0.42),
+      // Points are street addresses now (a ZIP center only when the geocoder missed), so the spread is ~50 m:
+      // enough to part two at one address, not the old 1.3 km cloud.
+      radiusUnits: 'meters', getRadius: 60, radiusMinPixels: 1, radiusMaxPixels: 3,
+      getFillColor: withAlpha(t.ink3, t.dark ? 0.3 : 0.36),
       updateTriggers: { getFillColor: t.key },
     }),
     new ScatterplotLayer<MapNode, Seat>({
@@ -247,7 +249,7 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, c
   const dots = useMemo(() => {
     if (!points?.length) return null
     const value = new Float32Array(points.length * 2)
-    points.forEach(([ein, lat, lon], i) => { const [x, y] = jitter(ein, lat, lon); value[i * 2] = x; value[i * 2 + 1] = y })
+    points.forEach(([ein, lat, lon], i) => { const [x, y] = jitter(ein, lat, lon, 0.0005); value[i * 2] = x; value[i * 2 + 1] = y })
     return { length: points.length, attributes: { getPosition: { value, size: 2 as const } } }
   }, [points])
   const labels = useMemo(() => {

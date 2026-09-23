@@ -54,14 +54,20 @@ public sealed partial class HelpbookService
     /// <summary>Every Washington 501(c)(3) that has a ZIP centroid, as (ein, lat, lon). Projects only those columns: ~35k rows.</summary>
     public async Task<IReadOnlyList<(string Ein, double Lat, double Lon)>> MapPointsAsync(CancellationToken ct = default)
     {
-        var rows = await (
-                from o in _db.Organizations.AsNoTracking()
-                where o.State == "WA" && o.Is501c3 && o.Zip5 != null
-                join z in _db.ZipCentroids.AsNoTracking() on o.Zip5 equals z.Zip5
-                orderby o.Ein
-                select new { o.Ein, z.Lat, z.Lon })
+        // Street address when the geocoder matched it, otherwise the ZIP's center; neither, and it's left off.
+        var orgs = await _db.Organizations.AsNoTracking()
+            .Where(o => o.State == "WA" && o.Is501c3)
+            .OrderBy(o => o.Ein)
+            .Select(o => new { o.Ein, o.Zip5 })
             .ToListAsync(ct);
-        return rows.Select(r => (r.Ein, r.Lat, r.Lon)).ToList();
+        var centroids = await _db.ZipCentroids.AsNoTracking().ToDictionaryAsync(z => z.Zip5, z => (z.Lat, z.Lon), ct);
+        var points = new List<(string, double, double)>(orgs.Count);
+        foreach (var o in orgs)
+        {
+            if (OrgLocations.TryGet(o.Ein, out var at)) points.Add((o.Ein, at.Lat, at.Lon));
+            else if (o.Zip5 is not null && centroids.TryGetValue(o.Zip5, out var c)) points.Add((o.Ein, c.Lat, c.Lon));
+        }
+        return points;
     }
 
     private async Task<IReadOnlyDictionary<string, (double Lat, double Lon)>> CentroidsAsync(IEnumerable<string?> zips, CancellationToken ct)

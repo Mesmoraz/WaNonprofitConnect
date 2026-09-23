@@ -124,3 +124,10 @@
   .page-body, .page-cta { max-width: 640px; margin-left: auto; margin-right: auto; }
   .page-cta { border: 1px solid var(--line-2); border-bottom: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
 }
+
+/* The demo's one grey line (VOICE.md rule 5), across the top of the content. */
+.demo-bar {
+  margin: 0; padding: 0 var(--gutter); height: 34px; display: flex; align-items: center; justify-content: center; gap: 6px;
+  border-bottom: 1px solid var(--line-2); background: var(--paper-2); white-space: nowrap; overflow: hidden;
+}
+.app-content:has(> .demo-bar) > .map-screen { height: calc(100% - 34px); }

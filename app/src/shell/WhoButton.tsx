@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMe, useSignOut } from '../api'
+import { DEMO, leaveDemo, startDemo, useMe, useSignOut } from '../api'
 
 /** Your name, with your organization behind it. Opens a small menu; your own page comes in a later round. */
 export function WhoButton() {
@@ -30,7 +30,10 @@ export function WhoButton() {
       {open && (
         <div className="who-menu" role="menu">
           {me.account.isAdmin && <button role="menuitem" onClick={() => { setOpen(false); navigate('/admin') }}>Admin</button>}
-          <button role="menuitem" onClick={() => signOut.mutate()} disabled={signOut.isPending}>Sign out</button>
+          {DEMO
+            ? <button role="menuitem" onClick={leaveDemo}>Leave the demo</button>
+            : me.account.isAdmin && <button role="menuitem" onClick={() => startDemo(me.account.name)}>Start the demo</button>}
+          {!DEMO && <button role="menuitem" onClick={() => signOut.mutate()} disabled={signOut.isPending}>Sign out</button>}
         </div>
       )}
     </div>

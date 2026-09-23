@@ -1,2 +1,21 @@
 .admin-code .code { display: block; font-family: var(--font-display); font-size: 24px; font-weight: 600; letter-spacing: 0.08em; }
 .admin-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+/* Organization search: a search field with its results dropping down right under it. */
+.admin-search { position: relative; }
+.admin-drop {
+  position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 10; max-height: 320px; overflow: auto;
+  background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 4px;
+}
+.admin-opt { display: block; width: 100%; text-align: left; padding: 10px 12px; border-radius: 8px; min-height: var(--tap); }
+.admin-opt:hover, .admin-opt:focus-visible { background: var(--paper-2); }
+.admin-opt .t, .admin-picked .t { display: block; font-weight: 600; }
+.admin-opt .m, .admin-picked .m { display: block; font-size: 13px; color: var(--ink-2); }
+.admin-drop-note { margin: 0; padding: 12px; font-size: 14px; color: var(--ink-3); }
+.admin-picked {
+  display: flex; align-items: center; gap: 10px; padding: 8px 4px 8px 12px; min-height: 52px;
+  border: 1px solid var(--accent); border-radius: var(--radius); background: var(--paper-2);
+}
+.admin-check { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-size: 13px; flex: none; }
+.admin-picked-text { flex: 1; min-width: 0; }
+.admin-clear { width: var(--tap); height: var(--tap); display: grid; place-items: center; border-radius: 50%; color: var(--ink-3); font-size: 20px; flex: none; }

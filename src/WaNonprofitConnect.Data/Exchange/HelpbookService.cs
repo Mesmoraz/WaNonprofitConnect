@@ -268,7 +268,7 @@ public sealed partial class HelpbookService
         return ToThread(m, orgs, actingEin, now);
     }
 
-    /// <summary>Contract org cards: IRS basics, the ZIP centroid, and whether anyone from it has joined.</summary>
+    /// <summary>Contract org cards: IRS basics, where it is (street address, else ZIP center), and whether anyone from it has joined.</summary>
     public async Task<Dictionary<string, OrgSummaryDto>> OrgSummariesAsync(IEnumerable<Organization> orgs, CancellationToken ct = default)
     {
         var list = orgs.Where(o => o is not null).DistinctBy(o => o.Ein).ToList();
@@ -282,7 +282,8 @@ public sealed partial class HelpbookService
 
     internal static OrgSummaryDto Summary(Organization o, bool isMember, IReadOnlyDictionary<string, (double Lat, double Lon)> centroids)
     {
-        var at = o.Zip5 is not null && centroids.TryGetValue(o.Zip5, out var c) ? c : ((double, double)?)null;
+        var at = OrgLocations.TryGet(o.Ein, out var street) ? street
+            : o.Zip5 is not null && centroids.TryGetValue(o.Zip5, out var c) ? c : ((double, double)?)null;
         return new OrgSummaryDto(o.Ein, o.Name, o.City, o.Zip5, o.NteeCode, at?.Item1, at?.Item2, isMember);
     }
 

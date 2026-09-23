@@ -3,7 +3,28 @@ import type {
   OrgSummary, Thread, ThreadAction, ThreadDetail,
 } from './types'
 
-export const MOCK = import.meta.env.VITE_MOCK === '1'
+const DEMO_KEY = 'helpbook.demo'
+const readDemo = () => { try { return localStorage.getItem(DEMO_KEY) === '1' } catch { return false } }
+/** The demo: sample organizations, posts and threads that live only in this browser. Started from the name menu. */
+export const DEMO = import.meta.env.VITE_MOCK !== '1' && readDemo()
+/** True when the app talks to the in-memory fake instead of the API: `npm run dev:mock`, or the demo. */
+export const MOCK = import.meta.env.VITE_MOCK === '1' || DEMO
+
+/** Start the demo as `name` at a sample organization, or leave it. Both reload, so every screen starts fresh. */
+export function startDemo(name: string) {
+  try {
+    localStorage.setItem(DEMO_KEY, '1')
+    localStorage.setItem('mock.session', JSON.stringify({
+      account: { id: 'acct-demo', email: 'demo@example.org', name, isAdmin: true },
+      membership: { ein: '911428805', orgName: 'Ballard Food Bank', status: 'confirmed' },
+    }))
+  } catch { return }
+  window.location.assign('/')
+}
+export function leaveDemo() {
+  try { localStorage.removeItem(DEMO_KEY); localStorage.removeItem('mock.session') } catch { /* private mode */ }
+  window.location.assign('/')
+}
 
 /** Any non-2xx answer from the API. `status` is the HTTP status; `body` is the parsed problem, if any. */
 export class ApiError extends Error {
@@ -24,7 +45,7 @@ type Method = 'GET' | 'POST'
 
 export type Transport = (method: Method, path: string, body?: unknown) => Promise<unknown>
 
-const httpTransport: Transport = async (method, path, body) => {
+export const httpTransport: Transport = async (method, path, body) => {
   const res = await fetch(path, {
     method,
     credentials: 'same-origin',
@@ -41,7 +62,7 @@ const httpTransport: Transport = async (method, path, body) => {
   return parsed
 }
 
-// The mock is loaded only when VITE_MOCK=1; in a normal build this branch is dead code and the mock is not bundled.
+// The mock is loaded only for `npm run dev:mock` or the demo, as its own chunk, so ordinary visits never download it.
 let transportPromise: Promise<Transport> | null = null
 function transport(): Promise<Transport> {
   if (!transportPromise) {

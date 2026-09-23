@@ -20,4 +20,8 @@
     <ProjectReference Include="..\WaNonprofitConnect.Data\WaNonprofitConnect.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Street-address positions for WA nonprofits (scripts/geocode-orgs.js). Read by OrgLocations. -->
+    <None Include="..\..\data\geo\wa-orgs-geo.csv" Link="geo\wa-orgs-geo.csv" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Condition="Exists('..\..\data\geo\wa-orgs-geo.csv')" />
+  </ItemGroup>
 </Project>
