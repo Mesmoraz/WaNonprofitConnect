@@ -2,30 +2,297 @@
   "note": "Invented content for the demo. The organizations these reference are real (see the other seed files); the people, the needs and offers, and the initiative are made up. Kinds of help come from docs/TAXONOMY.md.",
   "updated": "2026-09-22",
   "people": [
-    { "id": "P-1", "name": "Dana M.", "city": "SEATTLE", "zip": "98115", "can": ["driving", "building and repairs"] },
-    { "id": "P-2", "name": "Marcus T.", "city": "TACOMA", "zip": "98405", "can": ["bookkeeping", "legal"] },
-    { "id": "P-3", "name": "Priya R.", "city": "SPOKANE", "zip": "99202", "can": ["tutoring", "translating"] },
-    { "id": "P-4", "name": "Sam O.", "city": "BELLINGHAM", "zip": "98225", "can": ["design", "tech help"] }
+    {
+      "id": "P-1",
+      "name": "Dana M.",
+      "city": "SEATTLE",
+      "zip": "98115",
+      "can": [
+        "driving",
+        "building and repairs"
+      ]
+    },
+    {
+      "id": "P-2",
+      "name": "Marcus T.",
+      "city": "TACOMA",
+      "zip": "98405",
+      "can": [
+        "bookkeeping",
+        "legal"
+      ]
+    },
+    {
+      "id": "P-3",
+      "name": "Priya R.",
+      "city": "SPOKANE",
+      "zip": "99202",
+      "can": [
+        "tutoring",
+        "translating"
+      ]
+    },
+    {
+      "id": "P-4",
+      "name": "Sam O.",
+      "city": "BELLINGHAM",
+      "zip": "98225",
+      "can": [
+        "design",
+        "tech help"
+      ]
+    }
   ],
   "listings": [
-    { "id": 40, "kind": "Need", "help": "Time", "ein": "WDB-6", "category": "Volunteers", "title": "Mock interviewers, one morning a month", "desc": "Practice interviews for people finishing our training. No hiring involved.", "qty": 6, "unit": "volunteers", "urgency": "Normal", "tags": "interviews,mentoring,volunteers", "hoursAgo": 36, "cadence": "Monthly" },
-    { "id": 41, "kind": "Offer", "help": "Time", "ein": "P-1", "category": "Volunteers", "title": "I can drive on weekends", "desc": "I have a pickup and most Saturdays free. Happy to move things around Seattle.", "qty": 1, "unit": "driver", "urgency": "Normal", "tags": "driving,delivery,volunteers", "hoursAgo": 14, "cadence": "Weekly" },
-    { "id": 42, "kind": "Offer", "help": "Skills", "ein": "P-2", "category": "Services", "title": "Bookkeeping and nonprofit filings", "desc": "CPA. I can take a few hours a month, remote is fine.", "qty": 4, "unit": "hours", "urgency": "Normal", "tags": "bookkeeping,accounting,990", "hoursAgo": 52, "cadence": "Monthly" },
-    { "id": 43, "kind": "Need", "help": "Skills", "ein": "237438529", "category": "Services", "title": "Interpreters for intake appointments", "desc": "Cantonese and Vietnamese, two mornings a week.", "qty": 2, "unit": "interpreters", "urgency": "High", "tags": "interpreting,translation,language", "hoursAgo": 20, "cadence": "Weekly" },
-    { "id": 44, "kind": "Offer", "help": "Skills", "ein": "P-3", "category": "Services", "title": "Tutoring and Russian translation", "desc": "Evenings and weekends in Spokane.", "qty": 3, "unit": "hours", "urgency": "Normal", "tags": "tutoring,translation,russian", "hoursAgo": 30, "cadence": "Weekly" },
-    { "id": 45, "kind": "Need", "help": "Partnership", "ein": "911428805", "category": "Other", "title": "A sponsor for our summer meals program", "desc": "Eight weeks of lunches for kids out of school. Looking for one business to anchor it.", "qty": 1, "unit": "sponsor", "urgency": "High", "tags": "sponsorship,summer meals,partnership", "hoursAgo": 44 },
-    { "id": 46, "kind": "Offer", "help": "Partnership", "ein": "B-1", "category": "Volunteers", "title": "Our staff can volunteer one day a quarter", "desc": "About 20 people, any hands-on work. We bring our own lunch.", "qty": 20, "unit": "volunteers", "urgency": "Normal", "tags": "corporate volunteering,team,partnership", "hoursAgo": 26, "cadence": "Quarterly" },
-    { "id": 47, "kind": "Need", "help": "For schools", "ein": "OSPI-2220", "category": "Other", "title": "Career day speakers, March 12", "desc": "Twenty minutes each, three sessions. Trades and healthcare especially.", "qty": 12, "unit": "speakers", "urgency": "Normal", "tags": "career day,speakers,students", "hoursAgo": 16 },
-    { "id": 48, "kind": "Need", "help": "For schools", "ein": "OSPI-2215", "category": "Other", "title": "Mentors for the robotics team", "desc": "One evening a week, January through March.", "qty": 4, "unit": "mentors", "urgency": "Normal", "tags": "robotics,mentoring,stem", "hoursAgo": 60, "cadence": "Weekly" },
-    { "id": 49, "kind": "Offer", "help": "For schools", "ein": "B-2", "category": "Other", "title": "We'll host a shop field trip", "desc": "Up to 30 students at our Tacoma yard. Safety gear provided.", "qty": 30, "unit": "students", "urgency": "Low", "tags": "field trip,trades,students", "hoursAgo": 22 },
-    { "id": 50, "kind": "Offer", "help": "For schools", "ein": "P-4", "category": "Services", "title": "I'll teach a design workshop", "desc": "One afternoon, any grade. I bring the materials.", "qty": 1, "unit": "workshop", "urgency": "Low", "tags": "design,workshop,students", "hoursAgo": 38 },
-    { "id": 51, "kind": "Need", "help": "Jobs and mentoring", "ein": "WDB-12", "category": "Other", "title": "Employers for an apprenticeship fair", "desc": "One afternoon in Spokane. Tables provided.", "qty": 15, "unit": "employers", "urgency": "High", "tags": "apprenticeship,employers,hiring", "hoursAgo": 12 },
-    { "id": 52, "kind": "Offer", "help": "Jobs and mentoring", "ein": "B-3", "category": "Other", "title": "Three apprenticeships this fall", "desc": "Electronics refurbishing, paid, no experience needed.", "qty": 3, "unit": "apprenticeships", "urgency": "Normal", "tags": "apprenticeship,jobs,training", "hoursAgo": 18 },
-    { "id": 53, "kind": "Need", "help": "Jobs and mentoring", "ein": "WDB-2", "category": "Other", "title": "Mock interviewers for 20 trainees", "desc": "Two hours, Olympia. We'll match you to a trainee.", "qty": 8, "unit": "volunteers", "urgency": "Normal", "tags": "interviews,mentoring,jobs", "hoursAgo": 28 }
+    {
+      "id": 40,
+      "kind": "Need",
+      "help": "Time",
+      "ein": "WDB-6",
+      "category": "Volunteers",
+      "title": "Mock interviewers, one morning a month",
+      "desc": "Practice interviews for people finishing our training. No hiring involved.",
+      "qty": 6,
+      "unit": "volunteers",
+      "urgency": "Normal",
+      "tags": "interviews,mentoring,volunteers",
+      "hoursAgo": 36,
+      "cadence": "Monthly"
+    },
+    {
+      "id": 41,
+      "kind": "Offer",
+      "help": "Time",
+      "ein": "P-1",
+      "category": "Volunteers",
+      "title": "I can drive on weekends",
+      "desc": "I have a pickup and most Saturdays free. Happy to move things around Seattle.",
+      "qty": 1,
+      "unit": "driver",
+      "urgency": "Normal",
+      "tags": "driving,delivery,volunteers",
+      "hoursAgo": 14,
+      "cadence": "Weekly"
+    },
+    {
+      "id": 42,
+      "kind": "Offer",
+      "help": "Skills",
+      "ein": "P-2",
+      "category": "Services",
+      "title": "Bookkeeping and nonprofit filings",
+      "desc": "CPA. I can take a few hours a month, remote is fine.",
+      "qty": 4,
+      "unit": "hours",
+      "urgency": "Normal",
+      "tags": "bookkeeping,accounting,990",
+      "hoursAgo": 52,
+      "cadence": "Monthly"
+    },
+    {
+      "id": 43,
+      "kind": "Need",
+      "help": "Skills",
+      "ein": "237438529",
+      "category": "Services",
+      "title": "Interpreters for intake appointments",
+      "desc": "Cantonese and Vietnamese, two mornings a week.",
+      "qty": 2,
+      "unit": "interpreters",
+      "urgency": "High",
+      "tags": "interpreting,translation,language",
+      "hoursAgo": 20,
+      "cadence": "Weekly"
+    },
+    {
+      "id": 44,
+      "kind": "Offer",
+      "help": "Skills",
+      "ein": "P-3",
+      "category": "Services",
+      "title": "Tutoring and Russian translation",
+      "desc": "Evenings and weekends in Spokane.",
+      "qty": 3,
+      "unit": "hours",
+      "urgency": "Normal",
+      "tags": "tutoring,translation,russian",
+      "hoursAgo": 30,
+      "cadence": "Weekly"
+    },
+    {
+      "id": 45,
+      "kind": "Need",
+      "help": "Partnership",
+      "ein": "911428805",
+      "category": "Other",
+      "title": "A sponsor for our summer meals program",
+      "desc": "Eight weeks of lunches for kids out of school. Looking for one business to anchor it.",
+      "qty": 1,
+      "unit": "sponsor",
+      "urgency": "High",
+      "tags": "sponsorship,summer meals,partnership",
+      "hoursAgo": 44
+    },
+    {
+      "id": 46,
+      "kind": "Offer",
+      "help": "Partnership",
+      "ein": "B-1",
+      "category": "Volunteers",
+      "title": "Our staff can volunteer one day a quarter",
+      "desc": "About 20 people, any hands-on work. We bring our own lunch.",
+      "qty": 20,
+      "unit": "volunteers",
+      "urgency": "Normal",
+      "tags": "corporate volunteering,team,partnership",
+      "hoursAgo": 26,
+      "cadence": "Quarterly"
+    },
+    {
+      "id": 47,
+      "kind": "Need",
+      "help": "For schools",
+      "ein": "OSPI-2220",
+      "category": "Other",
+      "title": "Career day speakers, March 12",
+      "desc": "Twenty minutes each, three sessions. Trades and healthcare especially.",
+      "qty": 12,
+      "unit": "speakers",
+      "urgency": "Normal",
+      "tags": "career day,speakers,students",
+      "hoursAgo": 16
+    },
+    {
+      "id": 48,
+      "kind": "Need",
+      "help": "For schools",
+      "ein": "OSPI-2215",
+      "category": "Other",
+      "title": "Mentors for the robotics team",
+      "desc": "One evening a week, January through March.",
+      "qty": 4,
+      "unit": "mentors",
+      "urgency": "Normal",
+      "tags": "robotics,mentoring,stem",
+      "hoursAgo": 60,
+      "cadence": "Weekly"
+    },
+    {
+      "id": 49,
+      "kind": "Offer",
+      "help": "For schools",
+      "ein": "B-2",
+      "category": "Other",
+      "title": "We'll host a shop field trip",
+      "desc": "Up to 30 students at our Tacoma yard. Safety gear provided.",
+      "qty": 30,
+      "unit": "students",
+      "urgency": "Low",
+      "tags": "field trip,trades,students",
+      "hoursAgo": 22
+    },
+    {
+      "id": 50,
+      "kind": "Offer",
+      "help": "For schools",
+      "ein": "P-4",
+      "category": "Services",
+      "title": "I'll teach a design workshop",
+      "desc": "One afternoon, any grade. I bring the materials.",
+      "qty": 1,
+      "unit": "workshop",
+      "urgency": "Low",
+      "tags": "design,workshop,students",
+      "hoursAgo": 38
+    },
+    {
+      "id": 51,
+      "kind": "Need",
+      "help": "Jobs and mentoring",
+      "ein": "WDB-12",
+      "category": "Other",
+      "title": "Employers for an apprenticeship fair",
+      "desc": "One afternoon in Spokane. Tables provided.",
+      "qty": 15,
+      "unit": "employers",
+      "urgency": "High",
+      "tags": "apprenticeship,employers,hiring",
+      "hoursAgo": 12
+    },
+    {
+      "id": 52,
+      "kind": "Offer",
+      "help": "Jobs and mentoring",
+      "ein": "B-3",
+      "category": "Other",
+      "title": "Three apprenticeships this fall",
+      "desc": "Electronics refurbishing, paid, no experience needed.",
+      "qty": 3,
+      "unit": "apprenticeships",
+      "urgency": "Normal",
+      "tags": "apprenticeship,jobs,training",
+      "hoursAgo": 18
+    },
+    {
+      "id": 53,
+      "kind": "Need",
+      "help": "Jobs and mentoring",
+      "ein": "WDB-2",
+      "category": "Other",
+      "title": "Mock interviewers for 20 trainees",
+      "desc": "Two hours, Olympia. We'll match you to a trainee.",
+      "qty": 8,
+      "unit": "volunteers",
+      "urgency": "Normal",
+      "tags": "interviews,mentoring,jobs",
+      "hoursAgo": 28
+    }
   ],
   "retag": [
-    { "id": 7, "help": "Time" },
-    { "id": 28, "help": "Skills" }
+    {
+      "id": 7,
+      "help": "Time"
+    },
+    {
+      "id": 28,
+      "help": "Skills"
+    },
+    {
+      "id": 2,
+      "urgency": "Normal"
+    },
+    {
+      "id": 9,
+      "urgency": "Normal"
+    },
+    {
+      "id": 45,
+      "urgency": "Normal"
+    },
+    {
+      "id": 3,
+      "urgency": "Low"
+    },
+    {
+      "id": 11,
+      "urgency": "Low"
+    },
+    {
+      "id": 23,
+      "urgency": "Low"
+    },
+    {
+      "id": 5,
+      "urgency": "High"
+    },
+    {
+      "id": 43,
+      "urgency": "High"
+    },
+    {
+      "id": 51,
+      "urgency": "High"
+    }
   ],
   "together": {
     "id": 60,
@@ -33,7 +300,13 @@
     "desc": "Four organizations collecting and sorting coats through November. Who's in?",
     "help": "Together",
     "lead": "911500768",
-    "partners": ["911500768", "911425676", "465378620", "911428805"],
+    "partners": [
+      "911500768",
+      "911425676",
+      "465378620",
+      "911428805"
+    ],
     "hoursAgo": 6
-  }
+  },
+  "retagNote": "Urgency is set here so the board looks like a real one: most needs ordinary, a few genuinely time-bound, none urgent until the story posts one."
 }
