@@ -24,5 +24,5 @@ export default defineConfig({
     port: 5173,
     proxy: { '/api': api, '/hubs': { target: api, ws: true }, '/health': api },
   },
-  build: { outDir: '../src/WaNonprofitConnect.Api/wwwroot', emptyOutDir: true },
+  build: { outDir: '../src/WaNonprofitConnect.Api/wwwroot', emptyOutDir: true, rolldownOptions: { input: { main: 'index.html', mapDev: 'map-dev.html' } } },
 })

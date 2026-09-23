@@ -1,11 +1,34 @@
+import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
+import { ApiError, keys } from './api'
+import { App } from './App'
+import { ToastProvider } from './shell/Toast'
 import './styles/tokens.css'
-import { BRAND } from './brand'
+import './styles/app.css'
 
-// Placeholder root. The app lane replaces this with the router and the shell.
+const queryClient: QueryClient = new QueryClient({
+  // A 401 anywhere means the session ended: forget Me, and the route guard sends you to sign up.
+  queryCache: new QueryCache({
+    onError: err => { if (err instanceof ApiError && err.isUnauthorized) queryClient.setQueryData(keys.me, null) },
+  }),
+  defaultOptions: {
+    queries: {
+      retry: (count, err) => !(err instanceof ApiError && err.status < 500) && count < 2,
+      refetchOnWindowFocus: true,
+    },
+  },
+})
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <main style={{ padding: 16 }}><h1>{BRAND.name}</h1></main>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <ToastProvider>
+          <App />
+        </ToastProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   </StrictMode>,
 )

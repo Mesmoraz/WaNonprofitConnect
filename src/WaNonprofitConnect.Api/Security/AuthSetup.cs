@@ -21,7 +21,11 @@ public static class AuthSetup
     {
         var accountOptions = new AccountOptions
         {
-            AdminEmails = config.GetSection("Admin:Emails").Get<string[]>()?.Where(e => !string.IsNullOrWhiteSpace(e)).ToArray() ?? Array.Empty<string>(),
+            // Either a list (Admin__Emails__0, __1) or one comma-separated value (Admin__Emails), as App Service settings allow.
+            AdminEmails = (config.GetSection("Admin:Emails").Get<string[]>() ?? Array.Empty<string>())
+                .Append(config["Admin:Emails"] ?? "")
+                .SelectMany(e => e.Split(',', ';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                .Where(e => !string.IsNullOrWhiteSpace(e)).Distinct(StringComparer.OrdinalIgnoreCase).ToArray(),
         };
         services.AddSingleton(accountOptions);
 

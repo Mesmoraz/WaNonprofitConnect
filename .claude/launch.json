@@ -4,8 +4,25 @@
     {
       "name": "api",
       "runtimeExecutable": "dotnet",
-      "runtimeArgs": ["run", "--project", "src/WaNonprofitConnect.Api", "--launch-profile", "http"],
+      "runtimeArgs": [
+        "run",
+        "--project",
+        "src/WaNonprofitConnect.Api",
+        "--launch-profile",
+        "http"
+      ],
       "port": 5253
+    },
+    {
+      "name": "app",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "app",
+        "run",
+        "dev"
+      ],
+      "port": 5173
     }
   ]
 }

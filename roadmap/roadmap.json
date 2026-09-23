@@ -523,7 +523,7 @@
       "id": "S-18",
       "epic": "E-24",
       "title": "A need or offer: who it's from, how it fits you, I can help / I need this",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-21",
       "round": "B6",
       "tasks": [],
@@ -534,7 +534,7 @@
       "id": "S-19",
       "epic": "E-24",
       "title": "Post: kind of help first, then the rest",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-21",
       "round": "B7",
       "tasks": [],
@@ -545,7 +545,7 @@
       "id": "S-20",
       "epic": "E-24",
       "title": "Thread and inbox: accept, message, mark done, golden",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-21",
       "round": "B8",
       "tasks": [],
@@ -1012,7 +1012,13 @@
       "added": "2026-09-23",
       "lane": "backend",
       "source": "Taylor, 2026-09-23: skip prototyping, build a working alpha",
-      "tasks": []
+      "tasks": [
+        {
+          "id": "T-33",
+          "title": "Admin emails read from one comma-separated App Service setting too",
+          "status": "ready"
+        }
+      ]
     },
     {
       "id": "S-69",
@@ -1028,7 +1034,7 @@
       "id": "S-70",
       "epic": "E-24",
       "title": "App shell and front door on the approved copy",
-      "status": "in-progress",
+      "status": "review",
       "added": "2026-09-23",
       "lane": "app",
       "source": "Taylor, 2026-09-23: skip prototyping, build a working alpha",
@@ -1058,7 +1064,7 @@
       "id": "S-73",
       "epic": "E-25",
       "title": "Map: base map, clusters, four thread states, golden glow, tap for details",
-      "status": "in-progress",
+      "status": "review",
       "added": "2026-09-23",
       "lane": "map",
       "source": "Taylor, 2026-09-23: skip prototyping, build a working alpha",
@@ -1082,7 +1088,13 @@
       "added": "2026-09-23",
       "lane": "backend",
       "source": "Taylor, 2026-09-23: skip prototyping, build a working alpha",
-      "tasks": []
+      "tasks": [
+        {
+          "id": "T-32",
+          "title": "Google client ID in the app build and in App Service",
+          "status": "ready"
+        }
+      ]
     },
     {
       "id": "S-76",

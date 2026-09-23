@@ -1,0 +1,15 @@
+.map-card { position: relative; padding-right: 48px; box-shadow: var(--shadow); }
+.map-card .t { font-weight: 600; }
+.map-card-open { margin-top: 10px; }
+.map-card-close {
+  position: absolute; right: 2px; top: 2px; width: var(--tap); height: var(--tap);
+  display: grid; place-items: center; border-radius: 50%; color: var(--ink-3); font-size: 20px;
+}
+.map-preview { max-width: 480px; margin: 0 auto; width: 100%; }
+
+.map-screen { position: relative; height: 100%; min-height: 360px; }
+.map-fill { position: absolute; inset: 0; }
+.map-card-dock {
+  position: absolute; left: var(--gutter); right: var(--gutter); bottom: calc(12px + var(--safe-bottom));
+  max-width: 480px; margin: 0 auto; z-index: 2;
+}

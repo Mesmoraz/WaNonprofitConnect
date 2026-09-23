@@ -1,0 +1,10 @@
+.listing-top { margin: 4px 0 0; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.listing-top.need { color: var(--need); }
+.listing-top.offer { color: var(--offer); }
+.listing-org { margin: 0; font-weight: 600; }
+.listing-qty { margin: 4px 0 0; font-weight: 600; font-size: 16px; }
+.listing-desc { margin: 0; color: var(--ink); white-space: pre-line; }
+.listing-msg-label { margin-top: 8px; margin-bottom: 0; }
+.fit-card { color: var(--ink); text-decoration: none; }
+.fit-card .pills { display: flex; gap: 6px; margin-bottom: 6px; }
+

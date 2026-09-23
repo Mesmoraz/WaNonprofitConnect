@@ -1,0 +1,4 @@
+.post .field-label { margin: 6px 0 -2px; }
+.post-row { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
+.post-row .field-label { margin: 0 0 6px; }
+.chip:disabled { opacity: 0.4; cursor: default; }

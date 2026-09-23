@@ -1,0 +1,29 @@
+/* Board: a comfortable reading column, centered in the content area on wide screens. */
+.board { max-width: 640px; margin: 0 auto; width: 100%; }
+
+.seg {
+  display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain;
+  margin: 2px calc(-1 * var(--gutter)) 0; padding: 0 var(--gutter); border-bottom: 1px solid var(--line-2);
+}
+.seg::-webkit-scrollbar { display: none; }
+.seg-item {
+  flex: none; min-height: var(--tap); padding: 8px 10px 9px; font-size: 14px; font-weight: 600; color: var(--ink-3);
+  border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap;
+}
+.seg-item.on { color: var(--ink); border-bottom-color: var(--accent); }
+
+.flt-head { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--ink-2); }
+.flt-toggle { min-height: var(--tap); padding: 0 2px 0 12px; font-weight: 600; color: var(--accent); }
+.flt { display: flex; flex-direction: column; gap: 8px; padding-bottom: 4px; }
+.flt .btn.sm { align-self: flex-start; min-height: var(--tap); }
+
+.listing-card { color: var(--ink); text-decoration: none; }
+.listing-card .pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+.listing-card .who-line { display: block; font-size: 13px; color: var(--ink-2); font-weight: 500; }
+.listing-card .why { font-size: 11px; color: var(--ink-3); display: block; margin-top: 4px; }
+.board .verified { color: var(--good); font-weight: 600; }
+
+@media (min-width: 900px) {
+  .seg { margin-left: 0; margin-right: 0; padding: 0; }
+  .board .card { box-shadow: 0 1px 0 var(--line-2); }
+}

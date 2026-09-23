@@ -1,0 +1,10 @@
+.inbox { max-width: 640px; margin: 0 auto; width: 100%; }
+.inbox-row { display: flex; gap: 10px; align-items: flex-start; color: var(--ink); text-decoration: none; }
+.inbox-main { flex: 1; min-width: 0; }
+.inbox-row.unread .t { font-weight: 700; }
+.inbox-status { display: inline-block; margin-top: 6px; font-size: 12px; font-weight: 600; color: var(--ink-2); }
+.inbox-status.you { color: var(--need); }
+.inbox-status.golden { color: var(--thread-golden); }
+.inbox-side { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex: none; }
+.inbox-time { font-size: 12px; color: var(--ink-3); }
+.unread-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--need); }
