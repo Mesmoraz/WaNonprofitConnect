@@ -31,9 +31,9 @@ Approved by Taylor 2026-09-23, as written. Build exactly this. Anything else a s
 
 - Chips "We need" / "We have". Headline follows: "What do you need?" / "What do you have?"
 - Label "Kind of help": Time, Skills, Things, Partnership, For schools, Jobs and mentoring.
-- Field "What is it?", placeholder follows the kind of help, from TAXONOMY.md's "A need sounds like" / "An offer sounds like" columns (for example "12 laptops for client intake").
+- Field "What is it?", placeholder follows the kind of help, from TAXONOMY.md's "A need sounds like" / "An offer sounds like" columns (for example "Laptops for client intake").
 - Field "Details", placeholder "Condition, pickup or delivery, dates."
-- "How many" and "Of what".
+- "How many", hint "Just the number, if it matters." No "Of what" (Taylor, Sep 23: the title already says what it is). A count with no unit shows as "12 needed" or "12 to give".
 - Needs only, "How soon": Urgent, This week, This month, Whenever. Hint: "Urgent is 2 a month, so it keeps meaning you can't operate without it." Urgent is disabled once the organization has used 2 in the last 30 days.
 - "How often": Once, Every week, Every month, Every quarter, Ongoing.
 - Button **Post need** / **Post offer**. Toast "Posted. It's on the board now." Then open the post.

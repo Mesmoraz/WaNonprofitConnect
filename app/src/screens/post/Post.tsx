@@ -9,11 +9,11 @@ import './post.css'
 // Placeholders from docs/TAXONOMY.md, "A need sounds like" / "An offer sounds like", without the closing period.
 const SOUNDS_LIKE: Record<ListingKind, Record<KindOfHelp, string>> = {
   Need: {
-    Time: 'Drivers, Saturday mornings, 4-hour shifts', Skills: 'Bookkeeping, a few hours a month', Things: '12 laptops for client intake',
+    Time: 'Drivers, Saturday mornings, 4-hour shifts', Skills: 'Bookkeeping, a few hours a month', Things: 'Laptops for client intake',
     Partnership: 'A sponsor for our summer meals program', ForSchools: 'Guest speakers for career day', JobsAndMentoring: 'Mock interviewers for 20 trainees',
   },
   Offer: {
-    Time: 'I have Saturday mornings free', Skills: 'I’m a CPA. A few hours a month', Things: '15 refurbished laptops',
+    Time: 'I have Saturday mornings free', Skills: 'I’m a CPA. A few hours a month', Things: 'Refurbished laptops',
     Partnership: 'Our staff can volunteer one day a quarter', ForSchools: 'We’ll host a field trip to our shop', JobsAndMentoring: 'We’re hiring 3 apprentices this fall',
   },
 }
@@ -33,7 +33,6 @@ export function Post() {
   const [title, setTitle] = useState('')
   const [details, setDetails] = useState('')
   const [qty, setQty] = useState('')
-  const [unit, setUnit] = useState('')
   const [urgency, setUrgency] = useState<Urgency>('Normal')
   const [cadence, setCadence] = useState<Cadence>('OneTime')
   const [failed, setFailed] = useState(false)
@@ -49,7 +48,7 @@ export function Post() {
     const n = parseInt(qty, 10)
     create.mutate({
       kind, help, title: title.trim(), description: details.trim() || undefined,
-      quantity: Number.isFinite(n) && n > 0 ? n : undefined, unit: unit.trim() || undefined,
+      quantity: Number.isFinite(n) && n > 0 ? n : undefined, unit: undefined,
       urgency: isNeed ? (urgency === 'Critical' && urgentOff ? 'Normal' : urgency) : 'Normal', cadence,
     }, {
       onSuccess: l => { toast('Posted. It’s on the board now.'); navigate(`/listing/${l.id}`, { replace: true }) },
@@ -81,15 +80,11 @@ export function Post() {
       <label className="field-label" htmlFor="p-details">Details</label>
       <textarea id="p-details" rows={3} value={details} onChange={e => setDetails(e.target.value)} placeholder="Condition, pickup or delivery, dates." />
 
-      <div className="post-row">
-        <div>
-          <label className="field-label" htmlFor="p-qty">How many</label>
-          <input id="p-qty" inputMode="numeric" pattern="[0-9]*" value={qty} onChange={e => setQty(e.target.value.replace(/\D/g, ''))} />
-        </div>
-        <div>
-          <label className="field-label" htmlFor="p-unit">Of what</label>
-          <input id="p-unit" value={unit} onChange={e => setUnit(e.target.value)} />
-        </div>
+      {/* "Of what" is gone (Taylor, Sep 23): the title already says what it is. */}
+      <div className="post-qty">
+        <label className="field-label" htmlFor="p-qty">How many</label>
+        <input id="p-qty" inputMode="numeric" pattern="[0-9]*" value={qty} onChange={e => setQty(e.target.value.replace(/\D/g, ''))} aria-describedby="p-qty-hint" />
+        <p className="hint" id="p-qty-hint">Just the number, if it matters.</p>
       </div>
 
       {isNeed && <>

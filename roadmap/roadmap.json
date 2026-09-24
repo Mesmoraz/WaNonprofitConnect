@@ -1239,6 +1239,14 @@
           "status": "ready"
         }
       ]
+    },
+    {
+      "id": "S-87",
+      "epic": "E-25",
+      "title": "Wish list: search the map for an organization or a place, and fly to it",
+      "status": "backlog",
+      "added": "2026-09-24",
+      "tasks": []
     }
   ]
 }

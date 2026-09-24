@@ -25,7 +25,7 @@ Everything anyone posts is a **need** or an **offer**, and each is one kind of h
 |---|---|---|---|---|---|---|
 | 1 | Volunteer | Time | Drivers, Saturday mornings, 4-hour shifts. | I have Saturday mornings free. | Nonprofits, schools, programs | People, businesses |
 | 2 | Skills & Expertise | Skills | Bookkeeping, a few hours a month. | I'm a CPA. A few hours a month. | Nonprofits, schools, programs | People, businesses |
-| 3 | Donation & Resource | Things | 12 laptops for client intake. | 15 refurbished laptops. | Nonprofits, schools, programs | Businesses, people, nonprofits |
+| 3 | Donation & Resource | Things | Laptops for client intake. | Refurbished laptops. | Nonprofits, schools, programs | Businesses, people, nonprofits |
 | 4 | Corporate Partnership | Partnership | A sponsor for our summer meals program. | Our staff can volunteer one day a quarter. | Nonprofits, schools, programs | Businesses |
 | 5 | Education | For schools | Guest speakers for career day. | We'll host a field trip to our shop. | Schools | Businesses, people, nonprofits |
 | 6 | Workforce | Jobs and mentoring | Mock interviewers for 20 trainees. | We're hiring 3 apprentices this fall. | Workforce programs | Businesses, people |

@@ -23,7 +23,7 @@ export function Inbox() {
       {sorted.map(t => {
         const mineIsNeed = t.need.org.ein === myEin
         const theirs = mineIsNeed ? t.offer : t.need
-        const what = quantityLine(theirs) || theirs.title
+        const what = (theirs.unit && quantityLine(theirs)) || theirs.title
         const status = inboxStatus(t, myEin)
         return (
           <Link key={t.id} to={`/thread/${t.id}`} className={`card tap inbox-row${t.unread ? ' unread' : ''}`}>

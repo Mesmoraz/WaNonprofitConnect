@@ -23,7 +23,7 @@ export function shortAgo(iso: string) {
 
 /** The grey facts line on a card: city · how many · how often · how long ago. */
 export function listingFacts(l: Listing) {
-  return [cap(l.org.city), l.quantity ? `${l.quantity} ${l.unit ?? ''}`.trim() : '', CADENCE_WORD[l.cadence], shortAgo(l.createdAt)]
+  return [cap(l.org.city), quantityLine(l), CADENCE_WORD[l.cadence], shortAgo(l.createdAt)]
     .filter(Boolean).join(' · ')
 }
 
@@ -55,8 +55,11 @@ export function postedAgo(iso: string) {
   return `Posted ${MONTHS[d.getMonth()]} ${d.getDate()}`
 }
 
-/** "12 laptops" */
-export const quantityLine = (l: Pick<Listing, 'quantity' | 'unit'>) => l.quantity ? `${l.quantity} ${l.unit ?? ''}`.trim() : ''
+/** "12 laptops" on older posts that named a unit; otherwise "12 needed" or "12 to give" (the Post screen no longer asks "Of what"). */
+export function quantityLine(l: Pick<Listing, 'quantity' | 'unit' | 'kind'>) {
+  if (!l.quantity) return ''
+  return l.unit ? `${l.quantity} ${l.unit}` : `${l.quantity} ${l.kind === 'Need' ? 'needed' : 'to give'}`
+}
 
 /** B8 Inbox status word, from where you stand. Declined and cancelled threads carry none (not in the briefs). */
 export function inboxStatus(t: { status: string; startedByEin: string }, myEin: string | undefined) {

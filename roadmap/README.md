@@ -51,6 +51,7 @@ Generated from `roadmap.json` on 2026-09-24. Don't edit this file; run `node scr
 | S-83 Microsoft sign-in, since many nonprofits run on Microsoft 365 |  |  |  |  |
 | S-85 Sign in by email for people without Google |  |  |  |  |
 | S-86 What you see depends on who you are: nonprofit and company first, then schools and students |  |  |  |  |
+| S-87 Wish list: search the map for an organization or a place, and fly to it |  |  |  |  |
 
 ## Roadmap
 
@@ -285,7 +286,7 @@ Corporate giving and volunteering platforms, once there's something to integrate
 
 - **S-58** Corporate giving platforms (Benevity and others), subject to APIs and agreements · Backlog
 
-### I-6 A working alpha for invited nonprofits · In progress · 1/21 stories done
+### I-6 A working alpha for invited nonprofits · In progress · 1/22 stories done
 
 Real organizations post real needs and offers, start threads, and make golden threads, on the map, on any phone or desktop. Target: live Sep 30.
 
@@ -314,7 +315,7 @@ Board, a need or offer, post, thread, inbox, backed by the real API.
 - **S-72** Threads API: start, message, accept, mark done, live over SignalR · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-80** The name lives in one file, so it can change in minutes · Done · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 
-#### E-25 The map, for real · In progress · 0/5
+#### E-25 The map, for real · In progress · 0/6
 
 A real base map, every nonprofit as a dot, clusters, and threads that drift and glow gold when done.
 
@@ -323,6 +324,7 @@ A real base map, every nonprofit as a dot, clusters, and threads that drift and 
 - **S-73** Map: base map, clusters, four thread states, golden glow, tap for details · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-74** Map data: ZIP centroids from the Census gazetteer, map and points endpoints · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-84** Map: steady cursor, pins grow on hover, a tapped thread shows both posts, a tapped organization opens its page · In review
+- **S-87** Wish list: search the map for an organization or a place, and fly to it · Backlog
 
 #### E-26 Live and invited · In progress · 0/5
 
