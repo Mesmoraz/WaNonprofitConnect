@@ -53,3 +53,17 @@ public class Invite
     public string CreatedBy { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
 }
+
+/// <summary>
+/// An organization's board filters, shared by everyone at it (S-88). Serve is "Who they serve": group names from
+/// ServeGroups, comma-separated. No row means "start from the IRS cause code".
+/// </summary>
+public class OrgPreference
+{
+    public string Ein { get; set; } = string.Empty;
+    public Organization? Org { get; set; }
+    public string Serve { get; set; } = string.Empty;
+    public DateTime UpdatedAt { get; set; }
+    /// <summary>Email of whoever saved it last (a member, or an admin).</summary>
+    public string UpdatedBy { get; set; } = string.Empty;
+}

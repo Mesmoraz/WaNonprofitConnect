@@ -71,6 +71,27 @@ public sealed partial class HelpbookService
             statuses.Count(s => s is MatchStatus.Proposed or MatchStatus.Accepted));
     }
 
+    /// <summary>An organization's saved filters, or Serve = null when it has none yet.</summary>
+    public async Task<FiltersDto> GetFiltersAsync(string ein, CancellationToken ct = default)
+    {
+        var p = await _db.OrgPreferences.AsNoTracking().FirstOrDefaultAsync(x => x.Ein == ein, ct);
+        return new FiltersDto(p is null ? null : ServeGroups.Clean(p.Serve.Split(',', StringSplitOptions.RemoveEmptyEntries)));
+    }
+
+    /// <summary>Save an organization's "Who they serve" picks. Unknown names are dropped; an empty list means "show everything".</summary>
+    public async Task<FiltersDto> SaveFiltersAsync(string ein, IEnumerable<string>? serve, string byEmail, CancellationToken ct = default)
+    {
+        if (!await _db.Organizations.AnyAsync(o => o.Ein == ein, ct)) throw ExchangeException.NotFound("Organization");
+        var clean = ServeGroups.Clean(serve);
+        var p = await _db.OrgPreferences.FirstOrDefaultAsync(x => x.Ein == ein, ct);
+        if (p is null) { p = new OrgPreference { Ein = ein }; _db.OrgPreferences.Add(p); }
+        p.Serve = string.Join(',', clean);
+        p.UpdatedAt = DateTime.UtcNow;
+        p.UpdatedBy = byEmail;
+        await _db.SaveChangesAsync(ct);
+        return new FiltersDto(clean);
+    }
+
     public async Task<IReadOnlyList<(string Ein, double Lat, double Lon)>> MapPointsAsync(CancellationToken ct = default)
     {
         // Street address when the geocoder matched it. Without the file (tests, a fresh clone), the ZIP's center.

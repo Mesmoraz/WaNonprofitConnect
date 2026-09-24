@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useFilters, useSaveFilters } from '../api'
 
 // "Who they serve" (S-88, approved by Taylor Sep 24): 12 groups, read from the IRS cause code (NTEE).
 // Strict (Taylor, Sep 24: laptops showed under Food): with groups picked, only organizations serving one of them
@@ -14,9 +14,37 @@ const BY_MAJOR: Partial<Record<string, ServeGroup>> = {
   R: 'Communities facing barriers', C: 'Environment', D: 'Animals', A: 'Arts and culture',
 }
 
-/** The groups an organization serves, from its cause code: a major group letter, or a few specific codes (P30, W30...). */
-export function servedBy(ntee: string | null | undefined): ServeGroup[] {
-  const code = (ntee ?? '').toUpperCase()
+// About 1 in 5 WA charities has no cause code (the real Ballard Food Bank among them), and many more have one that
+// none of the 12 groups cover. For those, the name is the
+// best clue we have. Only plain, unambiguous words; a wrong guess is one tap to switch off.
+const BY_NAME: [RegExp, ServeGroup][] = [
+  [/\bFOOD (BANK|PANTRY|SHARE|LIFELINE)|\bMEALS?\b/, 'Food'],
+  [/\bHOUSING\b|\bHABITAT FOR HUMANITY|\bSHELTER\b|\bHOMELESS/, 'Housing'],
+  [/\bPTS?A\b|\bPTO\b|\bSCHOOLS?\b|\bACADEMY\b|\bLIBRARY FOUNDATION|\bSCHOLARSHIP/, 'Education'],
+  [/\bYOUTH\b|\bKIDS?\b|\bCHILDREN'?S?\b|\bBOYS (&|AND) GIRLS|\bLITTLE LEAGUE|\bSCOUTS?\b/, 'Children and youth'],
+  [/\bVETERANS?\b|\bVFW\b|\bAMERICAN LEGION/, 'Veterans'],
+  [/\bSENIORS?\b|\bELDERS?\b|\bAGING\b/, 'The elderly'],
+  [/\bHUMANE\b|\bANIMALS?\b|\bSPCA\b|\bPETS?\b|\bRESCUE\b|\bWILDLIFE\b/, 'Animals'],
+  [/\bARTS?\b|\bMUSEUM\b|\bTHEAT(RE|ER)\b|\bSYMPHONY\b|\bCHOIR\b|\bOPERA\b|\bBALLET\b/, 'Arts and culture'],
+  [/\bCONSERVA(NCY|TION)\b|\bWATERSHED\b|\bENVIRONMENT|\bLAND TRUST|\bSALMON\b/, 'Environment'],
+  [/\bCLINIC\b|\b(COMMUNITY|MENTAL|PUBLIC|FREE) HEALTH\b|\bHEALTH (CENTER|CLINIC|CARE)\b|\bHOSPICE\b|\bHOSPITAL\b/, 'Health'],
+  [/\bFAMILY (SERVICES|SUPPORT|CENTER|RESOURCES?|PROMISE)\b|\bFAMILIES\b|\bPARENTS?\b/, 'Families'],  // not "FAMILY FOUNDATION": that's a private funder
+  [/\bIMMIGRANTS?\b|\bREFUGEES?\b|\bCIVIL RIGHTS\b|\bTRIBAL\b|\bINDIGENOUS\b/, 'Communities facing barriers'],
+]
+
+/**
+ * The groups an organization serves: from its cause code (a major group letter, or a few specific codes like
+ * P30 and W30), or, when the code gives none, from words in its name.
+ */
+export function servedBy(ntee: string | null | undefined, name?: string | null): ServeGroup[] {
+  const fromCode = servedByCode((ntee ?? '').toUpperCase())
+  if (fromCode.length) return fromCode
+  // No code, or one none of the 12 cover (Auburn Food Bank is filed as T70, federated giving): use the name.
+  const n = (name ?? '').toUpperCase()
+  return n ? BY_NAME.filter(([re]) => re.test(n)).map(([, g]) => g) : []
+}
+
+function servedByCode(code: string): ServeGroup[] {
   if (!code) return []
   const out = new Set<ServeGroup>()
   const major = BY_MAJOR[code[0]]
@@ -31,28 +59,20 @@ export function servedBy(ntee: string | null | undefined): ServeGroup[] {
 }
 
 /** A post shows if you picked nothing, or its organization serves a group you picked. */
-export const passes = (picked: ServeGroup[], ntee: string | null | undefined) =>
-  !picked.length || servedBy(ntee).some(g => picked.includes(g))
+export const passes = (picked: ServeGroup[], org: { ntee: string | null; name: string }) =>
+  !picked.length || servedBy(org.ntee, org.name).some(g => picked.includes(g))
 
 /**
- * Your picks, remembered on this device per organization (not yet on your account: that needs a database change).
- * Until you change them, they start from your own organization's cause code.
+ * Your organization's picks, saved to it so everyone there shares them (an admin can set them too).
+ * Until someone saves, they start from your organization's cause code.
  */
-export function useServeFilter(myEin: string | undefined, myNtee: string | null | undefined) {
-  const key = myEin ? `helpbook.serve.${myEin}` : ''
-  const read = (): ServeGroup[] | null => {
-    if (!key) return null
-    try { const s = localStorage.getItem(key); return s ? (JSON.parse(s) as ServeGroup[]).filter(g => SERVE_GROUPS.includes(g)) : null } catch { return null }
-  }
-  const [stored, setStored] = useState<ServeGroup[] | null>(read)
-  const picked = stored ?? servedBy(myNtee)
-  const save = useCallback((next: ServeGroup[]) => {
-    setStored(next)
-    try { if (key) localStorage.setItem(key, JSON.stringify(next)) } catch { /* private mode: this visit only */ }
-  }, [key])
+export function useServeFilter(myEin: string, myOrg: { ntee: string | null; name: string } | undefined) {
+  const { data } = useFilters(myEin)
+  const save = useSaveFilters(myEin)
+  const picked = (data?.serve ?? servedBy(myOrg?.ntee, myOrg?.name)).filter((g): g is ServeGroup => (SERVE_GROUPS as readonly string[]).includes(g))
   return {
     picked,
-    toggle: (g: ServeGroup) => save(picked.includes(g) ? picked.filter(x => x !== g) : [...picked, g]),
-    clear: () => save([]),
+    toggle: (g: ServeGroup) => save.mutate(picked.includes(g) ? picked.filter(x => x !== g) : [...picked, g]),
+    clear: () => save.mutate([]),
   }
 }

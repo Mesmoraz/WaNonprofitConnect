@@ -35,10 +35,10 @@ export function Board() {
   const { data: me } = useMe()
   const myEin = me?.membership?.ein ?? ''
   const { data: mine } = useOrgPage(myEin)   // your cause code, to start "Who they serve" from
-  const serve = useServeFilter(myEin || undefined, mine?.org.ntee)
+  const serve = useServeFilter(myEin, mine?.org)
   const [showAll, setShowAll] = useState(false)
   const all = board.data ?? []
-  const listings = showAll ? all : all.filter(l => passes(serve.picked, l.org.ntee))
+  const listings = showAll ? all : all.filter(l => passes(serve.picked, l.org))
   const hidden = all.length - listings.length
   const filterCount = (kind ? 1 : 0) + serve.picked.length
   const clearFilters = () => { set('kind', ''); serve.clear() }

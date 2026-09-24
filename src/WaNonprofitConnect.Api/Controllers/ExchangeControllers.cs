@@ -33,6 +33,8 @@ public abstract class AppControllerBase : ControllerBase
     /// <summary>For reads: the caller's confirmed EIN, or null (still signed in, just not confirmed yet).</summary>
     protected Task<string?> FindActingEinAsync(CancellationToken ct)
         => HttpContext.RequestServices.GetRequiredService<AccountService>().FindActingEinAsync(AccountId, ct);
+
+    protected string Email => User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "unknown";
 }
 
 /// <summary>The board and single needs or offers, in the alpha contract's shapes.</summary>
@@ -62,6 +64,15 @@ public sealed class ListingsController : AppControllerBase
     [ProducesResponseType(404)]
     public async Task<ActionResult<OrgPageDto>> OrgPage(string ein, CancellationToken ct)
         => await _helpbook.OrgPageAsync(ein, ct) is { } page ? Ok(page) : NotFound();
+
+    /// <summary>Your organization's saved board filters. Serve is null until someone there saves them.</summary>
+    [HttpGet("filters")]
+    public async Task<FiltersDto> Filters(CancellationToken ct) => await _helpbook.GetFiltersAsync(await ActingEinAsync(ct), ct);
+
+    /// <summary>Save your organization's board filters, for everyone at it.</summary>
+    [HttpPut("filters")]
+    public async Task<FiltersDto> SaveFilters([FromBody] SaveFiltersRequest request, CancellationToken ct)
+        => await _helpbook.SaveFiltersAsync(await ActingEinAsync(ct), request.Serve, Email, ct);
 
     /// <summary>Older paged search over listings (CLI and scripts). The app uses /board.</summary>
     [HttpGet("listings")]

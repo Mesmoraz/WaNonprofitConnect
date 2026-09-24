@@ -1287,8 +1287,8 @@
         },
         {
           "id": "T-48",
-          "title": "Save filters to your account (needs the app's database login to be allowed to add a table)",
-          "status": "ready"
+          "title": "Save filters to your organization (shared by everyone there; admins can set them)",
+          "status": "done"
         }
       ]
     },

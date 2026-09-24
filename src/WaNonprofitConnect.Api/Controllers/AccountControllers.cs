@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WaNonprofitConnect.Api.Security;
 using WaNonprofitConnect.Data.Accounts;
+using WaNonprofitConnect.Data.Exchange;
 
 namespace WaNonprofitConnect.Api.Controllers;
 
@@ -119,6 +120,11 @@ public sealed class AdminController : AppControllerBase
     [HttpPost("invites")]
     public Task<InviteDto> CreateInvite([FromBody] CreateInviteRequest request, CancellationToken ct)
         => _accounts.CreateInviteAsync(request.Ein, request.Uses, Email, ct);
+
+    /// <summary>Admins only: set an organization's board filters for it.</summary>
+    [HttpPut("orgs/{ein}/filters")]
+    public Task<FiltersDto> SaveOrgFilters(string ein, [FromBody] SaveFiltersRequest request, [FromServices] HelpbookService helpbook, CancellationToken ct)
+        => helpbook.SaveFiltersAsync(ein, request.Serve, Email, ct);
 
     /// <summary>Admins only: act as any organization straight away, no invite. For testing both sides of a thread.</summary>
     [HttpPost("act-as")]

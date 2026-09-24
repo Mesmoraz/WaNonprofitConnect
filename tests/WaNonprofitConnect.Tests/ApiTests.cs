@@ -132,6 +132,29 @@ public sealed class ApiTests : IDisposable
     }
 
     [Fact]
+    public async Task An_organization_saves_its_filters_for_everyone_there_and_admins_can_set_them()
+    {
+        using var one = _factory.NewClient();
+        using var two = _factory.NewClient();
+        using var admin = _factory.NewClient();
+        await PostOk<JsonElement>(one, "/api/v1/auth/dev", new { email = "f1@example.org", name = "Fay", ein = C });
+        await PostOk<JsonElement>(two, "/api/v1/auth/dev", new { email = "f2@example.org", name = "Flo", ein = C });
+        await PostOk<JsonElement>(admin, "/api/v1/auth/dev", new { email = ApiFactory.AdminEmail, name = "Admin" });
+
+        var before = await one.GetFromJsonAsync<JsonElement>("/api/v1/filters", Json);
+        before.GetProperty("serve").ValueKind.Should().Be(JsonValueKind.Null); // never saved: start from the cause code
+
+        var saved = await one.PutAsJsonAsync("/api/v1/filters", new { serve = new[] { "Animals", "Not a group", "Food" } }, Json);
+        saved.StatusCode.Should().Be(HttpStatusCode.OK);
+        var theirs = await two.GetFromJsonAsync<JsonElement>("/api/v1/filters", Json);
+        theirs.GetProperty("serve").EnumerateArray().Select(x => x.GetString()).Should().Equal("Food", "Animals"); // known names, fixed order
+
+        (await one.PutAsJsonAsync($"/api/v1/admin/orgs/{D}/filters", new { serve = new[] { "Food" } }, Json)).StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        (await admin.PutAsJsonAsync($"/api/v1/admin/orgs/{D}/filters", new { serve = new[] { "Veterans" } }, Json)).StatusCode.Should().Be(HttpStatusCode.OK);
+        (await admin.PutAsJsonAsync("/api/v1/admin/orgs/000000000/filters", new { serve = new[] { "Food" } }, Json)).StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
     public async Task Google_sign_in_without_a_client_id_is_503()
     {
         using var http = _factory.NewClient();

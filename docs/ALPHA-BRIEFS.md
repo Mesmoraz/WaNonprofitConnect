@@ -83,4 +83,4 @@ Approved by Taylor 2026-09-24. Round one of S-88.
 - Line: "Set from your organization’s cause code. Tap to change."
 - Chips start from your organization's IRS cause code. A post shows if its organization serves a group you picked; nothing picked shows everything. Organizations with no listed group count as outside your filters (Taylor, Sep 24: they had always shown, and laptops appeared under Food).
 - At the bottom when posts are hidden: "{n} more outside your filters. Show them".
-- "Clear filters" clears these too. The map isn't filtered yet. Picks are remembered per device until they can be saved to your account.
+- "Clear filters" clears these too. The map isn't filtered yet. Picks are saved to your organization, shared by everyone there; an admin can set them. When a cause code gives no group (none, or one like T70 "federated giving"), the organization's name is read instead: "Food bank" is Food, "PTA" is Education, and so on.

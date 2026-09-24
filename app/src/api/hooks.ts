@@ -16,6 +16,7 @@ export const keys = {
   orgPage: (ein: string) => ['orgPage', ein] as const,
   adminClaims: ['admin', 'claims'] as const,
   adminInvites: ['admin', 'invites'] as const,
+  filters: (ein: string) => ['filters', ein] as const,
 }
 
 // ---- Reads ------------------------------------------------------------------
@@ -48,6 +49,18 @@ export function useThread(id: number) {
 }
 
 export const useMapData = (enabled = true) => useQuery({ queryKey: keys.map, queryFn: api.map, enabled, staleTime: 60_000 })
+
+/** Your organization's saved filters, per organization (switching organization switches them). */
+export const useFilters = (ein: string) => useQuery({ queryKey: keys.filters(ein), queryFn: api.filters, enabled: !!ein, staleTime: 5 * 60_000 })
+export function useSaveFilters(ein: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: api.saveFilters,
+    onMutate: serve => { qc.setQueryData(keys.filters(ein), { serve }) },   // the chips answer at once
+    onSuccess: saved => { qc.setQueryData(keys.filters(ein), saved) },
+    onError: () => { qc.invalidateQueries({ queryKey: keys.filters(ein) }) },
+  })
+}
 
 export const useOrgPage = (ein: string) => useQuery({ queryKey: keys.orgPage(ein), queryFn: () => api.orgPage(ein), enabled: !!ein })
 

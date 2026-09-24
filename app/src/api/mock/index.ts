@@ -39,6 +39,7 @@ for (const t of threads) for (const lid of [t.needId, t.offerId]) { const l = li
 
 const invites: Invite[] = Object.entries(SEED_INVITES).map(([code, ein]) => ({ code, ein, orgName: orgByEin(ein)?.name ?? ein, uses: 5, used: 0 }))
 const claims: Claim[] = []
+const filters: Record<string, string[]> = {}
 
 let nextId = 1000
 const id = () => ++nextId
@@ -257,6 +258,8 @@ const routes: [string, RegExp, Handler][] = [
     return { members, threads: mapThreads, suggested } satisfies MapData
   }],
   // The demo shows the real faint dots (public data) so the whole state looks alive; dev:mock stays offline.
+  ['GET', /^\/filters$/, () => ({ serve: filters[requireOrg()] ?? null })],
+  ['PUT', /^\/filters$/, (_m, b: { serve?: string[] }) => { const ein = requireOrg(); filters[ein] = b.serve ?? []; return { serve: filters[ein] } }],
   ['GET', /^\/orgs\/(\d+)\/page$/, m => {
     requireMe()
     const o = orgByEin(m[1]) ?? fail(404, 'Not found.')

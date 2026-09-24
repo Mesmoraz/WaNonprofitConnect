@@ -157,7 +157,7 @@ Find anyone here, joined or not; one profile layout for six shapes.
     - [ ] T-45 Question: does the second inbox hold posts outside your filters, messages from organizations outside them, or both? (Ready)
     - [x] T-46 Brief the Who they serve filter: approved by Taylor Sep 24 (12 groups, Communities facing barriers)
     - [x] T-47 Who they serve on the board: 12 groups from the cause code, remembered per device
-    - [ ] T-48 Save filters to your account (needs the app's database login to be allowed to add a table) (Ready)
+    - [x] T-48 Save filters to your organization (shared by everyone there; admins can set them)
 
 #### E-7 The map · Backlog · 0/3
 

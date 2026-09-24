@@ -20,6 +20,7 @@ public class AppDbContext : DbContext
     public DbSet<Membership> Memberships => Set<Membership>();
     public DbSet<Invite> Invites => Set<Invite>();
     public DbSet<ZipCentroid> ZipCentroids => Set<ZipCentroid>();
+    public DbSet<OrgPreference> OrgPreferences => Set<OrgPreference>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -127,6 +128,15 @@ public class AppDbContext : DbContext
         {
             b.HasKey(z => z.Zip5);
             b.Property(z => z.Zip5).HasMaxLength(5).IsUnicode(false);
+        });
+
+        modelBuilder.Entity<OrgPreference>(b =>
+        {
+            b.HasKey(p => p.Ein);
+            b.Property(p => p.Ein).HasMaxLength(9).IsUnicode(false);
+            b.Property(p => p.Serve).HasMaxLength(400).IsRequired();
+            b.Property(p => p.UpdatedBy).HasMaxLength(320).IsRequired();
+            b.HasOne(p => p.Org).WithMany().HasForeignKey(p => p.Ein).OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Account>(b =>

@@ -1,5 +1,5 @@
 import type {
-  BoardQuery, Claim, Invite, Listing, ListingDetail, MapData, MapPoint, Me, Message, NewListing, NewThread,
+  BoardQuery, Claim, Filters, Invite, Listing, ListingDetail, MapData, MapPoint, Me, Message, NewListing, NewThread,
   OrgPage, OrgSummary, Thread, ThreadAction, ThreadDetail,
 } from './types'
 
@@ -41,7 +41,7 @@ export class ApiError extends Error {
   get isNotFound() { return this.status === 404 }
 }
 
-type Method = 'GET' | 'POST'
+type Method = 'GET' | 'POST' | 'PUT'
 
 export type Transport = (method: Method, path: string, body?: unknown) => Promise<unknown>
 
@@ -117,6 +117,8 @@ export const api = {
   // Map
   map: () => call<MapData>('GET', `${V1}/map`),
   mapPoints: () => call<MapPoint[]>('GET', `${V1}/map/points`),
+  filters: () => call<Filters>('GET', `${V1}/filters`),
+  saveFilters: (serve: string[]) => call<Filters>('PUT', `${V1}/filters`, { serve }),
   orgPage: (ein: string) => call<OrgPage>('GET', `${V1}/orgs/${encodeURIComponent(ein)}/page`),
 
   // Admin

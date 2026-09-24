@@ -619,6 +619,31 @@ namespace WaNonprofitConnect.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.OrgPreference", b =>
+                {
+                    b.Property<string>("Ein")
+                        .HasMaxLength(9)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(9)");
+
+                    b.Property<string>("Serve")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.HasKey("Ein");
+
+                    b.ToTable("OrgPreferences");
+                });
+
             modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Organization", b =>
                 {
                     b.Property<string>("Ein")
@@ -1059,6 +1084,17 @@ namespace WaNonprofitConnect.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Match");
+                });
+
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.OrgPreference", b =>
+                {
+                    b.HasOne("WaNonprofitConnect.Data.Entities.Organization", "Org")
+                        .WithMany()
+                        .HasForeignKey("Ein")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Org");
                 });
 
             modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Organization", b =>
