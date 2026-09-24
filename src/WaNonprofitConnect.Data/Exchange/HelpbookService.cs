@@ -147,9 +147,14 @@ public sealed partial class HelpbookService
         if (target.Status != ListingStatus.Open) throw ExchangeException.Conflict("That post isn't open any more.");
 
         ListingViewDto? createdListing = null;
-        int myListingId;
-        await using (var tx = await _db.Database.BeginTransactionAsync(ct))
+        // Through the execution strategy: the database retries on a transient failure (a paused serverless
+        // database waking up), and retries can't wrap a transaction opened by hand.
+        var matchId = await _db.Database.CreateExecutionStrategy().ExecuteAsync(async () =>
         {
+            createdListing = null;
+            _db.ChangeTracker.Clear();
+            int myListingId;
+            await using var tx = await _db.Database.BeginTransactionAsync(ct);
             if (req.MyListingId is { } mine)
             {
                 var own = await _db.Listings.AsNoTracking().FirstOrDefaultAsync(l => l.Id == mine, ct)
@@ -186,16 +191,17 @@ public sealed partial class HelpbookService
             MarkRead(tracked, actingEin, DateTime.UtcNow);
             await _db.SaveChangesAsync(ct);
             await tx.CommitAsync(ct);
+            return match.Id;
+        });
 
-            if (createdListing is not null) await _notifier.ListingAddedAsync(createdListing, ct);
-            var thread = await ChangedAsync(match.Id, actingEin, ct);
-            if (message is not null && thread.LastMessageAt is not null)
-            {
-                var first = await _db.Messages.AsNoTracking().Where(x => x.MatchId == match.Id).OrderBy(x => x.SentAt).FirstAsync(ct);
-                await _notifier.MessageAddedAsync(new[] { thread.Need.Org.Ein, thread.Offer.Org.Ein }, ToMessage(first, thread), ct);
-            }
-            return thread;
+        if (createdListing is not null) await _notifier.ListingAddedAsync(createdListing, ct);
+        var thread = await ChangedAsync(matchId, actingEin, ct);
+        if (message is not null && thread.LastMessageAt is not null)
+        {
+            var first = await _db.Messages.AsNoTracking().Where(x => x.MatchId == matchId).OrderBy(x => x.SentAt).FirstAsync(ct);
+            await _notifier.MessageAddedAsync(new[] { thread.Need.Org.Ein, thread.Offer.Org.Ein }, ToMessage(first, thread), ct);
         }
+        return thread;
     }
 
     public async Task<ThreadMessageDto> SendMessageAsync(int threadId, string actingEin, string? body, string? senderName, CancellationToken ct = default)

@@ -17,7 +17,10 @@ var builder = WebApplication.CreateBuilder(args);
 // --- Data ---------------------------------------------------------------
 var connection = builder.Configuration.GetConnectionString("Default")
                  ?? DesignTimeDbContextFactory.DefaultDevConnection;
-builder.Services.AddDbContext<AppDbContext>(o => o.UseSqlServer(connection));
+// The Azure database is serverless and pauses after an idle hour; waking takes about a minute (error 40613).
+// Retry instead of failing the request, and see the startup loop below for migrations.
+builder.Services.AddDbContext<AppDbContext>(o => o.UseSqlServer(connection,
+    sql => sql.EnableRetryOnFailure(maxRetryCount: 6, maxRetryDelay: TimeSpan.FromSeconds(20), errorNumbersToAdd: null)));
 builder.Services.AddHttpClient<BmfImporter>(c =>
 {
     c.Timeout = TimeSpan.FromMinutes(10);
@@ -93,7 +96,20 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    if (db.Database.IsSqlServer()) await db.Database.MigrateAsync();
+    if (db.Database.IsSqlServer())
+    {
+        // A paused database answers "not currently available" until it wakes. Wait up to ~3 minutes rather than
+        // crash the container, which is what took the site down three times on Sep 24.
+        for (var attempt = 1; ; attempt++)
+        {
+            try { await db.Database.MigrateAsync(); break; }
+            catch (Exception e) when (attempt < 12 && e.GetBaseException() is Microsoft.Data.SqlClient.SqlException)
+            {
+                app.Logger.LogWarning("Database not ready (attempt {Attempt}): {Message}", attempt, e.GetBaseException().Message);
+                await Task.Delay(TimeSpan.FromSeconds(15));
+            }
+        }
+    }
     else await db.Database.EnsureCreatedAsync(); // tests run on SQLite, which can't apply SQL Server migrations
 }
 
