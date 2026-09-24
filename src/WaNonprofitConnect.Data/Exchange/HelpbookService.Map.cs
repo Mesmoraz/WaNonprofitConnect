@@ -38,8 +38,9 @@ public sealed partial class HelpbookService
         {
             var best = offers
                 .Where(o => o.OrgEin != need.OrgEin && !paired.Contains((need.Id, o.Id)))
-                .Select(o => (Offer: o, Score: MatchScorer.Score(need, o, now).Score))
-                .Where(x => x.Score >= MatchScorer.MinimumScore)
+                .Select(o => (Offer: o, Match: MatchScorer.Score(need, o, now)))
+                .Where(x => x.Match.IsFit)
+                .Select(x => (x.Offer, Score: x.Match.Score))
                 .OrderByDescending(x => x.Score).ThenByDescending(x => x.Offer.CreatedAt)
                 .FirstOrDefault();
             if (best.Offer is not null) suggested.Add((need, best.Offer, best.Score));

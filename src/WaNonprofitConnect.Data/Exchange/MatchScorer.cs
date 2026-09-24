@@ -98,8 +98,16 @@ public static class MatchScorer
         var t = now ?? DateTime.UtcNow;
         if ((t - offer.CreatedAt).TotalDays <= 30) score += 5;
 
-        return new MatchScore(score, reasons);
+        return new MatchScore(score, reasons, shared.Count);
     }
 }
 
-public sealed record MatchScore(int Score, IReadOnlyList<string> Reasons);
+/// <param name="Shared">How many words the two posts have in common (after stop words and plurals).</param>
+public sealed record MatchScore(int Score, IReadOnlyList<string> Reasons, int Shared = 0)
+{
+    /// <summary>
+    /// Worth showing a person as "could fit": a good enough score and at least one word in common. Same kind of help
+    /// alone isn't enough; it paired canned vegetables with a laptop need (Taylor, Sep 24).
+    /// </summary>
+    public bool IsFit => Score >= MatchScorer.MinimumScore && Shared > 0;
+}

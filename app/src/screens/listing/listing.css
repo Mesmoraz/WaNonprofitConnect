@@ -8,3 +8,4 @@
 .fit-card { color: var(--ink); text-decoration: none; }
 .fit-card .pills { display: flex; gap: 6px; margin-bottom: 6px; }
 
+.listing-close-hint { margin-top: 12px; }

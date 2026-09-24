@@ -69,6 +69,26 @@ public class MatchScorerTests
         act.Should().Throw<ArgumentException>();
     }
 
+    [Fact]
+    public void A_fit_needs_a_word_in_common_not_just_the_same_kind_of_help()
+    {
+        Listing Post(ListingKind kind, string title)
+        {
+            var l = Listing(kind, ListingCategory.Other, title, null, "SEATTLE", "98107", null, Urgency.High);
+            l.Help = KindOfHelp.Things;
+            return l;
+        }
+        var need = Post(ListingKind.Need, "12 laptops");
+
+        var laptops = MatchScorer.Score(need, Post(ListingKind.Offer, "15 refurbished laptops (Win 11, 8 GB)"));
+        laptops.IsFit.Should().BeTrue();
+        laptops.Shared.Should().Be(1);
+
+        var cans = MatchScorer.Score(need, Post(ListingKind.Offer, "6 pallets of canned vegetables"));
+        cans.Score.Should().BeGreaterThanOrEqualTo(MatchScorer.MinimumScore); // same kind of help and city alone score high...
+        cans.IsFit.Should().BeFalse();                                        // ...but it isn't a fit
+    }
+
     internal static Listing Listing(ListingKind kind, ListingCategory cat, string title, string? tags, string? city, string? zip, decimal? qty, Urgency urgency) => new()
     {
         Kind = kind, Category = cat, Title = title, Tags = tags, City = city, Zip5 = zip, Quantity = qty, Urgency = urgency,

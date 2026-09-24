@@ -74,8 +74,8 @@ public sealed partial class HelpbookService
             foreach (var c in await candidates.OrderByDescending(l => l.CreatedAt).Take(MaxCandidates).ToListAsync(ct))
             {
                 var (need, offer) = listing.Kind == ListingKind.Need ? (listing, c) : (c, listing);
-                var score = MatchScorer.Score(need, offer, now).Score;
-                if (score >= MatchScorer.MinimumScore) fits.Add((c, score));
+                var m = MatchScorer.Score(need, offer, now);
+                if (m.IsFit) fits.Add((c, m.Score));
             }
 
             if (listing.OrgEin != viewerEin)

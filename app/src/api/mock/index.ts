@@ -54,6 +54,14 @@ let session: Me | null = loadSession()
 
 // ---- Helpers ----------------------------------------------------------------
 
+// A light copy of the API's MatchScorer: a fit needs the same kind of help AND a word in common
+// (stop words dropped, plurals folded), so canned vegetables never "fit" a laptop need.
+const STOP = new Set('a an and any are as at be by for from have has in is it need needs needed of on or our some spare surplus extra the to we with looking want wanted offer offering donate donation free please new used good'.split(' '))
+const words = (l: { title: string; description: string | null }) => new Set(`${l.title} ${l.description ?? ''}`.toLowerCase().split(/[^a-z0-9]+/)
+  .filter(w => w.length >= 3 && !STOP.has(w)).map(w => (w.length > 3 && w.endsWith('s') && !w.endsWith('ss') ? w.slice(0, -1) : w)))
+const shared = (a: ListingRow, b: ListingRow) => { const wa = words(a); return [...words(b)].filter(w => wa.has(w)).length }
+const fits = (a: ListingRow, b: ListingRow) => a.help === b.help && shared(a, b) > 0
+
 const fail = (status: number, title: string): never => { throw new ApiError(status, { status, title }, title) }
 const requireMe = (): Me => session ?? fail(401, 'Sign in first.')
 /** Me as the API returns it: membership carries urgentLeft (2 Urgent needs per 30 days). */
@@ -165,9 +173,9 @@ const routes: [string, RegExp, Handler][] = [
     // Someone else's post: your open posts of the other kind with the same kind of help.
     // Your own post: other organizations' posts that could fit it (the B6 "Could fit" list).
     const own = l.ein === ein
-    const fits = listings.filter(x => x.status === 'Open' && x.kind !== l.kind && x.help === l.help && (own ? x.ein !== ein : x.ein === ein))
-      .sort((a, b) => Number(b.unit === l.unit) - Number(a.unit === l.unit) || b.createdAt.localeCompare(a.createdAt)).slice(0, 6).map(x => toListing(x))
-    return { ...toListing(l), fits } satisfies ListingDetail
+    const fitting = listings.filter(x => x.status === 'Open' && x.kind !== l.kind && fits(l, x) && (own ? x.ein !== ein : x.ein === ein))
+      .sort((a, b) => shared(l, b) - shared(l, a) || b.createdAt.localeCompare(a.createdAt)).slice(0, 6).map(x => toListing(x))
+    return { ...toListing(l), fits: fitting } satisfies ListingDetail
   }],
   ['POST', /^\/listings$/, (_m, b: NewListing) => {
     const ein = requireOrg()
@@ -244,7 +252,7 @@ const routes: [string, RegExp, Handler][] = [
     })
     const open = listings.filter(l => l.status === 'Open')
     const suggested = open.filter(n => n.kind === 'Need').flatMap(n => open
-      .filter(o => o.kind === 'Offer' && o.help === n.help && o.ein !== n.ein && o.unit === n.unit)
+      .filter(o => o.kind === 'Offer' && o.ein !== n.ein && fits(n, o))
       .map(o => ({ needId: n.id, offerId: o.id, fromEin: o.ein, toEin: n.ein })))
     return { members, threads: mapThreads, suggested } satisfies MapData
   }],

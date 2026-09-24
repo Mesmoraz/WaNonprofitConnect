@@ -69,10 +69,13 @@ export function ListingScreen() {
       {l.description && <p className="listing-desc">{l.description}</p>}
 
       {own ? <>
-        {open && <p className="hint">Closed posts leave the board.</p>}
-        {l.fits.length > 0 && <>
-          <div className="label">Could fit</div>
-          {l.fits.map(f => <FitCard key={f.id} l={f} to={`/listing/${f.id}`} />)}
+        {/* Your own post: what could answer it. Labelled for what it is (Taylor, Sep 24: "I don't understand this page"). */}
+        {open && <>
+          <div className="label">{isNeed ? 'Offers that could fit' : 'Needs that could fit'}</div>
+          {l.fits.length
+            ? <><p className="hint">Open one to start a thread.</p>{l.fits.map(f => <FitCard key={f.id} l={f} to={`/listing/${f.id}`} />)}</>
+            : <p className="hint">Nothing fits yet. It’s on the board, so anyone can find it.</p>}
+          <p className="hint listing-close-hint">Closed posts leave the board.</p>
         </>}
       </> : !existing && open && <>
         <div className="label">Yours that fit</div>
