@@ -1247,6 +1247,40 @@
       "status": "backlog",
       "added": "2026-09-24",
       "tasks": []
+    },
+    {
+      "id": "S-88",
+      "epic": "E-6",
+      "title": "Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox",
+      "status": "backlog",
+      "added": "2026-09-24",
+      "tasks": [
+        {
+          "id": "T-42",
+          "title": "Question: which filters first: reach (local, national, international), who you serve (children and youth, environment, animals, families, marginalized groups, the elderly, veterans, arts and culture), and kind of work (direct services, research, advocacy and education)?",
+          "status": "ready"
+        },
+        {
+          "id": "T-43",
+          "title": "Question: do an organization's filters come from its IRS cause code by default, set by itself, or set by an admin?",
+          "status": "ready"
+        },
+        {
+          "id": "T-44",
+          "title": "Question: is anything paid (for example a custom reach radius), and does that fit a 501(c)(3) where core services stay free?",
+          "status": "ready"
+        },
+        {
+          "id": "T-45",
+          "title": "Question: does the second inbox hold posts outside your filters, messages from organizations outside them, or both?",
+          "status": "ready"
+        },
+        {
+          "id": "T-46",
+          "title": "Brief the filters setting, the filtered board and the second inbox for approval",
+          "status": "ready"
+        }
+      ]
     }
   ]
 }

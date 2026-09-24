@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useCloseListing, useListing, useMe, useStartThread, useThreads, type Listing } from '../../api'
 import { CADENCE_FULL, HELP_LABEL, URGENCY_MARK, cap, listingFacts, postedAgo, quantityLine } from '../../lib/words'
+import { Confirm } from '../../shell/Confirm'
 import { BackLink, Page } from '../../shell/Page'
 import { useToast } from '../../shell/Toast'
 import './listing.css'
@@ -19,6 +20,7 @@ export function ListingScreen() {
   const [pick, setPick] = useState<number | null>(null)
   const [message, setMessage] = useState('')
   const [failed, setFailed] = useState(false)
+  const [confirmClose, setConfirmClose] = useState(false)
 
   if (!l) {
     return (
@@ -47,11 +49,14 @@ export function ListingScreen() {
   }
   const closePost = () => {
     setFailed(false)
-    close.mutate(l.id, { onSuccess: () => navigate('/', { replace: true }), onError: () => setFailed(true) })
+    close.mutate(l.id, {
+      onSuccess: () => { toast('Closed. It’s off the board.'); navigate('/', { replace: true }) },
+      onError: () => { setConfirmClose(false); setFailed(true) },
+    })
   }
 
   const cta = own
-    ? open && <button className="btn" onClick={closePost} disabled={close.isPending}>{isNeed ? 'Close this need' : 'Close this offer'}</button>
+    ? open && <button className="btn danger-outline" onClick={() => setConfirmClose(true)}><span className="x" aria-hidden>×</span>{isNeed ? 'Close this need' : 'Close this offer'}</button>
     : existing
       ? <Link className="btn primary" to={`/thread/${existing.id}`}>Open your thread</Link>
       : open && <button className="btn primary" onClick={startThread} disabled={start.isPending}>{isNeed ? 'I can help' : 'I need this'}</button>
@@ -87,6 +92,13 @@ export function ListingScreen() {
       </>}
 
       {failed && <p className="error" role="alert">That didn’t work. Try again.</p>}
+      {confirmClose && (
+        <Confirm danger busy={close.isPending}
+          title={isNeed ? 'Close this need?' : 'Close this offer?'}
+          body="It comes off the board, and you can’t open it again."
+          confirm={isNeed ? 'Close need' : 'Close offer'} cancel="Keep it"
+          onConfirm={closePost} onCancel={() => setConfirmClose(false)} />
+      )}
     </Page>
   )
 }

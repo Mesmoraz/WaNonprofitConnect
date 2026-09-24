@@ -93,3 +93,8 @@ textarea {
 }
 textarea::placeholder { color: var(--ink-3); }
 textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Something that can't be undone: red. The outline one opens a confirmation; the solid one confirms. */
+.btn.danger { background: var(--warn); border-color: var(--warn); color: var(--paper); }
+.btn.danger-outline { background: var(--warn-bg); border-color: var(--warn); color: var(--warn); gap: 8px; }
+.btn.danger-outline .x { font-size: 18px; line-height: 1; }

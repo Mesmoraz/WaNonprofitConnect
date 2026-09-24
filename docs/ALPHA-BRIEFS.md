@@ -24,7 +24,7 @@ Approved by Taylor 2026-09-23, as written. Build exactly this. Anything else a s
 - Field "Message to {org}", placeholder "Say what you can do and when."
 - Pinned button: **I can help** (on a need) or **I need this** (on an offer). Afterwards toast "Thread started. {org} will see it in their inbox." and open the thread.
 - Already a thread with you on this post: button **Open your thread**.
-- Your own post: button **Close this need** / **Close this offer**, line "Closed posts leave the board.", and instead of "Yours that fit": label "Offers that could fit" / "Needs that could fit", line "Open one to start a thread.", none: "Nothing fits yet. It’s on the board, so anyone can find it." (Taylor, Sep 24: the "Could fit" list was unclear and matched the wrong things. A fit now needs a word in common, not just the same kind of help.)
+- Your own post: red button **× Close this need** / **× Close this offer**, which asks "Close this need?" / "Close this offer?", "It comes off the board, and you can’t open it again.", with **Close need** / **Close offer** (red) and "Keep it"; then toast "Closed. It’s off the board." (Taylor, Sep 24), line "Closed posts leave the board.", and instead of "Yours that fit": label "Offers that could fit" / "Needs that could fit", line "Open one to start a thread.", none: "Nothing fits yet. It’s on the board, so anyone can find it." (Taylor, Sep 24: the "Could fit" list was unclear and matched the wrong things. A fit now needs a word in common, not just the same kind of help.)
 - Gone from the prototype: match scores, "Let's collaborate", category, tags.
 
 ## B7 Post

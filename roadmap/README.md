@@ -52,10 +52,11 @@ Generated from `roadmap.json` on 2026-09-24. Don't edit this file; run `node scr
 | S-85 Sign in by email for people without Google |  |  |  |  |
 | S-86 What you see depends on who you are: nonprofit and company first, then schools and students |  |  |  |  |
 | S-87 Wish list: search the map for an organization or a place, and fly to it |  |  |  |  |
+| S-88 Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox |  |  |  |  |
 
 ## Roadmap
 
-### I-1 A prototype that shows the whole mission · In progress · 17/38 stories done
+### I-1 A prototype that shows the whole mission · In progress · 17/39 stories done
 
 Every kind of participant and every kind of help, on a phone, in the approved voice. The thing to hand someone so they get it in a minute.
 
@@ -137,7 +138,7 @@ Confirmed organizations search grants and leave to apply on the funder's site.
 - **S-22** Grants tab shows only for confirmed organizations · In review
 - **S-60** Render a funder's stated priorities as their quoted words, not our copy · Backlog
 
-#### E-6 Directory and profiles · Backlog · 0/3
+#### E-6 Directory and profiles · Backlog · 0/4
 
 Find anyone here, joined or not; one profile layout for six shapes.
 
@@ -149,6 +150,12 @@ Find anyone here, joined or not; one profile layout for six shapes.
     - [ ] T-36 Question: should the map center on the company's office, with nonprofits nearby? (Ready)
     - [ ] T-37 Question: how does a company get confirmed: a work email, an invite code, or both? (Ready)
     - [ ] T-38 Brief the company board, map and post screens for approval (Ready)
+- **S-88** Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox · Backlog
+    - [ ] T-42 Question: which filters first: reach (local, national, international), who you serve (children and youth, environment, animals, families, marginalized groups, the elderly, veterans, arts and culture), and kind of work (direct services, research, advocacy and education)? (Ready)
+    - [ ] T-43 Question: do an organization's filters come from its IRS cause code by default, set by itself, or set by an admin? (Ready)
+    - [ ] T-44 Question: is anything paid (for example a custom reach radius), and does that fit a 501(c)(3) where core services stay free? (Ready)
+    - [ ] T-45 Question: does the second inbox hold posts outside your filters, messages from organizations outside them, or both? (Ready)
+    - [ ] T-46 Brief the filters setting, the filtered board and the second inbox for approval (Ready)
 
 #### E-7 The map · Backlog · 0/3
 

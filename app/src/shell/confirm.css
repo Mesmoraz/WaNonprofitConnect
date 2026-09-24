@@ -1,0 +1,12 @@
+.confirm-scrim {
+  position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: var(--gutter);
+  background: rgba(10, 14, 16, 0.6);
+}
+.confirm-box {
+  width: 100%; max-width: 400px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow); padding: 22px 20px 18px;
+}
+.confirm-title { font-size: 19px; margin: 0 0 8px; }
+.confirm-body { margin: 0 0 18px; color: var(--ink-2); }
+.confirm-actions { display: flex; gap: 10px; }
+.confirm-actions .btn { flex: 1; }
