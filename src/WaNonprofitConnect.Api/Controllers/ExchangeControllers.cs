@@ -56,6 +56,13 @@ public sealed class ListingsController : AppControllerBase
     public async Task<IReadOnlyList<ListingViewDto>> Board([FromQuery] BoardQuery query, CancellationToken ct)
         => await _helpbook.BoardAsync(await FindActingEinAsync(ct), query, ct);
 
+    /// <summary>An organization's page: its card, its open needs and offers, and how many live and golden threads it has.</summary>
+    [HttpGet("orgs/{ein}/page")]
+    [ProducesResponseType(typeof(OrgPageDto), 200)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult<OrgPageDto>> OrgPage(string ein, CancellationToken ct)
+        => await _helpbook.OrgPageAsync(ein, ct) is { } page ? Ok(page) : NotFound();
+
     /// <summary>Older paged search over listings (CLI and scripts). The app uses /board.</summary>
     [HttpGet("listings")]
     public Task<PagedResult<ListingDto>> Search([FromQuery] ListingSearchRequest request, CancellationToken ct)

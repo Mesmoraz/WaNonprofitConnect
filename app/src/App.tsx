@@ -8,6 +8,7 @@ import { Inbox } from './screens/inbox/Inbox'
 import { Invite } from './screens/invite/Invite'
 import { ListingScreen } from './screens/listing/ListingScreen'
 import { MapScreen } from './screens/map/MapScreen'
+import { OrgScreen } from './screens/org/OrgScreen'
 import { MapCardPreview } from './screens/map/MapCardPreview'
 import { Post } from './screens/post/Post'
 import { SignUp } from './screens/signup/SignUp'
@@ -59,6 +60,7 @@ export function App() {
           <Route path="/inbox" element={<Inbox />} />
           <Route path="/listing/:id" element={<ListingScreen />} />
           <Route path="/thread/:id" element={<ThreadScreen />} />
+          <Route path="/org/:ein" element={<OrgScreen />} />
           {(import.meta.env.DEV || MOCK) && <Route path="/dev/map-card" element={<MapCardPreview />} />}
         </Route>
       </Route>

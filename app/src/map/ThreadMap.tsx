@@ -21,6 +21,7 @@ const FONT = '"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif'
 const FLOW_PX_PER_S = 24          // dash drift speed; 48 px wrap / 24 = one seamless loop every 2 s
 const MOVER_MS = 1700             // one trip along a selected thread, like the prototype's 1.6 s
 const PICK_PIN_PX = 6
+const HOVER_GROW = 1.45          // a pin under the mouse eases up to this size
 const PICK_THREAD_PX = 7          // + the stroke itself ≈ a 16 px wide target
 
 // Shared extension instances: deck compares extensions by identity-ish equality, so keep them stable.
@@ -41,6 +42,8 @@ interface Frame {
   fontsReady: boolean
   /** Base-map layer our lower layers sit under (the first label layer), when it exists. */
   under?: string
+  /** The pin under the mouse: it grows. */
+  hover?: string
 }
 
 type Mover = { position: LonLat; color: RGBA }
@@ -92,7 +95,9 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
     }),
     new ScatterplotLayer<MapNode>({
       id: 'wm-pins', data: f.nodes, pickable: true,
-      radiusUnits: 'pixels', getPosition: d => d.position, getRadius: d => d.radius, getFillColor: d => d.fill,
+      radiusUnits: 'pixels', getPosition: d => d.position, getFillColor: d => d.fill,
+      getRadius: d => (d.id === f.hover ? d.radius * HOVER_GROW : d.radius),
+      updateTriggers: { getRadius: f.hover }, transitions: { getRadius: { duration: 160 } },
       stroked: true, lineWidthUnits: 'pixels', getLineWidth: d => d.lineWidth, getLineColor: d => d.line,
     }),
   ]
@@ -127,6 +132,7 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, c
   const indexRef = useRef<ReturnType<typeof buildIndex> | null>(null)
   const underRef = useRef<string | undefined>(undefined)
   const swappingRef = useRef(true)   // true until a real style has loaded
+  const hoverRef = useRef<{ pin?: string; hit: boolean }>({ hit: false })
 
   const theme = useMapTheme(boxRef)
   const reduced = useReducedMotion()
@@ -153,7 +159,11 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, c
     map.touchZoomRotate.disableRotation()
     map.keyboard.disableRotation()
     shimTransformForDeck(map)
-    const overlay = new MapboxOverlay({ interleaved: true, layers: [] })
+    // deck owns the cursor: it sets one every frame, so setting it on the canvas ourselves made it flicker.
+    const overlay = new MapboxOverlay({
+      interleaved: true, layers: [],
+      getCursor: ({ isDragging }) => (isDragging ? 'grabbing' : hoverRef.current.hit ? 'pointer' : 'grab'),
+    })
     map.addControl(overlay)
     mapRef.current = map
     overlayRef.current = overlay
@@ -185,14 +195,21 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, c
 
     // Pointer cursor on hover, mouse only (touch has no hover and picking costs a GPU read).
     let hoverQueued = false
+    map.on('mouseout', () => { hoverRef.current = { hit: false }; if (frameRef.current) frameRef.current.hover = undefined })
     map.on('mousemove', e => {
       if (hoverQueued) return
       hoverQueued = true
       requestAnimationFrame(() => {
         hoverQueued = false
         const { x, y } = e.point
-        const hit = pick(x, y, PICK_PIN_PX, 'wm-pins')?.object || (pick(x, y, PICK_THREAD_PX, 'wm-threads')?.object as ThreadArc | undefined)?.id != null
-        map.getCanvas().style.cursor = hit ? 'pointer' : ''
+        const pin = pick(x, y, PICK_PIN_PX, 'wm-pins')?.object as MapNode | undefined
+        const hit = !!pin || (pick(x, y, PICK_THREAD_PX, 'wm-threads')?.object as ThreadArc | undefined)?.id != null
+        const was = hoverRef.current.pin
+        hoverRef.current = { pin: pin?.id, hit }
+        if (was !== pin?.id && frameRef.current) {
+          frameRef.current.hover = pin?.id
+          overlay.setProps({ layers: buildLayers(frameRef.current, performance.now(), true) })
+        }
       })
     })
 
@@ -263,7 +280,7 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, c
     const id = underRef.current, map = mapRef.current
     return !swappingRef.current && id && map?.getLayer(id) ? id : undefined
   }
-  frameRef.current = { theme, dots, nodes, arcs, glows, movers, labels, counts, fontsReady, under: under() }
+  frameRef.current = { theme, dots, nodes, arcs, glows, movers, labels, counts, fontsReady, under: under(), hover: hoverRef.current.pin }
 
   // ---- Drawing: static redraw on change, plus a light animation loop when motion is allowed --------
   useEffect(() => {

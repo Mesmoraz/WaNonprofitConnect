@@ -1,6 +1,6 @@
 {
   "name": "Name TBD roadmap",
-  "updated": "2026-09-23",
+  "updated": "2026-09-24",
   "statuses": [
     "backlog",
     "ready",
@@ -1172,6 +1172,30 @@
       "title": "Microsoft sign-in, since many nonprofits run on Microsoft 365",
       "status": "backlog",
       "added": "2026-09-23",
+      "tasks": []
+    },
+    {
+      "id": "S-84",
+      "epic": "E-25",
+      "title": "Map: steady cursor, pins grow on hover, a tapped thread shows both posts, a tapped organization opens its page",
+      "status": "review",
+      "added": "2026-09-24",
+      "tasks": []
+    },
+    {
+      "id": "S-85",
+      "epic": "E-23",
+      "title": "Sign in by email for people without Google (a one-time link)",
+      "status": "backlog",
+      "added": "2026-09-24",
+      "tasks": []
+    },
+    {
+      "id": "S-86",
+      "epic": "E-6",
+      "title": "What you see depends on who you are: nonprofit and company first, then schools and students",
+      "status": "backlog",
+      "added": "2026-09-24",
       "tasks": []
     }
   ]

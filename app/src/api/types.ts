@@ -33,7 +33,10 @@ export interface Thread {
 export interface Message { id: number; threadId: number; senderEin: string; senderName: string; body: string; sentAt: string }
 export interface ThreadDetail extends Thread { messages: Message[] }
 
-export interface MapThread { id: number; status: ThreadStatus; help: KindOfHelp; fromEin: string; toEin: string; title: string }
+/** title and help come from the need; needId/offerId/offerTitle let a tapped thread show both posts. */
+export interface MapThread { id: number; status: ThreadStatus; help: KindOfHelp; fromEin: string; toEin: string; title: string; needId: number; offerId: number; offerTitle: string | null }
+/** An organization's page: its card, open needs and offers, and its live and golden thread counts. */
+export interface OrgPage { org: OrgSummary; listings: Listing[]; golden: number; live: number }
 export interface MapSuggested { needId: number; offerId: number; fromEin: string; toEin: string }
 export interface MapData { members: OrgSummary[]; threads: MapThread[]; suggested: MapSuggested[] }
 export type MapPoint = [ein: string, lat: number, lon: number]

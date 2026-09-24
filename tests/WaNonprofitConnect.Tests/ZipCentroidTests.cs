@@ -134,7 +134,16 @@ public sealed class ZipCentroidTests : IDisposable
         map.Members.Single(m => m.Ein == A).IsMember.Should().BeFalse(); // posts came straight through the service
 
         map.Threads.Should().ContainSingle();
-        map.Threads[0].Should().Be(new MapThreadDto(thread.Id, MatchStatus.Proposed, KindOfHelp.Time, B, A, "Drivers"));
+        map.Threads[0].Should().Be(new MapThreadDto(thread.Id, MatchStatus.Proposed, KindOfHelp.Time, B, A, "Drivers",
+            need2.Id, thread.Offer.Id, thread.Offer.Title));
+
+        var page = await svc.OrgPageAsync(A);
+        page!.Org.Name.Should().Be("ALPHA FOOD BANK");
+        page.Listings.Select(l => l.Id).Should().Contain(need.Id);
+        page.Listings.Should().OnlyContain(l => l.Org.Ein == A);
+        page.Live.Should().Be(1);   // the drivers thread; the declined one doesn't count
+        page.Golden.Should().Be(0);
+        (await svc.OrgPageAsync("000000000")).Should().BeNull();
 
         map.Suggested.Should().Contain(new MapSuggestionDto(need.Id, offer.Id, C, A));
         map.Suggested.Should().NotContain(s => s.NeedId == need2.Id && s.OfferId == thread.Offer.Id); // already a thread

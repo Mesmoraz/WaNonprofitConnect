@@ -2,7 +2,7 @@
 // The signed-in person survives a reload (localStorage); everything else resets to the seed.
 import { ApiError, DEMO, httpTransport, type Transport } from '../client'
 import type {
-  Claim, Invite, Listing, ListingDetail, MapData, MapPoint, Me, Message, NewListing, NewThread, OrgSummary,
+  Claim, Invite, Listing, ListingDetail, MapData, MapPoint, Me, Message, NewListing, NewThread, OrgPage, OrgSummary,
   Thread, ThreadAction, ThreadDetail, ThreadStatus,
 } from '../types'
 import { ORG_ROWS, SEED_INVITES, SEED_LISTINGS, SEED_MESSAGES, SEED_THREADS, ZIP } from './data'
@@ -240,7 +240,7 @@ const routes: [string, RegExp, Handler][] = [
     const members = orgs.filter(o => o.isMember || memberEins.has(o.ein))
     const mapThreads = threads.filter(t => t.status !== 'Declined' && t.status !== 'Cancelled').map(t => {
       const need = listingById(t.needId), offer = listingById(t.offerId)
-      return { id: t.id, status: t.status, help: need.help, fromEin: offer.ein, toEin: need.ein, title: need.title }
+      return { id: t.id, status: t.status, help: need.help, fromEin: offer.ein, toEin: need.ein, title: need.title, needId: need.id, offerId: offer.id, offerTitle: offer.title }
     })
     const open = listings.filter(l => l.status === 'Open')
     const suggested = open.filter(n => n.kind === 'Need').flatMap(n => open
@@ -249,6 +249,17 @@ const routes: [string, RegExp, Handler][] = [
     return { members, threads: mapThreads, suggested } satisfies MapData
   }],
   // The demo shows the real faint dots (public data) so the whole state looks alive; dev:mock stays offline.
+  ['GET', /^\/orgs\/(\d+)\/page$/, m => {
+    requireMe()
+    const o = orgByEin(m[1]) ?? fail(404, 'Not found.')
+    const mine = threads.filter(t => listingById(t.needId).ein === o.ein || listingById(t.offerId).ein === o.ein)
+    return {
+      org: o,
+      listings: listings.filter(l => l.ein === o.ein && l.status === 'Open').sort((a, b) => b.createdAt.localeCompare(a.createdAt)).map(l => toListing(l)),
+      golden: mine.filter(t => t.status === 'Completed').length,
+      live: mine.filter(t => t.status === 'Proposed' || t.status === 'Accepted').length,
+    } satisfies OrgPage
+  }],
   ['GET', /^\/map\/points$/, () => DEMO ? httpTransport('GET', '/api/v1/map/points') : orgs.filter(o => o.lat !== null).map(o => [o.ein, o.lat!, o.lon!] as MapPoint)],
   ['POST', /^\/admin\/act-as$/, (_m, b: { ein?: string }) => {
     const me = requireMe(); if (!me.account.isAdmin) fail(403, 'Admins only.')

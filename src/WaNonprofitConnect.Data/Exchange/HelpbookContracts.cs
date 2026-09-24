@@ -56,7 +56,12 @@ public sealed record ThreadDto(
 
 public sealed record ThreadMessageDto(int Id, int ThreadId, string SenderEin, string SenderName, string Body, DateTime SentAt);
 
-public sealed record MapThreadDto(int Id, MatchStatus Status, KindOfHelp Help, string FromEin, string ToEin, string Title);
+/// <summary>A thread on the map. Title and Help come from the need; NeedId/OfferId/OfferTitle let a tapped thread show both posts.</summary>
+public sealed record MapThreadDto(int Id, MatchStatus Status, KindOfHelp Help, string FromEin, string ToEin, string Title,
+    int NeedId = 0, int OfferId = 0, string? OfferTitle = null);
+
+/// <summary>One organization's page: who it is, its open needs and offers (newest first), and how many golden threads it has.</summary>
+public sealed record OrgPageDto(OrgSummaryDto Org, IReadOnlyList<ListingViewDto> Listings, int Golden, int Live);
 
 public sealed record MapSuggestionDto(int NeedId, int OfferId, string FromEin, string ToEin);
 

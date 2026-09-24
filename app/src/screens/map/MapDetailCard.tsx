@@ -17,6 +17,8 @@ export function MapDetailCard({ selection, onClose }: { selection: MapSelection;
   const myEin = me?.membership?.ein
   const name = (ein: string) => map.members.find(o => o.ein === ein)?.name ?? ein
 
+  const orgLink = (ein: string) => <Link className="map-card-org" to={`/org/${ein}`}>{name(ein)}</Link>
+
   let body
   if (selection.kind === 'org') {
     const o = map.members.find(m => m.ein === selection.id)
@@ -25,14 +27,17 @@ export function MapDetailCard({ selection, onClose }: { selection: MapSelection;
     body = <>
       <span className="t">{o.name}</span>
       <span className="m">{[cap(o.city), `${n} thread${n === 1 ? '' : 's'}`].filter(Boolean).join(' · ')}</span>
+      <Link className="btn primary map-card-open" to={`/org/${o.ein}`}>See their needs and offers</Link>
     </>
   } else {
     const t = map.threads.find(x => x.id === selection.id)
     if (!t) return null
     const mine = !!myEin && (t.fromEin === myEin || t.toEin === myEin)
     body = <>
-      <span className="t">{name(t.fromEin)} → {name(t.toEin)}</span>
+      <span className="t">{orgLink(t.fromEin)} → {orgLink(t.toEin)}</span>
       <span className="m">{[HELP_LABEL[t.help as KindOfHelp], STATE[t.status]].filter(Boolean).join(' · ')}</span>
+      {t.needId > 0 && <Link className="map-card-post" to={`/listing/${t.needId}`}><span className="k">Need</span>{t.title}</Link>}
+      {t.offerId > 0 && <Link className="map-card-post" to={`/listing/${t.offerId}`}><span className="k">Offer</span>{t.offerTitle ?? t.title}</Link>}
       {mine && <Link className="btn primary map-card-open" to={`/thread/${t.id}`}>Open thread</Link>}
     </>
   }

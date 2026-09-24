@@ -1,6 +1,6 @@
 import type {
   BoardQuery, Claim, Invite, Listing, ListingDetail, MapData, MapPoint, Me, Message, NewListing, NewThread,
-  OrgSummary, Thread, ThreadAction, ThreadDetail,
+  OrgPage, OrgSummary, Thread, ThreadAction, ThreadDetail,
 } from './types'
 
 const DEMO_KEY = 'helpbook.demo'
@@ -117,6 +117,7 @@ export const api = {
   // Map
   map: () => call<MapData>('GET', `${V1}/map`),
   mapPoints: () => call<MapPoint[]>('GET', `${V1}/map/points`),
+  orgPage: (ein: string) => call<OrgPage>('GET', `${V1}/orgs/${encodeURIComponent(ein)}/page`),
 
   // Admin
   adminClaims: () => call<Claim[]>('GET', `${V1}/admin/claims`),

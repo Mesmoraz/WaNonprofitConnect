@@ -19,6 +19,7 @@ public sealed partial class HelpbookService
             .Select(m => new
             {
                 m.Id, m.Status, NeedHelp = m.NeedListing!.Help, NeedTitle = m.NeedListing.Title,
+                m.NeedListingId, m.OfferListingId, OfferTitle = m.OfferListing!.Title,
                 FromEin = m.OfferListing!.OrgEin, ToEin = m.NeedListing.OrgEin,
             })
             .ToListAsync(ct);
@@ -46,12 +47,29 @@ public sealed partial class HelpbookService
 
         return new MapDataDto(
             orgs.OrderBy(o => o.Name).Select(o => summaries[o.Ein]).ToList(),
-            threads.Select(t => new MapThreadDto(t.Id, t.Status, t.NeedHelp == 0 ? KindOfHelp.Things : t.NeedHelp, t.FromEin, t.ToEin, t.NeedTitle)).ToList(),
+            threads.Select(t => new MapThreadDto(t.Id, t.Status, t.NeedHelp == 0 ? KindOfHelp.Things : t.NeedHelp, t.FromEin, t.ToEin, t.NeedTitle,
+                t.NeedListingId, t.OfferListingId, t.OfferTitle)).ToList(),
             suggested.OrderByDescending(s => s.Score).ThenByDescending(s => s.Need.CreatedAt).Take(MaxSuggested)
                 .Select(s => new MapSuggestionDto(s.Need.Id, s.Offer.Id, s.Offer.OrgEin, s.Need.OrgEin)).ToList());
     }
 
     /// <summary>Every Washington 501(c)(3) that has a ZIP centroid, as (ein, lat, lon). Projects only those columns: ~35k rows.</summary>
+    /// <summary>An organization's page (tapping it on the map): its card, open posts, and thread counts. Null for an unknown EIN.</summary>
+    public async Task<OrgPageDto?> OrgPageAsync(string ein, CancellationToken ct = default)
+    {
+        var org = await _db.Organizations.AsNoTracking().FirstOrDefaultAsync(o => o.Ein == ein, ct);
+        if (org is null) return null;
+        var now = DateTime.UtcNow;
+        var listings = await OpenListings(now).Where(l => l.OrgEin == ein).OrderByDescending(l => l.CreatedAt).Take(50).ToListAsync(ct);
+        var summaries = await OrgSummariesAsync(new[] { org }, ct);
+        var statuses = await _db.Matches.AsNoTracking()
+            .Where(m => m.NeedListing!.OrgEin == ein || m.OfferListing!.OrgEin == ein)
+            .Select(m => m.Status).ToListAsync(ct);
+        return new OrgPageDto(summaries[ein], listings.Select(l => View(l, summaries, now)).ToList(),
+            statuses.Count(s => s == MatchStatus.Completed),
+            statuses.Count(s => s is MatchStatus.Proposed or MatchStatus.Accepted));
+    }
+
     public async Task<IReadOnlyList<(string Ein, double Lat, double Lon)>> MapPointsAsync(CancellationToken ct = default)
     {
         // Street address when the geocoder matched it. Without the file (tests, a fresh clone), the ZIP's center.

@@ -1,6 +1,6 @@
 # Name TBD roadmap
 
-Generated from `roadmap.json` on 2026-09-23. Don't edit this file; run `node scripts/roadmap.js`. Rules: [SDLC.md](SDLC.md).
+Generated from `roadmap.json` on 2026-09-24. Don't edit this file; run `node scripts/roadmap.js`. Rules: [SDLC.md](SDLC.md).
 
 ## Board
 
@@ -22,7 +22,7 @@ Generated from `roadmap.json` on 2026-09-23. Don't edit this file; run `node scr
 | S-36 Pub 78 and revocation list, so IsActive is real |  |  | S-74 Map data: ZIP centroids from the Census gazetteer, map and points endpoints | S-15 Three grants from real WA foundations' public pages, labeled as examples |
 | S-37 Workforce programs list |  |  | S-75 Hosted on Azure: API, hub and app from one address, no domain needed | S-16 One Together initiative |
 | S-38 WA business lookup (UBI) for business confirmation |  |  | S-76 Installable to the home screen; phone, tablet and desktop layouts | S-34 IRS Business Master File loaded |
-| S-39 ASP.NET Identity replaces the X-Org-Ein header |  |  |  | S-35 OSPI schools loader into a Schools table |
+| S-39 ASP.NET Identity replaces the X-Org-Ein header |  |  | S-84 Map: steady cursor, pins grow on hover, a tapped thread shows both posts, a tapped organization opens its page | S-35 OSPI schools loader into a Schools table |
 | S-40 Claim an organization by kind, with the confirm methods from the taxonomy |  |  |  | S-53 Prototype, design brief, and how-it-works pages live |
 | S-41 Admin review queue |  |  |  | S-54 Roadmap page generated from roadmap.json |
 | S-42 Kind of help on every need and offer |  |  |  | S-57 React, with MapLibre and deck.gl for the map; Capacitor for store apps in Beta |
@@ -49,10 +49,12 @@ Generated from `roadmap.json` on 2026-09-23. Don't edit this file; run `node scr
 | S-81 Apple developer account, for TestFlight in Beta |  |  |  |  |
 | S-82 Pick and buy a domain, for email sign-in and store listings |  |  |  |  |
 | S-83 Microsoft sign-in, since many nonprofits run on Microsoft 365 |  |  |  |  |
+| S-85 Sign in by email for people without Google (a one-time link) |  |  |  |  |
+| S-86 What you see depends on who you are: nonprofit and company first, then schools and students |  |  |  |  |
 
 ## Roadmap
 
-### I-1 A prototype that shows the whole mission · In progress · 17/37 stories done
+### I-1 A prototype that shows the whole mission · In progress · 17/38 stories done
 
 Every kind of participant and every kind of help, on a phone, in the approved voice. The thing to hand someone so they get it in a minute.
 
@@ -134,12 +136,13 @@ Confirmed organizations search grants and leave to apply on the funder's site.
 - **S-22** Grants tab shows only for confirmed organizations · In review
 - **S-60** Render a funder's stated priorities as their quoted words, not our copy · Backlog
 
-#### E-6 Directory and profiles · Backlog · 0/2
+#### E-6 Directory and profiles · Backlog · 0/3
 
 Find anyone here, joined or not; one profile layout for six shapes.
 
 - **S-23** Directory: all six kinds, filter by kind, cause, city · Backlog · round B10
 - **S-24** Profile: one layout, six shapes · Backlog · round B10 · ⛔ after the freeze: profile layout belongs to the real app
+- **S-86** What you see depends on who you are: nonprofit and company first, then schools and students · Backlog
 
 #### E-7 The map · Backlog · 0/3
 
@@ -277,11 +280,11 @@ Corporate giving and volunteering platforms, once there's something to integrate
 
 - **S-58** Corporate giving platforms (Benevity and others), subject to APIs and agreements · Backlog
 
-### I-6 A working alpha for invited nonprofits · In progress · 1/19 stories done
+### I-6 A working alpha for invited nonprofits · In progress · 1/21 stories done
 
 Real organizations post real needs and offers, start threads, and make golden threads, on the map, on any phone or desktop. Target: live Sep 30.
 
-#### E-23 Accounts and invites · In progress · 0/3
+#### E-23 Accounts and invites · In progress · 0/4
 
 Sign in with Google; an invite code confirms you for one organization; anyone else waits for review.
 
@@ -289,6 +292,7 @@ Sign in with Google; an invite code confirms you for one organization; anyone el
     - [ ] T-33 Admin emails read from one comma-separated App Service setting too (Ready)
 - **S-69** Admin page: make invite codes, approve or reject claims · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-83** Microsoft sign-in, since many nonprofits run on Microsoft 365 · Backlog
+- **S-85** Sign in by email for people without Google (a one-time link) · Backlog
 
 #### E-24 The core loop, working · In progress · 1/7
 
@@ -302,7 +306,7 @@ Board, a need or offer, post, thread, inbox, backed by the real API.
 - **S-72** Threads API: start, message, accept, mark done, live over SignalR · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-80** The name lives in one file, so it can change in minutes · Done · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 
-#### E-25 The map, for real · In progress · 0/4
+#### E-25 The map, for real · In progress · 0/5
 
 A real base map, every nonprofit as a dot, clusters, and threads that drift and glow gold when done.
 
@@ -310,6 +314,7 @@ A real base map, every nonprofit as a dot, clusters, and threads that drift and 
 - **S-61** Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) · Backlog
 - **S-73** Map: base map, clusters, four thread states, golden glow, tap for details · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-74** Map data: ZIP centroids from the Census gazetteer, map and points endpoints · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
+- **S-84** Map: steady cursor, pins grow on hover, a tapped thread shows both posts, a tapped organization opens its page · In review
 
 #### E-26 Live and invited · In progress · 0/5
 

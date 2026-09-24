@@ -13,3 +13,10 @@
   position: absolute; left: var(--gutter); right: var(--gutter); bottom: calc(12px + var(--safe-bottom));
   max-width: 480px; margin: 0 auto; z-index: 2;
 }
+
+.map-card-org { color: inherit; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
+.map-card-post {
+  display: flex; gap: 8px; align-items: baseline; margin-top: 8px; padding: 8px 10px; border-radius: 8px;
+  background: var(--paper-2); color: var(--ink); text-decoration: none; font-size: 14px; min-height: var(--tap);
+}
+.map-card-post .k { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-3); flex: none; width: 44px; }
