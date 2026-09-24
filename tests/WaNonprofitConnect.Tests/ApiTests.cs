@@ -155,6 +155,15 @@ public sealed class ApiTests : IDisposable
     }
 
     [Fact]
+    public async Task Browser_errors_are_accepted_without_signing_in()
+    {
+        using var http = _factory.NewClient();
+        var resp = await http.PostAsJsonAsync("/api/v1/client-errors",
+            new { kind = "crash", message = new string('x', 10_000), url = "/board", stack = "at Board", build = "main-abc" }, Json);
+        resp.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
     public async Task Google_sign_in_without_a_client_id_is_503()
     {
         using var http = _factory.NewClient();

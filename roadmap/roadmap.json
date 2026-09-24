@@ -1328,7 +1328,7 @@
       "id": "S-91",
       "epic": "E-26",
       "title": "Error logging and database backups, so a problem is seen and nothing is lost",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-24",
       "tasks": []
     },

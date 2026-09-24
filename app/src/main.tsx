@@ -4,9 +4,13 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { ApiError, keys } from './api'
 import { App } from './App'
+import { Crashed } from './shell/Crashed'
+import { watchForErrors } from './lib/report'
 import { ToastProvider } from './shell/Toast'
 import './styles/tokens.css'
 import './styles/app.css'
+
+watchForErrors()
 
 const queryClient: QueryClient = new QueryClient({
   // A 401 anywhere means the session ended: forget Me, and the route guard sends you to sign up.
@@ -26,7 +30,9 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <ToastProvider>
-          <App />
+          <Crashed>
+            <App />
+          </Crashed>
         </ToastProvider>
       </BrowserRouter>
     </QueryClientProvider>

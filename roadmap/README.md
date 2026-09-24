@@ -24,7 +24,7 @@ Generated from `roadmap.json` on 2026-09-24. Don't edit this file; run `node scr
 | S-38 WA business lookup (UBI) for business confirmation |  |  | S-76 Installable to the home screen; phone, tablet and desktop layouts | S-34 IRS Business Master File loaded |
 | S-39 ASP.NET Identity replaces the X-Org-Ein header |  |  | S-84 Map: steady cursor, pins grow on hover, a tapped thread shows both posts, a tapped organization opens its page | S-35 OSPI schools loader into a Schools table |
 | S-40 Claim an organization by kind, with the confirm methods from the taxonomy |  |  | S-88 Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox | S-48 MapLibre base map on OpenStreetMap-based tiles |
-| S-41 Admin review queue |  |  |  | S-53 Prototype, design brief, and how-it-works pages live |
+| S-41 Admin review queue |  |  | S-91 Error logging and database backups, so a problem is seen and nothing is lost | S-53 Prototype, design brief, and how-it-works pages live |
 | S-42 Kind of help on every need and offer |  |  |  | S-54 Roadmap page generated from roadmap.json |
 | S-43 Cadence and standing agreements |  |  |  | S-57 React, with MapLibre and deck.gl for the map; Capacitor for store apps in Beta |
 | S-44 P0 to P3 with the monthly P0 cap |  |  |  | S-62 Washington higher education: universities, community and technical colleges, private nonprofits |
@@ -53,7 +53,6 @@ Generated from `roadmap.json` on 2026-09-24. Don't edit this file; run `node scr
 | S-87 Wish list: search the map for an organization or a place, and fly to it |  |  |  |  |
 | S-89 A paid tier for businesses (nonprofits stay free) |  |  |  |  |
 | S-90 Cost to consider: a database that doesn't pause (Azure SQL Basic, about $5 a month) so the first visit after a quiet hour isn't slow |  |  |  |  |
-| S-91 Error logging and database backups, so a problem is seen and nothing is lost |  |  |  |  |
 | S-92 Google sign-in out of Testing, so invited organizations don't need to be added one by one (needs the privacy and terms pages) |  |  |  |  |
 
 ## Roadmap
@@ -353,5 +352,5 @@ Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
     - [ ] T-49 Question: is a slow first load (up to about a minute after an idle hour) acceptable for the alpha, or worth about $5 a month to avoid? (Ready)
     - [ ] T-50 Check current Azure pricing for Basic and for serverless with auto-pause off before deciding (Ready)
     - [ ] T-51 If yes: change the database tier in the Azure portal (no code change; the app already retries while the database wakes) (Ready)
-- **S-91** Error logging and database backups, so a problem is seen and nothing is lost · Backlog
+- **S-91** Error logging and database backups, so a problem is seen and nothing is lost · In review
 

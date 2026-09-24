@@ -68,6 +68,15 @@ builder.Services.AddSwaggerGen(o =>
 
 builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>("database");
 
+// An unexpected server error answers with a problem document carrying a reference (the trace id), and the log line
+// carries the same one, so "it said error 00-7f3a..." can be found in the logs.
+builder.Services.AddProblemDetails(o => o.CustomizeProblemDetails = ctx =>
+{
+    var trace = System.Diagnostics.Activity.Current?.Id ?? ctx.HttpContext.TraceIdentifier;
+    ctx.ProblemDetails.Extensions["traceId"] = trace;
+    if (ctx.Exception is not null) ctx.ProblemDetails.Title = "That didn’t work. Try again."; // a crash, not a deliberate 503
+});
+
 // Public endpoints get a per-IP fixed window; tune per environment via config.
 var permitPerMinute = builder.Configuration.GetValue("RateLimit:PermitPerMinute", 120);
 builder.Services.AddRateLimiter(o =>
@@ -112,6 +121,10 @@ using (var scope = app.Services.CreateScope())
     }
     else await db.Database.EnsureCreatedAsync(); // tests run on SQLite, which can't apply SQL Server migrations
 }
+
+// Unhandled exceptions: logged (by the handler) with the trace id, answered as a problem document, never a bare 500.
+app.UseExceptionHandler();
+app.UseStatusCodePages();
 
 if (app.Environment.IsDevelopment())
 {
