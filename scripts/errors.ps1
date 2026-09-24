@@ -8,7 +8,9 @@ $az = "$env:LOCALAPPDATA\Programs\AzureCLI\bin\az.cmd"
 $dir = Join-Path $env:TEMP 'helpbook-logs'; $zip = "$dir.zip"
 if (Test-Path $dir) { Remove-Item -Recurse -Force $dir }
 & $az webapp log download -g helpbook-alpha -n helpbook-alpha --log-file $zip -o none
-Expand-Archive $zip $dir -Force
+# Not Expand-Archive: it fails on the paths inside App Service's log bundle.
+New-Item -ItemType Directory -Force $dir | Out-Null
+tar.exe -xf $zip -C $dir 2>$null
 $since = (Get-Date).ToUniversalTime().AddDays(-$Days)
 $files = Get-ChildItem $dir -Recurse -Include *docker.log, *failure.log | Where-Object { $_.LastWriteTimeUtc -ge $since }
 $pattern = 'Client error|fail: |Unhandled exception|An unhandled exception|Error Number:|ContainerStartupFailure'

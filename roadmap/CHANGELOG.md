@@ -22,6 +22,12 @@ Newest first. Every shipped change lands here with test cases Taylor can run on 
 2. **[verified]** A test error report without signing in is accepted (a new test).
 3. **[needs your phone]** Nothing to tap: tell me if a screen ever shows "That didn’t work. Reload the page", and I'll find it in the log.
 
+### Found along the way
+
+- App output wasn't being saved to the log files today; container logging to the file system is now on.
+- A restart while the database was waking still crashed the site (18:09 UTC): the retry checked only the innermost error, a reset connection, not the database error around it. It now looks through the whole chain, and Azure allows the app 10 minutes to start instead of about 140 seconds.
+- Checked end to end on the live site: a test error sent from outside appears in the log, and `scripts/errors.ps1` finds it.
+
 ### New line, for approval
 
 - Crash screen: "That didn’t work. Reload the page" ("Reload the page" is the link).
