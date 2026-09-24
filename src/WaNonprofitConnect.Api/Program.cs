@@ -112,9 +112,9 @@ using (var scope = app.Services.CreateScope())
         for (var attempt = 1; ; attempt++)
         {
             try { await db.Database.MigrateAsync(); break; }
-            catch (Exception e) when (attempt < 12 && e.GetBaseException() is Microsoft.Data.SqlClient.SqlException)
+            catch (Exception e) when (attempt < 12 && IsDatabaseUnreachable(e))
             {
-                app.Logger.LogWarning("Database not ready (attempt {Attempt}): {Message}", attempt, e.GetBaseException().Message);
+                app.Logger.LogWarning("Database not ready (attempt {Attempt}): {Message}", attempt, e.Message);
                 await Task.Delay(TimeSpan.FromSeconds(15));
             }
         }
@@ -160,4 +160,16 @@ if (staticFiles is not null)
 
 app.Run();
 
-public partial class Program { }
+public partial class Program
+{
+    /// <summary>
+    /// A waking database fails in several shapes: a SqlException (40613), a SqlException wrapping a reset socket,
+    /// or EF's retry-limit error wrapping either. Look through the whole chain, not just the innermost error.
+    /// </summary>
+    static bool IsDatabaseUnreachable(Exception e)
+    {
+        for (Exception? x = e; x is not null; x = x.InnerException)
+            if (x is Microsoft.Data.SqlClient.SqlException or System.IO.IOException or System.Net.Sockets.SocketException) return true;
+        return false;
+    }
+}
