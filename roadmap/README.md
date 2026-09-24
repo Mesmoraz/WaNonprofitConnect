@@ -48,11 +48,12 @@ Generated from `roadmap.json` on 2026-09-24. Don't edit this file; run `node scr
 | S-82 Pick and buy a domain, for email sign-in and store listings |  |  |  |  |
 | S-83 Microsoft sign-in, since many nonprofits run on Microsoft 365 |  |  |  |  |
 | S-85 Sign in by email for people without Google |  |  |  |  |
-| S-86 What you see depends on who you are: nonprofit and company first, then schools and students |  |  |  |  |
+| S-86 What you see depends on who you are: nonprofits, then schools and students, then companies |  |  |  |  |
 | S-87 Wish list: search the map for an organization or a place, and fly to it |  |  |  |  |
 | S-89 A paid tier for businesses (nonprofits stay free) |  |  |  |  |
 | S-90 Cost to consider: a database that doesn't pause (Azure SQL Basic, about $5 a month) so the first visit after a quiet hour isn't slow |  |  |  |  |
 | S-92 Google sign-in out of Testing, so invited organizations don't need to be added one by one (needs the privacy and terms pages) |  |  |  |  |
+| S-93 Send feedback from inside the app: a button that captures the screen, the page, the device and recent errors with your note, so a bug report arrives ready to fix |  |  |  |  |
 
 ## Roadmap
 
@@ -144,8 +145,8 @@ Find anyone here, joined or not; one profile layout for six shapes.
 
 - **S-23** Directory: all six kinds, filter by kind, cause, city · Backlog · round B10
 - **S-24** Profile: one layout, six shapes · Backlog · round B10 · ⛔ after the freeze: profile layout belongs to the real app
-- **S-86** What you see depends on who you are: nonprofit and company first, then schools and students · Backlog
-    - [ ] T-34 Question: which kind of user comes after nonprofits, companies or schools and students? (Ready)
+- **S-86** What you see depends on who you are: nonprofits, then schools and students, then companies · Backlog
+    - [x] T-34 Answered (Taylor, Sep 24): schools and students come next, then companies.
     - [ ] T-35 Question: should companies see only the needs they can meet (Time, Skills, Things, Partnership) and post offers only? (Ready)
     - [ ] T-36 Question: should the map center on the company's office, with nonprofits nearby? (Ready)
     - [ ] T-37 Question: how does a company get confirmed: a work email, an invite code, or both? (Ready)
@@ -296,7 +297,7 @@ Corporate giving and volunteering platforms, once there's something to integrate
 - **S-58** Corporate giving platforms (Benevity and others), subject to APIs and agreements · Backlog
 - **S-89** A paid tier for businesses (nonprofits stay free) · Backlog
 
-### I-6 A working alpha for invited nonprofits · In progress · 2/25 stories done
+### I-6 A working alpha for invited nonprofits · In progress · 2/26 stories done
 
 Real organizations post real needs and offers, start threads, and make golden threads, on the map, on any phone or desktop. Target: live Sep 30.
 
@@ -337,7 +338,7 @@ A real base map, every nonprofit as a dot, clusters, and threads that drift and 
 - **S-84** Map: steady cursor, pins grow on hover, a tapped thread shows both posts, a tapped organization opens its page · In review
 - **S-87** Wish list: search the map for an organization or a place, and fly to it · Backlog
 
-#### E-26 Live and invited · In progress · 0/7
+#### E-26 Live and invited · In progress · 0/8
 
 Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
 
@@ -349,9 +350,11 @@ Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
     - [ ] T-53 Taylor fills in: contact email, who runs it, reply time, and has a lawyer read before public launch (Ready)
 - **S-78** Recruit 8 to 12 organizations in two or three clusters · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-79** Invite message drafted, approved, and sent by Taylor · In progress · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
+    - [ ] T-54 Decided (Taylor, Sep 24): the co-founder sends the invite message to his contacts; Claude drafts it (Ready)
 - **S-90** Cost to consider: a database that doesn't pause (Azure SQL Basic, about $5 a month) so the first visit after a quiet hour isn't slow · Backlog
     - [ ] T-49 Question: is a slow first load (up to about a minute after an idle hour) acceptable for the alpha, or worth about $5 a month to avoid? (Ready)
     - [ ] T-50 Check current Azure pricing for Basic and for serverless with auto-pause off before deciding (Ready)
     - [ ] T-51 If yes: change the database tier in the Azure portal (no code change; the app already retries while the database wakes) (Ready)
 - **S-91** Error logging and database backups, so a problem is seen and nothing is lost · In review
+- **S-93** Send feedback from inside the app: a button that captures the screen, the page, the device and recent errors with your note, so a bug report arrives ready to fix · Backlog
 
