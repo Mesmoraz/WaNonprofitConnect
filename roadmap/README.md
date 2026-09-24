@@ -23,15 +23,14 @@ Generated from `roadmap.json` on 2026-09-24. Don't edit this file; run `node scr
 | S-37 Workforce programs list |  |  | S-75 Hosted on Azure: API, hub and app from one address, no domain needed | S-16 One Together initiative |
 | S-38 WA business lookup (UBI) for business confirmation |  |  | S-76 Installable to the home screen; phone, tablet and desktop layouts | S-34 IRS Business Master File loaded |
 | S-39 ASP.NET Identity replaces the X-Org-Ein header |  |  | S-84 Map: steady cursor, pins grow on hover, a tapped thread shows both posts, a tapped organization opens its page | S-35 OSPI schools loader into a Schools table |
-| S-40 Claim an organization by kind, with the confirm methods from the taxonomy |  |  | S-88 Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox | S-53 Prototype, design brief, and how-it-works pages live |
-| S-41 Admin review queue |  |  |  | S-54 Roadmap page generated from roadmap.json |
-| S-42 Kind of help on every need and offer |  |  |  | S-57 React, with MapLibre and deck.gl for the map; Capacitor for store apps in Beta |
-| S-43 Cadence and standing agreements |  |  |  | S-62 Washington higher education: universities, community and technical colleges, private nonprofits |
-| S-44 P0 to P3 with the monthly P0 cap |  |  |  | S-65 Diagnose held-backspace on Android with docs/keytest.html and fix the real cause |
-| S-45 Fair ranking: priority, then least seen, with the org cap |  |  |  | S-80 The name lives in one file, so it can change in minutes |
-| S-46 Capability tags and rule-driven alerts |  |  |  |  |
+| S-40 Claim an organization by kind, with the confirm methods from the taxonomy |  |  | S-88 Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox | S-48 MapLibre base map on OpenStreetMap-based tiles |
+| S-41 Admin review queue |  |  |  | S-53 Prototype, design brief, and how-it-works pages live |
+| S-42 Kind of help on every need and offer |  |  |  | S-54 Roadmap page generated from roadmap.json |
+| S-43 Cadence and standing agreements |  |  |  | S-57 React, with MapLibre and deck.gl for the map; Capacitor for store apps in Beta |
+| S-44 P0 to P3 with the monthly P0 cap |  |  |  | S-62 Washington higher education: universities, community and technical colleges, private nonprofits |
+| S-45 Fair ranking: priority, then least seen, with the org cap |  |  |  | S-65 Diagnose held-backspace on Android with docs/keytest.html and fix the real cause |
+| S-46 Capability tags and rule-driven alerts |  |  |  | S-80 The name lives in one file, so it can change in minutes |
 | S-47 Grant model with the eight filter fields and a hand-off URL |  |  |  |  |
-| S-48 MapLibre base map on OpenStreetMap-based tiles |  |  |  |  |
 | S-49 Geocode IRS and OSPI addresses to street level |  |  |  |  |
 | S-50 Confirm methods per kind, as designed in the taxonomy |  |  |  |  |
 | S-51 Grants gated to confirmed organizations |  |  |  |  |
@@ -54,6 +53,8 @@ Generated from `roadmap.json` on 2026-09-24. Don't edit this file; run `node scr
 | S-87 Wish list: search the map for an organization or a place, and fly to it |  |  |  |  |
 | S-89 A paid tier for businesses (nonprofits stay free) |  |  |  |  |
 | S-90 Cost to consider: a database that doesn't pause (Azure SQL Basic, about $5 a month) so the first visit after a quiet hour isn't slow |  |  |  |  |
+| S-91 Error logging and database backups, so a problem is seen and nothing is lost |  |  |  |  |
+| S-92 Google sign-in out of Testing, so invited organizations don't need to be added one by one (needs the privacy and terms pages) |  |  |  |  |
 
 ## Roadmap
 
@@ -297,22 +298,23 @@ Corporate giving and volunteering platforms, once there's something to integrate
 - **S-58** Corporate giving platforms (Benevity and others), subject to APIs and agreements · Backlog
 - **S-89** A paid tier for businesses (nonprofits stay free) · Backlog
 
-### I-6 A working alpha for invited nonprofits · In progress · 1/23 stories done
+### I-6 A working alpha for invited nonprofits · In progress · 2/25 stories done
 
 Real organizations post real needs and offers, start threads, and make golden threads, on the map, on any phone or desktop. Target: live Sep 30.
 
-#### E-23 Accounts and invites · In progress · 0/4
+#### E-23 Accounts and invites · In progress · 0/5
 
 Sign in with Google; an invite code confirms you for one organization; anyone else waits for review.
 
 - **S-68** Google sign-in, invite codes tied to one organization, claims that wait for review · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
-    - [ ] T-33 Admin emails read from one comma-separated App Service setting too (Ready)
+    - [x] T-33 Admin emails read from one comma-separated App Service setting too
 - **S-69** Admin page: make invite codes, approve or reject claims · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-83** Microsoft sign-in, since many nonprofits run on Microsoft 365 · Backlog
 - **S-85** Sign in by email for people without Google · Backlog
     - [ ] T-39 Question: OK to create an Azure Communication Services email resource (about a fraction of a cent per email)? (Ready)
     - [ ] T-40 Question: a one-time link by email, or a password? (Ready)
     - [ ] T-41 Brief the email sign-in screens for approval (Ready)
+- **S-92** Google sign-in out of Testing, so invited organizations don't need to be added one by one (needs the privacy and terms pages) · Backlog
 
 #### E-24 The core loop, working · In progress · 1/7
 
@@ -326,23 +328,23 @@ Board, a need or offer, post, thread, inbox, backed by the real API.
 - **S-72** Threads API: start, message, accept, mark done, live over SignalR · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-80** The name lives in one file, so it can change in minutes · Done · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 
-#### E-25 The map, for real · In progress · 0/6
+#### E-25 The map, for real · In progress · 1/6
 
 A real base map, every nonprofit as a dot, clusters, and threads that drift and glow gold when done.
 
-- **S-48** MapLibre base map on OpenStreetMap-based tiles · Backlog
+- **S-48** MapLibre base map on OpenStreetMap-based tiles · Done
 - **S-61** Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) · Backlog
 - **S-73** Map: base map, clusters, four thread states, golden glow, tap for details · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-74** Map data: ZIP centroids from the Census gazetteer, map and points endpoints · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-84** Map: steady cursor, pins grow on hover, a tapped thread shows both posts, a tapped organization opens its page · In review
 - **S-87** Wish list: search the map for an organization or a place, and fly to it · Backlog
 
-#### E-26 Live and invited · In progress · 0/6
+#### E-26 Live and invited · In progress · 0/7
 
 Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
 
 - **S-75** Hosted on Azure: API, hub and app from one address, no domain needed · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
-    - [ ] T-32 Google client ID in the app build and in App Service (Ready)
+    - [x] T-32 Google client ID in the app build and in App Service
 - **S-76** Installable to the home screen; phone, tablet and desktop layouts · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-77** Privacy and terms pages · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-78** Recruit 8 to 12 organizations in two or three clusters · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
@@ -351,4 +353,5 @@ Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
     - [ ] T-49 Question: is a slow first load (up to about a minute after an idle hour) acceptable for the alpha, or worth about $5 a month to avoid? (Ready)
     - [ ] T-50 Check current Azure pricing for Basic and for serverless with auto-pause off before deciding (Ready)
     - [ ] T-51 If yes: change the database tier in the Azure portal (no code change; the app already retries while the database wakes) (Ready)
+- **S-91** Error logging and database backups, so a problem is seen and nothing is lost · Backlog
 

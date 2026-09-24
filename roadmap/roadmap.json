@@ -810,7 +810,7 @@
       "id": "S-48",
       "epic": "E-25",
       "title": "MapLibre base map on OpenStreetMap-based tiles",
-      "status": "backlog",
+      "status": "done",
       "added": "2026-09-20",
       "tasks": [],
       "lane": "map"
@@ -1016,7 +1016,7 @@
         {
           "id": "T-33",
           "title": "Admin emails read from one comma-separated App Service setting too",
-          "status": "ready"
+          "status": "done"
         }
       ]
     },
@@ -1092,7 +1092,7 @@
         {
           "id": "T-32",
           "title": "Google client ID in the app build and in App Service",
-          "status": "ready"
+          "status": "done"
         }
       ]
     },
@@ -1323,6 +1323,22 @@
           "status": "ready"
         }
       ]
+    },
+    {
+      "id": "S-91",
+      "epic": "E-26",
+      "title": "Error logging and database backups, so a problem is seen and nothing is lost",
+      "status": "backlog",
+      "added": "2026-09-24",
+      "tasks": []
+    },
+    {
+      "id": "S-92",
+      "epic": "E-23",
+      "title": "Google sign-in out of Testing, so invited organizations don't need to be added one by one (needs the privacy and terms pages)",
+      "status": "backlog",
+      "added": "2026-09-24",
+      "tasks": []
     }
   ]
 }
