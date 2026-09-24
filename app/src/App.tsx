@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { MOCK, useMe, type Me } from './api'
 import { AppShell } from './shell/AppShell'
@@ -27,10 +28,24 @@ function Only({ stage }: { stage: Stage }) {
   return s === stage ? <Outlet /> : <Navigate to={HOME[s]} replace />
 }
 
+/**
+ * While we find out who you are. Usually a blink; after a quiet hour the database wakes first and it can take a
+ * minute, which looked like a blank, broken page (Taylor, Sep 24). After 2 seconds, say so.
+ */
+function Booting() {
+  const [slow, setSlow] = useState(false)
+  useEffect(() => { const t = setTimeout(() => setSlow(true), 2000); return () => clearTimeout(t) }, [])
+  return (
+    <div className="boot" aria-busy="true">
+      {slow && <p className="empty" role="status">Waking up. The first visit in a while can take a minute.</p>}
+    </div>
+  )
+}
+
 export function App() {
   const { data: me, isPending, isError, refetch } = useMe()
 
-  if (isPending) return <div className="boot" aria-busy="true" />
+  if (isPending) return <Booting />
   if (isError && me === undefined) {
     return (
       <div className="boot">

@@ -225,6 +225,7 @@ public sealed class ApiTests : IDisposable
         var page = await http.GetAsync("/inbox/42");
         page.StatusCode.Should().Be(HttpStatusCode.OK);
         page.Content.Headers.ContentType!.MediaType.Should().Be("text/html");
+        page.Headers.CacheControl!.NoCache.Should().BeTrue(); // a deploy is seen at once, never a stale page
 
         // Files are served as themselves: a missing one 404s, a real one keeps its own type.
         (await http.GetAsync("/assets/missing-abc123.js")).StatusCode.Should().Be(HttpStatusCode.NotFound);

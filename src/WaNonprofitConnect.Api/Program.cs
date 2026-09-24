@@ -141,7 +141,15 @@ StaticFileOptions? staticFiles = null;
 if (staticRoot is not null)
 {
     var staticFileProvider = new PhysicalFileProvider(staticRoot);
-    staticFiles = new StaticFileOptions { FileProvider = staticFileProvider };
+    staticFiles = new StaticFileOptions
+    {
+        FileProvider = staticFileProvider,
+        // index.html (and the fallback to it) is always checked with the server, so a deploy is seen at once.
+        // The hashed files under /assets never change, so they can be kept for a year.
+        OnPrepareResponse = ctx => ctx.Context.Response.Headers.CacheControl =
+            ctx.File.Name.EndsWith(".html", StringComparison.OrdinalIgnoreCase) ? "no-cache"
+            : ctx.Context.Request.Path.StartsWithSegments("/assets") ? "public, max-age=31536000, immutable" : "no-cache",
+    };
     app.UseDefaultFiles(new DefaultFilesOptions { FileProvider = staticFileProvider });
     app.UseStaticFiles(staticFiles);
 }
