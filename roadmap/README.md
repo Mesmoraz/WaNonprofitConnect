@@ -23,7 +23,7 @@ Generated from `roadmap.json` on 2026-09-24. Don't edit this file; run `node scr
 | S-37 Workforce programs list |  |  | S-75 Hosted on Azure: API, hub and app from one address, no domain needed | S-16 One Together initiative |
 | S-38 WA business lookup (UBI) for business confirmation |  |  | S-76 Installable to the home screen; phone, tablet and desktop layouts | S-34 IRS Business Master File loaded |
 | S-39 ASP.NET Identity replaces the X-Org-Ein header |  |  | S-84 Map: steady cursor, pins grow on hover, a tapped thread shows both posts, a tapped organization opens its page | S-35 OSPI schools loader into a Schools table |
-| S-40 Claim an organization by kind, with the confirm methods from the taxonomy |  |  |  | S-53 Prototype, design brief, and how-it-works pages live |
+| S-40 Claim an organization by kind, with the confirm methods from the taxonomy |  |  | S-88 Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox | S-53 Prototype, design brief, and how-it-works pages live |
 | S-41 Admin review queue |  |  |  | S-54 Roadmap page generated from roadmap.json |
 | S-42 Kind of help on every need and offer |  |  |  | S-57 React, with MapLibre and deck.gl for the map; Capacitor for store apps in Beta |
 | S-43 Cadence and standing agreements |  |  |  | S-62 Washington higher education: universities, community and technical colleges, private nonprofits |
@@ -52,7 +52,6 @@ Generated from `roadmap.json` on 2026-09-24. Don't edit this file; run `node scr
 | S-85 Sign in by email for people without Google |  |  |  |  |
 | S-86 What you see depends on who you are: nonprofit and company first, then schools and students |  |  |  |  |
 | S-87 Wish list: search the map for an organization or a place, and fly to it |  |  |  |  |
-| S-88 Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox |  |  |  |  |
 | S-89 A paid tier for businesses (nonprofits stay free) |  |  |  |  |
 
 ## Roadmap
@@ -139,7 +138,7 @@ Confirmed organizations search grants and leave to apply on the funder's site.
 - **S-22** Grants tab shows only for confirmed organizations · In review
 - **S-60** Render a funder's stated priorities as their quoted words, not our copy · Backlog
 
-#### E-6 Directory and profiles · Backlog · 0/4
+#### E-6 Directory and profiles · In progress · 0/4
 
 Find anyone here, joined or not; one profile layout for six shapes.
 
@@ -151,12 +150,14 @@ Find anyone here, joined or not; one profile layout for six shapes.
     - [ ] T-36 Question: should the map center on the company's office, with nonprofits nearby? (Ready)
     - [ ] T-37 Question: how does a company get confirmed: a work email, an invite code, or both? (Ready)
     - [ ] T-38 Brief the company board, map and post screens for approval (Ready)
-- **S-88** Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox · Backlog
-    - [ ] T-42 Question: which filters first: reach (local, national, international), who you serve (children and youth, environment, animals, families, marginalized groups, the elderly, veterans, arts and culture), and kind of work (direct services, research, advocacy and education)? (Ready)
-    - [ ] T-43 Question: do an organization's filters come from its IRS cause code by default, set by itself, or set by an admin? (Ready)
+- **S-88** Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox · In review
+    - [x] T-42 Answered (Taylor, Sep 24): who you serve first. Reach and kind of work later.
+    - [x] T-43 Answered (Taylor, Sep 24): pre-filled from the IRS cause code.
     - [x] T-44 Answered (Taylor, Sep 24): nonprofits get everything free; a paid tier comes later, for businesses only. See TAXONOMY.md, Decisions.
     - [ ] T-45 Question: does the second inbox hold posts outside your filters, messages from organizations outside them, or both? (Ready)
-    - [ ] T-46 Brief the filters setting, the filtered board and the second inbox for approval (Ready)
+    - [x] T-46 Brief the Who they serve filter: approved by Taylor Sep 24 (12 groups, Communities facing barriers)
+    - [x] T-47 Who they serve on the board: 12 groups from the cause code, remembered per device
+    - [ ] T-48 Save filters to your account (needs the app's database login to be allowed to add a table) (Ready)
 
 #### E-7 The map · Backlog · 0/3
 

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { useBoard, useMapData, useOrgs, type KindOfHelp, type ListingKind } from '../../api'
+import { useBoard, useMapData, useMe, useOrgPage, useOrgs, type KindOfHelp, type ListingKind } from '../../api'
 import { BRAND } from '../../brand'
+import { SERVE_GROUPS, passes, useServeFilter } from '../../lib/serve'
 import { cap, HELPS, HELP_LABEL } from '../../lib/words'
 import { ListingCard } from './ListingCard'
 import './board.css'
@@ -31,8 +32,16 @@ export function Board() {
   const map = useMapData()
   const orgs = useOrgs(searching ? term : '')
   const done = map.data?.threads.filter(t => t.status === 'Completed').length
-  const listings = board.data ?? []
-  const filterCount = kind ? 1 : 0
+  const { data: me } = useMe()
+  const myEin = me?.membership?.ein ?? ''
+  const { data: mine } = useOrgPage(myEin)   // your cause code, to start "Who they serve" from
+  const serve = useServeFilter(myEin || undefined, mine?.org.ntee)
+  const [showAll, setShowAll] = useState(false)
+  const all = board.data ?? []
+  const listings = showAll ? all : all.filter(l => passes(serve.picked, l.org.ntee))
+  const hidden = all.length - listings.length
+  const filterCount = (kind ? 1 : 0) + serve.picked.length
+  const clearFilters = () => { set('kind', ''); serve.clear() }
 
   return (
     <div className="screen board">
@@ -71,7 +80,15 @@ export function Board() {
             <div className="chips">
               {KINDS.map(([v, t]) => <button key={t} className={`chip${kind === v ? ' on' : ''}`} aria-pressed={kind === v} onClick={() => set('kind', v)}>{t}</button>)}
             </div>
-            {filterCount > 0 && <button className="btn sm quiet" onClick={() => set('kind', '')}>Clear filters</button>}
+            <div className="label">Who they serve</div>
+            <div className="chips">
+              {SERVE_GROUPS.map(g => {
+                const on = serve.picked.includes(g)
+                return <button key={g} className={`chip${on ? ' on' : ''}`} aria-pressed={on} onClick={() => { setShowAll(false); serve.toggle(g) }}>{g}</button>
+              })}
+            </div>
+            <p className="hint">Set from your organization’s cause code. Tap to change.</p>
+            {filterCount > 0 && <button className="btn sm quiet" onClick={clearFilters}>Clear filters</button>}
           </div>
         )}
 
@@ -81,9 +98,11 @@ export function Board() {
 
         {listings.length > 0 && <div className="board-grid">{listings.map(l => <ListingCard key={l.id} l={l} />)}</div>}
 
-        {board.data && !listings.length && (help
+        {board.data && !listings.length && !hidden && (help
           ? <p className="empty">Nothing under {HELP_LABEL[help]} yet. <Link className="inline-link" to="/post">Post the first one?</Link></p>
-          : <p className="empty">Nothing here with those filters. <button className="inline-link" onClick={() => set('kind', '')}>Clear them?</button></p>)}
+          : <p className="empty">Nothing here with those filters. <button className="inline-link" onClick={clearFilters}>Clear them?</button></p>)}
+
+        {hidden > 0 && <p className="hint board-hidden">{hidden} more outside your filters. <button className="inline-link" onClick={() => setShowAll(true)}>Show them</button></p>}
 
         {board.data && <p className="hint">Urgent first, then whoever’s been seen least.</p>}
       </>}

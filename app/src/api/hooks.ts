@@ -49,7 +49,7 @@ export function useThread(id: number) {
 
 export const useMapData = (enabled = true) => useQuery({ queryKey: keys.map, queryFn: api.map, enabled, staleTime: 60_000 })
 
-export const useOrgPage = (ein: string) => useQuery({ queryKey: keys.orgPage(ein), queryFn: () => api.orgPage(ein) })
+export const useOrgPage = (ein: string) => useQuery({ queryKey: keys.orgPage(ein), queryFn: () => api.orgPage(ein), enabled: !!ein })
 
 export const useMapPoints = () => useQuery({ queryKey: keys.mapPoints, queryFn: api.mapPoints, staleTime: 3600_000 })
 

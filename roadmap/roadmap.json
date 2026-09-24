@@ -1252,18 +1252,18 @@
       "id": "S-88",
       "epic": "E-6",
       "title": "Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-24",
       "tasks": [
         {
           "id": "T-42",
-          "title": "Question: which filters first: reach (local, national, international), who you serve (children and youth, environment, animals, families, marginalized groups, the elderly, veterans, arts and culture), and kind of work (direct services, research, advocacy and education)?",
-          "status": "ready"
+          "title": "Answered (Taylor, Sep 24): who you serve first. Reach and kind of work later.",
+          "status": "done"
         },
         {
           "id": "T-43",
-          "title": "Question: do an organization's filters come from its IRS cause code by default, set by itself, or set by an admin?",
-          "status": "ready"
+          "title": "Answered (Taylor, Sep 24): pre-filled from the IRS cause code.",
+          "status": "done"
         },
         {
           "id": "T-44",
@@ -1277,7 +1277,17 @@
         },
         {
           "id": "T-46",
-          "title": "Brief the filters setting, the filtered board and the second inbox for approval",
+          "title": "Brief the Who they serve filter: approved by Taylor Sep 24 (12 groups, Communities facing barriers)",
+          "status": "done"
+        },
+        {
+          "id": "T-47",
+          "title": "Who they serve on the board: 12 groups from the cause code, remembered per device",
+          "status": "done"
+        },
+        {
+          "id": "T-48",
+          "title": "Save filters to your account (needs the app's database login to be allowed to add a table)",
           "status": "ready"
         }
       ]

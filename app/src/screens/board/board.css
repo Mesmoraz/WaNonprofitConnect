@@ -37,3 +37,4 @@
   .seg { margin-left: 0; margin-right: 0; padding: 0; }
   .board .card { box-shadow: 0 1px 0 var(--line-2); }
 }
+.board-hidden { text-align: center; font-size: 14px; padding: 6px 0; }

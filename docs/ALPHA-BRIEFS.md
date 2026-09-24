@@ -74,3 +74,13 @@ Approved by Taylor 2026-09-23.
 - Headline "Admin".
 - Invite codes: field "Find the organization", field "How many people" (3 by default), button **Make code**. Each code shows large, with "{org} · 1 of 3 used". Tap a code to copy it: toast "Copied."
 - Waiting for you: each claim shows "{name} · {email}", the organization, then "Seattle · Sep 23", with **Approve** and "Not this one". None: "No one is waiting."
+
+## Who they serve (board filter)
+
+Approved by Taylor 2026-09-24. Round one of S-88.
+
+- In the board's Filters, under "What": label "Who they serve", 12 chips: Children and youth · Education · Food · Housing · Health · Families · The elderly · Veterans · Communities facing barriers · Environment · Animals · Arts and culture.
+- Line: "Set from your organization’s cause code. Tap to change."
+- Chips start from your organization's IRS cause code. A post shows if its organization serves a group you picked; organizations with no listed group always show; nothing picked shows everything.
+- At the bottom when posts are hidden: "{n} more outside your filters. Show them".
+- "Clear filters" clears these too. The map isn't filtered yet. Picks are remembered per device until they can be saved to your account.
