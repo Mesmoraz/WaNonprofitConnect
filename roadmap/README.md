@@ -49,7 +49,7 @@ Generated from `roadmap.json` on 2026-09-24. Don't edit this file; run `node scr
 | S-81 Apple developer account, for TestFlight in Beta |  |  |  |  |
 | S-82 Pick and buy a domain, for email sign-in and store listings |  |  |  |  |
 | S-83 Microsoft sign-in, since many nonprofits run on Microsoft 365 |  |  |  |  |
-| S-85 Sign in by email for people without Google (a one-time link) |  |  |  |  |
+| S-85 Sign in by email for people without Google |  |  |  |  |
 | S-86 What you see depends on who you are: nonprofit and company first, then schools and students |  |  |  |  |
 
 ## Roadmap
@@ -143,6 +143,11 @@ Find anyone here, joined or not; one profile layout for six shapes.
 - **S-23** Directory: all six kinds, filter by kind, cause, city · Backlog · round B10
 - **S-24** Profile: one layout, six shapes · Backlog · round B10 · ⛔ after the freeze: profile layout belongs to the real app
 - **S-86** What you see depends on who you are: nonprofit and company first, then schools and students · Backlog
+    - [ ] T-34 Question: which kind of user comes after nonprofits, companies or schools and students? (Ready)
+    - [ ] T-35 Question: should companies see only the needs they can meet (Time, Skills, Things, Partnership) and post offers only? (Ready)
+    - [ ] T-36 Question: should the map center on the company's office, with nonprofits nearby? (Ready)
+    - [ ] T-37 Question: how does a company get confirmed: a work email, an invite code, or both? (Ready)
+    - [ ] T-38 Brief the company board, map and post screens for approval (Ready)
 
 #### E-7 The map · Backlog · 0/3
 
@@ -292,7 +297,10 @@ Sign in with Google; an invite code confirms you for one organization; anyone el
     - [ ] T-33 Admin emails read from one comma-separated App Service setting too (Ready)
 - **S-69** Admin page: make invite codes, approve or reject claims · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-83** Microsoft sign-in, since many nonprofits run on Microsoft 365 · Backlog
-- **S-85** Sign in by email for people without Google (a one-time link) · Backlog
+- **S-85** Sign in by email for people without Google · Backlog
+    - [ ] T-39 Question: OK to create an Azure Communication Services email resource (about a fraction of a cent per email)? (Ready)
+    - [ ] T-40 Question: a one-time link by email, or a password? (Ready)
+    - [ ] T-41 Brief the email sign-in screens for approval (Ready)
 
 #### E-24 The core loop, working · In progress · 1/7
 

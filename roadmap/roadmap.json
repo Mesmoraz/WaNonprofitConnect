@@ -1185,10 +1185,26 @@
     {
       "id": "S-85",
       "epic": "E-23",
-      "title": "Sign in by email for people without Google (a one-time link)",
+      "title": "Sign in by email for people without Google",
       "status": "backlog",
       "added": "2026-09-24",
-      "tasks": []
+      "tasks": [
+        {
+          "id": "T-39",
+          "title": "Question: OK to create an Azure Communication Services email resource (about a fraction of a cent per email)?",
+          "status": "ready"
+        },
+        {
+          "id": "T-40",
+          "title": "Question: a one-time link by email, or a password?",
+          "status": "ready"
+        },
+        {
+          "id": "T-41",
+          "title": "Brief the email sign-in screens for approval",
+          "status": "ready"
+        }
+      ]
     },
     {
       "id": "S-86",
@@ -1196,7 +1212,33 @@
       "title": "What you see depends on who you are: nonprofit and company first, then schools and students",
       "status": "backlog",
       "added": "2026-09-24",
-      "tasks": []
+      "tasks": [
+        {
+          "id": "T-34",
+          "title": "Question: which kind of user comes after nonprofits, companies or schools and students?",
+          "status": "ready"
+        },
+        {
+          "id": "T-35",
+          "title": "Question: should companies see only the needs they can meet (Time, Skills, Things, Partnership) and post offers only?",
+          "status": "ready"
+        },
+        {
+          "id": "T-36",
+          "title": "Question: should the map center on the company's office, with nonprofits nearby?",
+          "status": "ready"
+        },
+        {
+          "id": "T-37",
+          "title": "Question: how does a company get confirmed: a work email, an invite code, or both?",
+          "status": "ready"
+        },
+        {
+          "id": "T-38",
+          "title": "Brief the company board, map and post screens for approval",
+          "status": "ready"
+        }
+      ]
     }
   ]
 }
