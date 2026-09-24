@@ -53,6 +53,7 @@ Generated from `roadmap.json` on 2026-09-24. Don't edit this file; run `node scr
 | S-86 What you see depends on who you are: nonprofit and company first, then schools and students |  |  |  |  |
 | S-87 Wish list: search the map for an organization or a place, and fly to it |  |  |  |  |
 | S-89 A paid tier for businesses (nonprofits stay free) |  |  |  |  |
+| S-90 Cost to consider: a database that doesn't pause (Azure SQL Basic, about $5 a month) so the first visit after a quiet hour isn't slow |  |  |  |  |
 
 ## Roadmap
 
@@ -296,7 +297,7 @@ Corporate giving and volunteering platforms, once there's something to integrate
 - **S-58** Corporate giving platforms (Benevity and others), subject to APIs and agreements · Backlog
 - **S-89** A paid tier for businesses (nonprofits stay free) · Backlog
 
-### I-6 A working alpha for invited nonprofits · In progress · 1/22 stories done
+### I-6 A working alpha for invited nonprofits · In progress · 1/23 stories done
 
 Real organizations post real needs and offers, start threads, and make golden threads, on the map, on any phone or desktop. Target: live Sep 30.
 
@@ -336,7 +337,7 @@ A real base map, every nonprofit as a dot, clusters, and threads that drift and 
 - **S-84** Map: steady cursor, pins grow on hover, a tapped thread shows both posts, a tapped organization opens its page · In review
 - **S-87** Wish list: search the map for an organization or a place, and fly to it · Backlog
 
-#### E-26 Live and invited · In progress · 0/5
+#### E-26 Live and invited · In progress · 0/6
 
 Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
 
@@ -346,4 +347,8 @@ Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
 - **S-77** Privacy and terms pages · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-78** Recruit 8 to 12 organizations in two or three clusters · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-79** Invite message drafted, approved, and sent by Taylor · In progress · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
+- **S-90** Cost to consider: a database that doesn't pause (Azure SQL Basic, about $5 a month) so the first visit after a quiet hour isn't slow · Backlog
+    - [ ] T-49 Question: is a slow first load (up to about a minute after an idle hour) acceptable for the alpha, or worth about $5 a month to avoid? (Ready)
+    - [ ] T-50 Check current Azure pricing for Basic and for serverless with auto-pause off before deciding (Ready)
+    - [ ] T-51 If yes: change the database tier in the Azure portal (no code change; the app already retries while the database wakes) (Ready)
 

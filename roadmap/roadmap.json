@@ -1299,6 +1299,30 @@
       "status": "backlog",
       "added": "2026-09-24",
       "tasks": []
+    },
+    {
+      "id": "S-90",
+      "epic": "E-26",
+      "title": "Cost to consider: a database that doesn't pause (Azure SQL Basic, about $5 a month) so the first visit after a quiet hour isn't slow",
+      "status": "backlog",
+      "added": "2026-09-24",
+      "tasks": [
+        {
+          "id": "T-49",
+          "title": "Question: is a slow first load (up to about a minute after an idle hour) acceptable for the alpha, or worth about $5 a month to avoid?",
+          "status": "ready"
+        },
+        {
+          "id": "T-50",
+          "title": "Check current Azure pricing for Basic and for serverless with auto-pause off before deciding",
+          "status": "ready"
+        },
+        {
+          "id": "T-51",
+          "title": "If yes: change the database tier in the Azure portal (no code change; the app already retries while the database wakes)",
+          "status": "ready"
+        }
+      ]
     }
   ]
 }
