@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react'
 
 // "Who they serve" (S-88, approved by Taylor Sep 24): 12 groups, read from the IRS cause code (NTEE).
-// An organization with no code, or a code none of these cover, serves no listed group and is never filtered out.
+// Strict (Taylor, Sep 24: laptops showed under Food): with groups picked, only organizations serving one of them
+// show. The rest, including ones with no code, wait behind "{n} more outside your filters. Show them".
 export const SERVE_GROUPS = [
   'Children and youth', 'Education', 'Food', 'Housing', 'Health', 'Families', 'The elderly', 'Veterans',
   'Communities facing barriers', 'Environment', 'Animals', 'Arts and culture',
@@ -29,12 +30,9 @@ export function servedBy(ntee: string | null | undefined): ServeGroup[] {
   return [...out]
 }
 
-/** A post shows if its organization serves a group you picked, serves none of the listed groups, or you picked none. */
-export const passes = (picked: ServeGroup[], ntee: string | null | undefined) => {
-  if (!picked.length) return true
-  const served = servedBy(ntee)
-  return !served.length || served.some(g => picked.includes(g))
-}
+/** A post shows if you picked nothing, or its organization serves a group you picked. */
+export const passes = (picked: ServeGroup[], ntee: string | null | undefined) =>
+  !picked.length || servedBy(ntee).some(g => picked.includes(g))
 
 /**
  * Your picks, remembered on this device per organization (not yet on your account: that needs a database change).

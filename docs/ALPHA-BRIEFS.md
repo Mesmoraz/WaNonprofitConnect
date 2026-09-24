@@ -81,6 +81,6 @@ Approved by Taylor 2026-09-24. Round one of S-88.
 
 - In the board's Filters, under "What": label "Who they serve", 12 chips: Children and youth · Education · Food · Housing · Health · Families · The elderly · Veterans · Communities facing barriers · Environment · Animals · Arts and culture.
 - Line: "Set from your organization’s cause code. Tap to change."
-- Chips start from your organization's IRS cause code. A post shows if its organization serves a group you picked; organizations with no listed group always show; nothing picked shows everything.
+- Chips start from your organization's IRS cause code. A post shows if its organization serves a group you picked; nothing picked shows everything. Organizations with no listed group count as outside your filters (Taylor, Sep 24: they had always shown, and laptops appeared under Food).
 - At the bottom when posts are hidden: "{n} more outside your filters. Show them".
 - "Clear filters" clears these too. The map isn't filtered yet. Picks are remembered per device until they can be saved to your account.
