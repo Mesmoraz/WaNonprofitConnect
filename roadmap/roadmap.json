@@ -729,10 +729,11 @@
       "id": "S-39",
       "epic": "E-12",
       "title": "ASP.NET Identity replaces the X-Org-Ein header",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-20",
       "tasks": [],
-      "lane": "backend"
+      "lane": "backend",
+      "source": "Built in the alpha: sign-in cookie and confirmed membership replace the header (S-68)."
     },
     {
       "id": "S-40",
@@ -747,19 +748,21 @@
       "id": "S-41",
       "epic": "E-12",
       "title": "Admin review queue",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-20",
       "tasks": [],
-      "lane": "backend"
+      "lane": "backend",
+      "source": "Built in the alpha as the Admin page claims queue (S-69)."
     },
     {
       "id": "S-42",
       "epic": "E-13",
       "title": "Kind of help on every need and offer",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-21",
       "tasks": [],
-      "lane": "backend"
+      "lane": "backend",
+      "source": "Built in the alpha: every need and offer carries a kind of help (S-71)."
     },
     {
       "id": "S-43",
@@ -774,19 +777,21 @@
       "id": "S-44",
       "epic": "E-13",
       "title": "P0 to P3 with the monthly P0 cap",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-20",
       "tasks": [],
-      "lane": "backend"
+      "lane": "backend",
+      "source": "Built in the alpha: four levels shown as Urgent, This week and nothing, with Urgent capped at 2 a month (S-71)."
     },
     {
       "id": "S-45",
       "epic": "E-13",
       "title": "Fair ranking: priority, then least seen, with the org cap",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-20",
       "tasks": [],
-      "lane": "backend"
+      "lane": "backend",
+      "source": "Built in the alpha: urgent first, then least seen, at most 2 per organization in the top 6 (S-71)."
     },
     {
       "id": "S-46",
@@ -819,10 +824,11 @@
       "id": "S-49",
       "epic": "E-15",
       "title": "Geocode IRS and OSPI addresses to street level",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-20",
       "tasks": [],
-      "lane": "backend"
+      "lane": "backend",
+      "source": "Built in the alpha: 25,781 of 35,361 WA charities placed at their street address by the Census geocoder; OSPI schools already carry building coordinates."
     },
     {
       "id": "S-50",
@@ -848,7 +854,13 @@
       "title": "Rate limits, reporting, and a review queue for posts",
       "status": "backlog",
       "added": "2026-09-21",
-      "tasks": [],
+      "tasks": [
+        {
+          "id": "T-55",
+          "title": "Rate limits on every API call (done in the alpha)",
+          "status": "done"
+        }
+      ],
       "lane": "backend"
     },
     {
@@ -947,7 +959,13 @@
       "title": "Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap)",
       "status": "backlog",
       "added": "2026-09-22",
-      "tasks": [],
+      "tasks": [
+        {
+          "id": "T-56",
+          "title": "Organizations at the same point fan out on a small ring (done Sep 24)",
+          "status": "done"
+        }
+      ],
       "lane": "map"
     },
     {
@@ -1093,6 +1111,11 @@
           "id": "T-32",
           "title": "Google client ID in the app build and in App Service",
           "status": "done"
+        },
+        {
+          "id": "T-57",
+          "title": "Browser security headers (HSTS, no framing, no sniffing): none are sent today",
+          "status": "ready"
         }
       ]
     },
@@ -1140,7 +1163,7 @@
     {
       "id": "S-79",
       "epic": "E-26",
-      "title": "Invite message drafted, approved, and sent by Taylor",
+      "title": "Invite message drafted by Claude, sent by the co-founder to his contacts",
       "status": "in-progress",
       "added": "2026-09-23",
       "lane": "research",
@@ -1338,6 +1361,11 @@
           "id": "T-51",
           "title": "If yes: change the database tier in the Azure portal (no code change; the app already retries while the database wakes)",
           "status": "ready"
+        },
+        {
+          "id": "T-58",
+          "title": "Seen on Sep 24: the first request after a quiet spell took 50 seconds",
+          "status": "ready"
         }
       ]
     },
@@ -1364,6 +1392,87 @@
       "status": "backlog",
       "added": "2026-09-24",
       "tasks": []
+    },
+    {
+      "id": "S-94",
+      "epic": "E-24",
+      "title": "Tell people when something happens: approved, a new thread, a new message (email, or nudges by hand for the alpha)",
+      "status": "backlog",
+      "added": "2026-09-24",
+      "tasks": [],
+      "source": "Alpha review, 2026-09-24"
+    },
+    {
+      "id": "S-95",
+      "epic": "E-23",
+      "title": "Members invite colleagues to their own organization",
+      "status": "backlog",
+      "added": "2026-09-24",
+      "tasks": [],
+      "source": "Alpha review, 2026-09-24"
+    },
+    {
+      "id": "S-96",
+      "epic": "E-23",
+      "title": "A welcome after joining: post one need and one offer to start",
+      "status": "backlog",
+      "added": "2026-09-24",
+      "tasks": [],
+      "source": "Alpha review, 2026-09-24"
+    },
+    {
+      "id": "S-97",
+      "epic": "E-24",
+      "title": "Edit a need or offer after posting",
+      "status": "backlog",
+      "added": "2026-09-24",
+      "tasks": [],
+      "source": "Alpha review, 2026-09-24"
+    },
+    {
+      "id": "S-98",
+      "epic": "E-24",
+      "title": "Organization names in normal case (the IRS list is all capitals), keeping acronyms",
+      "status": "backlog",
+      "added": "2026-09-24",
+      "tasks": [],
+      "source": "Alpha review, 2026-09-24"
+    },
+    {
+      "id": "S-99",
+      "epic": "E-24",
+      "title": "An organization describes itself: a line about what it does, a website, a contact person",
+      "status": "backlog",
+      "added": "2026-09-24",
+      "tasks": [],
+      "source": "Alpha review, 2026-09-24"
+    },
+    {
+      "id": "S-100",
+      "epic": "E-26",
+      "title": "Alpha numbers on the Admin page: posts, threads started and accepted, golden threads, time to first message",
+      "status": "backlog",
+      "added": "2026-09-24",
+      "tasks": [],
+      "source": "Alpha review, 2026-09-24"
+    },
+    {
+      "id": "S-101",
+      "epic": "E-26",
+      "title": "Demo keeps its posts until you leave it, not just until a reload",
+      "status": "backlog",
+      "added": "2026-09-24",
+      "tasks": [],
+      "source": "Alpha review, 2026-09-24"
+    },
+    {
+      "id": "S-102",
+      "epic": "E-26",
+      "title": "Check on a real phone: iPhone Safari and Android Chrome, the map most of all",
+      "status": "backlog",
+      "added": "2026-09-24",
+      "tasks": [],
+      "source": "Alpha review, 2026-09-24"
     }
   ]
 }

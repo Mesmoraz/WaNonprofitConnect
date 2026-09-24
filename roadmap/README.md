@@ -7,36 +7,30 @@ Generated from `roadmap.json` on 2026-09-24. Don't edit this file; run `node scr
 | Backlog | Ready | In progress | In review | Done |
 | --- | --- | --- | --- | --- |
 | S-13 Foundations flagged from the IRS list's foundation code |  | S-77 Privacy and terms pages | S-17 Board: kind-of-help chips, fair ranking, directory search at the top | S-1 Mission statement saved and pointed at from the repo |
-| S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder ⛔ |  | S-79 Invite message drafted, approved, and sent by Taylor | S-18 A need or offer: who it's from, how it fits you, I can help / I need this | S-2 Voice sheet: ten rules and a words list |
+| S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder ⛔ |  | S-79 Invite message drafted by Claude, sent by the co-founder to his contacts | S-18 A need or offer: who it's from, how it fits you, I can help / I need this | S-2 Voice sheet: ten rules and a words list |
 | S-23 Directory: all six kinds, filter by kind, cause, city |  |  | S-19 Post: kind of help first, then the rest | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
 | S-24 Profile: one layout, six shapes ⛔ |  |  | S-20 Thread and inbox: accept, message, mark done, golden | S-4 App map: five tabs, sixteen screens, three stories, order of work |
 | S-25 Map: fewer controls at once ⛔ |  |  | S-22 Grants tab shows only for confirmed organizations | S-5 Sign up: one green button, email behind a link |
-| S-26 Legend and pin colors for six kinds ⛔ |  |  | S-66 Opening a search result crashed the app: EINs were coerced to numbers | S-6 Who are you here as: six kinds, button label follows the pick |
-| S-27 Golden threads for every kind of help; Together as a multi-ended thread ⛔ |  |  | S-67 Board card and filters: plain-word priority, three-line card, filters grouped | S-7 Find yours: list, words, and search follow the kind |
-| S-28 You: behind your name in the top bar ⛔ |  |  | S-68 Google sign-in, invite codes tied to one organization, claims that wait for review | S-8 Confirm: email-domain match per kind, ways to confirm per kind |
-| S-29 Casey needs laptops, trimmed to five steps ⛔ |  |  | S-69 Admin page: make invite codes, approve or reject claims | S-9 About you: a person says where they are, what they can do, and when |
-| S-30 Dana has Saturdays ⛔ |  |  | S-70 App shell and front door on the approved copy | S-10 Phone fixes found along the way |
-| S-31 Casey finds a grant ⛔ |  |  | S-71 Board and listings API: kind of help, fair ranking, views counted | S-11 Schools and districts from OSPI's public feature service |
-| S-32 Help sheet and story wrapper rewritten in the voice ⛔ |  |  | S-72 Threads API: start, message, accept, mark done, live over SignalR | S-12 Workforce programs from the WA Workforce Board list |
-| S-33 Design page rewritten to the mission |  |  | S-73 Map: base map, clusters, four thread states, golden glow, tap for details | S-14 Needs and offers for all six kinds of help, plus people |
-| S-36 Pub 78 and revocation list, so IsActive is real |  |  | S-74 Map data: ZIP centroids from the Census gazetteer, map and points endpoints | S-15 Three grants from real WA foundations' public pages, labeled as examples |
-| S-37 Workforce programs list |  |  | S-75 Hosted on Azure: API, hub and app from one address, no domain needed | S-16 One Together initiative |
-| S-38 WA business lookup (UBI) for business confirmation |  |  | S-76 Installable to the home screen; phone, tablet and desktop layouts | S-34 IRS Business Master File loaded |
-| S-39 ASP.NET Identity replaces the X-Org-Ein header |  |  | S-84 Map: steady cursor, pins grow on hover, a tapped thread shows both posts, a tapped organization opens its page | S-35 OSPI schools loader into a Schools table |
-| S-40 Claim an organization by kind, with the confirm methods from the taxonomy |  |  | S-88 Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox | S-48 MapLibre base map on OpenStreetMap-based tiles |
-| S-41 Admin review queue |  |  | S-91 Error logging and database backups, so a problem is seen and nothing is lost | S-53 Prototype, design brief, and how-it-works pages live |
-| S-42 Kind of help on every need and offer |  |  |  | S-54 Roadmap page generated from roadmap.json |
-| S-43 Cadence and standing agreements |  |  |  | S-57 React, with MapLibre and deck.gl for the map; Capacitor for store apps in Beta |
-| S-44 P0 to P3 with the monthly P0 cap |  |  |  | S-62 Washington higher education: universities, community and technical colleges, private nonprofits |
-| S-45 Fair ranking: priority, then least seen, with the org cap |  |  |  | S-65 Diagnose held-backspace on Android with docs/keytest.html and fix the real cause |
-| S-46 Capability tags and rule-driven alerts |  |  |  | S-80 The name lives in one file, so it can change in minutes |
-| S-47 Grant model with the eight filter fields and a hand-off URL |  |  |  |  |
-| S-49 Geocode IRS and OSPI addresses to street level |  |  |  |  |
-| S-50 Confirm methods per kind, as designed in the taxonomy |  |  |  |  |
-| S-51 Grants gated to confirmed organizations |  |  |  |  |
-| S-52 Rate limits, reporting, and a review queue for posts |  |  |  |  |
-| S-55 Replace Name TBD when the name goes public ⛔ |  |  |  |  |
-| S-56 File for 501(c)(3) status |  |  |  |  |
+| S-26 Legend and pin colors for six kinds ⛔ |  |  | S-39 ASP.NET Identity replaces the X-Org-Ein header | S-6 Who are you here as: six kinds, button label follows the pick |
+| S-27 Golden threads for every kind of help; Together as a multi-ended thread ⛔ |  |  | S-41 Admin review queue | S-7 Find yours: list, words, and search follow the kind |
+| S-28 You: behind your name in the top bar ⛔ |  |  | S-42 Kind of help on every need and offer | S-8 Confirm: email-domain match per kind, ways to confirm per kind |
+| S-29 Casey needs laptops, trimmed to five steps ⛔ |  |  | S-44 P0 to P3 with the monthly P0 cap | S-9 About you: a person says where they are, what they can do, and when |
+| S-30 Dana has Saturdays ⛔ |  |  | S-45 Fair ranking: priority, then least seen, with the org cap | S-10 Phone fixes found along the way |
+| S-31 Casey finds a grant ⛔ |  |  | S-49 Geocode IRS and OSPI addresses to street level | S-11 Schools and districts from OSPI's public feature service |
+| S-32 Help sheet and story wrapper rewritten in the voice ⛔ |  |  | S-66 Opening a search result crashed the app: EINs were coerced to numbers | S-12 Workforce programs from the WA Workforce Board list |
+| S-33 Design page rewritten to the mission |  |  | S-67 Board card and filters: plain-word priority, three-line card, filters grouped | S-14 Needs and offers for all six kinds of help, plus people |
+| S-36 Pub 78 and revocation list, so IsActive is real |  |  | S-68 Google sign-in, invite codes tied to one organization, claims that wait for review | S-15 Three grants from real WA foundations' public pages, labeled as examples |
+| S-37 Workforce programs list |  |  | S-69 Admin page: make invite codes, approve or reject claims | S-16 One Together initiative |
+| S-38 WA business lookup (UBI) for business confirmation |  |  | S-70 App shell and front door on the approved copy | S-34 IRS Business Master File loaded |
+| S-40 Claim an organization by kind, with the confirm methods from the taxonomy |  |  | S-71 Board and listings API: kind of help, fair ranking, views counted | S-35 OSPI schools loader into a Schools table |
+| S-43 Cadence and standing agreements |  |  | S-72 Threads API: start, message, accept, mark done, live over SignalR | S-48 MapLibre base map on OpenStreetMap-based tiles |
+| S-46 Capability tags and rule-driven alerts |  |  | S-73 Map: base map, clusters, four thread states, golden glow, tap for details | S-53 Prototype, design brief, and how-it-works pages live |
+| S-47 Grant model with the eight filter fields and a hand-off URL |  |  | S-74 Map data: ZIP centroids from the Census gazetteer, map and points endpoints | S-54 Roadmap page generated from roadmap.json |
+| S-50 Confirm methods per kind, as designed in the taxonomy |  |  | S-75 Hosted on Azure: API, hub and app from one address, no domain needed | S-57 React, with MapLibre and deck.gl for the map; Capacitor for store apps in Beta |
+| S-51 Grants gated to confirmed organizations |  |  | S-76 Installable to the home screen; phone, tablet and desktop layouts | S-62 Washington higher education: universities, community and technical colleges, private nonprofits |
+| S-52 Rate limits, reporting, and a review queue for posts |  |  | S-84 Map: steady cursor, pins grow on hover, a tapped thread shows both posts, a tapped organization opens its page | S-65 Diagnose held-backspace on Android with docs/keytest.html and fix the real cause |
+| S-55 Replace Name TBD when the name goes public ⛔ |  |  | S-88 Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox | S-80 The name lives in one file, so it can change in minutes |
+| S-56 File for 501(c)(3) status |  |  | S-91 Error logging and database backups, so a problem is seen and nothing is lost |  |
 | S-58 Corporate giving platforms (Benevity and others), subject to APIs and agreements |  |  |  |  |
 | S-59 Relabel non-district LEAs (ESDs, technical colleges, charters, tribal compacts) with their own sub |  |  |  |  |
 | S-60 Render a funder's stated priorities as their quoted words, not our copy |  |  |  |  |
@@ -54,6 +48,15 @@ Generated from `roadmap.json` on 2026-09-24. Don't edit this file; run `node scr
 | S-90 Cost to consider: a database that doesn't pause (Azure SQL Basic, about $5 a month) so the first visit after a quiet hour isn't slow |  |  |  |  |
 | S-92 Google sign-in out of Testing, so invited organizations don't need to be added one by one (needs the privacy and terms pages) |  |  |  |  |
 | S-93 Send feedback from inside the app: a button that captures the screen, the page, the device and recent errors with your note, so a bug report arrives ready to fix |  |  |  |  |
+| S-94 Tell people when something happens: approved, a new thread, a new message (email, or nudges by hand for the alpha) |  |  |  |  |
+| S-95 Members invite colleagues to their own organization |  |  |  |  |
+| S-96 A welcome after joining: post one need and one offer to start |  |  |  |  |
+| S-97 Edit a need or offer after posting |  |  |  |  |
+| S-98 Organization names in normal case (the IRS list is all capitals), keeping acronyms |  |  |  |  |
+| S-99 An organization describes itself: a line about what it does, a website, a contact person |  |  |  |  |
+| S-100 Alpha numbers on the Admin page: posts, threads started and accepted, golden threads, time to first message |  |  |  |  |
+| S-101 Demo keeps its posts until you leave it, not just until a reload |  |  |  |  |
+| S-102 Check on a real phone: iPhone Safari and Android Chrome, the map most of all |  |  |  |  |
 
 ## Roadmap
 
@@ -189,7 +192,7 @@ The mission, the six kinds, the eight threads, and the decisions, in the voice, 
 
 - **S-33** Design page rewritten to the mission · Backlog · round B14
 
-### I-2 A backend that can run it for real · Backlog · 2/15 stories done
+### I-2 A backend that can run it for real · In progress · 2/15 stories done
 
 Real data, real accounts, real matching. The prototype's flows, made durable.
 
@@ -203,22 +206,22 @@ Every list the app relies on arrives through a loader that produces one shape.
 - **S-37** Workforce programs list · Backlog
 - **S-38** WA business lookup (UBI) for business confirmation · Backlog
 
-#### E-12 Accounts and claiming · Backlog · 0/3
+#### E-12 Accounts and claiming · In progress · 0/3
 
 Real sign-in, one account per person, claiming an organization by kind.
 
-- **S-39** ASP.NET Identity replaces the X-Org-Ein header · Backlog
+- **S-39** ASP.NET Identity replaces the X-Org-Ein header · In review · _Built in the alpha: sign-in cookie and confirmed membership replace the header (S-68)._
 - **S-40** Claim an organization by kind, with the confirm methods from the taxonomy · Backlog
-- **S-41** Admin review queue · Backlog
+- **S-41** Admin review queue · In review · _Built in the alpha as the Admin page claims queue (S-69)._
 
-#### E-13 Mission features in the backend · Backlog · 0/5
+#### E-13 Mission features in the backend · In progress · 0/5
 
 Kinds of help, cadence, priority levels, fair ranking, tags, alerts, threads.
 
-- **S-42** Kind of help on every need and offer · Backlog
+- **S-42** Kind of help on every need and offer · In review · _Built in the alpha: every need and offer carries a kind of help (S-71)._
 - **S-43** Cadence and standing agreements · Backlog
-- **S-44** P0 to P3 with the monthly P0 cap · Backlog
-- **S-45** Fair ranking: priority, then least seen, with the org cap · Backlog
+- **S-44** P0 to P3 with the monthly P0 cap · In review · _Built in the alpha: four levels shown as Urgent, This week and nothing, with Urgent capped at 2 a month (S-71)._
+- **S-45** Fair ranking: priority, then least seen, with the org cap · In review · _Built in the alpha: urgent first, then least seen, at most 2 per organization in the top 6 (S-71)._
 - **S-46** Capability tags and rule-driven alerts · Backlog
 
 #### E-14 Grants in the backend · Backlog · 0/1
@@ -227,11 +230,11 @@ Grant records, the eight filters, gating, and the hand-off link.
 
 - **S-47** Grant model with the eight filter fields and a hand-off URL · Backlog
 
-#### E-15 A real map · Backlog · 0/1
+#### E-15 A real map · In progress · 0/1
 
 Base map tiles and street-level geocoding of every address.
 
-- **S-49** Geocode IRS and OSPI addresses to street level · Backlog
+- **S-49** Geocode IRS and OSPI addresses to street level · In review · _Built in the alpha: 25,781 of 35,361 WA charities placed at their street address by the Census geocoder; OSPI schools already carry building coordinates._
 
 ### I-3 Trust · Backlog · 0/4 stories done
 
@@ -250,6 +253,7 @@ Each of the six kinds has at least one way to prove they belong, and a person re
 Rate limits, a review queue, reporting, and revocation.
 
 - **S-52** Rate limits, reporting, and a review queue for posts · Backlog
+    - [x] T-55 Rate limits on every API call (done in the alpha)
 
 ### I-4 The public site · Backlog · 2/3 stories done
 
@@ -297,11 +301,11 @@ Corporate giving and volunteering platforms, once there's something to integrate
 - **S-58** Corporate giving platforms (Benevity and others), subject to APIs and agreements · Backlog
 - **S-89** A paid tier for businesses (nonprofits stay free) · Backlog
 
-### I-6 A working alpha for invited nonprofits · In progress · 2/26 stories done
+### I-6 A working alpha for invited nonprofits · In progress · 2/35 stories done
 
 Real organizations post real needs and offers, start threads, and make golden threads, on the map, on any phone or desktop. Target: live Sep 30.
 
-#### E-23 Accounts and invites · In progress · 0/5
+#### E-23 Accounts and invites · In progress · 0/7
 
 Sign in with Google; an invite code confirms you for one organization; anyone else waits for review.
 
@@ -314,8 +318,10 @@ Sign in with Google; an invite code confirms you for one organization; anyone el
     - [ ] T-40 Question: a one-time link by email, or a password? (Ready)
     - [ ] T-41 Brief the email sign-in screens for approval (Ready)
 - **S-92** Google sign-in out of Testing, so invited organizations don't need to be added one by one (needs the privacy and terms pages) · Backlog
+- **S-95** Members invite colleagues to their own organization · Backlog · _Alpha review, 2026-09-24_
+- **S-96** A welcome after joining: post one need and one offer to start · Backlog · _Alpha review, 2026-09-24_
 
-#### E-24 The core loop, working · In progress · 1/7
+#### E-24 The core loop, working · In progress · 1/11
 
 Board, a need or offer, post, thread, inbox, backed by the real API.
 
@@ -326,6 +332,10 @@ Board, a need or offer, post, thread, inbox, backed by the real API.
 - **S-71** Board and listings API: kind of help, fair ranking, views counted · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-72** Threads API: start, message, accept, mark done, live over SignalR · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-80** The name lives in one file, so it can change in minutes · Done · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
+- **S-94** Tell people when something happens: approved, a new thread, a new message (email, or nudges by hand for the alpha) · Backlog · _Alpha review, 2026-09-24_
+- **S-97** Edit a need or offer after posting · Backlog · _Alpha review, 2026-09-24_
+- **S-98** Organization names in normal case (the IRS list is all capitals), keeping acronyms · Backlog · _Alpha review, 2026-09-24_
+- **S-99** An organization describes itself: a line about what it does, a website, a contact person · Backlog · _Alpha review, 2026-09-24_
 
 #### E-25 The map, for real · In progress · 1/6
 
@@ -333,28 +343,34 @@ A real base map, every nonprofit as a dot, clusters, and threads that drift and 
 
 - **S-48** MapLibre base map on OpenStreetMap-based tiles · Done
 - **S-61** Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) · Backlog
+    - [x] T-56 Organizations at the same point fan out on a small ring (done Sep 24)
 - **S-73** Map: base map, clusters, four thread states, golden glow, tap for details · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-74** Map data: ZIP centroids from the Census gazetteer, map and points endpoints · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-84** Map: steady cursor, pins grow on hover, a tapped thread shows both posts, a tapped organization opens its page · In review
 - **S-87** Wish list: search the map for an organization or a place, and fly to it · Backlog
 
-#### E-26 Live and invited · In progress · 0/8
+#### E-26 Live and invited · In progress · 0/11
 
 Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
 
 - **S-75** Hosted on Azure: API, hub and app from one address, no domain needed · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
     - [x] T-32 Google client ID in the app build and in App Service
+    - [ ] T-57 Browser security headers (HSTS, no framing, no sniffing): none are sent today (Ready)
 - **S-76** Installable to the home screen; phone, tablet and desktop layouts · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-77** Privacy and terms pages · In progress · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
     - [x] T-52 Draft both pages for approval: docs/PRIVACY-TERMS-DRAFT.md
     - [ ] T-53 Taylor fills in: contact email, who runs it, reply time, and has a lawyer read before public launch (Ready)
 - **S-78** Recruit 8 to 12 organizations in two or three clusters · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
-- **S-79** Invite message drafted, approved, and sent by Taylor · In progress · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
+- **S-79** Invite message drafted by Claude, sent by the co-founder to his contacts · In progress · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
     - [ ] T-54 Decided (Taylor, Sep 24): the co-founder sends the invite message to his contacts; Claude drafts it (Ready)
 - **S-90** Cost to consider: a database that doesn't pause (Azure SQL Basic, about $5 a month) so the first visit after a quiet hour isn't slow · Backlog
     - [ ] T-49 Question: is a slow first load (up to about a minute after an idle hour) acceptable for the alpha, or worth about $5 a month to avoid? (Ready)
     - [ ] T-50 Check current Azure pricing for Basic and for serverless with auto-pause off before deciding (Ready)
     - [ ] T-51 If yes: change the database tier in the Azure portal (no code change; the app already retries while the database wakes) (Ready)
+    - [ ] T-58 Seen on Sep 24: the first request after a quiet spell took 50 seconds (Ready)
 - **S-91** Error logging and database backups, so a problem is seen and nothing is lost · In review
 - **S-93** Send feedback from inside the app: a button that captures the screen, the page, the device and recent errors with your note, so a bug report arrives ready to fix · Backlog
+- **S-100** Alpha numbers on the Admin page: posts, threads started and accepted, golden threads, time to first message · Backlog · _Alpha review, 2026-09-24_
+- **S-101** Demo keeps its posts until you leave it, not just until a reload · Backlog · _Alpha review, 2026-09-24_
+- **S-102** Check on a real phone: iPhone Safari and Android Chrome, the map most of all · Backlog · _Alpha review, 2026-09-24_
 
