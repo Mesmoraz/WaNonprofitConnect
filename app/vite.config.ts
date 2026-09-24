@@ -25,6 +25,8 @@ export default defineConfig({
   ],
   server: {
     port: 5173,
+    // Poll for changes: Windows file events missed some edits, and the dev server served a stale mix (Sep 24).
+    watch: { usePolling: true, interval: 300 },
     proxy: { '/api': api, '/hubs': { target: api, ws: true }, '/health': api },
   },
   build: { outDir: '../src/WaNonprofitConnect.Api/wwwroot', emptyOutDir: true, rolldownOptions: { input: { main: 'index.html', mapDev: 'map-dev.html' } } },
