@@ -17,6 +17,7 @@ export const keys = {
   adminClaims: ['admin', 'claims'] as const,
   adminInvites: ['admin', 'invites'] as const,
   filters: (ein: string) => ['filters', ein] as const,
+  adminFeedback: ['admin', 'feedback'] as const,
 }
 
 // ---- Reads ------------------------------------------------------------------
@@ -150,6 +151,11 @@ export function useRejectClaim() {
 export function useActAs() {
   const qc = useQueryClient()
   return useMutation({ mutationFn: api.actAs, onSuccess: (me: Me) => { qc.setQueryData(keys.me, me); qc.invalidateQueries({ predicate: q => q.queryKey !== keys.me }) } })
+}
+export const useAdminFeedback = () => useQuery({ queryKey: keys.adminFeedback, queryFn: api.adminFeedback, refetchInterval: 60_000 })
+export function useFeedbackDone() {
+  const qc = useQueryClient()
+  return useMutation({ mutationFn: api.feedbackDone, onSuccess: () => qc.invalidateQueries({ queryKey: keys.adminFeedback }) })
 }
 export function useCreateInvite() {
   const qc = useQueryClient()

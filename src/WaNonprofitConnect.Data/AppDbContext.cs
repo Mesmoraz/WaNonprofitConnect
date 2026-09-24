@@ -21,6 +21,7 @@ public class AppDbContext : DbContext
     public DbSet<Invite> Invites => Set<Invite>();
     public DbSet<ZipCentroid> ZipCentroids => Set<ZipCentroid>();
     public DbSet<OrgPreference> OrgPreferences => Set<OrgPreference>();
+    public DbSet<Feedback> Feedback => Set<Feedback>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -128,6 +129,17 @@ public class AppDbContext : DbContext
         {
             b.HasKey(z => z.Zip5);
             b.Property(z => z.Zip5).HasMaxLength(5).IsUnicode(false);
+        });
+
+        modelBuilder.Entity<Feedback>(b =>
+        {
+            b.Property(f => f.Email).HasMaxLength(320);
+            b.Property(f => f.Name).HasMaxLength(200);
+            b.Property(f => f.Ein).HasMaxLength(9).IsUnicode(false);
+            b.Property(f => f.Message).HasMaxLength(4000).IsRequired();
+            b.Property(f => f.Context).IsRequired();
+            b.Property(f => f.Status).HasMaxLength(10).IsUnicode(false).IsRequired();
+            b.HasIndex(f => f.CreatedAt);
         });
 
         modelBuilder.Entity<OrgPreference>(b =>

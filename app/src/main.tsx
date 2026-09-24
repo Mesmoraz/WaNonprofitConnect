@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { ApiError, keys } from './api'
 import { App } from './App'
 import { Crashed } from './shell/Crashed'
+import { FeedbackHost, PageTrail } from './shell/Feedback'
 import { watchForErrors } from './lib/report'
 import { ToastProvider } from './shell/Toast'
 import './styles/tokens.css'
@@ -30,9 +31,11 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <ToastProvider>
+          <PageTrail />
           <Crashed>
             <App />
           </Crashed>
+          <FeedbackHost />
         </ToastProvider>
       </BrowserRouter>
     </QueryClientProvider>

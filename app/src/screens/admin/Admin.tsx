@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { useActAs, useAdminClaims, useAdminInvites, useApproveClaim, useCreateInvite, useOrgs, useRejectClaim, type OrgSummary } from '../../api'
+import { useActAs, useAdminClaims, useAdminFeedback, useFeedbackDone, useAdminInvites, useApproveClaim, useCreateInvite, useOrgs, useRejectClaim, type OrgSummary } from '../../api'
 import { useNavigate } from 'react-router-dom'
 import { cap } from '../../lib/words'
 import { Door } from '../../shell/Door'
 import { useToast } from '../../shell/Toast'
 import './admin.css'
 
+const pretty = (json: string) => { try { return JSON.stringify(JSON.parse(json), null, 2) } catch { return json } }
 const day = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 
 /** Taylor's page (docs/ALPHA-BRIEFS.md, Admin): make invite codes, and approve or turn down claims. */
@@ -22,6 +23,8 @@ export function Admin() {
   const { data: invites = [] } = useAdminInvites()
   const { data: claims = [] } = useAdminClaims()
   const make = useCreateInvite()
+  const { data: feedback = [] } = useAdminFeedback()
+  const done = useFeedbackDone()
   const actAs = useActAs()
   const navigate = useNavigate()
   const approve = useApproveClaim()
@@ -102,6 +105,24 @@ export function Admin() {
           <div className="admin-actions">
             <button className="btn primary sm" disabled={approve.isPending} onClick={() => approve.mutate(c.id)}>Approve</button>
             <button className="btn quiet sm" disabled={reject.isPending} onClick={() => reject.mutate(c.id)}>Not this one</button>
+          </div>
+        </div>
+      ))}
+
+      <div className="label">Feedback</div>
+      {feedback.length === 0 && <p className="empty">Nothing new.</p>}
+      {feedback.map(f => (
+        <div key={f.id} className="card fb-card">
+          <span className="t">{f.message}</span>
+          <span className="m">{[f.name ?? 'Signed out', f.orgName, f.page, day(f.createdAt)].filter(Boolean).join(' · ')}</span>
+          {f.hasScreenshot && (
+            <a href={`/api/v1/admin/feedback/${f.id}/screenshot`} target="_blank" rel="noreferrer" className="fb-shot">
+              <img src={`/api/v1/admin/feedback/${f.id}/screenshot`} alt="The screen when this was sent" loading="lazy" />
+            </a>
+          )}
+          <details className="fb-details"><summary>Details</summary><pre>{pretty(f.context)}</pre></details>
+          <div className="admin-actions">
+            <button className="btn quiet sm" disabled={done.isPending} onClick={() => done.mutate(f.id)}>Done</button>
           </div>
         </div>
       ))}

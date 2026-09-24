@@ -1389,7 +1389,7 @@
       "id": "S-93",
       "epic": "E-26",
       "title": "Send feedback from inside the app: a button that captures the screen, the page, the device and recent errors with your note, so a bug report arrives ready to fix",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-24",
       "tasks": []
     },

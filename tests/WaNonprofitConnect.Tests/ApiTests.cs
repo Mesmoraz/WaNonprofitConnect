@@ -164,6 +164,39 @@ public sealed class ApiTests : IDisposable
     }
 
     [Fact]
+    public async Task Feedback_arrives_with_who_sent_it_and_the_picture_and_only_admins_see_it()
+    {
+        using var person = _factory.NewClient();
+        using var stranger = _factory.NewClient();
+        using var admin = _factory.NewClient();
+        await PostOk<JsonElement>(person, "/api/v1/auth/dev", new { email = "fb@example.org", name = "Fern", ein = A });
+        await PostOk<JsonElement>(admin, "/api/v1/auth/dev", new { email = ApiFactory.AdminEmail, name = "Admin" });
+
+        (await person.PostAsJsonAsync("/api/v1/feedback", new { message = "  " }, Json)).StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var png = "data:image/png;base64," + Convert.ToBase64String(new byte[] { 0x89, 0x50, 0x4E, 0x47, 1, 2, 3 });
+        var sent = await person.PostAsJsonAsync("/api/v1/feedback",
+            new { message = "The map froze", screenshot = png, context = new { page = "/map", viewport = "375x812" } }, Json);
+        sent.StatusCode.Should().Be(HttpStatusCode.Created);
+        (await stranger.PostAsJsonAsync("/api/v1/feedback", new { message = "Can't sign in" }, Json)).StatusCode.Should().Be(HttpStatusCode.Created);
+
+        (await person.GetAsync("/api/v1/admin/feedback")).StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        var list = await admin.GetFromJsonAsync<JsonElement>("/api/v1/admin/feedback", Json);
+        var mine = list.EnumerateArray().Single(f => f.GetProperty("message").GetString() == "The map froze");
+        mine.GetProperty("email").GetString().Should().Be("fb@example.org");
+        mine.GetProperty("orgName").GetString().Should().Be("ALPHA FOOD BANK");
+        mine.GetProperty("page").GetString().Should().Be("/map");
+        mine.GetProperty("hasScreenshot").GetBoolean().Should().BeTrue();
+        list.EnumerateArray().Single(f => f.GetProperty("message").GetString() == "Can't sign in").GetProperty("email").ValueKind.Should().Be(JsonValueKind.Null);
+
+        var id = mine.GetProperty("id").GetInt32();
+        var pic = await admin.GetAsync($"/api/v1/admin/feedback/{id}/screenshot");
+        pic.Content.Headers.ContentType!.MediaType.Should().Be("image/png");
+        (await admin.PostAsync($"/api/v1/admin/feedback/{id}/done", null)).StatusCode.Should().Be(HttpStatusCode.NoContent);
+        (await admin.GetFromJsonAsync<JsonElement>("/api/v1/admin/feedback", Json)).EnumerateArray().Should().NotContain(f => f.GetProperty("id").GetInt32() == id);
+    }
+
+    [Fact]
     public async Task Google_sign_in_without_a_client_id_is_503()
     {
         using var http = _factory.NewClient();

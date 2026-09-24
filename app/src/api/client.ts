@@ -1,5 +1,6 @@
+import { noteFailedCall } from '../lib/telemetry'
 import type {
-  BoardQuery, Claim, Filters, Invite, Listing, ListingDetail, MapData, MapPoint, Me, Message, NewListing, NewThread,
+  BoardQuery, Claim, FeedbackItem, Filters, Invite, Listing, ListingDetail, MapData, MapPoint, Me, Message, NewListing, NewThread,
   OrgPage, OrgSummary, Thread, ThreadAction, ThreadDetail,
 } from './types'
 
@@ -57,6 +58,7 @@ export const httpTransport: Transport = async (method, path, body) => {
   if (text) { try { parsed = JSON.parse(text) } catch { parsed = text } }
   if (!res.ok) {
     const title = typeof parsed === 'object' && parsed && 'title' in parsed ? String((parsed as { title: unknown }).title) : undefined
+    noteFailedCall(method, path, res.status, title)
     throw new ApiError(res.status, parsed, title)
   }
   return parsed
@@ -127,5 +129,8 @@ export const api = {
   rejectClaim: (id: number) => call<Claim>('POST', `${V1}/admin/claims/${id}/reject`),
   adminInvites: () => call<Invite[]>('GET', `${V1}/admin/invites`),
   createInvite: (ein: string, uses: number) => call<Invite>('POST', `${V1}/admin/invites`, { ein, uses }),
+  // Feedback always goes to the real server, even in the demo (it's how people report what they saw there).
+  adminFeedback: () => httpTransport('GET', `${V1}/admin/feedback`) as Promise<FeedbackItem[]>,
+  feedbackDone: (id: number) => httpTransport('POST', `${V1}/admin/feedback/${id}/done`) as Promise<void>,
   actAs: (ein: string) => call<Me>('POST', `${V1}/admin/act-as`, { ein }),
 }

@@ -10,3 +10,10 @@
 .confirm-body { margin: 0 0 18px; color: var(--ink-2); }
 .confirm-actions { display: flex; gap: 10px; }
 .confirm-actions .btn { flex: 1; }
+
+.feedback-box { max-width: 460px; display: flex; flex-direction: column; gap: 10px; }
+.feedback-box .confirm-title { margin: 0; }
+.feedback-box .field-label { margin: 0; }
+.feedback-pic { display: grid; grid-template-columns: auto 1fr; gap: 8px 10px; align-items: center; font-size: 14px; color: var(--ink-2); cursor: pointer; }
+.feedback-pic input { width: 18px; height: 18px; accent-color: var(--accent); }
+.feedback-pic img { grid-column: 1 / -1; width: 100%; max-height: 160px; object-fit: cover; object-position: top; border: 1px solid var(--line); border-radius: 8px; }

@@ -19,3 +19,10 @@
 .admin-check { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-size: 13px; flex: none; }
 .admin-picked-text { flex: 1; min-width: 0; }
 .admin-clear { width: var(--tap); height: var(--tap); display: grid; place-items: center; border-radius: 50%; color: var(--ink-3); font-size: 20px; flex: none; }
+
+/* Feedback notes: the note, who and where, the screen, and the details the app attached. */
+.fb-card .t { white-space: pre-line; }
+.fb-shot img { display: block; width: 100%; max-height: 240px; object-fit: cover; object-position: top; margin-top: 8px; border: 1px solid var(--line); border-radius: 8px; }
+.fb-details { margin-top: 8px; font-size: 13px; color: var(--ink-2); }
+.fb-details summary { cursor: pointer; min-height: var(--tap); display: flex; align-items: center; }
+.fb-details pre { margin: 0; max-height: 240px; overflow: auto; background: var(--paper-2); padding: 8px; border-radius: 6px; font-size: 12px; white-space: pre-wrap; word-break: break-word; }

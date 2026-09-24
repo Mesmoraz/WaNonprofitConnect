@@ -35,6 +35,8 @@ export interface ThreadDetail extends Thread { messages: Message[] }
 
 /** title and help come from the need; needId/offerId/offerTitle let a tapped thread show both posts. */
 export interface MapThread { id: number; status: ThreadStatus; help: KindOfHelp; fromEin: string; toEin: string; title: string; needId: number; offerId: number; offerTitle: string | null }
+/** A "Send feedback" note, for the Admin page. context is the JSON the app attached. */
+export interface FeedbackItem { id: number; email: string | null; name: string | null; ein: string | null; orgName: string | null; message: string; page: string; context: string; hasScreenshot: boolean; createdAt: string; status: string }
 /** Your organization's saved board filters. serve is null until someone there saves them (start from the cause code). */
 export interface Filters { serve: string[] | null }
 /** An organization's page: its card, open needs and offers, and its live and golden thread counts. */

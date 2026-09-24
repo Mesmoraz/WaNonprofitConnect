@@ -1,3 +1,4 @@
+import { noteError } from './telemetry'
 // Browser errors go to the server log (POST /api/v1/client-errors), so a broken screen on someone's phone reaches us
 // without them having to tell us. At most 5 per page load, each distinct message once. Never throws.
 const BUILD = document.querySelector<HTMLScriptElement>('script[type="module"][src*="/assets/"]')?.src.split('/').pop() ?? 'dev'
@@ -6,6 +7,7 @@ const seen = new Set<string>()
 export function reportError(kind: string, err: unknown) {
   try {
     const e = err instanceof Error ? err : new Error(typeof err === 'string' ? err : JSON.stringify(err))
+    noteError(kind, e.message)
     const key = `${kind}:${e.message}`
     if (seen.has(key) || seen.size >= 5) return
     seen.add(key)

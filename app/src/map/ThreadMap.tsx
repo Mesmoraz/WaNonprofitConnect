@@ -155,6 +155,8 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, c
       renderWorldCopies: false,
       // Default attribution: full line on wide screens, the (i) button, open at first, on narrow ones.
       pixelRatio: Math.min(window.devicePixelRatio || 1, 2),   // cheap phones with 3x screens stay smooth
+      // Keep the last frame readable, so "Send feedback" can include the map in its picture of the screen.
+      canvasContextAttributes: { antialias: true, preserveDrawingBuffer: true },
     })
     map.touchZoomRotate.disableRotation()
     map.keyboard.disableRotation()

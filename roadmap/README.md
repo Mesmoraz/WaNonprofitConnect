@@ -31,7 +31,7 @@ Generated from `roadmap.json` on 2026-09-24. Don't edit this file; run `node scr
 | S-52 Rate limits, reporting, and a review queue for posts |  |  | S-84 Map: steady cursor, pins grow on hover, a tapped thread shows both posts, a tapped organization opens its page | S-65 Diagnose held-backspace on Android with docs/keytest.html and fix the real cause |
 | S-55 Replace Name TBD when the name goes public ⛔ |  |  | S-88 Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox | S-80 The name lives in one file, so it can change in minutes |
 | S-56 File for 501(c)(3) status |  |  | S-91 Error logging and database backups, so a problem is seen and nothing is lost |  |
-| S-58 Corporate giving platforms (Benevity and others), subject to APIs and agreements |  |  |  |  |
+| S-58 Corporate giving platforms (Benevity and others), subject to APIs and agreements |  |  | S-93 Send feedback from inside the app: a button that captures the screen, the page, the device and recent errors with your note, so a bug report arrives ready to fix |  |
 | S-59 Relabel non-district LEAs (ESDs, technical colleges, charters, tribal compacts) with their own sub |  |  |  |  |
 | S-60 Render a funder's stated priorities as their quoted words, not our copy |  |  |  |  |
 | S-61 Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) |  |  |  |  |
@@ -47,7 +47,6 @@ Generated from `roadmap.json` on 2026-09-24. Don't edit this file; run `node scr
 | S-89 A paid tier for businesses (nonprofits stay free) |  |  |  |  |
 | S-90 Cost to consider: a database that doesn't pause (Azure SQL Basic, about $5 a month) so the first visit after a quiet hour isn't slow |  |  |  |  |
 | S-92 Google sign-in out of Testing, so invited organizations don't need to be added one by one (needs the privacy and terms pages) |  |  |  |  |
-| S-93 Send feedback from inside the app: a button that captures the screen, the page, the device and recent errors with your note, so a bug report arrives ready to fix |  |  |  |  |
 | S-94 Tell people when something happens: approved, a new thread, a new message (email, or nudges by hand for the alpha) |  |  |  |  |
 | S-95 Members invite colleagues to their own organization |  |  |  |  |
 | S-96 A welcome after joining: post one need and one offer to start |  |  |  |  |
@@ -369,7 +368,7 @@ Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
     - [ ] T-51 If yes: change the database tier in the Azure portal (no code change; the app already retries while the database wakes) (Ready)
     - [ ] T-58 Seen on Sep 24: the first request after a quiet spell took 50 seconds (Ready)
 - **S-91** Error logging and database backups, so a problem is seen and nothing is lost · In review
-- **S-93** Send feedback from inside the app: a button that captures the screen, the page, the device and recent errors with your note, so a bug report arrives ready to fix · Backlog
+- **S-93** Send feedback from inside the app: a button that captures the screen, the page, the device and recent errors with your note, so a bug report arrives ready to fix · In review
 - **S-100** Alpha numbers on the Admin page: posts, threads started and accepted, golden threads, time to first message · Backlog · _Alpha review, 2026-09-24_
 - **S-101** Demo keeps its posts until you leave it, not just until a reload · Backlog · _Alpha review, 2026-09-24_
 - **S-102** Check on a real phone: iPhone Safari and Android Chrome, the map most of all · Backlog · _Alpha review, 2026-09-24_
