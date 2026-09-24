@@ -46,12 +46,37 @@ type Leaf = { ein: string }
 export type Index = { sc: Supercluster<Leaf, Record<string, never>>; byEin: Map<string, OrgSummary & { lat: number; lon: number }>; solo: (OrgSummary & { lat: number; lon: number })[] }
 
 /** Selected orgs and their thread partners never cluster, like the prototype: you always see both ends. */
+const SPREAD_M = 40   // organizations at one spot fan out on a ring this wide (in meters), so each can be told apart and tapped
+
+/**
+ * Organizations at the very same point (one building, or two falling back to one ZIP center) would draw as one pin:
+ * the label names one and a tap hits the other (Taylor, Sep 24: Treehouse and Seattle Children's PlayGarden).
+ * Give each a place on a small ring around the shared point, in a fixed order, so they part as you zoom in.
+ */
+function spreadStacked<T extends { ein: string; lat: number; lon: number }>(orgs: T[]): T[] {
+  const at = new Map<string, T[]>()
+  for (const o of orgs) {
+    const k = `${o.lat.toFixed(5)},${o.lon.toFixed(5)}`
+    at.set(k, [...(at.get(k) ?? []), o])
+  }
+  const out: T[] = []
+  for (const group of at.values()) {
+    if (group.length === 1) { out.push(group[0]); continue }
+    group.sort((a, b) => a.ein.localeCompare(b.ein))
+    const r = SPREAD_M / 2 / 111_320
+    group.forEach((o, i) => {
+      const a = (2 * Math.PI * i) / group.length
+      out.push({ ...o, lat: o.lat + r * Math.sin(a), lon: o.lon + (r * Math.cos(a)) / Math.cos((o.lat * Math.PI) / 180) })
+    })
+  }
+  return out
+}
+
 export function buildIndex(members: OrgSummary[], standalone: Set<string>): Index {
   const byEin = new Map<string, OrgSummary & { lat: number; lon: number }>()
   const solo: (OrgSummary & { lat: number; lon: number })[] = []
   const feats: PointFeature<Leaf>[] = []
-  for (const o of members) {
-    if (!placed(o)) continue
+  for (const o of spreadStacked(members.filter(placed))) {
     byEin.set(o.ein, o)
     if (standalone.has(o.ein)) { solo.push(o); continue }
     feats.push({ type: 'Feature', geometry: { type: 'Point', coordinates: [o.lon, o.lat] }, properties: { ein: o.ein } })
