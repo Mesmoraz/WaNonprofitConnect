@@ -11,6 +11,9 @@ export default defineConfig({
     react(),
     { name: 'brand-html', transformIndexHtml: html => html.replaceAll('%BRAND_NAME%', brand.name).replaceAll('%THEME_COLOR%', brand.themeColor) },
     VitePWA({
+      // No offline cache in the alpha: a service worker kept serving old, broken builds (Sep 23). This one
+      // removes itself and its caches on every device that has the old one. The manifest still makes it installable.
+      selfDestroying: true,
       registerType: 'autoUpdate',
       manifest: {
         name: brand.name, short_name: brand.shortName, description: brand.tagline,
