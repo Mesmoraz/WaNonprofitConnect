@@ -1267,8 +1267,8 @@
         },
         {
           "id": "T-44",
-          "title": "Question: is anything paid (for example a custom reach radius), and does that fit a 501(c)(3) where core services stay free?",
-          "status": "ready"
+          "title": "Answered (Taylor, Sep 24): nonprofits get everything free; a paid tier comes later, for businesses only. See TAXONOMY.md, Decisions.",
+          "status": "done"
         },
         {
           "id": "T-45",
@@ -1281,6 +1281,14 @@
           "status": "ready"
         }
       ]
+    },
+    {
+      "id": "S-89",
+      "epic": "E-22",
+      "title": "A paid tier for businesses (nonprofits stay free)",
+      "status": "backlog",
+      "added": "2026-09-24",
+      "tasks": []
     }
   ]
 }

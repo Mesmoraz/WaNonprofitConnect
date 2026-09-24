@@ -52,6 +52,7 @@ Urgent stays capped at 2 a month per organization.
 - **Money** stays off the app except through Grants. No cash offers as Things.
 - **Grants are one-directional.** Foundations list; organizations search. Organizations do not post funding needs.
 - **Together** is a seeded example, not a built flow, until after the prototype.
+- **Who pays** (Taylor, 2026-09-24): nonprofits get everything free, every feature, filters and reach included. A paid tier comes later, for businesses only.
 
 ## Words-list changes (added to VOICE.md)
 

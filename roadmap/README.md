@@ -53,6 +53,7 @@ Generated from `roadmap.json` on 2026-09-24. Don't edit this file; run `node scr
 | S-86 What you see depends on who you are: nonprofit and company first, then schools and students |  |  |  |  |
 | S-87 Wish list: search the map for an organization or a place, and fly to it |  |  |  |  |
 | S-88 Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox |  |  |  |  |
+| S-89 A paid tier for businesses (nonprofits stay free) |  |  |  |  |
 
 ## Roadmap
 
@@ -153,7 +154,7 @@ Find anyone here, joined or not; one profile layout for six shapes.
 - **S-88** Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox · Backlog
     - [ ] T-42 Question: which filters first: reach (local, national, international), who you serve (children and youth, environment, animals, families, marginalized groups, the elderly, veterans, arts and culture), and kind of work (direct services, research, advocacy and education)? (Ready)
     - [ ] T-43 Question: do an organization's filters come from its IRS cause code by default, set by itself, or set by an admin? (Ready)
-    - [ ] T-44 Question: is anything paid (for example a custom reach radius), and does that fit a 501(c)(3) where core services stay free? (Ready)
+    - [x] T-44 Answered (Taylor, Sep 24): nonprofits get everything free; a paid tier comes later, for businesses only. See TAXONOMY.md, Decisions.
     - [ ] T-45 Question: does the second inbox hold posts outside your filters, messages from organizations outside them, or both? (Ready)
     - [ ] T-46 Brief the filters setting, the filtered board and the second inbox for approval (Ready)
 
@@ -269,7 +270,7 @@ Replace Name TBD everywhere when the name is announced.
 
 - **S-55** Replace Name TBD when the name goes public · Backlog · ⛔ Taylor decides when the name is public
 
-### I-5 The organization behind it · Backlog · 1/5 stories done
+### I-5 The organization behind it · Backlog · 1/6 stories done
 
 Decisions that aren't code: the name, the entity, the platform, the partners.
 
@@ -287,11 +288,12 @@ What the real app is built in, and the accounts it ships under.
 - **S-81** Apple developer account, for TestFlight in Beta · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-82** Pick and buy a domain, for email sign-in and store listings · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 
-#### E-22 Integrations · Backlog · 0/1
+#### E-22 Integrations · Backlog · 0/2
 
 Corporate giving and volunteering platforms, once there's something to integrate with.
 
 - **S-58** Corporate giving platforms (Benevity and others), subject to APIs and agreements · Backlog
+- **S-89** A paid tier for businesses (nonprofits stay free) · Backlog
 
 ### I-6 A working alpha for invited nonprofits · In progress · 1/22 stories done
 
