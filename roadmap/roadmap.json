@@ -1,6 +1,6 @@
 {
   "name": "Name TBD roadmap",
-  "updated": "2026-09-24",
+  "updated": "2026-09-25",
   "statuses": [
     "backlog",
     "ready",
@@ -1147,6 +1147,11 @@
           "id": "T-53",
           "title": "Taylor fills in: contact email, who runs it, reply time, and has a lawyer read before public launch",
           "status": "ready"
+        },
+        {
+          "id": "T-59",
+          "title": "Pages built with draft language and highlighted placeholders (/privacy, /terms, sign-in line)",
+          "status": "done"
         }
       ]
     },

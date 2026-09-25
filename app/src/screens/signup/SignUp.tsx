@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { MOCK, useDevSignIn, useGoogleSignIn } from '../../api'
 import { BRAND } from '../../brand'
 import { Door } from '../../shell/Door'
@@ -51,6 +52,7 @@ export function SignUp() {
 
       {failed && <p className="error center" role="alert">That didn’t work. Try again.</p>}
       <p className="hint center signup-free">Free. No forms. Your organization is already here.</p>
+      <p className="hint center signup-legal">By signing in you agree to <Link to="/terms">the terms</Link> and <Link to="/privacy">the privacy page</Link>.</p>
     </Door>
   )
 }

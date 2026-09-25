@@ -2,3 +2,5 @@
 .signup-free { margin-top: 20px; }
 .google-btn { display: flex; justify-content: center; min-height: var(--tap); width: 100%; }
 .dev-form { display: flex; flex-direction: column; gap: 8px; }
+.signup-legal { margin-top: 8px; }
+.signup-legal a { color: var(--ink-2); }

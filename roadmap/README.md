@@ -1,6 +1,6 @@
 # Name TBD roadmap
 
-Generated from `roadmap.json` on 2026-09-24. Don't edit this file; run `node scripts/roadmap.js`. Rules: [SDLC.md](SDLC.md).
+Generated from `roadmap.json` on 2026-09-25. Don't edit this file; run `node scripts/roadmap.js`. Rules: [SDLC.md](SDLC.md).
 
 ## Board
 
@@ -359,6 +359,7 @@ Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
 - **S-77** Privacy and terms pages · In progress · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
     - [x] T-52 Draft both pages for approval: docs/PRIVACY-TERMS-DRAFT.md
     - [ ] T-53 Taylor fills in: contact email, who runs it, reply time, and has a lawyer read before public launch (Ready)
+    - [x] T-59 Pages built with draft language and highlighted placeholders (/privacy, /terms, sign-in line)
 - **S-78** Recruit 8 to 12 organizations in two or three clusters · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-79** Invite message drafted by Claude, sent by the co-founder to his contacts · In progress · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
     - [ ] T-54 Decided (Taylor, Sep 24): the co-founder sends the invite message to his contacts; Claude drafts it (Ready)

@@ -2,6 +2,8 @@
 
 Draft 2026-09-24, for Taylor to approve line by line (S-77). Every fact below is checked against the code as it stands today. Items in **[brackets]** are Taylor's to fill in. This is plain-language copy, not legal advice: have a lawyer read both pages before the public launch.
 
+**Built Sep 24** as `app/src/screens/legal/Legal.tsx`. The five facts in brackets live in `app/src/legal/facts.ts`: fill them in there and the highlighted placeholders and the "Draft:" line go away. Change wording here and in `Legal.tsx` together.
+
 The pages live at `/privacy` and `/terms`, open to anyone, signed in or not. The sign-up page gets one line under the button: "By signing in you agree to the terms and the privacy page." ("terms" and "privacy page" are links.)
 
 ---
@@ -21,6 +23,7 @@ Helpbook helps Washington nonprofits trade what they have for what they need. To
 - How often each post has been seen, as a number. Not who saw it.
 - Your organization's filters, such as who they serve.
 - Errors. If a screen breaks on your device, we get the page, the error, and your browser's name. Not your messages or anything you typed.
+- Feedback you send. Your note, and a picture of your screen if you leave that ticked, with the page you were on, your device and browser, and recent errors. Only the people who run Helpbook see it.
 
 **What we don't do**
 

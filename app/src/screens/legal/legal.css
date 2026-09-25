@@ -1,0 +1,10 @@
+/* Privacy and terms: plain reading pages. */
+.legal { display: flex; flex-direction: column; gap: 14px; max-width: 62ch; }
+.legal-draft { text-align: left; padding: 0; }
+.legal-lede { margin: 0; color: var(--ink-2); }
+.legal-section h2 { font-size: 16px; margin: 6px 0; }
+.legal-section ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+.legal-section li { line-height: 1.5; }
+.legal-foot { margin: 8px 0 0; font-size: 14px; color: var(--ink-2); }
+.legal-todo { background: var(--need-bg); color: var(--need); padding: 0 3px; border-radius: 3px; font-weight: 600; }
+.legal a { color: var(--accent); }

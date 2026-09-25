@@ -10,6 +10,7 @@ import { Invite } from './screens/invite/Invite'
 import { ListingScreen } from './screens/listing/ListingScreen'
 import { MapScreen } from './screens/map/MapScreen'
 import { OrgScreen } from './screens/org/OrgScreen'
+import { Privacy, Terms } from './screens/legal/Legal'
 import { MapCardPreview } from './screens/map/MapCardPreview'
 import { Post } from './screens/post/Post'
 import { SignUp } from './screens/signup/SignUp'
@@ -79,6 +80,9 @@ export function App() {
           {(import.meta.env.DEV || MOCK) && <Route path="/dev/map-card" element={<MapCardPreview />} />}
         </Route>
       </Route>
+      {/* Open to anyone, signed in or not. */}
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="/terms" element={<Terms />} />
       {me?.account.isAdmin && <Route path="/admin" element={<Admin />} />}
       <Route path="*" element={<Navigate to={HOME[stageOf(me)]} replace />} />
     </Routes>
