@@ -18,11 +18,15 @@ public static class MatchScorer
         "LOOKING", "WANT", "WANTED", "OFFER", "OFFERING", "DONATE", "DONATION", "FREE", "PLEASE", "NEW", "USED", "GOOD",
     };
 
-    /// <summary>Normalized, de-duplicated keyword set from title + description + tags.</summary>
+    /// <summary>
+    /// Normalized, de-duplicated keyword set from title + description + tags, cut at a word to fit its column
+    /// (<see cref="ExchangeService.MaxSearchText"/>). Title words come first, so they always survive.
+    /// </summary>
     public static string BuildSearchText(string title, string? description, string? tags)
     {
         var raw = string.Join(' ', title, description ?? string.Empty, (tags ?? string.Empty).Replace(',', ' '));
-        return string.Join(' ', Tokens(BmfRowParser.Normalize(raw)));
+        var text = string.Join(' ', Tokens(BmfRowParser.Normalize(raw)));
+        return ExchangeService.TruncateAtBoundary(text, ExchangeService.MaxSearchText)!;
     }
 
     public static IReadOnlyList<string> Tokens(string normalizedText)

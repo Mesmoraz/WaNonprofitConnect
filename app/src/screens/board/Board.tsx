@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useBoard, useMapData, useMe, useOrgPage, useOrgs, type KindOfHelp, type ListingKind } from '../../api'
 import { BRAND } from '../../brand'
 import { SERVE_GROUPS, passes, useServeFilter } from '../../lib/serve'
-import { cap, HELPS, HELP_LABEL } from '../../lib/words'
+import { cap, causeOf, HELPS, HELP_LABEL } from '../../lib/words'
 import { ListingCard } from './ListingCard'
 import './board.css'
 
@@ -52,13 +52,13 @@ export function Board() {
 
       {searching ? (
         orgs.data && term.length >= 2 && (orgs.data.length ? orgs.data.map(o => (
-          <div key={o.ein} className="card">
+          <Link key={o.ein} to={`/org/${o.ein}`} className="card tap">
             <span className="t">{o.name}</span>
             <span className="m">
-              {[cap(o.city), 'Nonprofit'].filter(Boolean).join(' · ')}
+              {[cap(o.city), causeOf(o.ntee)].filter(Boolean).join(' · ')}
               {o.isMember && <> · <span className="verified">on {BRAND.name}</span></>}
             </span>
-          </div>
+          </Link>
         )) : <p className="empty">No one by that name. Try an EIN.</p>)
       ) : <>
         <div className="seg" role="tablist" aria-label="Kind of help">
@@ -100,11 +100,13 @@ export function Board() {
 
         {board.data && !listings.length && !hidden && (help
           ? <p className="empty">Nothing under {HELP_LABEL[help]} yet. <Link className="inline-link" to="/post">Post the first one?</Link></p>
-          : <p className="empty">Nothing here with those filters. <button className="inline-link" onClick={clearFilters}>Clear them?</button></p>)}
+          : filterCount
+            ? <p className="empty">Nothing here with those filters. <button className="inline-link" onClick={clearFilters}>Clear them?</button></p>
+            : <p className="empty">Nothing here yet. <Link className="inline-link" to="/post">Post the first one?</Link></p>)}
 
         {hidden > 0 && <p className="hint board-hidden">{hidden} more outside your filters. <button className="inline-link" onClick={() => setShowAll(true)}>Show them</button></p>}
 
-        {board.data && <p className="hint">Urgent first, then whoever’s been seen least.</p>}
+        {listings.length > 0 && <p className="hint">Urgent first, then whoever’s been seen least.</p>}
       </>}
     </div>
   )

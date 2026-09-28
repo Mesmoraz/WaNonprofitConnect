@@ -14,6 +14,8 @@
 .logo { font-family: var(--font-display); font-weight: 700; font-size: 20px; letter-spacing: -0.01em; color: var(--ink); text-decoration: none; }
 
 .app-content { grid-area: content; overflow: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; background: var(--paper); }
+/* On a phone the tab bar sits below the content and already clears the home indicator, so nothing inside pads for it again. */
+@media (max-width: 899px) { .app-content { --safe-bottom: 0px; } }
 
 .tabs {
   grid-area: tabs; display: grid; grid-template-columns: repeat(4, 1fr);

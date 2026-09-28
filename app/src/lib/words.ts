@@ -29,12 +29,12 @@ export function listingFacts(l: Listing) {
 
 export const formatEin = (ein: string) => /^\d{9}$/.test(ein) ? `${ein.slice(0, 2)}-${ein.slice(2)}` : ein
 
-// NTEE major groups, as the prototype names them.
+// NTEE major groups, in sentence case and the words the "Who they serve" chips use (VOICE.md rule 7).
 const CAUSES: Record<string, string> = {
-  A: 'Arts & Culture', B: 'Education', C: 'Environment', D: 'Animals', E: 'Health', F: 'Mental Health', G: 'Health', H: 'Medical Research',
-  I: 'Legal', J: 'Employment', K: 'Food & Nutrition', L: 'Housing & Shelter', M: 'Public Safety', N: 'Recreation', O: 'Youth',
-  P: 'Human Services', Q: 'International', R: 'Civil Rights', S: 'Community', T: 'Philanthropy', U: 'Science', V: 'Social Science',
-  W: 'Public Benefit', X: 'Religion', Y: 'Membership', Z: 'Uncategorized',
+  A: 'Arts and culture', B: 'Education', C: 'Environment', D: 'Animals', E: 'Health', F: 'Mental health', G: 'Health', H: 'Medical research',
+  I: 'Legal help', J: 'Jobs', K: 'Food', L: 'Housing', M: 'Public safety', N: 'Recreation', O: 'Youth',
+  P: 'Human services', Q: 'International', R: 'Civil rights', S: 'Community', T: 'Giving', U: 'Science', V: 'Social science',
+  W: 'Public benefit', X: 'Religion', Y: 'Mutual benefit', Z: '',
 }
 export const causeOf = (ntee: string | null) => (ntee ? CAUSES[ntee[0].toUpperCase()] : undefined) ?? ''
 
@@ -60,6 +60,9 @@ export function quantityLine(l: Pick<Listing, 'quantity' | 'unit' | 'kind'>) {
   if (!l.quantity) return ''
   return l.unit ? `${l.quantity} ${l.unit}` : `${l.quantity} ${l.kind === 'Need' ? 'needed' : 'to give'}`
 }
+
+/** A post that isn't open any more, in the words list's words: done, closed, or in a thread. */
+export const STATUS_WORD: Record<string, string> = { Matched: 'In a thread', Fulfilled: 'Done', Expired: 'Closed', Closed: 'Closed' }
 
 /** B8 Inbox status word, from where you stand. Declined and cancelled threads carry none (not in the briefs). */
 export function inboxStatus(t: { status: string; startedByEin: string }, myEin: string | undefined) {

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import type { Listing } from '../../api'
-import { listingFacts, URGENCY_MARK } from '../../lib/words'
+import { listingFacts, STATUS_WORD, URGENCY_MARK } from '../../lib/words'
 
 /**
  * The B5.1 card: the NEED or OFFER pill (plus Urgent or This week on needs that are), then three lines:
@@ -14,7 +14,7 @@ export function ListingCard({ l }: { l: Listing }) {
       <span className="pills">
         <span className={`pill kind ${l.kind === 'Need' ? 'need' : 'offer'}`}>{l.kind}</span>
         {mark && <span className={`pill ${l.urgency === 'Critical' ? 'p0' : 'p1'}`}>{mark}</span>}
-        {l.status !== 'Open' && <span className="pill grey">{l.status}</span>}
+        {l.status !== 'Open' && STATUS_WORD[l.status] && <span className="pill grey">{STATUS_WORD[l.status]}</span>}
       </span>
       <span className="t">{l.title}</span>
       <span className="who-line">{l.org.name}</span>

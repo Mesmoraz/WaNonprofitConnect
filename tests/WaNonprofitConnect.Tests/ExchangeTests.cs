@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using WaNonprofitConnect.Data.Entities;
 using WaNonprofitConnect.Data.Exchange;
 using WaNonprofitConnect.Data.Import;
@@ -275,7 +276,156 @@ public sealed class ExchangeServiceTests : IDisposable
         seattle.Items.Select(x => x.Org.Ein).Should().OnlyContain(e => e == A || e == C);
     }
 
+    [Fact]
+    public async Task Times_come_back_from_the_database_as_utc_and_serialize_with_a_z()
+    {
+        using (var h = new AppDbContextHolder(_fx))
+            await Svc(h).CreateListingAsync(A, Need("Plywood"));
+
+        using var fresh = new AppDbContextHolder(_fx);
+        var l = await fresh.Db.Listings.AsNoTracking().Include(x => x.Org).SingleAsync();
+        l.CreatedAt.Kind.Should().Be(DateTimeKind.Utc);
+        System.Text.Json.JsonSerializer.Serialize(l.CreatedAt).Should().EndWith("Z\"");
+        System.Text.Json.JsonSerializer.Serialize(ListingDto.From(l)).Should().MatchRegex("\"CreatedAt\":\"[^\"]+Z\"");
+    }
+
+    [Fact]
+    public async Task Details_unit_tags_and_search_text_fit_their_columns()
+    {
+        using var h = new AppDbContextHolder(_fx);
+        var svc = Svc(h);
+
+        var ex = await Invalid(() => svc.CreateListingAsync(A, With(Need("Plywood"), r => r.Description = new string('x', 4001))));
+        ex.Message.Should().Be("Keep the details under 4,000 characters.");
+        ex = await Invalid(() => svc.CreateListingAsync(A, With(Need("Plywood"), r => r.Unit = new string('u', 41))));
+        ex.Message.Should().Be("Keep the unit under 40 characters.");
+
+        // 500 distinct 7-letter words: 4,000 characters of details, twice what search text can hold.
+        var words = Enumerable.Range(0, 520).Select(i => "WD" + ToLetters(i)).ToList();
+        var tags = string.Join(",", Enumerable.Range(0, 100).Select(i => "tag" + ToLetters(i).ToLowerInvariant())); // 100 x 8 chars
+        var made = await svc.CreateListingAsync(A, With(Need("Plywood"), r => { r.Description = string.Join(' ', words)[..3999] + "Y"; r.Unit = new string('u', 40); r.Tags = tags; }));
+
+        var row = await h.Db.Listings.AsNoTracking().SingleAsync(x => x.Id == made.Id);
+        row.Description!.Length.Should().Be(4000);
+        row.Tags!.Length.Should().BeLessThanOrEqualTo(ExchangeService.MaxTags);
+        row.Tags.Split(',').Should().OnlyContain(t => t.Length == 8 && t.StartsWith("tag")); // cut between tags, not inside one
+        row.SearchText.Length.Should().BeLessThanOrEqualTo(ExchangeService.MaxSearchText);
+        row.SearchText.Should().StartWith("PLYWOOD ");                                           // the title survives the cut
+        var known = words.Append("PLYWOOD").ToHashSet();
+        row.SearchText.Split(' ').Should().OnlyContain(t => known.Contains(t));                  // cut at a word
+    }
+
+    [Fact]
+    public async Task Expiry_is_clamped_to_a_day_through_a_year()
+    {
+        using var h = new AppDbContextHolder(_fx);
+        var svc = Svc(h);
+        (await svc.CreateListingAsync(A, With(Need("a"), r => r.ExpiresInDays = int.MaxValue))).ExpiresAt
+            .Should().BeCloseTo(DateTime.UtcNow.AddDays(365), TimeSpan.FromMinutes(1));
+        (await svc.CreateListingAsync(A, With(Need("b"), r => r.ExpiresInDays = 0))).ExpiresAt
+            .Should().BeCloseTo(DateTime.UtcNow.AddDays(1), TimeSpan.FromMinutes(1));
+        (await svc.CreateListingAsync(A, Need("c"))).ExpiresAt.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Accepting_needs_both_posts_still_open()
+    {
+        using var h = new AppDbContextHolder(_fx);
+        var svc = Svc(h);
+        var need = await svc.CreateListingAsync(A, Need("Plywood", ListingCategory.Materials, "plywood"));
+        var offerB = await svc.CreateListingAsync(B, Offer("Plywood", ListingCategory.Materials, "plywood"));
+        var offerC = await svc.CreateListingAsync(C, Offer("Plywood", ListingCategory.Materials, "plywood"));
+        var m1 = await svc.ProposeMatchAsync(B, Pair(need.Id, offerB.Id));
+        var m2 = await svc.ProposeMatchAsync(C, Pair(need.Id, offerC.Id));
+
+        await svc.RespondAsync(m1.Id, A, accept: true);
+        var ex = await Conflict(() => svc.RespondAsync(m2.Id, A, accept: true)); // the need is taken now
+        ex.Message.Should().Be("That post isn't open any more.");
+        (await svc.GetMatchAsync(m2.Id, A)).Status.Should().Be(MatchStatus.Proposed);
+        (await svc.RespondAsync(m2.Id, A, accept: false)).Status.Should().Be(MatchStatus.Declined); // declining still works
+
+        // A closed offer can't be accepted either.
+        var need2 = await svc.CreateListingAsync(A, Need("Chairs", ListingCategory.Furniture, "chairs"));
+        var offer2 = await svc.CreateListingAsync(B, Offer("Chairs", ListingCategory.Furniture, "chairs"));
+        var m3 = await svc.ProposeMatchAsync(A, Pair(need2.Id, offer2.Id));
+        await svc.CloseListingAsync(offer2.Id, B);
+        await Conflict(() => svc.RespondAsync(m3.Id, B, accept: true));
+    }
+
+    [Fact]
+    public async Task Cancel_reopens_only_posts_this_thread_took_off_the_board()
+    {
+        using var h = new AppDbContextHolder(_fx);
+        var svc = Svc(h);
+        var need = await svc.CreateListingAsync(A, Need("Plywood", ListingCategory.Materials, "plywood"));
+        var offer = await svc.CreateListingAsync(B, Offer("Plywood", ListingCategory.Materials, "plywood"));
+        var m = await svc.ProposeMatchAsync(A, Pair(need.Id, offer.Id));
+        await svc.RespondAsync(m.Id, B, accept: true);
+
+        await svc.CloseListingAsync(need.Id, A);  // A closes its need while the thread is live
+        await svc.CancelAsync(m.Id, B);
+        (await svc.GetListingAsync(need.Id))!.Status.Should().Be(ListingStatus.Closed);
+        (await svc.GetListingAsync(offer.Id))!.Status.Should().Be(ListingStatus.Open);
+
+        // Expired stays expired; a post another accepted thread holds stays taken.
+        var need2 = await svc.CreateListingAsync(A, Need("Chairs", ListingCategory.Furniture, "chairs"));
+        var offer2 = await svc.CreateListingAsync(B, Offer("Chairs", ListingCategory.Furniture, "chairs"));
+        var offer3 = await svc.CreateListingAsync(C, Offer("Chairs", ListingCategory.Furniture, "chairs"));
+        var m2 = await svc.ProposeMatchAsync(A, Pair(need2.Id, offer2.Id));
+        var m3 = await svc.ProposeMatchAsync(A, Pair(need2.Id, offer3.Id));
+        await svc.RespondAsync(m2.Id, B, accept: true);
+        await h.Db.Matches.Where(x => x.Id == m3.Id).ExecuteUpdateAsync(s => s.SetProperty(x => x.Status, MatchStatus.Accepted)); // older data
+        await h.Db.Listings.Where(x => x.Id == offer2.Id).ExecuteUpdateAsync(s => s.SetProperty(x => x.Status, ListingStatus.Expired));
+        h.Db.ChangeTracker.Clear();
+
+        await svc.CancelAsync(m2.Id, A);
+        (await svc.GetListingAsync(need2.Id))!.Status.Should().Be(ListingStatus.Matched);
+        (await svc.GetListingAsync(offer2.Id))!.Status.Should().Be(ListingStatus.Expired);
+    }
+
+    [Fact]
+    public async Task Problem_titles_are_plain_sentences()
+    {
+        using var h = new AppDbContextHolder(_fx);
+        var svc = Svc(h);
+        var need = await svc.CreateListingAsync(A, Need("Plywood", ListingCategory.Materials, "plywood"));
+        var offer = await svc.CreateListingAsync(B, Offer("Plywood", ListingCategory.Materials, "plywood"));
+        var offerA = await svc.CreateListingAsync(A, Offer("Plywood", ListingCategory.Materials, "plywood"));
+
+        (await Invalid(() => svc.CreateListingAsync(A, Need(" ")))).Message.Should().Be("Say what it is.");
+        (await Invalid(() => svc.CreateListingAsync(A, Need(new string('t', 201))))).Message.Should().Be("Keep it under 200 characters.");
+        (await Invalid(() => svc.ProposeMatchAsync(A, Pair(need.Id, offerA.Id)))).Message.Should().Be("That's your own post.");
+        (await Invalid(() => svc.ProposeMatchAsync(A, Pair(offer.Id, need.Id)))).Message.Should().Be("Pick a need to pair with this offer.");
+        (await Assert.ThrowsAsync<ExchangeException>(() => svc.CloseListingAsync(need.Id, B))).Message.Should().Be("Only the organization that posted this can close it.");
+        (await Assert.ThrowsAsync<ExchangeException>(() => svc.CloseListingAsync(99999, A))).Message.Should().Be("That post is gone.");
+        (await Assert.ThrowsAsync<ExchangeException>(() => svc.GetMatchAsync(99999, A))).Message.Should().Be("That thread is gone.");
+        (await Assert.ThrowsAsync<ExchangeException>(() => svc.CreateListingAsync(NotC3, Need("x")))).Message.Should().Be("For now, only 501(c)(3) organizations can join.");
+
+        var m = await svc.ProposeMatchAsync(A, Pair(need.Id, offer.Id));
+        (await Conflict(() => svc.ProposeMatchAsync(B, Pair(need.Id, offer.Id)))).Message.Should().Be("You already have a thread for these.");
+        await svc.RespondAsync(m.Id, B, accept: false);
+        (await Conflict(() => svc.RespondAsync(m.Id, B, accept: true))).Message.Should().Be("This thread has already moved on.");
+    }
+
     // ---- helpers ----
+
+    private static CreateListingRequest With(CreateListingRequest r, Action<CreateListingRequest> set) { set(r); return r; }
+
+    private static string ToLetters(int i) => new(new[] { (char)('A' + i / 676 % 26), (char)('A' + i / 26 % 26), (char)('A' + i % 26), 'Q', 'Z' });
+
+    private static async Task<ExchangeException> Invalid(Func<Task> act)
+    {
+        var ex = (await act.Should().ThrowAsync<ExchangeException>()).Which;
+        ex.StatusCode.Should().Be(400);
+        return ex;
+    }
+
+    private static async Task<ExchangeException> Conflict(Func<Task> act)
+    {
+        var ex = (await act.Should().ThrowAsync<ExchangeException>()).Which;
+        ex.StatusCode.Should().Be(409);
+        return ex;
+    }
 
     private static CreateListingRequest Need(string title, ListingCategory cat = ListingCategory.Other, string? tags = null, Urgency urgency = Urgency.Normal)
         => new() { Kind = ListingKind.Need, Category = cat, Title = title, Tags = tags, Quantity = 10, Urgency = urgency };

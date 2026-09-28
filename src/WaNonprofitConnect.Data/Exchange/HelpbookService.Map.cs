@@ -81,7 +81,7 @@ public sealed partial class HelpbookService
     /// <summary>Save an organization's "Who they serve" picks. Unknown names are dropped; an empty list means "show everything".</summary>
     public async Task<FiltersDto> SaveFiltersAsync(string ein, IEnumerable<string>? serve, string byEmail, CancellationToken ct = default)
     {
-        if (!await _db.Organizations.AnyAsync(o => o.Ein == ein, ct)) throw ExchangeException.NotFound("Organization");
+        if (!await _db.Organizations.AnyAsync(o => o.Ein == ein, ct)) throw ExchangeException.NotFound("We can't find that organization.");
         var clean = ServeGroups.Clean(serve);
         var p = await _db.OrgPreferences.FirstOrDefaultAsync(x => x.Ein == ein, ct);
         if (p is null) { p = new OrgPreference { Ein = ein }; _db.OrgPreferences.Add(p); }

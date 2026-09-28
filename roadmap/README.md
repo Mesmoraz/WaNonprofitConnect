@@ -1,6 +1,6 @@
 # Name TBD roadmap
 
-Generated from `roadmap.json` on 2026-09-25. Don't edit this file; run `node scripts/roadmap.js`. Rules: [SDLC.md](SDLC.md).
+Generated from `roadmap.json` on 2026-09-28. Don't edit this file; run `node scripts/roadmap.js`. Rules: [SDLC.md](SDLC.md).
 
 ## Board
 
@@ -32,7 +32,7 @@ Generated from `roadmap.json` on 2026-09-25. Don't edit this file; run `node scr
 | S-55 Replace Name TBD when the name goes public ⛔ |  |  | S-88 Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox | S-80 The name lives in one file, so it can change in minutes |
 | S-56 File for 501(c)(3) status |  |  | S-91 Error logging and database backups, so a problem is seen and nothing is lost |  |
 | S-58 Corporate giving platforms (Benevity and others), subject to APIs and agreements |  |  | S-93 Send feedback from inside the app: a button that captures the screen, the page, the device and recent errors with your note, so a bug report arrives ready to fix |  |
-| S-59 Relabel non-district LEAs (ESDs, technical colleges, charters, tribal compacts) with their own sub |  |  |  |  |
+| S-59 Relabel non-district LEAs (ESDs, technical colleges, charters, tribal compacts) with their own sub |  |  | S-103 Review fixes: times read right, errors say why, one thread per post, live updates survive a sleeping phone, a lighter first load |  |
 | S-60 Render a funder's stated priorities as their quoted words, not our copy |  |  |  |  |
 | S-61 Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) |  |  |  |  |
 | S-63 Decide whether WSU branch campuses become their own rows, as UW's are |  |  |  |  |
@@ -56,6 +56,12 @@ Generated from `roadmap.json` on 2026-09-25. Don't edit this file; run `node scr
 | S-100 Alpha numbers on the Admin page: posts, threads started and accepted, golden threads, time to first message |  |  |  |  |
 | S-101 Demo keeps its posts until you leave it, not just until a reload |  |  |  |  |
 | S-102 Check on a real phone: iPhone Safari and Android Chrome, the map most of all |  |  |  |  |
+| S-104 A closed thread says so: declined or cancelled, and what to do next |  |  |  |  |
+| S-105 Map legend: what gold, green, dashed and dotted mean, and what a golden thread is |  |  |  |  |
+| S-106 Every screen says something while it loads or fails, the map included, instead of a blank page |  |  |  |  |
+| S-107 After sign-in, go back to the link you opened (a shared post, an invite) |  |  |  |  |
+| S-108 Who they serve starts empty while the board is small, so the alpha organizations see each other |  |  |  |  |
+| S-109 Copy that needs a brief: the message box on an offer, "Ask a member to invite you", why Urgent is greyed out, server error sentences |  |  |  |  |
 
 ## Roadmap
 
@@ -300,11 +306,11 @@ Corporate giving and volunteering platforms, once there's something to integrate
 - **S-58** Corporate giving platforms (Benevity and others), subject to APIs and agreements · Backlog
 - **S-89** A paid tier for businesses (nonprofits stay free) · Backlog
 
-### I-6 A working alpha for invited nonprofits · In progress · 2/35 stories done
+### I-6 A working alpha for invited nonprofits · In progress · 2/42 stories done
 
 Real organizations post real needs and offers, start threads, and make golden threads, on the map, on any phone or desktop. Target: live Sep 30.
 
-#### E-23 Accounts and invites · In progress · 0/7
+#### E-23 Accounts and invites · In progress · 0/8
 
 Sign in with Google; an invite code confirms you for one organization; anyone else waits for review.
 
@@ -319,8 +325,9 @@ Sign in with Google; an invite code confirms you for one organization; anyone el
 - **S-92** Google sign-in out of Testing, so invited organizations don't need to be added one by one (needs the privacy and terms pages) · Backlog
 - **S-95** Members invite colleagues to their own organization · Backlog · _Alpha review, 2026-09-24_
 - **S-96** A welcome after joining: post one need and one offer to start · Backlog · _Alpha review, 2026-09-24_
+- **S-107** After sign-in, go back to the link you opened (a shared post, an invite) · Backlog · _Full review, 2026-09-28_
 
-#### E-24 The core loop, working · In progress · 1/11
+#### E-24 The core loop, working · In progress · 1/16
 
 Board, a need or offer, post, thread, inbox, backed by the real API.
 
@@ -335,8 +342,22 @@ Board, a need or offer, post, thread, inbox, backed by the real API.
 - **S-97** Edit a need or offer after posting · Backlog · _Alpha review, 2026-09-24_
 - **S-98** Organization names in normal case (the IRS list is all capitals), keeping acronyms · Backlog · _Alpha review, 2026-09-24_
 - **S-99** An organization describes itself: a line about what it does, a website, a contact person · Backlog · _Alpha review, 2026-09-24_
+- **S-103** Review fixes: times read right, errors say why, one thread per post, live updates survive a sleeping phone, a lighter first load · In review · _Full review, 2026-09-28_
+    - [x] T-60 Times: every date from the server marked UTC, so nothing reads 7 hours in the future
+    - [x] T-61 An action that fails says why (the server's sentence), not only "Try again"
+    - [x] T-62 One live thread per post: the server returns the one you have; I can help waits for a message or a pick
+    - [x] T-63 Live updates reconnect after a phone sleeps, and catch up on an open thread
+    - [x] T-64 The map loads when you open it: about 430 KB before sign-in instead of 2.2 MB
+    - [x] T-65 Board: an empty board invites the first post; directory results open the organization; post states in the words list
+    - [x] T-66 Server: length limits checked, accept needs both posts open, cancel never reopens a closed post, invite codes safe when two redeem at once
+    - [ ] T-67 Fix the lint tool (oxlint native binding missing on this machine) (Ready)
+    - [ ] T-68 Check on a phone (Ready)
+- **S-104** A closed thread says so: declined or cancelled, and what to do next · Backlog · _Full review, 2026-09-28_
+- **S-106** Every screen says something while it loads or fails, the map included, instead of a blank page · Backlog · _Full review, 2026-09-28_
+- **S-108** Who they serve starts empty while the board is small, so the alpha organizations see each other · Backlog · _Full review, 2026-09-28_
+- **S-109** Copy that needs a brief: the message box on an offer, "Ask a member to invite you", why Urgent is greyed out, server error sentences · Backlog · _Full review, 2026-09-28_
 
-#### E-25 The map, for real · In progress · 1/6
+#### E-25 The map, for real · In progress · 1/7
 
 A real base map, every nonprofit as a dot, clusters, and threads that drift and glow gold when done.
 
@@ -347,6 +368,7 @@ A real base map, every nonprofit as a dot, clusters, and threads that drift and 
 - **S-74** Map data: ZIP centroids from the Census gazetteer, map and points endpoints · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-84** Map: steady cursor, pins grow on hover, a tapped thread shows both posts, a tapped organization opens its page · In review
 - **S-87** Wish list: search the map for an organization or a place, and fly to it · Backlog
+- **S-105** Map legend: what gold, green, dashed and dotted mean, and what a golden thread is · Backlog · _Full review, 2026-09-28_
 
 #### E-26 Live and invited · In progress · 0/11
 

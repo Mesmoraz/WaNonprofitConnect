@@ -95,7 +95,7 @@ interface MapData { members: OrgSummary[];                                  // o
 
 SignalR at `/hubs/exchange`, cookie-authenticated, joins the caller to their org's group. Events: `threadChanged(Thread)`, `messageAdded(Message)`, `listingAdded(Listing)`.
 
-Locations: the IRS list has addresses but no coordinates. Every org is placed at its ZIP's centroid from the Census Bureau's 2020 ZCTA gazetteer, loaded into a `ZipCentroids` table. Street-level geocoding is Beta (S-49).
+Locations: the IRS list has addresses but no coordinates. Every org is placed at its ZIP's centroid from the Census Bureau's 2020 ZCTA gazetteer, loaded into a `ZipCentroids` table. Street-level positions come from the geocoded IRS addresses (S-49).
 
 ## Recruiting the cohort (runs alongside the build)
 
@@ -141,6 +141,7 @@ Added by the backend lane on Sep 23 (S-68, S-71, S-72, S-74, serving). The contr
 - `Message.senderName` is the person's name from their account ("Casey"). Messages from before accounts show the organization's name.
 - "How soon" applies to needs only. An offer sent with an urgency is saved as Normal.
 - Starting a thread with no `myListingId` needs a `message`. It makes your matching post from the other one's title, kind of help, quantity, unit and how often, with your message as the details. That post is a normal open post: it shows on the board and sends `listingAdded`.
+- Starting a thread with no `myListingId` when you already have a live (proposed or accepted) thread on that post returns that thread with `200` instead of `201`, with your message added to it. No second thread, no duplicate post.
 - `MapData.threads[].help` and `.title` come from the need. `members` also includes any organization in a thread.
 - SignalR: you join `org-{ein}` when you connect. After redeeming an invite or getting approved, reconnect to receive `threadChanged` and `messageAdded`. `threadChanged` carries that organization's own `unread`. A new message sends `messageAdded`, then `threadChanged`.
 - Unknown paths fall back to `index.html`, except `/api`, `/hubs` and `/swagger`, which 404. The app is served from `wwwroot` next to the published binaries, or the project's `wwwroot` in dev.

@@ -5,6 +5,7 @@ import { HELP_LABEL } from '../../lib/words'
 import { Page } from '../../shell/Page'
 import { useToast } from '../../shell/Toast'
 import './post.css'
+import { errorLine } from '../../lib/errors'
 
 // Placeholders from docs/TAXONOMY.md, "A need sounds like" / "An offer sounds like", without the closing period.
 const SOUNDS_LIKE: Record<ListingKind, Record<KindOfHelp, string>> = {
@@ -35,7 +36,7 @@ export function Post() {
   const [qty, setQty] = useState('')
   const [urgency, setUrgency] = useState<Urgency>('Normal')
   const [cadence, setCadence] = useState<Cadence>('OneTime')
-  const [failed, setFailed] = useState(false)
+  const [failed, setFailed] = useState<string | null>(null)
 
   const urgentLeft = me?.membership?.urgentLeft
   const urgentOff = urgentLeft !== undefined && urgentLeft <= 0
@@ -44,7 +45,7 @@ export function Post() {
 
   const submit = () => {
     if (!help || !title.trim()) return
-    setFailed(false)
+    setFailed(null)
     const n = parseInt(qty, 10)
     create.mutate({
       kind, help, title: title.trim(), description: details.trim() || undefined,
@@ -52,7 +53,7 @@ export function Post() {
       urgency: isNeed ? (urgency === 'Critical' && urgentOff ? 'Normal' : urgency) : 'Normal', cadence,
     }, {
       onSuccess: l => { toast('Posted. It’s on the board now.'); navigate(`/listing/${l.id}`, { replace: true }) },
-      onError: () => setFailed(true),
+      onError: e => setFailed(errorLine(e)),
     })
   }
 
@@ -75,7 +76,7 @@ export function Post() {
       </div>
 
       <label className="field-label" htmlFor="p-title">What is it?</label>
-      <input id="p-title" value={title} onChange={e => setTitle(e.target.value)} placeholder={SOUNDS_LIKE[kind][help ?? 'Things']} />
+      <input id="p-title" maxLength={200} value={title} onChange={e => setTitle(e.target.value)} placeholder={SOUNDS_LIKE[kind][help ?? 'Things']} />
 
       <label className="field-label" htmlFor="p-details">Details</label>
       <textarea id="p-details" rows={3} value={details} onChange={e => setDetails(e.target.value)} placeholder="Condition, pickup or delivery, dates." />
@@ -105,7 +106,7 @@ export function Post() {
         ))}
       </div>
 
-      {failed && <p className="error" role="alert">That didn’t work. Try again.</p>}
+      {failed && <p className="error" role="alert">{failed}</p>}
     </Page>
   )
 }
