@@ -400,5 +400,5 @@ Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
     - [x] T-201 GitHub deploys every merge to staging and ships the same files to production on a button, signing in to Azure without a stored password
     - [x] T-202 A small Staging tag on the staging copy
     - [ ] T-203 Taylor adds the staging address to the Google sign-in client (Ready)
-    - [ ] T-204 Decide whether production gets WebSockets on (staging has them; production falls back to slower polling) (Ready)
+    - [x] T-204 WebSockets on in production (Taylor, Sep 28), so live messages stop falling back to polling
 

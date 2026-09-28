@@ -14,6 +14,7 @@ Newest first. Every shipped change lands here with test cases Taylor can run on 
 - **Every merge to `main` now goes to staging by itself.** GitHub builds once, runs the API tests, deploys, and checks the site answers. Watch it under the repo's Actions tab.
 - **Production only changes when you press Actions → Deploy to production → Run workflow.** It ships the exact files that are on staging.
 - GitHub signs in to Azure with a trust link, not a stored password. It can only deploy the two sites, and only from `main`.
+- **WebSockets are on in production** (Taylor, Sep 28). Live messages used to fall back to slower polling there.
 - `scripts/deploy-azure.ps1` still works by hand. It now goes to staging unless you add `-App helpbook-alpha`.
 
 ### Still to do by Taylor

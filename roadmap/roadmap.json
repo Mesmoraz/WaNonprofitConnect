@@ -1626,8 +1626,8 @@
         },
         {
           "id": "T-204",
-          "title": "Decide whether production gets WebSockets on (staging has them; production falls back to slower polling)",
-          "status": "ready"
+          "title": "WebSockets on in production (Taylor, Sep 28), so live messages stop falling back to polling",
+          "status": "done"
         }
       ]
     }
