@@ -129,10 +129,12 @@ public sealed class ThreadsController : AppControllerBase
     /// <summary>"I can help" / "I need this". With no myListingId, the matching need or offer is made for you.</summary>
     [HttpPost]
     [ProducesResponseType(typeof(ThreadDto), 201)]
+    [ProducesResponseType(typeof(ThreadDto), 200)]
     public async Task<ActionResult<ThreadDto>> Start([FromBody] StartThreadRequest request, CancellationToken ct)
     {
-        var dto = await _helpbook.StartThreadAsync(await ActingEinAsync(ct), request, SenderName, ct);
-        return CreatedAtAction(nameof(Get), new { id = dto.Id }, dto);
+        // 200 with the thread you already have on that post (your message added to it); 201 when a new one was made.
+        var (dto, created) = await _helpbook.StartOrReuseThreadAsync(await ActingEinAsync(ct), request, SenderName, ct);
+        return created ? CreatedAtAction(nameof(Get), new { id = dto.Id }, dto) : Ok(dto);
     }
 
     [HttpPost("{id:int}/messages")]

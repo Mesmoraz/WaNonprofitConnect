@@ -48,6 +48,28 @@ public sealed class AccountServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task The_last_use_of_an_invite_goes_to_one_person_when_two_redeem_at_once()
+    {
+        string code;
+        using (var setup = _fx.CreateContext()) code = (await Svc(setup).CreateInviteAsync(A, uses: 1, AdminEmail)).Code;
+
+        using var db1 = _fx.CreateContext();
+        using var db2 = _fx.CreateContext();
+        var sam = await Svc(db1).SignInAsync("sam@example.org", "Sam");
+        var pat = await Svc(db2).SignInAsync("pat@example.org", "Pat");
+
+        // db1 read the invite (Used 0) just before db2 took the last use: a race, made deterministic.
+        (await db1.Invites.SingleAsync(i => i.Code == code)).Used.Should().Be(0);
+        await Svc(db2).RedeemInviteAsync(pat.Id, code);
+
+        var ex = (await Svc(db1).Invoking(s => s.RedeemInviteAsync(sam.Id, code)).Should().ThrowAsync<ExchangeException>()).Which;
+        ex.StatusCode.Should().Be(409);
+        ex.Message.Should().Be("That code has been used. Ask for a new one.");
+        (await db2.Invites.AsNoTracking().SingleAsync()).Used.Should().Be(1);
+        (await db2.Memberships.AsNoTracking().CountAsync(m => m.Ein == A)).Should().Be(1);
+    }
+
+    [Fact]
     public async Task Claim_is_pending_until_an_admin_approves_it()
     {
         using var db = _fx.CreateContext();

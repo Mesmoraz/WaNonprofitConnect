@@ -118,9 +118,13 @@ public sealed class AccountService
             if (current.Ein == invite.Ein) return (await GetMeAsync(accountId, ct))!;
             throw ExchangeException.Conflict("You're already confirmed for another organization.");
         }
-        if (invite.Used >= invite.Uses) throw ExchangeException.Conflict("That code has been used. Ask for a new one.");
+        const string usedUp = "That code has been used. Ask for a new one.";
+        if (invite.Used >= invite.Uses) throw ExchangeException.Conflict(usedUp);
 
-        invite.Used++;
+        // Take a use in one conditional UPDATE, so two people redeeming the last use at once can't both get in.
+        var taken = await _db.Invites.Where(i => i.Code == invite.Code && i.Used < i.Uses)
+            .ExecuteUpdateAsync(s => s.SetProperty(i => i.Used, i => i.Used + 1), ct);
+        if (taken == 0) throw ExchangeException.Conflict(usedUp);
         await SetMembershipAsync(accountId, invite.Ein, MembershipStatus.Confirmed, MembershipVia.Invite, invite.Code, ct);
         return (await GetMeAsync(accountId, ct))!;
     }
@@ -153,7 +157,7 @@ public sealed class AccountService
     public async Task<ClaimDto> DecideClaimAsync(int membershipId, bool approve, string adminEmail, CancellationToken ct = default)
     {
         var m = await _db.Memberships.Include(x => x.Account).Include(x => x.Org).FirstOrDefaultAsync(x => x.Id == membershipId, ct)
-                ?? throw ExchangeException.NotFound("Claim");
+                ?? throw ExchangeException.NotFound("That claim is gone.");
         if (m.Via != MembershipVia.Claim) throw ExchangeException.Invalid("That membership came from an invite, not a claim.");
         if (m.Status != MembershipStatus.Pending) throw ExchangeException.Conflict($"That claim is already {m.Status.ToString().ToLowerInvariant()}.");
 

@@ -23,6 +23,22 @@ public class AppDbContext : DbContext
     public DbSet<OrgPreference> OrgPreferences => Set<OrgPreference>();
     public DbSet<Feedback> Feedback => Set<Feedback>();
 
+    /// <summary>
+    /// Every DateTime is stored as UTC. SQL Server's datetime2 drops the kind, so mark it on the way out too:
+    /// without this the JSON has no "Z" and a phone in Seattle reads every time as 7 hours in the future.
+    /// </summary>
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<DateTime>().HaveConversion<UtcConverter>();
+        configurationBuilder.Properties<DateTime?>().HaveConversion<NullableUtcConverter>();
+    }
+
+    private sealed class UtcConverter() : Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime, DateTime>(
+        v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+    private sealed class NullableUtcConverter() : Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime?, DateTime?>(
+        v => v, v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v);
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

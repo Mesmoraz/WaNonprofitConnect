@@ -129,7 +129,8 @@ public sealed class ExchangeException : Exception
     public int StatusCode { get; }
     public ExchangeException(int statusCode, string message) : base(message) => StatusCode = statusCode;
 
-    public static ExchangeException NotFound(string what) => new(404, $"{what} not found.");
+    /// <summary>404 with <paramref name="title"/> as the sentence people see ("That post is gone.").</summary>
+    public static ExchangeException NotFound(string title) => new(404, title);
     public static ExchangeException Forbidden(string why) => new(403, why);
     public static ExchangeException Invalid(string why) => new(400, why);
     public static ExchangeException Conflict(string why) => new(409, why);

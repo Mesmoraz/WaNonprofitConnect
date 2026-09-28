@@ -14,6 +14,15 @@ public sealed class ExchangeService
 {
     private const int MaxCandidates = 500;
 
+    // Column limits (AppDbContext). An overlong value is a 500 on SQL Server, so check or trim before saving.
+    public const int MaxTitle = 200;
+    public const int MaxDescription = 4000;
+    public const int MaxUnit = 40;
+    public const int MaxTags = 500;
+    public const int MaxSearchText = 2000;
+    public const int MaxMessage = 4000;
+    public const int MaxExpiresInDays = 365;
+
     private readonly AppDbContext _db;
     private readonly IExchangeNotifier _notifier;
 
@@ -29,11 +38,16 @@ public sealed class ExchangeService
     {
         var org = await RequireOrgAsync(actingEin, ct);
         var title = req.Title?.Trim();
-        if (string.IsNullOrWhiteSpace(title)) throw ExchangeException.Invalid("Title is required.");
-        if (title.Length > 200) throw ExchangeException.Invalid("Title must be 200 characters or fewer.");
-        if (req.Quantity is < 0) throw ExchangeException.Invalid("Quantity cannot be negative.");
-        if (!Enum.IsDefined(req.Kind)) throw ExchangeException.Invalid("Kind must be Need or Offer.");
-        if (!Enum.IsDefined(req.Category)) throw ExchangeException.Invalid("Unknown category.");
+        if (string.IsNullOrWhiteSpace(title)) throw ExchangeException.Invalid("Say what it is.");
+        if (title.Length > MaxTitle) throw ExchangeException.Invalid("Keep it under 200 characters.");
+        var description = BmfRowParser.Clean(req.Description);
+        if (description is { Length: > MaxDescription }) throw ExchangeException.Invalid("Keep the details under 4,000 characters.");
+        var unit = BmfRowParser.Clean(req.Unit);
+        if (unit is { Length: > MaxUnit }) throw ExchangeException.Invalid("Keep the unit under 40 characters.");
+        var tags = TruncateAtBoundary(BmfRowParser.Clean(req.Tags), MaxTags, ',');
+        if (req.Quantity is < 0) throw ExchangeException.Invalid("The number can't be below 0.");
+        if (!Enum.IsDefined(req.Kind)) throw ExchangeException.Invalid("Pick need or offer.");
+        if (!Enum.IsDefined(req.Category)) throw ExchangeException.Invalid("Pick a kind of help.");
         var help = req.Help == 0 ? KindOfHelp.Things : req.Help;
         if (!Enum.IsDefined(help)) throw ExchangeException.Invalid("Pick a kind of help.");
         var cadence = Enum.IsDefined(req.Cadence) ? req.Cadence : Cadence.OneTime;
@@ -53,18 +67,19 @@ public sealed class ExchangeService
             Cadence = cadence,
             Category = req.Category,
             Title = title,
-            Description = BmfRowParser.Clean(req.Description),
+            Description = description,
             Quantity = req.Quantity,
-            Unit = BmfRowParser.Clean(req.Unit),
+            Unit = unit,
             Urgency = urgency,
             Status = ListingStatus.Open,
-            Tags = BmfRowParser.Clean(req.Tags),
-            SearchText = MatchScorer.BuildSearchText(title, req.Description, req.Tags),
+            Tags = tags,
+            SearchText = MatchScorer.BuildSearchText(title, description, tags),
             City = org.City,
             Zip5 = org.Zip5,
             CreatedAt = now,
             UpdatedAt = now,
-            ExpiresAt = req.ExpiresInDays is { } d and > 0 ? now.AddDays(d) : null,
+            // A huge number would overflow DateTime (a 500). A post lives a year at most.
+            ExpiresAt = req.ExpiresInDays is { } d ? now.AddDays(Math.Clamp(d, 1, MaxExpiresInDays)) : null,
         };
         _db.Listings.Add(listing);
         await _db.SaveChangesAsync(ct);
@@ -111,8 +126,8 @@ public sealed class ExchangeService
     {
         var ein = await RequireEinAsync(actingEin, ct);
         var l = await _db.Listings.Include(x => x.Org).FirstOrDefaultAsync(x => x.Id == id, ct)
-                ?? throw ExchangeException.NotFound("Listing");
-        if (l.OrgEin != ein) throw ExchangeException.Forbidden("Only the posting organization can close a listing.");
+                ?? throw ExchangeException.NotFound(PostGone);
+        if (l.OrgEin != ein) throw ExchangeException.Forbidden("Only the organization that posted this can close it.");
         if (l.Status is ListingStatus.Fulfilled or ListingStatus.Closed) return ListingDto.From(l);
         l.Status = ListingStatus.Closed;
         l.UpdatedAt = DateTime.UtcNow;
@@ -126,7 +141,7 @@ public sealed class ExchangeService
     public async Task<IReadOnlyList<MatchSuggestionDto>> SuggestMatchesAsync(int listingId, int take = 10, CancellationToken ct = default)
     {
         var source = await _db.Listings.AsNoTracking().Include(l => l.Org).FirstOrDefaultAsync(l => l.Id == listingId, ct)
-                     ?? throw ExchangeException.NotFound("Listing");
+                     ?? throw ExchangeException.NotFound(PostGone);
         var wantKind = source.Kind == ListingKind.Need ? ListingKind.Offer : ListingKind.Need;
         var now = DateTime.UtcNow;
         var tokens = MatchScorer.Tokens(source.SearchText);
@@ -163,18 +178,17 @@ public sealed class ExchangeService
     {
         var ein = await RequireEinAsync(actingEin, ct);
         var need = await _db.Listings.Include(l => l.Org).FirstOrDefaultAsync(l => l.Id == req.NeedListingId, ct)
-                   ?? throw ExchangeException.NotFound("Need listing");
+                   ?? throw ExchangeException.NotFound(PostGone);
         var offer = await _db.Listings.Include(l => l.Org).FirstOrDefaultAsync(l => l.Id == req.OfferListingId, ct)
-                    ?? throw ExchangeException.NotFound("Offer listing");
+                    ?? throw ExchangeException.NotFound(PostGone);
 
-        if (need.Kind != ListingKind.Need) throw ExchangeException.Invalid($"Listing {need.Id} is not a Need.");
-        if (offer.Kind != ListingKind.Offer) throw ExchangeException.Invalid($"Listing {offer.Id} is not an Offer.");
-        if (need.OrgEin == offer.OrgEin) throw ExchangeException.Invalid("A need and an offer from the same organization cannot be matched.");
-        if (ein != need.OrgEin && ein != offer.OrgEin) throw ExchangeException.Forbidden("Only one of the two organizations can propose this match.");
-        if (need.Status != ListingStatus.Open) throw ExchangeException.Conflict($"Need listing is {need.Status}.");
-        if (offer.Status != ListingStatus.Open) throw ExchangeException.Conflict($"Offer listing is {offer.Status}.");
+        if (need.Kind != ListingKind.Need) throw ExchangeException.Invalid("Pick a need to pair with this offer.");
+        if (offer.Kind != ListingKind.Offer) throw ExchangeException.Invalid("Pick an offer to pair with this need.");
+        if (need.OrgEin == offer.OrgEin) throw ExchangeException.Invalid("That's your own post.");
+        if (ein != need.OrgEin && ein != offer.OrgEin) throw ExchangeException.Forbidden("Only the two organizations can start this thread.");
+        if (need.Status != ListingStatus.Open || offer.Status != ListingStatus.Open) throw ExchangeException.Conflict(NotOpen);
         if (await _db.Matches.AnyAsync(m => m.NeedListingId == need.Id && m.OfferListingId == offer.Id, ct))
-            throw ExchangeException.Conflict("These two listings are already matched.");
+            throw ExchangeException.Conflict("You already have a thread for these.");
 
         var match = new Match
         {
@@ -200,7 +214,10 @@ public sealed class ExchangeService
         var match = await LoadMatchAsync(matchId, ct);
         RequireParty(match, ein);
         if (match.ProposedByEin == ein) throw ExchangeException.Forbidden("The other organization answers this one.");
-        if (match.Status != MatchStatus.Proposed) throw ExchangeException.Conflict($"Match is already {match.Status}.");
+        if (match.Status != MatchStatus.Proposed) throw ExchangeException.Conflict(MovedOn);
+        // Accepting takes both posts off the board, so both must still be on it (not closed, done, or held by another thread).
+        if (accept && (match.NeedListing!.Status != ListingStatus.Open || match.OfferListing!.Status != ListingStatus.Open))
+            throw ExchangeException.Conflict(NotOpen);
 
         var now = DateTime.UtcNow;
         match.Status = accept ? MatchStatus.Accepted : MatchStatus.Declined;
@@ -244,7 +261,7 @@ public sealed class ExchangeService
         var match = await LoadMatchAsync(matchId, ct);
         RequireParty(match, ein);
         if (match.Status is MatchStatus.Completed or MatchStatus.Cancelled or MatchStatus.Declined)
-            throw ExchangeException.Conflict($"Match is already {match.Status}.");
+            throw ExchangeException.Conflict(MovedOn);
 
         var now = DateTime.UtcNow;
         var wasAccepted = match.Status == MatchStatus.Accepted;
@@ -252,10 +269,17 @@ public sealed class ExchangeService
         match.RespondedAt ??= now;
         if (wasAccepted)
         {
-            // Re-open both sides so they can be matched elsewhere.
-            match.NeedListing!.Status = ListingStatus.Open;
-            match.OfferListing!.Status = ListingStatus.Open;
-            match.NeedListing.UpdatedAt = match.OfferListing.UpdatedAt = now;
+            // Put each post back on the board so it can pair elsewhere, but only one this thread took off:
+            // never a closed, done or expired one, and not one another accepted thread still holds.
+            foreach (var l in new[] { match.NeedListing!, match.OfferListing! })
+            {
+                if (l.Status != ListingStatus.Matched) continue;
+                var held = await _db.Matches.AnyAsync(m => m.Id != match.Id && m.Status == MatchStatus.Accepted
+                                                           && (m.NeedListingId == l.Id || m.OfferListingId == l.Id), ct);
+                if (held) continue;
+                l.Status = ListingStatus.Open;
+                l.UpdatedAt = now;
+            }
         }
         await _db.SaveChangesAsync(ct);
 
@@ -294,7 +318,7 @@ public sealed class ExchangeService
     {
         var ein = await RequireEinAsync(actingEin, ct);
         var body = BmfRowParser.Clean(req.Body) ?? throw ExchangeException.Invalid("Write a message first.");
-        if (body.Length > 4000) throw ExchangeException.Invalid("Message must be 4000 characters or fewer.");
+        if (body.Length > MaxMessage) throw ExchangeException.Invalid(MessageTooLong);
         var match = await LoadMatchAsync(matchId, ct);
         RequireParty(match, ein);
         if (match.Status is MatchStatus.Declined or MatchStatus.Cancelled)
@@ -312,12 +336,27 @@ public sealed class ExchangeService
 
     // ---- helpers -----------------------------------------------------------
 
+    internal const string PostGone = "That post is gone.";
+    internal const string ThreadGone = "That thread is gone.";
+    internal const string NotOpen = "That post isn't open any more.";
+    internal const string MovedOn = "This thread has already moved on.";
+    internal const string MessageTooLong = "Keep your message under 4,000 characters.";
+
+    /// <summary>Cut to <paramref name="max"/> at the last separator (or space) that fits, so no word is cut in half.</summary>
+    public static string? TruncateAtBoundary(string? s, int max, char separator = ' ')
+    {
+        if (s is null || s.Length <= max) return s;
+        var cut = s.LastIndexOf(separator, max);
+        if (cut <= 0 && separator != ' ') cut = s.LastIndexOf(' ', max);
+        return (cut > 0 ? s[..cut] : s[..max]).TrimEnd(' ', separator);
+    }
+
     private async Task<Organization> RequireOrgAsync(string actingEin, CancellationToken ct)
     {
         var ein = BmfRowParser.NormalizeEin(actingEin) ?? throw ExchangeException.Forbidden("X-Org-Ein header must be a 9-digit EIN.");
         var org = await _db.Organizations.FirstOrDefaultAsync(o => o.Ein == ein, ct)
-                  ?? throw ExchangeException.Forbidden($"EIN {ein} is not a known exempt organization.");
-        if (!org.Is501c3) throw ExchangeException.Forbidden($"{org.Name} is not a 501(c)(3); only 501(c)(3)s can use the exchange for now.");
+                  ?? throw ExchangeException.Forbidden("We can't find that organization.");
+        if (!org.Is501c3) throw ExchangeException.Forbidden("For now, only 501(c)(3) organizations can join.");
         return org;
     }
 
@@ -331,7 +370,7 @@ public sealed class ExchangeService
             .Include(m => m.Messages)
             .AsQueryable();
         if (!track) q = q.AsNoTracking();
-        return await q.FirstOrDefaultAsync(m => m.Id == id, ct) ?? throw ExchangeException.NotFound("Match");
+        return await q.FirstOrDefaultAsync(m => m.Id == id, ct) ?? throw ExchangeException.NotFound(ThreadGone);
     }
 
     private static void RequireParty(Match m, string ein)

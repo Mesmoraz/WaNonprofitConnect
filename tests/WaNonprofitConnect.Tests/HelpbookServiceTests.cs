@@ -217,6 +217,51 @@ public sealed class HelpbookServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task Starting_again_on_the_same_post_reuses_your_live_thread()
+    {
+        using var db = _fx.CreateContext();
+        var svc = Svc(db);
+        var need = await svc.CreateListingAsync(A, Post(ListingKind.Need, "Plywood"));
+        var (first, created) = await svc.StartOrReuseThreadAsync(B, new StartThreadRequest { ListingId = need.Id, Message = "We have 40 sheets" }, "Casey");
+        created.Should().BeTrue();
+        var listings = await db.Listings.CountAsync();
+
+        var (again, createdAgain) = await svc.StartOrReuseThreadAsync(B, new StartThreadRequest { ListingId = need.Id, Message = "Also 10 more" }, "Casey");
+        createdAgain.Should().BeFalse();
+        again.Id.Should().Be(first.Id);
+        again.Messages!.Select(m => m.Body).Should().Equal("We have 40 sheets", "Also 10 more"); // the message isn't lost
+        (await db.Listings.CountAsync()).Should().Be(listings);                                  // no duplicate offer
+        (await db.Matches.CountAsync()).Should().Be(1);
+
+        // Still the same thread once accepted, though the need is off the board.
+        await svc.AcceptAsync(first.Id, A);
+        (await svc.StartThreadAsync(B, new StartThreadRequest { ListingId = need.Id, Message = "Thursday?" }, "Casey")).Id.Should().Be(first.Id);
+
+        // Once it's cancelled, a new tap on an open post makes a new thread.
+        await svc.CancelAsync(first.Id, B);
+        var (fresh, createdFresh) = await svc.StartOrReuseThreadAsync(B, new StartThreadRequest { ListingId = need.Id, Message = "Try again?" }, "Casey");
+        createdFresh.Should().BeTrue();
+        fresh.Id.Should().NotBe(first.Id);
+    }
+
+    [Fact]
+    public async Task A_first_message_at_the_limit_fits_the_new_posts_details()
+    {
+        using var db = _fx.CreateContext();
+        var svc = Svc(db);
+        var need = await svc.CreateListingAsync(A, Post(ListingKind.Need, "Plywood"));
+        var message = new string('m', ExchangeService.MaxMessage);
+
+        var thread = await svc.StartThreadAsync(B, new StartThreadRequest { ListingId = need.Id, Message = message }, "Casey");
+        thread.Offer.Description.Should().HaveLength(ExchangeService.MaxDescription);
+
+        var ex = (await svc.Invoking(s => s.StartThreadAsync(C, new StartThreadRequest { ListingId = need.Id, Message = message + "m" }, null))
+            .Should().ThrowAsync<ExchangeException>()).Which;
+        ex.StatusCode.Should().Be(400);
+        ex.Message.Should().Be("Keep your message under 4,000 characters.");
+    }
+
+    [Fact]
     public async Task Posting_needs_a_kind_of_help()
     {
         using var db = _fx.CreateContext();

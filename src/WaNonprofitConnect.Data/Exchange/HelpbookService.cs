@@ -125,7 +125,7 @@ public sealed partial class HelpbookService
     /// <summary>One thread with its messages. Opening it marks it read for your side.</summary>
     public async Task<ThreadDto> GetThreadAsync(int id, string actingEin, CancellationToken ct = default)
     {
-        var m = await Threads().FirstOrDefaultAsync(x => x.Id == id, ct) ?? throw ExchangeException.NotFound("Thread");
+        var m = await Threads().FirstOrDefaultAsync(x => x.Id == id, ct) ?? throw ExchangeException.NotFound(ExchangeService.ThreadGone);
         RequireParty(m, actingEin);
         MarkRead(m, actingEin, DateTime.UtcNow);
         await _db.SaveChangesAsync(ct);
@@ -138,13 +138,39 @@ public sealed partial class HelpbookService
     /// for you (same kind of help, your message as its details), then the thread, then the first message.
     /// </summary>
     public async Task<ThreadDto> StartThreadAsync(string actingEin, StartThreadRequest req, string? senderName, CancellationToken ct = default)
+        => (await StartOrReuseThreadAsync(actingEin, req, senderName, ct)).Thread;
+
+    /// <summary>
+    /// Like <see cref="StartThreadAsync"/>, but says whether a thread was made. Without <see cref="StartThreadRequest.MyListingId"/>,
+    /// if you already have a live (Proposed or Accepted) thread on that post, your message goes there and you get that thread back
+    /// (<c>Created</c> false) instead of a second thread and a duplicate post.
+    /// </summary>
+    public async Task<(ThreadDto Thread, bool Created)> StartOrReuseThreadAsync(string actingEin, StartThreadRequest req, string? senderName, CancellationToken ct = default)
     {
         var message = BmfRowParser.Clean(req.Message);
-        if (message is { Length: > 4000 }) throw ExchangeException.Invalid("Message must be 4000 characters or fewer.");
+        if (message is { Length: > ExchangeService.MaxMessage }) throw ExchangeException.Invalid(ExchangeService.MessageTooLong);
         var target = await _db.Listings.AsNoTracking().FirstOrDefaultAsync(l => l.Id == req.ListingId, ct)
-                     ?? throw ExchangeException.NotFound("That need or offer");
+                     ?? throw ExchangeException.NotFound(ExchangeService.PostGone);
         if (target.OrgEin == actingEin) throw ExchangeException.Invalid("That's your own post.");
-        if (target.Status != ListingStatus.Open) throw ExchangeException.Conflict("That post isn't open any more.");
+
+        if (req.MyListingId is null)
+        {
+            // A second tap on "I can help" (or a retry) lands in the thread you already have. Checked before "open",
+            // because an accepted thread has already taken the post off the board.
+            var existing = await _db.Matches.AsNoTracking()
+                .Where(m => (m.NeedListingId == target.Id && m.OfferListing!.OrgEin == actingEin) || (m.OfferListingId == target.Id && m.NeedListing!.OrgEin == actingEin))
+                .Where(m => m.Status == MatchStatus.Proposed || m.Status == MatchStatus.Accepted)
+                .OrderByDescending(m => m.CreatedAt)
+                .Select(m => (int?)m.Id)
+                .FirstOrDefaultAsync(ct);
+            if (existing is { } threadId)
+            {
+                if (message is not null) return (await ReuseWithMessageAsync(threadId, actingEin, message, senderName, ct), false);
+                return (await GetThreadAsync(threadId, actingEin, ct), false);
+            }
+        }
+
+        if (target.Status != ListingStatus.Open) throw ExchangeException.Conflict(ExchangeService.NotOpen);
 
         ListingViewDto? createdListing = null;
         // Through the execution strategy: the database retries on a transient failure (a paused serverless
@@ -158,7 +184,7 @@ public sealed partial class HelpbookService
             if (req.MyListingId is { } mine)
             {
                 var own = await _db.Listings.AsNoTracking().FirstOrDefaultAsync(l => l.Id == mine, ct)
-                          ?? throw ExchangeException.NotFound("Your need or offer");
+                          ?? throw ExchangeException.NotFound(ExchangeService.PostGone);
                 if (own.OrgEin != actingEin) throw ExchangeException.Forbidden("Pick one of your own posts.");
                 if (own.Kind == target.Kind) throw ExchangeException.Invalid("Pair a need with an offer. Pick one of your offers for a need, or one of your needs for an offer.");
                 myListingId = own.Id;
@@ -173,7 +199,8 @@ public sealed partial class HelpbookService
                     Category = target.Category,
                     Cadence = target.Cadence,
                     Title = target.Title,
-                    Description = message,
+                    // The message limit and the details limit are both 4,000 today; cut anyway so a change to one can't make this a 400.
+                    Description = message.Length > ExchangeService.MaxDescription ? message[..ExchangeService.MaxDescription] : message,
                     Quantity = target.Quantity,
                     Unit = target.Unit,
                     Urgency = Urgency.Normal,
@@ -201,7 +228,14 @@ public sealed partial class HelpbookService
             var first = await _db.Messages.AsNoTracking().Where(x => x.MatchId == matchId).OrderBy(x => x.SentAt).FirstAsync(ct);
             await _notifier.MessageAddedAsync(new[] { thread.Need.Org.Ein, thread.Offer.Org.Ein }, ToMessage(first, thread), ct);
         }
-        return thread;
+        return (thread, true);
+    }
+
+    private async Task<ThreadDto> ReuseWithMessageAsync(int threadId, string actingEin, string message, string? senderName, CancellationToken ct)
+    {
+        await SendMessageAsync(threadId, actingEin, message, senderName, ct);
+        _db.ChangeTracker.Clear();
+        return await GetThreadAsync(threadId, actingEin, ct);
     }
 
     public async Task<ThreadMessageDto> SendMessageAsync(int threadId, string actingEin, string? body, string? senderName, CancellationToken ct = default)
