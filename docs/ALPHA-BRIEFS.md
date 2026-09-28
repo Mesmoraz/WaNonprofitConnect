@@ -31,8 +31,15 @@ Approved by Taylor 2026-09-23, as written. Build exactly this. Anything else a s
 
 - Chips "We need" / "We have". Headline follows: "What do you need?" / "What do you have?"
 - Label "Kind of help": Time, Skills, Things, Partnership, For schools, Jobs and mentoring.
-- Field "What is it?", placeholder follows the kind of help, from TAXONOMY.md's "A need sounds like" / "An offer sounds like" columns (for example "Laptops for client intake").
-- Field "Details", placeholder "Condition, pickup or delivery, dates."
+- "What is it?" (S-111, Mario's feedback, Sep 26: "Free text should be minimal or discrete"). Shows once a kind of help is picked, as chips. The chip is the title.
+  - Time: Driving, Event help, Sorting and packing, Tutoring, Office help
+  - Skills: Bookkeeping, Legal help, Tech help, Design, Marketing
+  - Things: Laptops, Food, Clothing, Furniture, Supplies
+  - Partnership: A sponsor, Staff volunteer day, Event partner, Shared space
+  - For schools: Guest speakers, Field trips, Classroom supplies, Tutoring
+  - Jobs and mentoring: Mock interviews, Mentors, Job openings, Apprenticeships
+  - Last chip on every row: "Something else", which opens a text box (80 characters) with the placeholder from TAXONOMY.md's "A need sounds like" / "An offer sounds like" columns.
+- Details are optional and folded away: a link "Add details" after How often opens the box (placeholder "Condition, pickup or delivery, dates.", 280 characters) with the hint "The rest you can work out in the thread."
 - "How many", hint "Just the number, if it matters." No "Of what" (Taylor, Sep 23: the title already says what it is). A count with no unit shows as "12 needed" or "12 to give".
 - Needs only, "How soon": Urgent, This week, This month, Whenever. Hint: "Urgent is 2 a month, so it keeps meaning you can't operate without it." Urgent is disabled once the organization has used 2 in the last 30 days.
 - "How often": Once, Every week, Every month, Every quarter, Ongoing.
