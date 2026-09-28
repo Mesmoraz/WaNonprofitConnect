@@ -1133,7 +1133,7 @@
       "id": "S-77",
       "epic": "E-26",
       "title": "Privacy and terms pages",
-      "status": "in-progress",
+      "status": "review",
       "added": "2026-09-23",
       "lane": "app",
       "source": "Taylor, 2026-09-23: skip prototyping, build a working alpha",
@@ -1145,7 +1145,7 @@
         },
         {
           "id": "T-53",
-          "title": "Taylor fills in: contact email, who runs it, reply time, and has a lawyer read before public launch",
+          "title": "The co-founder owns the wording: contact email, who runs it, the date, the liability sentence, and a lawyer's read before the public launch. The pages keep their highlighted placeholders until then.",
           "status": "ready"
         },
         {
@@ -1388,7 +1388,8 @@
       "title": "Google sign-in out of Testing, so invited organizations don't need to be added one by one (needs the privacy and terms pages)",
       "status": "backlog",
       "added": "2026-09-24",
-      "tasks": []
+      "tasks": [],
+      "blocked": "waiting on T-53 (the co-founder): the privacy and terms wording"
     },
     {
       "id": "S-93",
@@ -1593,6 +1594,16 @@
       "status": "backlog",
       "added": "2026-09-28",
       "source": "Full review, 2026-09-28",
+      "tasks": []
+    },
+    {
+      "id": "S-110",
+      "epic": "E-26",
+      "lane": "app",
+      "title": "Admins can walk the front door again: a demo that starts as a new organization at the invite code",
+      "status": "backlog",
+      "added": "2026-09-28",
+      "source": "Taylor, 2026-09-28: how do I reset the demo as a new user",
       "tasks": []
     }
   ]
