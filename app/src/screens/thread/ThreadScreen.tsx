@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { useParams } from 'react-router-dom'
 import { useMe, useSendMessage, useThread, useThreadAction, type ThreadAction } from '../../api'
+import { errorLine } from '../../lib/errors'
 import { shortAgo } from '../../lib/words'
 import { BackLink } from '../../shell/Page'
 import './thread.css'
@@ -17,7 +18,7 @@ export function ThreadScreen() {
   const send = useSendMessage(id)
   const [body, setBody] = useState('')
   const [confirming, setConfirming] = useState(false)
-  const [failed, setFailed] = useState(false)
+  const [failed, setFailed] = useState<string | null>(null)
   const end = useRef<HTMLDivElement>(null)
   const count = t?.messages.length ?? 0
 
@@ -35,13 +36,13 @@ export function ThreadScreen() {
   const myEin = me?.membership?.ein
   const other = t.need.org.ein === myEin ? t.offer.org : t.need.org
   const iStarted = t.startedByEin === myEin
-  const run = (a: ThreadAction) => { setFailed(false); act.mutate(a, { onSuccess: () => setConfirming(false), onError: () => setFailed(true) }) }
+  const run = (a: ThreadAction) => { setFailed(null); act.mutate(a, { onSuccess: () => setConfirming(false), onError: e => setFailed(errorLine(e)) }) }
   const submit = (e: FormEvent) => {
     e.preventDefault()
     const text = body.trim()
     if (!text) return
-    setFailed(false)
-    send.mutate(text, { onSuccess: () => setBody(''), onError: () => setFailed(true) })
+    setFailed(null)
+    send.mutate(text, { onSuccess: () => setBody(''), onError: e => setFailed(errorLine(e)) })
   }
 
   let status: ReactNode = null
@@ -79,7 +80,7 @@ export function ThreadScreen() {
           <p>Offer: {t.offer.title} · {t.offer.org.name}</p>
         </div>
         {status}
-        {failed && <p className="error" role="alert">That didn’t work. Try again.</p>}
+        {failed && <p className="error" role="alert">{failed}</p>}
 
         <div className="msgs" aria-live="polite">
           {t.messages.length === 0 && <p className="hint center">No messages yet. Say hello.</p>}

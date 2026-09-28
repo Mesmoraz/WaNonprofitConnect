@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { MOCK, useMe, type Me } from './api'
 import { AppShell } from './shell/AppShell'
@@ -8,14 +8,16 @@ import { FindYours } from './screens/find/FindYours'
 import { Inbox } from './screens/inbox/Inbox'
 import { Invite } from './screens/invite/Invite'
 import { ListingScreen } from './screens/listing/ListingScreen'
-import { MapScreen } from './screens/map/MapScreen'
 import { OrgScreen } from './screens/org/OrgScreen'
 import { Privacy, Terms } from './screens/legal/Legal'
-import { MapCardPreview } from './screens/map/MapCardPreview'
 import { Post } from './screens/post/Post'
 import { SignUp } from './screens/signup/SignUp'
 import { ThreadScreen } from './screens/thread/ThreadScreen'
 import { Waiting } from './screens/waiting/Waiting'
+
+// The map (MapLibre and deck.gl, about 2 MB) loads when you open it, not before the sign-in screen.
+const MapScreen = lazy(() => import('./screens/map/MapScreen').then(m => ({ default: m.MapScreen })))
+const MapCardPreview = lazy(() => import('./screens/map/MapCardPreview').then(m => ({ default: m.MapCardPreview })))
 
 type Stage = 'signedOut' | 'noOrg' | 'pending' | 'confirmed'
 const stageOf = (me: Me | null | undefined): Stage =>
@@ -71,13 +73,13 @@ export function App() {
       <Route element={<Only stage="confirmed" />}>
         <Route element={<AppShell />}>
           <Route index element={<Board />} />
-          <Route path="/map" element={<MapScreen />} />
+          <Route path="/map" element={<Suspense fallback={<Booting />}><MapScreen /></Suspense>} />
           <Route path="/post" element={<Post />} />
           <Route path="/inbox" element={<Inbox />} />
           <Route path="/listing/:id" element={<ListingScreen />} />
           <Route path="/thread/:id" element={<ThreadScreen />} />
           <Route path="/org/:ein" element={<OrgScreen />} />
-          {(import.meta.env.DEV || MOCK) && <Route path="/dev/map-card" element={<MapCardPreview />} />}
+          {(import.meta.env.DEV || MOCK) && <Route path="/dev/map-card" element={<Suspense fallback={null}><MapCardPreview /></Suspense>} />}
         </Route>
       </Route>
       {/* Open to anyone, signed in or not. */}

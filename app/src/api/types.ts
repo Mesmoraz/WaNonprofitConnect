@@ -24,7 +24,7 @@ export interface Listing {
   quantity: number | null; unit: string | null; urgency: Urgency; cadence: Cadence; status: string
   org: OrgSummary; createdAt: string; views: number; why: string
 }
-export interface ListingDetail extends Listing { fits: Listing[] }
+export interface ListingDetail extends Listing { fits: Listing[]; myThreadId?: number }
 
 export interface Thread {
   id: number; status: ThreadStatus; need: Listing; offer: Listing; startedByEin: string

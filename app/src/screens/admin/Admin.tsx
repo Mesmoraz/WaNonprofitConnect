@@ -88,7 +88,7 @@ export function Admin() {
       <input id="uses" type="number" inputMode="numeric" min={1} max={50} value={uses} onChange={e => setUses(e.target.value)} />
       {failed && <p className="error" role="alert">That didn’t work. Try again.</p>}
 
-      {invites.slice().reverse().map(i => (
+      {invites.map(i => (   // newest first, as the API sends them
         <button key={i.code} className="card tap admin-code" onClick={() => copy(i.code)}>
           <span className="code">{i.code}</span>
           <span className="m">{i.orgName} · {i.used} of {i.uses} used</span>
@@ -103,8 +103,8 @@ export function Admin() {
           <span className="m">{c.orgName}</span>
           <span className="m">{[cap(c.city), day(c.createdAt)].filter(Boolean).join(' · ')}</span>
           <div className="admin-actions">
-            <button className="btn primary sm" disabled={approve.isPending} onClick={() => approve.mutate(c.id)}>Approve</button>
-            <button className="btn quiet sm" disabled={reject.isPending} onClick={() => reject.mutate(c.id)}>Not this one</button>
+            <button className="btn primary sm" disabled={approve.isPending} onClick={() => { setFailed(false); approve.mutate(c.id, { onError: () => setFailed(true) }) }}>Approve</button>
+            <button className="btn quiet sm" disabled={reject.isPending} onClick={() => { setFailed(false); reject.mutate(c.id, { onError: () => setFailed(true) }) }}>Not this one</button>
           </div>
         </div>
       ))}
