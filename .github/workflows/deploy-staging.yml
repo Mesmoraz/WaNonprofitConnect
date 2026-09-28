@@ -1,7 +1,9 @@
-# Every merge to main builds once and goes to staging. "Deploy to production" ships these same files.
+# Every pull request is built and tested (a check on the PR). Every merge to main builds once and goes to
+# staging. "Deploy to production" ships those same files.
 name: Deploy to staging
 
 on:
+  pull_request:
   push:
     branches: [main]
   workflow_dispatch:
@@ -11,8 +13,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: deploy-staging
-  cancel-in-progress: false
+  group: deploy-staging-${{ github.event_name == 'pull_request' && github.ref || 'main' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -44,6 +46,7 @@ jobs:
 
   staging:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: staging
