@@ -21,7 +21,7 @@ Ids are stable and never reused: `I-n`, `E-n`, `S-n`, `T-n`. Everything lives in
 | `ready` | Defined: purpose, the one action, and what "done" looks like are written down. Could start today. |
 | `in-progress` | Someone is on it right now. |
 | `review` | Built; waiting on Taylor's check (on a phone, for screens). |
-| `done` | Shipped: in the artifact, on the site, and committed. |
+| `done` | Shipped: its pull request merged into `main`, and the site rebuilt where it changed. |
 
 Any item can also carry `blocked: "reason"`. Blocked items stay in their column and show the reason.
 
@@ -37,7 +37,7 @@ Every story that touches what a person sees goes through the same loop, and no s
 2. **Approve.** Taylor edits or approves line by line. Nothing is built before this.
 3. **Build.** Exactly what was approved. Anything extra that was needed to make it true (a bug found, a missing style) is called out by name when shipping.
 4. **Check.** Phone width, real taps and typing, console clean. Tests pass (`node scripts/test-prototype.js`).
-5. **Ship.** Republish the artifact, rebuild the site, commit both repos, push the site. Set the story to `review`; Taylor's OK moves it to `done`.
+5. **Ship.** Open a pull request (see below) with the change log entry and test cases in its description. Set the story to `review`. Taylor's OK merges it, and merging moves the story to `done`.
 
 A round fits in one sitting. If it doesn't, the story is too big: split it.
 
@@ -48,7 +48,7 @@ A round fits in one sitting. If it doesn't, the story is too big: split it.
 - **Only `ready` gets detail.** Backlog items stay one line until they're next. Detail written early is detail rewritten later.
 - **Order is a suggestion, not a promise.** `order` on epics is the current plan; Taylor can reorder any time. Dates are not tracked; the roadmap shows sequence and status.
 - **Small and shipped beats big and pending.** Every round ends with something live.
-- **Parallel where files don't collide.** Data, backend, and research stories can run side by side with a screen round. Agents working in parallel never commit; the person running them commits once each piece is checked.
+- **Parallel where files don't collide.** Data, backend, and research stories can run side by side with a screen round. Agents working in parallel never commit; the person running them commits once each piece is checked, on the round's branch.
 - **Decisions are written where they're used.** A product decision goes in `docs/TAXONOMY.md` or `docs/APP-MAP.md`; a copy decision in `docs/VOICE.md`; a process decision here. The roadmap item links to it rather than repeating it.
 
 ## Keeping designs uncoupled
@@ -79,6 +79,16 @@ node scripts/roadmap.js add story E-3 "Fetch schools from OSPI"
 node scripts/build-site.js                  # rebuilds the site, including roadmap.html
 ```
 
+## Pull requests
+
+Adopted 2026-09-28 (Taylor: "so I can see what the changes are and keep track of them"). The repo is `Mesmoraz/WaNonprofitConnect` (private) and its default branch is `main`.
+
+- **Nothing is committed straight to `main`.** Every round works on its own branch from an up-to-date `main`: `story/S-12-short-name` for a story, `fix/short-name` for a bug, `process/short-name` for docs and roadmap only.
+- **One pull request per round.** The title says what a person will notice. The description is the change log entry (what changed, why, test cases marked [verified] or [needs your phone]) plus any copy waiting for approval.
+- **Small commits inside it**, each one readable on its own (server, app, roadmap).
+- **Taylor reviews and merges.** Claude never merges its own pull request, never enables auto-merge, and never force-pushes `main`.
+- The public site repo (`helpbook-site`) is only a build output and keeps its direct pushes.
+
 ## Change log and test cases
 
 **Every shipped change gets an entry in `roadmap/CHANGELOG.md`, newest first, and the same entry is given to Taylor in chat.** An entry has three parts and nothing else:
@@ -94,5 +104,5 @@ Rules for the test cases: write them for a phone, not a desktop. One action per 
 - The story's one action works on a phone with real taps.
 - Copy matches the approved brief and `docs/VOICE.md`.
 - Tests pass. Console is clean.
-- Artifact republished, site rebuilt and pushed, both repos committed.
+- Pull request open with the change log entry and test cases; merged into `main` once Taylor approves.
 - Anything discovered along the way is on the roadmap.
