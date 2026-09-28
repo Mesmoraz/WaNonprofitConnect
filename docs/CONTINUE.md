@@ -10,7 +10,7 @@ Two artifacts exist, and both are deployed:
 
 | Thing | Where | Notes |
 |---|---|---|
-| **Backend prototype** (.NET 8 API + CLI) | `C:\Projects\WaNonprofitConnect` (private, local git only) | Real IRS data loaded into SQL Server LocalDB; needs/offers exchange with scored matching, propose/accept/complete, private messaging, SignalR real-time; CLI `demo` and `watch`. 57 xUnit tests. |
+| **Backend prototype** (.NET 8 API + CLI) | `C:\Projects\WaNonprofitConnect` (private GitHub repo `Mesmoraz/WaNonprofitConnect`, default branch `main`, changes by pull request) | Real IRS data loaded into SQL Server LocalDB; needs/offers exchange with scored matching, propose/accept/complete, private messaging, SignalR real-time; CLI `demo` and `watch`. 57 xUnit tests. |
 | **Clickable prototype + design brief + how-it-works** (static HTML) | `docs/helpbook-prototype.html`, `docs/helpbook-step2-design.html`, `docs/how-it-works.html` (hand-written, 7 hash-routed pages) in the same repo; published via `scripts/build-site.js` → `C:\Projects\helpbook-site` (public repo `Mesmoraz/helpbook-site`) → **https://mesmoraz.github.io/helpbook-site/** | Also mirrored as private claude.ai artifacts (prototype `14WxTqjyxp8hBrgXqyELN9`, design `Tev9dE62ksqfMLQLrqqXTv`). |
 
 The person who gave Taylor the idea is the audience for the public site. Keep it phone-first.
