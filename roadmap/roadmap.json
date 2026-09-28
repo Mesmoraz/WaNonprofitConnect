@@ -1,6 +1,6 @@
 {
   "name": "Name TBD roadmap",
-  "updated": "2026-09-25",
+  "updated": "2026-09-28",
   "statuses": [
     "backlog",
     "ready",
@@ -1478,6 +1478,122 @@
       "added": "2026-09-24",
       "tasks": [],
       "source": "Alpha review, 2026-09-24"
+    },
+    {
+      "id": "S-103",
+      "epic": "E-24",
+      "lane": "app",
+      "title": "Review fixes: times read right, errors say why, one thread per post, live updates survive a sleeping phone, a lighter first load",
+      "status": "review",
+      "added": "2026-09-28",
+      "source": "Full review, 2026-09-28",
+      "tasks": [
+        {
+          "id": "T-60",
+          "title": "Times: every date from the server marked UTC, so nothing reads 7 hours in the future",
+          "status": "done"
+        },
+        {
+          "id": "T-61",
+          "title": "An action that fails says why (the server's sentence), not only \"Try again\"",
+          "status": "done"
+        },
+        {
+          "id": "T-62",
+          "title": "One live thread per post: the server returns the one you have; I can help waits for a message or a pick",
+          "status": "done"
+        },
+        {
+          "id": "T-63",
+          "title": "Live updates reconnect after a phone sleeps, and catch up on an open thread",
+          "status": "done"
+        },
+        {
+          "id": "T-64",
+          "title": "The map loads when you open it: about 430 KB before sign-in instead of 2.2 MB",
+          "status": "done"
+        },
+        {
+          "id": "T-65",
+          "title": "Board: an empty board invites the first post; directory results open the organization; post states in the words list",
+          "status": "done"
+        },
+        {
+          "id": "T-66",
+          "title": "Server: length limits checked, accept needs both posts open, cancel never reopens a closed post, invite codes safe when two redeem at once",
+          "status": "done"
+        },
+        {
+          "id": "T-67",
+          "title": "Fix the lint tool (oxlint native binding missing on this machine)",
+          "status": "ready"
+        },
+        {
+          "id": "T-68",
+          "title": "Check on a phone",
+          "status": "ready"
+        }
+      ]
+    },
+    {
+      "id": "S-104",
+      "epic": "E-24",
+      "lane": "app",
+      "title": "A closed thread says so: declined or cancelled, and what to do next",
+      "status": "backlog",
+      "added": "2026-09-28",
+      "source": "Full review, 2026-09-28",
+      "tasks": []
+    },
+    {
+      "id": "S-105",
+      "epic": "E-25",
+      "lane": "map",
+      "title": "Map legend: what gold, green, dashed and dotted mean, and what a golden thread is",
+      "status": "backlog",
+      "added": "2026-09-28",
+      "source": "Full review, 2026-09-28",
+      "tasks": []
+    },
+    {
+      "id": "S-106",
+      "epic": "E-24",
+      "lane": "app",
+      "title": "Every screen says something while it loads or fails, the map included, instead of a blank page",
+      "status": "backlog",
+      "added": "2026-09-28",
+      "source": "Full review, 2026-09-28",
+      "tasks": []
+    },
+    {
+      "id": "S-107",
+      "epic": "E-23",
+      "lane": "app",
+      "title": "After sign-in, go back to the link you opened (a shared post, an invite)",
+      "status": "backlog",
+      "added": "2026-09-28",
+      "source": "Full review, 2026-09-28",
+      "tasks": []
+    },
+    {
+      "id": "S-108",
+      "epic": "E-24",
+      "lane": "app",
+      "title": "Who they serve starts empty while the board is small, so the alpha organizations see each other",
+      "status": "backlog",
+      "added": "2026-09-28",
+      "source": "Full review, 2026-09-28",
+      "tasks": []
+    },
+    {
+      "id": "S-109",
+      "epic": "E-24",
+      "lane": "app",
+      "title": "Copy that needs a brief: the message box on an offer, \"Ask a member to invite you\", why Urgent is greyed out, server error sentences",
+      "status": "backlog",
+      "added": "2026-09-28",
+      "source": "Full review, 2026-09-28",
+      "tasks": []
     }
   ]
 }
