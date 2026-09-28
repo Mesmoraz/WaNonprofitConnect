@@ -4,6 +4,32 @@ Newest first. Every shipped change lands here with test cases Taylor can run on 
 
 ---
 
+## 2026-09-28 · A staging copy of the site
+
+**Story:** S-112. From Taylor: "set up staging."
+
+### What changed
+
+- **Staging** is at https://helpbook-staging.azurewebsites.net: the same app and settings as the real site, on the same Azure plan (no extra cost), with its own database, so nothing done there touches real organizations. A small orange "Staging" tag sits at the top, and the tab title starts with "Staging ·".
+- **Every merge to `main` now goes to staging by itself.** GitHub builds once, runs the API tests, deploys, and checks the site answers. Watch it under the repo's Actions tab.
+- **Production only changes when you press Actions → Deploy to production → Run workflow.** It ships the exact files that are on staging.
+- GitHub signs in to Azure with a trust link, not a stored password. It can only deploy the two sites, and only from `main`.
+- `scripts/deploy-azure.ps1` still works by hand. It now goes to staging unless you add `-App helpbook-alpha`.
+
+### Still to do by Taylor
+
+- Add `https://helpbook-staging.azurewebsites.net` to the Google sign-in client's authorized JavaScript origins. Until then, Google sign-in on staging says it can't continue.
+
+### Test cases
+
+1. **[verified]** Open https://helpbook-staging.azurewebsites.net. The tab reads "Staging · Helpbook", and a small "Staging" tag shows at the top.
+2. **[verified]** https://helpbook-staging.azurewebsites.net/health answers 200.
+3. **[needs your phone]** After you add the staging address in Google Cloud, sign in on staging. Your admin menu shows **Admin**.
+4. **[needs your phone]** Merge this PR. Within about 5 minutes, Actions shows *Deploy to staging* green.
+5. **[needs your phone]** Actions → *Deploy to production* → Run workflow. It goes green, and the real site still works.
+
+---
+
 ## 2026-09-28 · Full review: times, errors, one thread per post, live updates, a lighter first load
 
 **Story:** S-103. From Taylor: a full review and QA pass, comparing the mission, the roadmap, and the app. Follow-ups are S-104 to S-109, each waiting on a brief.

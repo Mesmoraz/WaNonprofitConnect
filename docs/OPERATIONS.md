@@ -2,13 +2,35 @@
 
 Internal. How to deploy, see what went wrong, and get data back. The live site is https://helpbook-alpha.azurewebsites.net (App Service `helpbook-alpha`, database `helpbook-alpha-db` on server `helpbookalpha0923`, resource group `helpbook-alpha`, West US 2).
 
+## Staging and production
+
+| | Staging | Production |
+|---|---|---|
+| Address | https://helpbook-staging.azurewebsites.net | https://helpbook-alpha.azurewebsites.net |
+| App Service | `helpbook-staging` | `helpbook-alpha` |
+| Database | `helpbook-staging-db` (its own; test data only) | `helpbook-alpha-db` |
+| Gets a new version | Every merge to `main`, by itself | Only when someone presses **Deploy to production** |
+
+Both run on the same plan (`helpbook-alpha-plan`, B1), so staging costs nothing extra; both databases are on the free serverless offer. Staging shows a small "Staging" tag at the top and in the tab title. Everything else (settings, Google client, admins) is the same.
+
 ## Deploy
 
+1. **Merge a pull request.** GitHub's *Deploy to staging* workflow builds once, runs the API tests, and deploys to staging (about 5 minutes). Watch it in the repo's **Actions** tab.
+2. **Check it on staging**, on a phone, using the pull request's test cases.
+3. **Actions → Deploy to production → Run workflow.** It ships the exact files the last successful staging deploy used, then checks `/health`.
+
+GitHub signs in to Azure as the managed identity `helpbook-github-deploy`, which trusts only this repo's `main` branch and its `staging` and `production` environments, and can only deploy App Services in the `helpbook-alpha` resource group (Website Contributor). No password or key is stored in GitHub; the ids are repository variables (`AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`).
+
+By hand, if GitHub is down:
+
 ```
-powershell -ExecutionPolicy Bypass -File scripts/deploy-azure.ps1
+powershell -ExecutionPolicy Bypass -File scripts/deploy-azure.ps1                       # staging
+powershell -ExecutionPolicy Bypass -File scripts/deploy-azure.ps1 -App helpbook-alpha   # production
 ```
 
-Builds the app and the API, uploads one zip, and checks `/health`. The site takes up to about 2 minutes to come back, longer if the database was asleep (below). The Azure CLI must be signed in (`az login --tenant 9a32419d-366e-4cdd-858f-95ecb9c983c2`); its sign-in expires every so often.
+It builds on this machine, uploads one zip, and checks `/health`. The site takes up to about 2 minutes to come back, longer if the database was asleep (below). The Azure CLI must be signed in (`az login --tenant 9a32419d-366e-4cdd-858f-95ecb9c983c2`); its sign-in expires every so often.
+
+The staging app's identity has `db_datareader`, `db_datawriter` and `db_ddladmin` on `helpbook-staging-db` only. It migrates and loads the IRS list itself on first start, like production.
 
 ## See what went wrong
 
@@ -16,7 +38,7 @@ Builds the app and the API, uploads one zip, and checks `/health`. The site take
 powershell -ExecutionPolicy Bypass -File scripts/errors.ps1
 ```
 
-Prints the last 2 days of:
+Prints the last 2 days of (production; add `-App helpbook-staging` for staging):
 
 - **Browser errors** (`Client error (crash|error|rejection) on /page: message`): a screen that crashed or a script error on someone's device. The app sends these itself (`app/src/lib/report.ts`), at most 5 per page load. A crashed screen shows "That didn’t work. Reload the page" instead of going blank.
 - **Server errors** (`fail:` lines): an unexpected error answers the person with "That didn’t work. Try again." and a `traceId`. Search the logs for that id to find the matching line.

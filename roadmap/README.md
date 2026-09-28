@@ -33,7 +33,7 @@ Generated from `roadmap.json` on 2026-09-28. Don't edit this file; run `node scr
 | S-56 File for 501(c)(3) status |  |  | S-91 Error logging and database backups, so a problem is seen and nothing is lost |  |
 | S-58 Corporate giving platforms (Benevity and others), subject to APIs and agreements |  |  | S-93 Send feedback from inside the app: a button that captures the screen, the page, the device and recent errors with your note, so a bug report arrives ready to fix |  |
 | S-59 Relabel non-district LEAs (ESDs, technical colleges, charters, tribal compacts) with their own sub |  |  | S-103 Review fixes: times read right, errors say why, one thread per post, live updates survive a sleeping phone, a lighter first load |  |
-| S-60 Render a funder's stated priorities as their quoted words, not our copy |  |  |  |  |
+| S-60 Render a funder's stated priorities as their quoted words, not our copy |  |  | S-112 A staging copy of the site: every merge goes there first, production is one button |  |
 | S-61 Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) |  |  |  |  |
 | S-63 Decide whether WSU branch campuses become their own rows, as UW's are |  |  |  |  |
 | S-64 A separate email-domain field for confirming, where it differs from the website host |  |  |  |  |
@@ -306,7 +306,7 @@ Corporate giving and volunteering platforms, once there's something to integrate
 - **S-58** Corporate giving platforms (Benevity and others), subject to APIs and agreements · Backlog
 - **S-89** A paid tier for businesses (nonprofits stay free) · Backlog
 
-### I-6 A working alpha for invited nonprofits · In progress · 2/42 stories done
+### I-6 A working alpha for invited nonprofits · In progress · 2/43 stories done
 
 Real organizations post real needs and offers, start threads, and make golden threads, on the map, on any phone or desktop. Target: live Sep 30.
 
@@ -370,7 +370,7 @@ A real base map, every nonprofit as a dot, clusters, and threads that drift and 
 - **S-87** Wish list: search the map for an organization or a place, and fly to it · Backlog
 - **S-105** Map legend: what gold, green, dashed and dotted mean, and what a golden thread is · Backlog · _Full review, 2026-09-28_
 
-#### E-26 Live and invited · In progress · 0/11
+#### E-26 Live and invited · In progress · 0/12
 
 Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
 
@@ -395,4 +395,10 @@ Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
 - **S-100** Alpha numbers on the Admin page: posts, threads started and accepted, golden threads, time to first message · Backlog · _Alpha review, 2026-09-24_
 - **S-101** Demo keeps its posts until you leave it, not just until a reload · Backlog · _Alpha review, 2026-09-24_
 - **S-102** Check on a real phone: iPhone Safari and Android Chrome, the map most of all · Backlog · _Alpha review, 2026-09-24_
+- **S-112** A staging copy of the site: every merge goes there first, production is one button · In review · _Taylor, 2026-09-28: set up staging_
+    - [x] T-200 Staging App Service on the same plan, its own free database, same settings
+    - [x] T-201 GitHub deploys every merge to staging and ships the same files to production on a button, signing in to Azure without a stored password
+    - [x] T-202 A small Staging tag on the staging copy
+    - [ ] T-203 Taylor adds the staging address to the Google sign-in client (Ready)
+    - [ ] T-204 Decide whether production gets WebSockets on (staging has them; production falls back to slower polling) (Ready)
 

@@ -1,0 +1,68 @@
+# Every merge to main builds once and goes to staging. "Deploy to production" ships these same files.
+name: Deploy to staging
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # sign in to Azure with GitHub's token; no password is stored
+  contents: read
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Build the app
+        working-directory: app
+        run: npm ci && npm run build
+      - name: Test the API
+        run: dotnet test tests/WaNonprofitConnect.Tests/WaNonprofitConnect.Tests.csproj -c Release
+      - name: Publish the API with the app inside
+        run: dotnet publish src/WaNonprofitConnect.Api -c Release -o publish
+      - name: Zip
+        run: cd publish && zip -qr ../site.zip .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: site.zip
+          retention-days: 30
+
+  staging:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://helpbook-staging.azurewebsites.net
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy
+        run: az webapp deploy -g helpbook-alpha -n helpbook-staging --src-path site.zip --type zip --async false
+      - name: Health check
+        run: |
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' https://helpbook-staging.azurewebsites.net/health || true)
+            echo "health: $code"; [ "$code" = "200" ] && exit 0; sleep 10
+          done
+          exit 1
