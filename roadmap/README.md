@@ -62,7 +62,6 @@ Generated from `roadmap.json` on 2026-09-28. Don't edit this file; run `node scr
 | S-107 After sign-in, go back to the link you opened (a shared post, an invite) |  |  |  |  |
 | S-108 Who they serve starts empty while the board is small, so the alpha organizations see each other |  |  |  |  |
 | S-109 Copy that needs a brief: the message box on an offer, "Ask a member to invite you", why Urgent is greyed out, server error sentences |  |  |  |  |
-| S-110 Admins can walk the front door again: a demo that starts as a new organization at the invite code |  |  |  |  |
 
 ## Roadmap
 
@@ -307,7 +306,7 @@ Corporate giving and volunteering platforms, once there's something to integrate
 - **S-58** Corporate giving platforms (Benevity and others), subject to APIs and agreements · Backlog
 - **S-89** A paid tier for businesses (nonprofits stay free) · Backlog
 
-### I-6 A working alpha for invited nonprofits · In progress · 2/43 stories done
+### I-6 A working alpha for invited nonprofits · In progress · 2/42 stories done
 
 Real organizations post real needs and offers, start threads, and make golden threads, on the map, on any phone or desktop. Target: live Sep 30.
 
@@ -371,7 +370,7 @@ A real base map, every nonprofit as a dot, clusters, and threads that drift and 
 - **S-87** Wish list: search the map for an organization or a place, and fly to it · Backlog
 - **S-105** Map legend: what gold, green, dashed and dotted mean, and what a golden thread is · Backlog · _Full review, 2026-09-28_
 
-#### E-26 Live and invited · In progress · 0/12
+#### E-26 Live and invited · In progress · 0/11
 
 Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
 
@@ -396,5 +395,4 @@ Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
 - **S-100** Alpha numbers on the Admin page: posts, threads started and accepted, golden threads, time to first message · Backlog · _Alpha review, 2026-09-24_
 - **S-101** Demo keeps its posts until you leave it, not just until a reload · Backlog · _Alpha review, 2026-09-24_
 - **S-102** Check on a real phone: iPhone Safari and Android Chrome, the map most of all · Backlog · _Alpha review, 2026-09-24_
-- **S-110** Admins can walk the front door again: a demo that starts as a new organization at the invite code · Backlog · _Taylor, 2026-09-28: how do I reset the demo as a new user_
 
