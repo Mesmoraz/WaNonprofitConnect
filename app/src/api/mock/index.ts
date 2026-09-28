@@ -1,6 +1,6 @@
 // In-memory fake of the /api/v1 contract, for `npm run dev:mock`. Same routes, same shapes, same errors.
 // The signed-in person survives a reload (localStorage); everything else resets to the seed.
-import { ApiError, DEMO, httpTransport, type Transport } from '../client'
+import { ApiError, DEMO, DEMO_STATE_KEY, httpTransport, type Transport } from '../client'
 import type {
   Claim, Invite, Listing, ListingDetail, MapData, MapPoint, Me, Message, NewListing, NewThread, OrgPage, OrgSummary,
   Thread, ThreadAction, ThreadDetail, ThreadStatus,
@@ -43,6 +43,26 @@ const filters: Record<string, string[]> = {}
 
 let nextId = 1000
 const id = () => ++nextId
+
+// In the demo, everything done survives a reload until you leave it (dev:mock starts fresh every time).
+interface Saved { listings: ListingRow[]; threads: ThreadRow[]; messages: Message[]; invites: Invite[]; claims: Claim[]; filters: Record<string, string[]>; nextId: number; members: string[] }
+function restore() {
+  if (!DEMO) return
+  try {
+    const raw = localStorage.getItem(DEMO_STATE_KEY); if (!raw) return
+    const s = JSON.parse(raw) as Saved
+    listings.splice(0, listings.length, ...s.listings); threads.splice(0, threads.length, ...s.threads)
+    messages.splice(0, messages.length, ...s.messages); invites.splice(0, invites.length, ...s.invites)
+    claims.splice(0, claims.length, ...s.claims); Object.assign(filters, s.filters); nextId = s.nextId
+    for (const o of orgs) o.isMember = s.members.includes(o.ein)
+  } catch { /* a bad save starts the demo over */ }
+}
+function persist() {
+  if (!DEMO) return
+  const s: Saved = { listings, threads, messages, invites, claims, filters, nextId, members: orgs.filter(o => o.isMember).map(o => o.ein) }
+  try { localStorage.setItem(DEMO_STATE_KEY, JSON.stringify(s)) } catch { /* private mode: this visit only */ }
+}
+restore()
 
 const SESSION_KEY = 'mock.session'
 function loadSession(): Me | null {
@@ -305,7 +325,7 @@ export const mockTransport: Transport = async (method, path, body) => {
   for (const [m, re, handler] of routes) {
     if (m !== method) continue
     const match = sub.match(re)
-    if (match) return structuredClone(await handler(match, body ?? {}, url.searchParams))
+    if (match) { const out = structuredClone(await handler(match, body ?? {}, url.searchParams)); persist(); return out }
   }
   return fail(404, `No mock route for ${method} ${url.pathname}`)
 }
