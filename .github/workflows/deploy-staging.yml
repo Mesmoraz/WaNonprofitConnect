@@ -1,0 +1,115 @@
+# Every pull request is built and tested (a check on the PR). Every merge to main builds once and goes to
+# staging. A pull request with the label "staging" goes to staging too, and again on each new push, until
+# something else takes its place. "Deploy to production" ships the files of the last main deploy.
+name: Deploy to staging
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write        # sign in to Azure with GitHub's token; no password is stored
+  contents: read
+  pull-requests: write   # comment on the PR that went to staging, and move the label
+
+concurrency:
+  group: build-${{ github.event_name == 'pull_request' && github.ref || 'main' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    # Adding any label other than "staging" doesn't need a new build.
+    if: github.event.action != 'labeled' || github.event.label.name == 'staging'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Say which pull request this build is
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          TITLE: ${{ github.event.pull_request.title }}
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          # A merge to main: the pull request that merged this commit, if there was one.
+          if [ -z "$PR" ]; then
+            PR=$(gh api "repos/$GITHUB_REPOSITORY/commits/$SHA/pulls" --jq '.[0].number // empty' 2>/dev/null || true)
+            [ -n "$PR" ] && TITLE=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR" --jq .title 2>/dev/null || true)
+          fi
+          echo "VITE_BUILD_PR=$PR" >> "$GITHUB_ENV"
+          # GITHUB_ENV takes one line per value.
+          TITLE=$(printf '%s' "$TITLE" | tr -s '\r\n' ' ' | cut -c1-200)
+          echo "VITE_BUILD_TITLE=$TITLE" >> "$GITHUB_ENV"
+          echo "VITE_BUILD_SHA=$SHA" >> "$GITHUB_ENV"
+          echo "VITE_BUILD_REPO=$GITHUB_REPOSITORY" >> "$GITHUB_ENV"
+          echo "Build of ${PR:+PR #$PR, }commit ${SHA:0:7}"
+      - name: Build the app
+        working-directory: app
+        run: npm ci && npm run build
+      - name: Test the API
+        run: dotnet test tests/WaNonprofitConnect.Tests/WaNonprofitConnect.Tests.csproj -c Release
+      - name: Publish the API with the app inside
+        run: dotnet publish src/WaNonprofitConnect.Api -c Release -o publish
+      - name: Zip
+        run: cd publish && zip -qr ../site.zip .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: site.zip
+          retention-days: 30
+
+  staging:
+    needs: build
+    # main always; a pull request only while it carries the "staging" label.
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'staging')
+    runs-on: ubuntu-latest
+    # One deploy to the staging site at a time, whoever it's for.
+    concurrency:
+      group: staging-site
+      cancel-in-progress: false
+    environment:
+      name: staging
+      url: https://helpbook-staging.azurewebsites.net
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy
+        run: az webapp deploy -g helpbook-alpha -n helpbook-staging --src-path site.zip --type zip --async false
+      - name: Health check
+        run: |
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' https://helpbook-staging.azurewebsites.net/health || true)
+            echo "health: $code"; [ "$code" = "200" ] && exit 0; sleep 10
+          done
+          exit 1
+      - name: Say what's on staging now
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          # The "staging" label means "this is what's on staging", so only one PR keeps it.
+          for n in $(gh pr list -R "$GITHUB_REPOSITORY" --label staging --json number --jq '.[].number'); do
+            [ "$n" = "$PR" ] && continue
+            gh pr edit "$n" -R "$GITHUB_REPOSITORY" --remove-label staging
+            gh pr comment "$n" -R "$GITHUB_REPOSITORY" --body "Staging now has $([ -n "$PR" ] && echo "#$PR" || echo "\`main\`") instead of this PR. Add the **staging** label again to put this back."
+          done
+          if [ -n "$PR" ]; then
+            gh pr comment "$PR" -R "$GITHUB_REPOSITORY" --body "On staging: https://helpbook-staging.azurewebsites.net (commit ${SHA:0:7}). It stays there until another PR is labeled **staging** or something merges to \`main\`."
+          fi

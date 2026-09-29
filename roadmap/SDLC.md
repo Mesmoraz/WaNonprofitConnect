@@ -37,7 +37,7 @@ Every story that touches what a person sees goes through the same loop, and no s
 2. **Approve.** Taylor edits or approves line by line. Nothing is built before this.
 3. **Build.** Exactly what was approved. Anything extra that was needed to make it true (a bug found, a missing style) is called out by name when shipping.
 4. **Check.** Phone width, real taps and typing, console clean. Tests pass (`node scripts/test-prototype.js`).
-5. **Ship.** Open a pull request (see below) with the change log entry and test cases in its description. Set the story to `review`. Taylor's OK merges it, and merging moves the story to `done`.
+5. **Ship.** Open a pull request (see below) with the change log entry and test cases in its description. For a screen change, label it **staging** so Taylor can run the phone test cases on https://helpbook-staging.azurewebsites.net before merging (`docs/OPERATIONS.md`). Set the story to `review`. Taylor's OK merges it, and merging moves the story to `done`.
 
 A round fits in one sitting. If it doesn't, the story is too big: split it.
 
