@@ -12,7 +12,8 @@ const env = import.meta.env
 const repo = (env.VITE_BUILD_REPO as string | undefined) || ''
 const pr = (env.VITE_BUILD_PR as string | undefined) || ''
 const sha = (env.VITE_BUILD_SHA as string | undefined) || ''
+const title = (env.VITE_BUILD_TITLE as string | undefined) || ''
 export const BUILD = {
-  label: pr ? `PR #${pr}` : sha ? sha.slice(0, 7) : '',
+  label: pr ? `#${pr}${title ? ` ${title}` : ''}` : sha ? sha.slice(0, 7) : '',
   href: !repo ? '' : pr ? `https://github.com/${repo}/pull/${pr}` : sha ? `https://github.com/${repo}/commit/${sha}` : '',
 }

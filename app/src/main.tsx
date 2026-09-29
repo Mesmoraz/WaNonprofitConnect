@@ -39,7 +39,7 @@ createRoot(document.getElementById('root')!).render(
           </Crashed>
           <FeedbackHost />
           {STAGING && (BUILD.href
-            ? <a className="staging-flag" href={BUILD.href} target="_blank" rel="noreferrer">Staging · {BUILD.label}</a>
+            ? <a className="staging-flag" href={BUILD.href} target="_blank" rel="noreferrer" title={BUILD.label}>Staging · {BUILD.label}</a>
             : <div className="staging-flag" aria-hidden>Staging</div>)}
         </ToastProvider>
       </BrowserRouter>
