@@ -6,7 +6,7 @@ import { ApiError, keys } from './api'
 import { App } from './App'
 import { Crashed } from './shell/Crashed'
 import { FeedbackHost, PageTrail } from './shell/Feedback'
-import { STAGING } from './lib/env'
+import { BUILD, STAGING } from './lib/env'
 import { watchForErrors } from './lib/report'
 import { ToastProvider } from './shell/Toast'
 import './styles/tokens.css'
@@ -38,7 +38,9 @@ createRoot(document.getElementById('root')!).render(
             <App />
           </Crashed>
           <FeedbackHost />
-          {STAGING && <div className="staging-flag" aria-hidden>Staging</div>}
+          {STAGING && (BUILD.href
+            ? <a className="staging-flag" href={BUILD.href} target="_blank" rel="noreferrer">Staging · {BUILD.label}</a>
+            : <div className="staging-flag" aria-hidden>Staging</div>)}
         </ToastProvider>
       </BrowserRouter>
     </QueryClientProvider>
