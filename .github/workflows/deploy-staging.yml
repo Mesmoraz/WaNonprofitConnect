@@ -1,23 +1,28 @@
 # Every pull request is built and tested (a check on the PR). Every merge to main builds once and goes to
-# staging. "Deploy to production" ships those same files.
+# staging. A pull request with the label "staging" goes to staging too, and again on each new push, until
+# something else takes its place. "Deploy to production" ships the files of the last main deploy.
 name: Deploy to staging
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled]
   push:
     branches: [main]
   workflow_dispatch:
 
 permissions:
-  id-token: write   # sign in to Azure with GitHub's token; no password is stored
+  id-token: write        # sign in to Azure with GitHub's token; no password is stored
   contents: read
+  pull-requests: write   # comment on the PR that went to staging, and move the label
 
 concurrency:
-  group: deploy-staging-${{ github.event_name == 'pull_request' && github.ref || 'main' }}
+  group: build-${{ github.event_name == 'pull_request' && github.ref || 'main' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
+    # Adding any label other than "staging" doesn't need a new build.
+    if: github.event.action != 'labeled' || github.event.label.name == 'staging'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -46,8 +51,13 @@ jobs:
 
   staging:
     needs: build
-    if: github.event_name != 'pull_request'
+    # main always; a pull request only while it carries the "staging" label.
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'staging')
     runs-on: ubuntu-latest
+    # One deploy to the staging site at a time, whoever it's for.
+    concurrency:
+      group: staging-site
+      cancel-in-progress: false
     environment:
       name: staging
       url: https://helpbook-staging.azurewebsites.net
@@ -69,3 +79,18 @@ jobs:
             echo "health: $code"; [ "$code" = "200" ] && exit 0; sleep 10
           done
           exit 1
+      - name: Say what's on staging now
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          # The "staging" label means "this is what's on staging", so only one PR keeps it.
+          for n in $(gh pr list -R "$GITHUB_REPOSITORY" --label staging --json number --jq '.[].number'); do
+            [ "$n" = "$PR" ] && continue
+            gh pr edit "$n" -R "$GITHUB_REPOSITORY" --remove-label staging
+            gh pr comment "$n" -R "$GITHUB_REPOSITORY" --body "Staging now has $([ -n "$PR" ] && echo "#$PR" || echo "\`main\`") instead of this PR. Add the **staging** label again to put this back."
+          done
+          if [ -n "$PR" ]; then
+            gh pr comment "$PR" -R "$GITHUB_REPOSITORY" --body "On staging: https://helpbook-staging.azurewebsites.net (commit ${SHA:0:7}). It stays there until another PR is labeled **staging** or something merges to \`main\`."
+          fi

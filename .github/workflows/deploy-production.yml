@@ -1,4 +1,5 @@
-# Press "Run workflow" in the Actions tab. Ships exactly the files the last successful staging deploy used.
+# Press "Run workflow" in the Actions tab. Ships exactly the files of the last successful deploy of main to
+# staging. A pull request that is on staging never goes to production; only merged code does.
 name: Deploy to production
 
 on:

@@ -13,6 +13,7 @@ Newest first. Every shipped change lands here with test cases Taylor can run on 
 - **Staging** is at https://helpbook-staging.azurewebsites.net: the same app and settings as the real site, on the same Azure plan (no extra cost), with its own database, so nothing done there touches real organizations. A small orange "Staging" tag sits at the top, and the tab title starts with "Staging ·".
 - **Every merge to `main` now goes to staging by itself.** GitHub builds once, runs the API tests, deploys, and checks the site answers. Watch it under the repo's Actions tab.
 - **Production only changes when you press Actions → Deploy to production → Run workflow.** It ships the exact files that are on staging.
+- **Check a PR on staging before merging it:** add the label **staging** to the PR. GitHub puts that PR on staging, comments the link, and updates it on each new push. One PR at a time: labeling another, or any merge to `main`, takes staging back and says so on the PR.
 - GitHub signs in to Azure with a trust link, not a stored password. It can only deploy the two sites, and only from `main`.
 - **WebSockets are on in production** (Taylor, Sep 28). Live messages used to fall back to slower polling there.
 - `scripts/deploy-azure.ps1` still works by hand. It now goes to staging unless you add `-App helpbook-alpha`.

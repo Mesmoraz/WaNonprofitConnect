@@ -9,7 +9,7 @@ Internal. How to deploy, see what went wrong, and get data back. The live site i
 | Address | https://helpbook-staging.azurewebsites.net | https://helpbook-alpha.azurewebsites.net |
 | App Service | `helpbook-staging` | `helpbook-alpha` |
 | Database | `helpbook-staging-db` (its own; test data only) | `helpbook-alpha-db` |
-| Gets a new version | Every merge to `main`, by itself | Only when someone presses **Deploy to production** |
+| Gets a new version | Every merge to `main`, by itself, or a pull request labeled `staging` | Only when someone presses **Deploy to production** |
 
 Both run on the same plan (`helpbook-alpha-plan`, B1), so staging costs nothing extra; both databases are on the free serverless offer. Staging shows a small "Staging" tag at the top and in the tab title. Everything else (settings, Google client, admins) is the same.
 
@@ -17,6 +17,10 @@ Both run on the same plan (`helpbook-alpha-plan`, B1), so staging costs nothing 
 
 1. **Merge a pull request.** GitHub's *Deploy to staging* workflow builds once, runs the API tests, and deploys to staging (about 5 minutes). Watch it in the repo's **Actions** tab.
 2. **Check it on staging**, on a phone, using the pull request's test cases.
+
+   To check a pull request *before* merging it, add the label **staging** to it. It deploys that branch (merged with the latest `main`) to staging, comments the link on the PR, and redeploys on each new push. Only one PR has the label at a time: labeling another, or merging anything to `main`, takes staging back and removes the label with a comment. A PR on staging never goes to production.
+
+   Careful with a PR that changes the database (a new migration): staging's database keeps the change even if the PR is closed. The PR description says so when it happens; reset staging's database before putting `main` back if it does.
 3. **Actions → Deploy to production → Run workflow.** It ships the exact files the last successful staging deploy used, then checks `/health`.
 
 GitHub signs in to Azure as the managed identity `helpbook-github-deploy`, which trusts only this repo's `main` branch and its `staging` and `production` environments, and can only deploy App Services in the `helpbook-alpha` resource group (Website Contributor). No password or key is stored in GitHub; the ids are repository variables (`AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`).
