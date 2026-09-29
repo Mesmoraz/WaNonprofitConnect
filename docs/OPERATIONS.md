@@ -23,7 +23,7 @@ Both run on the same plan (`helpbook-alpha-plan`, B1), so staging costs nothing 
    Careful with a PR that changes the database (a new migration): staging's database keeps the change even if the PR is closed. The PR description says so when it happens; reset staging's database before putting `main` back if it does.
 3. **Actions → Deploy to production → Run workflow.** It ships the exact files the last successful staging deploy used, then checks `/health`.
 
-GitHub signs in to Azure as the managed identity `helpbook-github-deploy`, which trusts only this repo's `main` branch and its `staging` and `production` environments, and can only deploy App Services in the `helpbook-alpha` resource group (Website Contributor). No password or key is stored in GitHub; the ids are repository variables (`AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`).
+GitHub signs in to Azure as the managed identity `helpbook-github-deploy`, which trusts only this repo's `main` branch and its `staging` and `production` environments, and can only deploy App Services in the `helpbook-alpha` resource group (Website Contributor). GitHub presents the repo by its permanent ids (`repo:Mesmoraz@93046683/WaNonprofitConnect@1393798469:environment:staging`), so the identity's federated credentials use that form; if the repo is renamed or moved, they still match, but a new repo needs new ones. No password or key is stored in GitHub; the ids are repository variables (`AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`).
 
 By hand, if GitHub is down:
 
