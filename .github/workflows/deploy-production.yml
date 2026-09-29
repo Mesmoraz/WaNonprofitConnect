@@ -1,0 +1,51 @@
+# Press "Run workflow" in the Actions tab. Ships exactly the files of the last successful deploy of main to
+# staging. A pull request that is on staging never goes to production; only merged code does.
+name: Deploy to production
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+  actions: read     # to find the last staging build and download its files
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  production:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://helpbook-alpha.azurewebsites.net
+    steps:
+      - name: Find the last successful staging deploy
+        id: last
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          run=$(gh run list -R "$GITHUB_REPOSITORY" --workflow deploy-staging.yml --branch main --status success --limit 1 --json databaseId,headSha,displayTitle --jq '.[0]')
+          [ -n "$run" ] || { echo "No successful staging deploy yet."; exit 1; }
+          echo "id=$(echo "$run" | jq -r .databaseId)" >> "$GITHUB_OUTPUT"
+          echo "Shipping $(echo "$run" | jq -r .headSha): $(echo "$run" | jq -r .displayTitle)" | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+          run-id: ${{ steps.last.outputs.id }}
+          github-token: ${{ github.token }}
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy
+        run: az webapp deploy -g helpbook-alpha -n helpbook-alpha --src-path site.zip --type zip --async false
+      - name: Health check
+        run: |
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' https://helpbook-alpha.azurewebsites.net/health || true)
+            echo "health: $code"; [ "$code" = "200" ] && exit 0; sleep 10
+          done
+          exit 1

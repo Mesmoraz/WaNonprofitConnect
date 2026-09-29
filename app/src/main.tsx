@@ -6,12 +6,14 @@ import { ApiError, keys } from './api'
 import { App } from './App'
 import { Crashed } from './shell/Crashed'
 import { FeedbackHost, PageTrail } from './shell/Feedback'
+import { BUILD, STAGING } from './lib/env'
 import { watchForErrors } from './lib/report'
 import { ToastProvider } from './shell/Toast'
 import './styles/tokens.css'
 import './styles/app.css'
 
 watchForErrors()
+if (STAGING) document.title = `Staging · ${document.title}`
 
 const queryClient: QueryClient = new QueryClient({
   // A 401 anywhere means the session ended: forget Me, and the route guard sends you to sign up.
@@ -36,6 +38,9 @@ createRoot(document.getElementById('root')!).render(
             <App />
           </Crashed>
           <FeedbackHost />
+          {STAGING && (BUILD.href
+            ? <a className="staging-flag" href={BUILD.href} target="_blank" rel="noreferrer" title={BUILD.label}>Staging · {BUILD.label}</a>
+            : <div className="staging-flag" aria-hidden>Staging</div>)}
         </ToastProvider>
       </BrowserRouter>
     </QueryClientProvider>

@@ -1602,6 +1602,42 @@
       "tasks": []
     },
     {
+      "id": "S-112",
+      "epic": "E-26",
+      "lane": "backend",
+      "title": "A staging copy of the site: every merge goes there first, production is one button",
+      "status": "review",
+      "added": "2026-09-28",
+      "source": "Taylor, 2026-09-28: set up staging",
+      "tasks": [
+        {
+          "id": "T-200",
+          "title": "Staging App Service on the same plan, its own free database, same settings",
+          "status": "done"
+        },
+        {
+          "id": "T-201",
+          "title": "GitHub deploys every merge to staging and ships the same files to production on a button, signing in to Azure without a stored password",
+          "status": "done"
+        },
+        {
+          "id": "T-202",
+          "title": "A small Staging tag on the staging copy",
+          "status": "done"
+        },
+        {
+          "id": "T-203",
+          "title": "Taylor adds the staging address to the Google sign-in client",
+          "status": "ready"
+        },
+        {
+          "id": "T-204",
+          "title": "WebSockets on in production (Taylor, Sep 28), so live messages stop falling back to polling",
+          "status": "done"
+        }
+      ]
+    },
+    {
       "id": "S-110",
       "epic": "E-26",
       "lane": "app",
