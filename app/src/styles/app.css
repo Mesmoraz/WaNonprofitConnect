@@ -98,3 +98,16 @@ textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; 
 .btn.danger { background: var(--warn); border-color: var(--warn); color: var(--paper); }
 .btn.danger-outline { background: var(--warn-bg); border-color: var(--warn); color: var(--warn); gap: 8px; }
 .btn.danger-outline .x { font-size: 18px; line-height: 1; }
+
+/* On the staging copy only: a small tag at the top, so it's never mistaken for the real site. When the build knows
+   its pull request, the tag links to it; otherwise taps pass through. */
+.staging-flag {
+  position: fixed; top: calc(2px + var(--safe-top)); left: 50%; transform: translateX(-50%); z-index: 1000; pointer-events: none;
+  text-decoration: none; white-space: nowrap;
+  background: var(--need); color: var(--paper); font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+  padding: 1px 8px; border-radius: 999px; opacity: 0.9;
+}
+a.staging-flag, a.staging-flag:visited, a.staging-flag:hover {
+  pointer-events: auto; font-size: 11px; padding: 3px 10px; color: var(--paper); text-decoration: none;
+  max-width: min(360px, calc(100vw - 32px)); overflow: hidden; text-overflow: ellipsis;
+}
