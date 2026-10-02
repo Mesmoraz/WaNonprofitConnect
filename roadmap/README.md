@@ -6,8 +6,8 @@ Generated from `roadmap.json` on 2026-09-28. Don't edit this file; run `node scr
 
 | Backlog | Ready | In progress | In review | Done |
 | --- | --- | --- | --- | --- |
-| S-13 Foundations flagged from the IRS list's foundation code |  | S-77 Privacy and terms pages | S-17 Board: kind-of-help chips, fair ranking, directory search at the top | S-1 Mission statement saved and pointed at from the repo |
-| S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder ⛔ |  | S-79 Invite message drafted by Claude, sent by the co-founder to his contacts | S-18 A need or offer: who it's from, how it fits you, I can help / I need this | S-2 Voice sheet: ten rules and a words list |
+| S-13 Foundations flagged from the IRS list's foundation code |  | S-79 Invite message drafted by Claude, sent by the co-founder to his contacts | S-17 Board: kind-of-help chips, fair ranking, directory search at the top | S-1 Mission statement saved and pointed at from the repo |
+| S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder ⛔ |  |  | S-18 A need or offer: who it's from, how it fits you, I can help / I need this | S-2 Voice sheet: ten rules and a words list |
 | S-23 Directory: all six kinds, filter by kind, cause, city |  |  | S-19 Post: kind of help first, then the rest | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
 | S-24 Profile: one layout, six shapes ⛔ |  |  | S-20 Thread and inbox: accept, message, mark done, golden | S-4 App map: five tabs, sixteen screens, three stories, order of work |
 | S-25 Map: fewer controls at once ⛔ |  |  | S-22 Grants tab shows only for confirmed organizations | S-5 Sign up: one green button, email behind a link |
@@ -28,13 +28,13 @@ Generated from `roadmap.json` on 2026-09-28. Don't edit this file; run `node scr
 | S-47 Grant model with the eight filter fields and a hand-off URL |  |  | S-74 Map data: ZIP centroids from the Census gazetteer, map and points endpoints | S-54 Roadmap page generated from roadmap.json |
 | S-50 Confirm methods per kind, as designed in the taxonomy |  |  | S-75 Hosted on Azure: API, hub and app from one address, no domain needed | S-57 React, with MapLibre and deck.gl for the map; Capacitor for store apps in Beta |
 | S-51 Grants gated to confirmed organizations |  |  | S-76 Installable to the home screen; phone, tablet and desktop layouts | S-62 Washington higher education: universities, community and technical colleges, private nonprofits |
-| S-52 Rate limits, reporting, and a review queue for posts |  |  | S-84 Map: steady cursor, pins grow on hover, a tapped thread shows both posts, a tapped organization opens its page | S-65 Diagnose held-backspace on Android with docs/keytest.html and fix the real cause |
-| S-55 Replace Name TBD when the name goes public ⛔ |  |  | S-88 Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox | S-80 The name lives in one file, so it can change in minutes |
-| S-56 File for 501(c)(3) status |  |  | S-91 Error logging and database backups, so a problem is seen and nothing is lost |  |
-| S-58 Corporate giving platforms (Benevity and others), subject to APIs and agreements |  |  | S-93 Send feedback from inside the app: a button that captures the screen, the page, the device and recent errors with your note, so a bug report arrives ready to fix |  |
-| S-59 Relabel non-district LEAs (ESDs, technical colleges, charters, tribal compacts) with their own sub |  |  | S-103 Review fixes: times read right, errors say why, one thread per post, live updates survive a sleeping phone, a lighter first load |  |
-| S-60 Render a funder's stated priorities as their quoted words, not our copy |  |  | S-112 A staging copy of the site: every merge goes there first, production is one button |  |
-| S-61 Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) |  |  |  |  |
+| S-52 Rate limits, reporting, and a review queue for posts |  |  | S-77 Privacy and terms pages | S-65 Diagnose held-backspace on Android with docs/keytest.html and fix the real cause |
+| S-55 Replace Name TBD when the name goes public ⛔ |  |  | S-84 Map: steady cursor, pins grow on hover, a tapped thread shows both posts, a tapped organization opens its page | S-80 The name lives in one file, so it can change in minutes |
+| S-56 File for 501(c)(3) status |  |  | S-88 Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox |  |
+| S-58 Corporate giving platforms (Benevity and others), subject to APIs and agreements |  |  | S-91 Error logging and database backups, so a problem is seen and nothing is lost |  |
+| S-59 Relabel non-district LEAs (ESDs, technical colleges, charters, tribal compacts) with their own sub |  |  | S-93 Send feedback from inside the app: a button that captures the screen, the page, the device and recent errors with your note, so a bug report arrives ready to fix |  |
+| S-60 Render a funder's stated priorities as their quoted words, not our copy |  |  | S-103 Review fixes: times read right, errors say why, one thread per post, live updates survive a sleeping phone, a lighter first load |  |
+| S-61 Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) |  |  | S-112 A staging copy of the site: every merge goes there first, production is one button |  |
 | S-63 Decide whether WSU branch campuses become their own rows, as UW's are |  |  |  |  |
 | S-64 A separate email-domain field for confirming, where it differs from the website host |  |  |  |  |
 | S-78 Recruit 8 to 12 organizations in two or three clusters |  |  |  |  |
@@ -46,7 +46,7 @@ Generated from `roadmap.json` on 2026-09-28. Don't edit this file; run `node scr
 | S-87 Wish list: search the map for an organization or a place, and fly to it |  |  |  |  |
 | S-89 A paid tier for businesses (nonprofits stay free) |  |  |  |  |
 | S-90 Cost to consider: a database that doesn't pause (Azure SQL Basic, about $5 a month) so the first visit after a quiet hour isn't slow |  |  |  |  |
-| S-92 Google sign-in out of Testing, so invited organizations don't need to be added one by one (needs the privacy and terms pages) |  |  |  |  |
+| S-92 Google sign-in out of Testing, so invited organizations don't need to be added one by one (needs the privacy and terms pages) ⛔ |  |  |  |  |
 | S-94 Tell people when something happens: approved, a new thread, a new message (email, or nudges by hand for the alpha) |  |  |  |  |
 | S-95 Members invite colleagues to their own organization |  |  |  |  |
 | S-96 A welcome after joining: post one need and one offer to start |  |  |  |  |
@@ -322,7 +322,7 @@ Sign in with Google; an invite code confirms you for one organization; anyone el
     - [ ] T-39 Question: OK to create an Azure Communication Services email resource (about a fraction of a cent per email)? (Ready)
     - [ ] T-40 Question: a one-time link by email, or a password? (Ready)
     - [ ] T-41 Brief the email sign-in screens for approval (Ready)
-- **S-92** Google sign-in out of Testing, so invited organizations don't need to be added one by one (needs the privacy and terms pages) · Backlog
+- **S-92** Google sign-in out of Testing, so invited organizations don't need to be added one by one (needs the privacy and terms pages) · Backlog · ⛔ waiting on T-53 (the co-founder): the privacy and terms wording
 - **S-95** Members invite colleagues to their own organization · Backlog · _Alpha review, 2026-09-24_
 - **S-96** A welcome after joining: post one need and one offer to start · Backlog · _Alpha review, 2026-09-24_
 - **S-107** After sign-in, go back to the link you opened (a shared post, an invite) · Backlog · _Full review, 2026-09-28_
@@ -378,9 +378,9 @@ Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
     - [x] T-32 Google client ID in the app build and in App Service
     - [ ] T-57 Browser security headers (HSTS, no framing, no sniffing): none are sent today (Ready)
 - **S-76** Installable to the home screen; phone, tablet and desktop layouts · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
-- **S-77** Privacy and terms pages · In progress · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
+- **S-77** Privacy and terms pages · In review · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
     - [x] T-52 Draft both pages for approval: docs/PRIVACY-TERMS-DRAFT.md
-    - [ ] T-53 Taylor fills in: contact email, who runs it, reply time, and has a lawyer read before public launch (Ready)
+    - [ ] T-53 The co-founder owns the wording: contact email, who runs it, the date, the liability sentence, and a lawyer's read before the public launch. The pages keep their highlighted placeholders until then. (Ready)
     - [x] T-59 Pages built with draft language and highlighted placeholders (/privacy, /terms, sign-in line)
 - **S-78** Recruit 8 to 12 organizations in two or three clusters · Backlog · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
 - **S-79** Invite message drafted by Claude, sent by the co-founder to his contacts · In progress · _Taylor, 2026-09-23: skip prototyping, build a working alpha_
