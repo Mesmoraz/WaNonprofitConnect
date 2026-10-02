@@ -116,4 +116,6 @@ export const SEED_INVITES: Record<string, string> = {
   BALLARD: '911428805',
   TREEHOUSE: '911425676',
   HARVEST: '910826037',
+  // Nothing posted yet: the demo's "new organization" starts here.
+  RAINIER: '911500768',
 }

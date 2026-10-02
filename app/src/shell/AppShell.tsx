@@ -18,7 +18,7 @@ export function AppShell() {
       <div className="app-brand"><NavLink to="/" className="logo">{BRAND.name}</NavLink></div>
       <div className="app-who"><WhoButton /></div>
       <main className="app-content" id="content">
-        {DEMO && <p className="demo demo-bar">Demo: sample organizations. Nothing here is saved. <button className="inline-link" onClick={leaveDemo}>Leave the demo</button></p>}
+        {DEMO && <p className="demo demo-bar">Demo: sample organizations. Only you see this. <button className="inline-link" onClick={leaveDemo}>Leave the demo</button></p>}
         <Outlet />
       </main>
       <nav className="tabs" aria-label="Main">

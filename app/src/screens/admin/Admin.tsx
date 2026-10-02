@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useActAs, useAdminClaims, useAdminFeedback, useFeedbackDone, useAdminInvites, useApproveClaim, useCreateInvite, useOrgs, useRejectClaim, type OrgSummary } from '../../api'
+import { startDemo, useActAs, useAdminClaims, useAdminFeedback, useFeedbackDone, useAdminInvites, useApproveClaim, useCreateInvite, useMe, useOrgs, useRejectClaim, type OrgSummary } from '../../api'
 import { useNavigate } from 'react-router-dom'
 import { cap } from '../../lib/words'
 import { Door } from '../../shell/Door'
@@ -26,6 +26,7 @@ export function Admin() {
   const { data: feedback = [] } = useAdminFeedback()
   const done = useFeedbackDone()
   const actAs = useActAs()
+  const { data: me } = useMe()
   const navigate = useNavigate()
   const approve = useApproveClaim()
   const reject = useRejectClaim()
@@ -54,6 +55,10 @@ export function Admin() {
   return (
     <Door back="/" who cta={<button className="btn primary" disabled={!pick || make.isPending} onClick={makeCode}>Make code</button>}>
       <h1 className="h">Admin</h1>
+
+      <div className="label">Try it as someone new</div>
+      <p className="hint">A demo that starts at the invite code. Nothing you do there reaches the real site.</p>
+      <button className="btn quiet" onClick={() => startDemo(me?.account.name ?? 'You', true)}>Try as a new organization</button>
 
       <div className="label">Invite codes</div>
       <label className="field-label" htmlFor="adminq">Find the organization</label>

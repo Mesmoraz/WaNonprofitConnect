@@ -43,7 +43,7 @@ export function FindYours() {
         <p className="empty">Nothing by that name. Try the EIN instead.</p>
         {MOCK && <p className="demo">Demo: only a few of Washington’s 35,361 organizations are loaded.</p>}
       </>}
-      {!term && MOCK && <p className="demo">Demo: try "Ballard Food".</p>}
+      {!term && MOCK && <p className="demo">Demo: try "West Seattle Food".</p>}
       {failed && <p className="error" role="alert">That didn’t work. Try again.</p>}
     </Door>
   )
