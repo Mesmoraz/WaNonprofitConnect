@@ -21,21 +21,33 @@ jobs:
       name: production
       url: https://helpbook-alpha.azurewebsites.net
     steps:
-      - name: Find the last successful staging deploy
+      # The production database pauses after an idle hour; a knock now wakes it while the files download.
+      - name: Wake the production site and its database
+        run: curl -s -o /dev/null -m 5 https://helpbook-alpha.azurewebsites.net/health || true
+      - name: Find the last successful staging deploy of main
         id: last
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          run=$(gh run list -R "$GITHUB_REPOSITORY" --workflow deploy-staging.yml --branch main --status success --limit 1 --json databaseId,headSha,displayTitle --jq '.[0]')
-          [ -n "$run" ] || { echo "No successful staging deploy yet."; exit 1; }
+          # Only a push to main: a pull request from a branch that happens to be called "main" doesn't count.
+          run=$(gh run list -R "$GITHUB_REPOSITORY" --workflow deploy-staging.yml --event push --branch main --status success --limit 1 --json databaseId,headSha,displayTitle --jq '.[0]')
+          [ -n "$run" ] || { echo "No successful staging deploy of main yet."; exit 1; }
+          sha=$(echo "$run" | jq -r .headSha)
+          # And the commit must really be on main: main is that commit, or is ahead of it.
+          status=$(gh api "repos/$GITHUB_REPOSITORY/compare/$sha...main" --jq .status)
+          case "$status" in
+            identical|ahead) ;;
+            *) echo "Commit $sha is not on main (compare says: $status). Not shipping it."; exit 1 ;;
+          esac
           echo "id=$(echo "$run" | jq -r .databaseId)" >> "$GITHUB_OUTPUT"
-          echo "Shipping $(echo "$run" | jq -r .headSha): $(echo "$run" | jq -r .displayTitle)" | tee -a "$GITHUB_STEP_SUMMARY"
-      - uses: actions/download-artifact@v4
+          echo "Shipping $sha: $(echo "$run" | jq -r .displayTitle)" | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/download-artifact@v8
         with:
           name: site
           run-id: ${{ steps.last.outputs.id }}
           github-token: ${{ github.token }}
-      - uses: azure/login@v2
+      # Production's own identity: it can deploy helpbook-alpha and nothing else (docs/OPERATIONS.md).
+      - uses: azure/login@v3
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}

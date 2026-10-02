@@ -1,67 +1,80 @@
-# Continuation brief — "Name TBD" (working title; formerly HelpBook)
+# Continuation brief
 
-Paste this into a new conversation to pick up where we left off. Last updated 2026-09-20.
+Paste this into a new conversation to pick up the work. Last updated 2026-10-02. The name people see lives only in
+`app/brand.json`; the public roadmap says "Name TBD".
 
 ## What this is
 
-A platform where Washington's 501(c)(3)s say what they **need** and what they **have**, get matched, connect, message, and hand off — plus businesses and community members who give. Public IRS data (35,361 WA 501c3s) is the org directory; nobody has to self-register to be found.
+A place where Washington's 501(c)(3)s say what they need and what they have, find each other, and hand things off.
+Public IRS data (about 35,000 WA 501(c)(3)s) is the directory, so nobody has to sign up to be found. The alpha is a
+real app: a React app (`app/`) served by a .NET 8 API (`src/`) on Azure, with SQL Server.
 
-Two artifacts exist, and both are deployed:
+## Where things are
 
-| Thing | Where | Notes |
-|---|---|---|
-| **Backend prototype** (.NET 8 API + CLI) | `C:\Projects\WaNonprofitConnect` (private GitHub repo `Mesmoraz/WaNonprofitConnect`, default branch `main`, changes by pull request) | Real IRS data loaded into SQL Server LocalDB; needs/offers exchange with scored matching, propose/accept/complete, private messaging, SignalR real-time; CLI `demo` and `watch`. 57 xUnit tests. |
-| **Clickable prototype + design brief + how-it-works** (static HTML) | `docs/helpbook-prototype.html`, `docs/helpbook-step2-design.html`, `docs/how-it-works.html` (hand-written, 7 hash-routed pages) in the same repo; published via `scripts/build-site.js` → `C:\Projects\helpbook-site` (public repo `Mesmoraz/helpbook-site`) → **https://mesmoraz.github.io/helpbook-site/** | Also mirrored as private claude.ai artifacts (prototype `14WxTqjyxp8hBrgXqyELN9`, design `Tev9dE62ksqfMLQLrqqXTv`). |
+| What | Where |
+|---|---|
+| Why we build it, and how every word reads | `docs/MISSION.md`, `docs/VOICE.md` (read both before any work; see `CLAUDE.md`) |
+| The alpha: scope, stack, API contract | `docs/ALPHA.md` (screen briefs in `docs/ALPHA-BRIEFS.md`) |
+| Deploying, logs, the sleeping database, backups | `docs/OPERATIONS.md` |
+| The roadmap and how work is tracked | `roadmap/SDLC.md` (rules), `roadmap/roadmap.json` (the source), `roadmap/CHANGELOG.md` |
+| Backend quick start and CLI | `README.md` at the repo root |
+| The old clickable prototype and design brief | `docs/helpbook-prototype.html`, `docs/helpbook-step2-design.html` (historical) |
 
-The person who gave Taylor the idea is the audience for the public site. Keep it phone-first.
+## How work flows
 
-## How to work on it
+1. **Every round is a branch and a pull request** on `Mesmoraz/WaNonprofitConnect`. Nothing goes straight to `main`;
+   Taylor merges. Parallel agents each use their own worktree off `origin/main`
+   (`git worktree add -b <branch> ../wt-<name> origin/main`), because the main checkout may be someone else's.
+2. **Brief, approve, build, check, ship** (`roadmap/SDLC.md`). Update the roadmap in the same round with
+   `node scripts/roadmap.js set <id> <status>`, and add a `roadmap/CHANGELOG.md` entry with numbered phone tests.
+3. **Checks on every pull request** (`.github/workflows/deploy-staging.yml`):
+   - `build`: installs, lints and builds the app, runs the API tests (`dotnet test`), and packs the site.
+   - `acceptance`: starts the real API on a fresh SQL Server, loads 13 real organizations from
+     `tests/acceptance/fixtures/`, and drives the app like a person on a phone (`app/e2e/*.spec.ts`, Playwright).
+     The job summary lists which roadmap stories have tests (`node scripts/acceptance.js`).
+4. **Staging**: every merge to `main` deploys to https://helpbook-staging.azurewebsites.net. A pull request labeled
+   `staging` goes there too, until something else takes its place.
+5. **Production**: Actions, then *Deploy to production*, then *Run workflow*. It ships the exact files of the last
+   staging deploy of `main` to https://helpbook-alpha.azurewebsites.net. Details in `docs/OPERATIONS.md`.
+
+## Local setup (Windows)
+
+Needs: .NET 8 SDK, SQL Server 2022 LocalDB, Git, GitHub CLI (signed in as Mesmoraz), and **Node 22.12 or newer**
+(`.nvmrc` says 22; `app/package.json` "engines" says `^20.19.0 || >=22.12.0`).
 
 ```powershell
-# backend
-cd C:\Projects\WaNonprofitConnect
-dotnet build WaNonprofitConnect.sln; dotnet test tests/WaNonprofitConnect.Tests/WaNonprofitConnect.Tests.csproj
-dotnet run --project src/WaNonprofitConnect.Api --launch-profile http     # http://localhost:5253, Swagger at /swagger
-dotnet run --project src/WaNonprofitConnect.Cli -- demo                     # end-to-end story via the API
-dotnet run --project src/WaNonprofitConnect.Cli -- watch --as 581735531     # live SignalR feed
+# the API on http://localhost:5253 (Swagger at /swagger); it migrates the database itself
+dotnet run --project src/WaNonprofitConnect.Api --launch-profile http
+dotnet test tests/WaNonprofitConnect.Tests/WaNonprofitConnect.Tests.csproj
 
-# static prototype: edit docs/*.html, then
-node scripts/test-prototype.js          # 18 headless checks (story via Play and by hand)
-node scripts/build-site.js              # wraps pages as full HTML docs into ../helpbook-site
-cd ..\helpbook-site; git add -A; git commit -m "..."; git push    # GitHub Pages rebuilds in ~20 s
+# the app on http://localhost:5173, calling the API above
+cd app; npm ci; npm run dev          # npm run dev:mock runs it without the API
+npm run lint; npm run build          # build writes into the API's wwwroot
+
+# acceptance tests: builds the app, starts the API from this checkout (or uses one already on 5253), runs them
+npm run test:e2e:local
 ```
 
-Machine notes (this box, user Taylor): .NET 8 SDK, SQL Server 2022 LocalDB, GitHub CLI (logged in as **Mesmoraz**, `gh auth setup-git` done) were installed 2026-09-19/20. In Claude's Bash tool, prefix with `export PATH="/c/Program Files/dotnet:/c/Program Files/GitHub CLI:$PATH"`. If LocalDB "cannot create file … already exists": re-attach the .mdf (README has the command). Git identity for commits: Taylor Philpott <taylor.philpott@gmail.com>, add `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>`.
+In the Claude desktop app, the `api` and `app` entries in `.claude/launch.json` start the two servers.
 
-Editing gotcha: the prototype HTML contains literal non-ASCII characters (·, →, ↻, ’). When patching it with a Node script written via the Write tool, `\u00b7`-style escapes get decoded/mangled; every patch script so far included a `U()` normalizer (decode `\uXXXX`, strip a stray backslash before non-ASCII) applied to both search and replacement strings. Bash heredocs containing apostrophes also fail in this harness — write scripts to files instead. Verify visually with the browser pane at the mobile preset (`localhost:8765` via `npx serve` on the site folder); synthetic `.click()` passes where real taps can fail (see pointer-capture bug below).
+Notes:
 
-## Product decisions made (see design.html for the full brief)
+- **Node 22.12 or newer is required.** `app/.npmrc` sets `engine-strict`, so an older Node stops `npm ci` with a
+  clear message; upgrade with `winget install OpenJS.NodeJS.LTS`, then `npm ci` again. (History: on Node 22.11,
+  npm silently left out the rolldown and oxlint native bindings, which broke `npm run build` and `npm run lint`
+  until Node was upgraded on 2026-10-02.)
+- **Acceptance tests with two checkouts**: if an API from another worktree is already on port 5253, the tests use
+  it, and it serves that checkout's build of the app. Stop it first.
+- **Dev server polling**: Vite polls for file changes once a second, because Windows file events missed edits.
+  `VITE_POLL=0` turns it off.
+- **LocalDB** "cannot create file ... already exists": re-attach the database (command in `README.md`).
+- **Claude's Bash tool**: prefix commands with `export PATH="/c/Program Files/dotnet:/c/Program Files/GitHub CLI:$PATH"`.
+  Heredocs that contain apostrophes fail there; write scripts to files instead.
+- **Commits**: as Taylor Philpott <taylor.philpott@gmail.com>, with the Co-Authored-By line for Claude.
 
-- **Accounts**: Nonprofit (free, must claim an IRS-listed org; verification methods pluggable: email-domain instant, mailed code, document, member invite, admin), Business (paid subscription, WA UBI lookup, allow-listed sponsored placements only), Supporter (pay-what-you-want or proof of a donation), Admin. Roles attach to memberships, not people. Unverified users browse/draft only.
-- **No money moves through the app** (RCW 19.09 commercial-fundraiser exposure). Cash giving links out.
-- **Priority** P0 can't operate · P1 this week · P2 this month · P3 whenever; **P0 capped at 2 per org per rolling 30 days**.
-- **Cadence** One-time / Weekly / Monthly / Quarterly / Ongoing; accepting a recurring pair creates a **standing agreement** (log deliveries, next date, end it).
-- **Equitable exposure**: board ranks by priority band then fewest views; max 2 listings per org in the top 6; slot 3 reserved for the least-seen; every card says why; alerts are rule-driven (tags/category/area), never popularity; placement can't be bought.
-- **Map** ("golden thread"): full-screen, pinch/scroll/drag/double-tap, 1–40×, ZIP-centroid placement, zoom-dependent clustering with heat glow (tap cluster → animated zoom), curved string threads whose dash drifts giver→receiver (gold completed · green in progress · amber dashed proposed · grey dotted suggested), filters shared with the Board (kind, who, category, distance; thread statuses), connections list, degree-scaled hover, edge-aware/abbreviated labels with collision avoidance.
-- **Data freshness**: IRS files monthly (BMF, Pub 78, revocation, 990-N); scheduled import upserts by EIN and never overwrites what members typed; WA SOS registry only via public-records request. Every screen states the file date (2026-09-08).
-- Naming: "HelpBook" was rejected; use **Name TBD** everywhere until chosen.
+## Product decisions that hold
 
-## Prototype internals (docs/helpbook-prototype.html)
-
-Single-file vanilla JS. `S` = state (persisted to localStorage key `helpbook-proto`; boot migrates old shapes and self-heals). `STEPS[0..7]` = the story with `enter()`, `auto()`, `done()`; the guide advances on Play and on manual completion (`syncStep`). `ORGS` = 32 real WA 501c3s (EIN, city, ZIP, cause, revenue, tags) + 3 example businesses + 1 community member. Matching in `score()` mirrors the backend `MatchScorer` (+50 category, +25/+10 keywords, +20 city/+10 area, urgency, quantity, recency). Map: `renderMap()` (clustering, threads, labels), `fitView/zoomAt/clampView/animateView`, gesture handlers at the bottom (no pointer capture — it retargets clicks to the SVG and broke real taps). `mapUpp` = map units per CSS px, measured after render; `MAP_H` follows the container's aspect.
-
-## Backend internals (short)
-
-`src/WaNonprofitConnect.Data` (entities, EF Core + migrations `InitialCreate`, `AddExchange`; `Import/BmfImporter` download→SHA-256→batched upsert; `Exchange/ExchangeService` + `MatchScorer` + shared DTOs; `Queries/`), `Api` (controllers under `/api/v1`, `X-Org-Ein` acting-org header until identity exists, `Realtime/ExchangeHub` at `/hubs/exchange`), `Cli` (import/stats direct to DB; listing/match/msg/watch/demo over HTTP). Demo EINs: Ballard Food Bank 911428805, Computers 4 People 822888626, Tacoma-Pierce Habitat 581735531, Rebuilding Together Seattle 911606330, SE Seattle Tool Library 465378620.
-
-## Roadmap
-
-The backlog below is superseded by `roadmap/roadmap.json` (rules in `roadmap/SDLC.md`, board in `roadmap/README.md`, public view at the site's roadmap.html). Direction docs: `docs/MISSION.md`, `docs/TAXONOMY.md`, `docs/APP-MAP.md`, `docs/VOICE.md`.
-
-## Backlog / next candidates (historical; see roadmap/)
-
-1. Backend phase 2a–2b: ASP.NET Identity + org claiming (replace `X-Org-Ein`), Pub 78 + revocation → `IsActive`, admin queue.
-2. Bring prototype features to the backend: cadence/agreements, P-levels + cap, fair ranking, org capability tags, alerts.
-3. Real base map (Leaflet + OpenStreetMap) and street-level geocoding of IRS addresses.
-4. Business/supporter sign-up flows in the prototype (currently the role picker explains they're not built).
-5. Decide the name; decide web framework (Blazor vs React) after wireframe sign-off.
+- No money moves through the app; cash giving links out.
+- Ranking is fair, not bought: priority first, then the least seen; every card says why it is shown.
+- The IRS files are the directory and are re-imported monthly by EIN; an import never overwrites what members typed.
+- The map's "golden threads" connect who gives with who receives. See `docs/MISSION.md` and `docs/APP-MAP.md`.

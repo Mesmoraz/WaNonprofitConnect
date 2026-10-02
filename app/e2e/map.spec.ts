@@ -54,10 +54,12 @@ test('[S-84] tapping an organization on the map opens its card, then its page', 
 
   await page.goto('/map')
   const at = await screenPoint(page, ballard.lon!, ballard.lat!)
-  await page.waitForTimeout(800)   // let the pins draw at the new zoom
-  await page.mouse.click(at.x, at.y)
-
   const card = page.getByRole('dialog', { name: 'Details' })
+  // The pins draw a moment after the map moves: tap again until the card opens, rather than wait a fixed time.
+  await expect(async () => {
+    await page.mouse.click(at.x, at.y)
+    await expect(card).toBeVisible({ timeout: 1000 })
+  }).toPass({ timeout: 15_000 })
   await expect(card).toContainText(ORG.ballard.name)
   await card.getByRole('link', { name: 'See their needs and offers' }).click()
   await expect(page).toHaveURL(new RegExp(`/org/${ORG.ballard.ein}$`))

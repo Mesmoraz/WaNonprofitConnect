@@ -25,15 +25,26 @@ jobs:
     if: github.event.action != 'labeled' || github.event.label.name == 'staging'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      # The staging database pauses after an idle hour and takes about a minute to wake, and the site waits for
+      # it when it starts. A knock now wakes it while this build and the tests run. Only when this build goes to
+      # staging: a knock on every pull request would spend the free database allowance for nothing.
+      - name: Wake the staging site and its database
+        if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'staging')
+        run: curl -s -o /dev/null -m 5 https://helpbook-staging.azurewebsites.net/health || true
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           cache: npm
           cache-dependency-path: app/package-lock.json
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
+      - uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
       - name: Say which pull request this build is
         env:
           GH_TOKEN: ${{ github.token }}
@@ -53,16 +64,22 @@ jobs:
           echo "VITE_BUILD_SHA=$SHA" >> "$GITHUB_ENV"
           echo "VITE_BUILD_REPO=$GITHUB_REPOSITORY" >> "$GITHUB_ENV"
           echo "Build of ${PR:+PR #$PR, }commit ${SHA:0:7}"
+      - name: Install the app
+        working-directory: app
+        run: npm ci
+      - name: Lint the app
+        working-directory: app
+        run: npm run lint
       - name: Build the app
         working-directory: app
-        run: npm ci && npm run build
+        run: npm run build
       - name: Test the API
         run: dotnet test tests/WaNonprofitConnect.Tests/WaNonprofitConnect.Tests.csproj -c Release
       - name: Publish the API with the app inside
         run: dotnet publish src/WaNonprofitConnect.Api -c Release -o publish
       - name: Zip
         run: cd publish && zip -qr ../site.zip .
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: site
           path: site.zip
@@ -73,38 +90,70 @@ jobs:
   acceptance:
     if: github.event.action != 'labeled' || github.event.label.name == 'staging'
     runs-on: ubuntu-latest
-    services:
-      sql:
-        image: mcr.microsoft.com/mssql/server:2022-latest
-        env:
-          ACCEPT_EULA: 'Y'
-          MSSQL_SA_PASSWORD: Accept-${{ github.run_id }}-Tests!
-        ports: ['1433:1433']
-        options: >-
-          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P 'Accept-${{ github.run_id }}-Tests!' -Q 'SELECT 1'"
-          --health-interval 10s --health-timeout 5s --health-retries 20
     env:
-      # A throwaway database in this job's own container; nothing real.
-      ConnectionStrings__Default: Server=localhost,1433;Database=helpbook_acceptance;User Id=sa;Password=Accept-${{ github.run_id }}-Tests!;TrustServerCertificate=True
       ASPNETCORE_ENVIRONMENT: Development      # dev sign-in, admin@localhost
       ASPNETCORE_URLS: http://localhost:5253
       Data__LoadOnStartup: 'false'             # the tests load a sample, not the whole IRS list
       BASE_URL: http://localhost:5253
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      # A throwaway SQL Server in this job's own container; nothing real. Its password is made up for this run
+      # only. Started first, by hand rather than as a service, so it boots while everything below builds.
+      - name: Start SQL Server
+        run: |
+          SA_PASSWORD="Accept-$(openssl rand -hex 12)-Tests!"
+          echo "::add-mask::$SA_PASSWORD"
+          echo "SA_PASSWORD=$SA_PASSWORD" >> "$GITHUB_ENV"
+          echo "ConnectionStrings__Default=Server=localhost,1433;Database=helpbook_acceptance;User Id=sa;Password=$SA_PASSWORD;TrustServerCertificate=True" >> "$GITHUB_ENV"
+          docker run -d --name sql -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD="$SA_PASSWORD" -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           cache: npm
           cache-dependency-path: app/package-lock.json
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
+      - uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+      # The browser is cached by Playwright's version, read from the lockfile.
+      - name: Which Playwright
+        id: pw
+        run: echo "version=$(node -p "require('./app/package-lock.json').packages['node_modules/@playwright/test'].version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v6
+        id: pw-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
       - name: Build the app and the API
         run: |
-          (cd app && npm ci && npm run build)
-          dotnet build src/WaNonprofitConnect.Api -c Release
-          dotnet build src/WaNonprofitConnect.Cli -c Release
+          # The app's packages and the .NET build at the same time. (The CLI doesn't reference the API, so both
+          # are built.) The app is built last: it writes into the API's wwwroot, which must not change under
+          # the .NET build.
+          (cd app && npm ci) & npm_pid=$!
+          (dotnet build src/WaNonprofitConnect.Api -c Release && dotnet build src/WaNonprofitConnect.Cli -c Release) & dotnet_pid=$!
+          wait $npm_pid || exit 1
+          wait $dotnet_pid || exit 1
+          cd app && npm run build
+      # Only the headless shell: the tests never open a visible browser.
+      - name: Install the browser
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        working-directory: app
+        run: npx playwright install --with-deps --only-shell chromium
+      - name: Install the browser's system libraries (browser from the cache)
+        if: steps.pw-cache.outputs.cache-hit == 'true'
+        working-directory: app
+        run: npx playwright install-deps chromium
+      - name: Wait for SQL Server
+        run: |
+          for i in $(seq 1 60); do
+            docker exec sql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$SA_PASSWORD" -Q "SELECT 1" > /dev/null 2>&1 && exit 0
+            sleep 2
+          done
+          docker logs sql; exit 1
       - name: Start the API (it creates the tables)
         run: |
           nohup dotnet run --project src/WaNonprofitConnect.Api -c Release --no-build --no-launch-profile > api.log 2>&1 &
@@ -116,9 +165,6 @@ jobs:
         run: |
           dotnet run --project src/WaNonprofitConnect.Cli -c Release --no-build -- import-zips --file tests/acceptance/fixtures/zcta_sample.txt
           dotnet run --project src/WaNonprofitConnect.Cli -c Release --no-build -- import bmf --state WA --file tests/acceptance/fixtures/eo_wa_sample.csv
-      - name: Install the browser
-        working-directory: app
-        run: npx playwright install --with-deps chromium
       - name: Run the acceptance tests
         working-directory: app
         run: npx playwright test
@@ -127,7 +173,7 @@ jobs:
         run: node scripts/acceptance.js >> "$GITHUB_STEP_SUMMARY"
       - name: Keep the report and the API log
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: acceptance-report
           path: |
@@ -149,12 +195,14 @@ jobs:
       name: staging
       url: https://helpbook-staging.azurewebsites.net
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: site
-      - uses: azure/login@v2
+      # Staging's own identity, helpbook-github-staging: it can deploy helpbook-staging and nothing else.
+      # Production uses a different one (docs/OPERATIONS.md).
+      - uses: azure/login@v3
         with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          client-id: ${{ vars.AZURE_STAGING_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       - name: Deploy
