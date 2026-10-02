@@ -5,6 +5,7 @@ import { BRAND } from '../../brand'
 import { SERVE_GROUPS, passes, useServeFilter } from '../../lib/serve'
 import { cap, causeOf, HELPS, HELP_LABEL } from '../../lib/words'
 import { ListingCard } from './ListingCard'
+import { WelcomeCard } from './WelcomeCard'
 import './board.css'
 
 function useDebounced<T>(value: T, ms: number) {
@@ -49,6 +50,8 @@ export function Board() {
       <span className="search-wrap">
         <input id="boardq" type="search" placeholder="Search everyone here" autoComplete="off" value={q} onChange={e => setQ(e.target.value)} />
       </span>
+
+      {!searching && myEin && <WelcomeCard key={myEin} ein={myEin} mine={mine?.listings} />}
 
       {searching ? (
         orgs.data && term.length >= 2 && (orgs.data.length ? orgs.data.map(o => (

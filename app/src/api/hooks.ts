@@ -104,14 +104,14 @@ export function useCreateListing() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (body: NewListing) => api.createListing(body),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: keys.boardAll }); qc.invalidateQueries({ queryKey: keys.map }); qc.invalidateQueries({ queryKey: keys.me }) },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: keys.boardAll }); qc.invalidateQueries({ queryKey: keys.map }); qc.invalidateQueries({ queryKey: keys.me }); qc.invalidateQueries({ queryKey: ['orgPage'] }) },
   })
 }
 export function useCloseListing() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: api.closeListing,
-    onSuccess: (_v, id) => { qc.invalidateQueries({ queryKey: keys.boardAll }); qc.invalidateQueries({ queryKey: keys.listing(id) }); qc.invalidateQueries({ queryKey: keys.map }) },
+    onSuccess: (_v, id) => { qc.invalidateQueries({ queryKey: keys.boardAll }); qc.invalidateQueries({ queryKey: keys.listing(id) }); qc.invalidateQueries({ queryKey: keys.map }); qc.invalidateQueries({ queryKey: ['orgPage'] }) },
   })
 }
 export function useStartThread() {

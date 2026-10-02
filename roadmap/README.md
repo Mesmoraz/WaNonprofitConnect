@@ -33,13 +33,13 @@ Generated from `roadmap.json` on 2026-09-28. Don't edit this file; run `node scr
 | S-56 File for 501(c)(3) status |  |  | S-88 Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox |  |
 | S-58 Corporate giving platforms (Benevity and others), subject to APIs and agreements |  |  | S-91 Error logging and database backups, so a problem is seen and nothing is lost |  |
 | S-59 Relabel non-district LEAs (ESDs, technical colleges, charters, tribal compacts) with their own sub |  |  | S-93 Send feedback from inside the app: a button that captures the screen, the page, the device and recent errors with your note, so a bug report arrives ready to fix |  |
-| S-60 Render a funder's stated priorities as their quoted words, not our copy |  |  | S-101 Demo keeps its posts until you leave it, not just until a reload |  |
-| S-61 Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) |  |  | S-103 Review fixes: times read right, errors say why, one thread per post, live updates survive a sleeping phone, a lighter first load |  |
-| S-63 Decide whether WSU branch campuses become their own rows, as UW's are |  |  | S-111 Post by picking, not typing: choose what it is from a short list for each kind of help, details optional |  |
-| S-64 A separate email-domain field for confirming, where it differs from the website host |  |  | S-112 A staging copy of the site: every merge goes there first, production is one button |  |
-| S-78 Recruit 8 to 12 organizations in two or three clusters |  |  | S-110 Admins can walk the front door again: a demo that starts as a new organization at the invite code |  |
-| S-81 Apple developer account, for TestFlight in Beta |  |  | S-113 Automated acceptance tests: each built story proved on a phone-sized browser, on every pull request |  |
-| S-82 Pick and buy a domain, for email sign-in and store listings |  |  |  |  |
+| S-60 Render a funder's stated priorities as their quoted words, not our copy |  |  | S-96 A welcome after joining: post one need and one offer to start |  |
+| S-61 Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) |  |  | S-101 Demo keeps its posts until you leave it, not just until a reload |  |
+| S-63 Decide whether WSU branch campuses become their own rows, as UW's are |  |  | S-103 Review fixes: times read right, errors say why, one thread per post, live updates survive a sleeping phone, a lighter first load |  |
+| S-64 A separate email-domain field for confirming, where it differs from the website host |  |  | S-111 Post by picking, not typing: choose what it is from a short list for each kind of help, details optional |  |
+| S-78 Recruit 8 to 12 organizations in two or three clusters |  |  | S-112 A staging copy of the site: every merge goes there first, production is one button |  |
+| S-81 Apple developer account, for TestFlight in Beta |  |  | S-110 Admins can walk the front door again: a demo that starts as a new organization at the invite code |  |
+| S-82 Pick and buy a domain, for email sign-in and store listings |  |  | S-113 Automated acceptance tests: each built story proved on a phone-sized browser, on every pull request |  |
 | S-83 Microsoft sign-in, since many nonprofits run on Microsoft 365 |  |  |  |  |
 | S-85 Sign in by email for people without Google |  |  |  |  |
 | S-86 What you see depends on who you are: nonprofits, then schools and students, then companies |  |  |  |  |
@@ -49,7 +49,6 @@ Generated from `roadmap.json` on 2026-09-28. Don't edit this file; run `node scr
 | S-92 Google sign-in out of Testing, so invited organizations don't need to be added one by one (needs the privacy and terms pages) ⛔ |  |  |  |  |
 | S-94 Tell people when something happens: approved, a new thread, a new message (email, or nudges by hand for the alpha) |  |  |  |  |
 | S-95 Members invite colleagues to their own organization |  |  |  |  |
-| S-96 A welcome after joining: post one need and one offer to start |  |  |  |  |
 | S-97 Edit a need or offer after posting |  |  |  |  |
 | S-98 Organization names in normal case (the IRS list is all capitals), keeping acronyms |  |  |  |  |
 | S-99 An organization describes itself: a line about what it does, a website, a contact person |  |  |  |  |
@@ -323,7 +322,11 @@ Sign in with Google; an invite code confirms you for one organization; anyone el
     - [ ] T-41 Brief the email sign-in screens for approval (Ready)
 - **S-92** Google sign-in out of Testing, so invited organizations don't need to be added one by one (needs the privacy and terms pages) · Backlog · ⛔ waiting on T-53 (the co-founder): the privacy and terms wording
 - **S-95** Members invite colleagues to their own organization · Backlog · _Alpha review, 2026-09-24_
-- **S-96** A welcome after joining: post one need and one offer to start · Backlog · _Alpha review, 2026-09-24_
+- **S-96** A welcome after joining: post one need and one offer to start · In review · _Alpha review, 2026-09-24_
+    - [x] T-209 Brief approved (PR #6)
+    - [x] T-210 Card at the top of the board until your organization has an open need and an open offer; Post an offer opens Post on We have; Not now hides it on this device
+    - [x] T-211 Acceptance tests named [S-96]
+    - [ ] T-212 Check on a phone (Ready)
 - **S-107** After sign-in, go back to the link you opened (a shared post, an invite) · Backlog · _Full review, 2026-09-28_
 
 #### E-24 The core loop, working · In progress · 1/17

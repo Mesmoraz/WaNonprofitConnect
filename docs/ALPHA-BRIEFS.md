@@ -92,9 +92,9 @@ Approved by Taylor 2026-09-24. Round one of S-88.
 - At the bottom when posts are hidden: "{n} more outside your filters. Show them".
 - "Clear filters" clears these too. The map isn't filtered yet. Picks are saved to your organization, shared by everyone there; an admin can set them. When a cause code gives no group (none, or one like T70 "federated giving"), the organization's name is read instead: "Food bank" is Food, "PTA" is Education, and so on.
 
-## Welcome card (proposed, waiting for approval)
+## Welcome card
 
-Proposed 2026-09-28. Approving this pull request approves the brief; the build follows in its own pull request.
+Approved by Taylor 2026-10-02 (PR #6, merged). Built in the welcome-card PR.
 
 - **For:** the alpha asks each organization to post one need and one offer. A newly joined organization lands on the board with only a toast. This says what to do first, and it's the first place anyone is told what a golden thread is.
 - **Where:** a card at the top of the board. It shows for a confirmed organization with no open need or no open offer, however it joined (invite code or approved claim). It keys off your posts, so it goes away once you have both.

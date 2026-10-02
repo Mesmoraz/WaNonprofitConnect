@@ -1421,10 +1421,32 @@
       "id": "S-96",
       "epic": "E-23",
       "title": "A welcome after joining: post one need and one offer to start",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-24",
-      "tasks": [],
-      "source": "Alpha review, 2026-09-24"
+      "tasks": [
+        {
+          "id": "T-209",
+          "title": "Brief approved (PR #6)",
+          "status": "done"
+        },
+        {
+          "id": "T-210",
+          "title": "Card at the top of the board until your organization has an open need and an open offer; Post an offer opens Post on We have; Not now hides it on this device",
+          "status": "done"
+        },
+        {
+          "id": "T-211",
+          "title": "Acceptance tests named [S-96]",
+          "status": "done"
+        },
+        {
+          "id": "T-212",
+          "title": "Check on a phone",
+          "status": "ready"
+        }
+      ],
+      "source": "Alpha review, 2026-09-24",
+      "lane": "app"
     },
     {
       "id": "S-97",
