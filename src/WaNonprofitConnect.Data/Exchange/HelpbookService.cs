@@ -28,7 +28,11 @@ public sealed partial class HelpbookService
 
     // ---- board and listings ---------------------------------------------------------
 
-    /// <summary>Open needs and offers, fairly ranked. Counts a view for each listing in the top 12 that isn't the viewer's own.</summary>
+    /// <summary>
+    /// Open needs and offers, fairly ranked. Counts a view for each listing in the top 12 that isn't the viewer's own,
+    /// and only when the viewer is a confirmed member (<paramref name="viewerEin"/> set): anyone else signed in can
+    /// look, but can't move the "Seen least" ranking (S-114).
+    /// </summary>
     public async Task<IReadOnlyList<ListingViewDto>> BoardAsync(string? viewerEin, BoardQuery query, CancellationToken ct = default)
     {
         var now = DateTime.UtcNow;
@@ -47,7 +51,8 @@ public sealed partial class HelpbookService
         var rows = await q.OrderByDescending(l => l.CreatedAt).Take(MaxCandidates).ToListAsync(ct);
         var ranked = BoardRanking.Rank(rows).Take(MaxBoard).ToList();
 
-        var seen = ranked.Take(BoardRanking.CountedPositions).Where(l => l.OrgEin != viewerEin).Select(l => l.Id).ToList();
+        var seen = viewerEin is null ? new List<int>()
+            : ranked.Take(BoardRanking.CountedPositions).Where(l => l.OrgEin != viewerEin).Select(l => l.Id).ToList();
         if (seen.Count > 0)
             await _db.Listings.Where(l => seen.Contains(l.Id)).ExecuteUpdateAsync(s => s.SetProperty(l => l.Views, l => l.Views + 1), ct);
 

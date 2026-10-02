@@ -11,7 +11,9 @@ namespace WaNonprofitConnect.Api.Controllers;
 
 /// <summary>
 /// "Send feedback" (S-93): a note from inside the app with a picture of the screen and what the app knew at the time.
-/// Anyone can send one (the sign-in page can break too); the account and organization are added when signed in.
+/// Anyone can send one (the sign-in page and the crash screen can break while signed out); the account and
+/// organization are added when signed in. Signed out, it's held to less (S-114): 5 an hour from one address, a note of
+/// 2,000 characters and a picture of 1.5 MB. Pictures must really be PNG, JPEG or WebP.
 /// Also written to the log, so scripts/errors.ps1 shows it next to errors.
 /// </summary>
 [ApiController]
@@ -19,32 +21,39 @@ namespace WaNonprofitConnect.Api.Controllers;
 [AllowAnonymous]
 public sealed class FeedbackController(AppDbContext db, AccountService accounts, ILogger<FeedbackController> logger) : ControllerBase
 {
-    private const int MaxScreenshotBytes = 3 * 1024 * 1024;
+    public const int MaxScreenshotBytes = 3 * 1024 * 1024;
+    public const int MaxAnonymousScreenshotBytes = 1536 * 1024;
+    public const int MaxMessage = 4000;
+    public const int MaxAnonymousMessage = 2000;
+    public const string BadPicture = "That picture didn't work. Send it without one.";
 
     [HttpPost]
     [RequestSizeLimit(6 * 1024 * 1024)]
+    [SignedOutHourlyLimit]
     public async Task<IActionResult> Send([FromBody] SendFeedbackRequest request, CancellationToken ct)
     {
+        var me = User.AccountId() is { } accountId ? await accounts.GetMeAsync(accountId, ct) : null;
         var message = (request.Message ?? "").Trim();
         if (message.Length == 0) return Problem(statusCode: 400, title: "Write a note first.");
-        if (message.Length > 4000) message = message[..4000];
+        var maxMessage = me is null ? MaxAnonymousMessage : MaxMessage;
+        if (message.Length > maxMessage) message = message[..maxMessage];
 
         byte[]? screenshot = null;
         if (request.Screenshot is { Length: > 0 } dataUrl)
         {
             var comma = dataUrl.IndexOf(',');
-            if (!dataUrl.StartsWith("data:image/", StringComparison.Ordinal) || comma < 0)
-                return Problem(statusCode: 400, title: "That picture didn't come through. Send it without the picture.");
+            if (!dataUrl.StartsWith("data:image/", StringComparison.Ordinal) || comma < 0) return Problem(statusCode: 400, title: BadPicture);
             try { screenshot = Convert.FromBase64String(dataUrl[(comma + 1)..]); }
-            catch (FormatException) { return Problem(statusCode: 400, title: "That picture didn't come through. Send it without the picture."); }
-            if (screenshot.Length > MaxScreenshotBytes) screenshot = null; // keep the note, drop an oversized picture
+            catch (FormatException) { return Problem(statusCode: 400, title: BadPicture); }
+            if (ImageType(screenshot) is null) return Problem(statusCode: 400, title: BadPicture);
+            if (screenshot.Length > (me is null ? MaxAnonymousScreenshotBytes : MaxScreenshotBytes)) screenshot = null; // keep the note, drop an oversized picture
         }
 
         var context = request.Context.ValueKind == JsonValueKind.Undefined ? "{}" : request.Context.GetRawText();
         if (context.Length > 64_000) context = "{\"note\":\"context too large, dropped\"}";
 
         var feedback = new Feedback { Message = message, Context = context, Screenshot = screenshot, CreatedAt = DateTime.UtcNow };
-        if (User.AccountId() is { } accountId && await accounts.GetMeAsync(accountId, ct) is { } me)
+        if (me is not null)
         {
             feedback.AccountId = me.Account.Id;
             feedback.Email = me.Account.Email;
@@ -55,8 +64,17 @@ public sealed class FeedbackController(AppDbContext db, AccountService accounts,
         await db.SaveChangesAsync(ct);
 
         logger.LogWarning("Feedback #{Id} from {Who} on {Page}: {Message}", feedback.Id, feedback.Email ?? "someone signed out",
-            PageOf(context), message.Length > 300 ? message[..300] + "…" : message);
+            LogText.Clean(PageOf(context), 300), LogText.Clean(message, 300));
         return StatusCode(201, new { id = feedback.Id });
+    }
+
+    /// <summary>The image type from the file's first bytes (PNG, JPEG or WebP), or null for anything else.</summary>
+    internal static string? ImageType(ReadOnlySpan<byte> b)
+    {
+        if (b.Length >= 8 && b[..8].SequenceEqual(new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A })) return "image/png";
+        if (b.Length >= 3 && b[0] == 0xFF && b[1] == 0xD8 && b[2] == 0xFF) return "image/jpeg";
+        if (b.Length >= 12 && b[..4].SequenceEqual("RIFF"u8) && b[8..12].SequenceEqual("WEBP"u8)) return "image/webp";
+        return null;
     }
 
     internal static string PageOf(string context)
@@ -69,7 +87,7 @@ public sealed class FeedbackController(AppDbContext db, AccountService accounts,
 public sealed class SendFeedbackRequest
 {
     public string? Message { get; set; }
-    /// <summary>A data: URL (image/jpeg or image/png), or null.</summary>
+    /// <summary>A data: URL (PNG, JPEG or WebP), or null.</summary>
     public string? Screenshot { get; set; }
     public JsonElement Context { get; set; }
 }
@@ -100,8 +118,11 @@ public sealed class AdminFeedbackController(AppDbContext db) : ControllerBase
     {
         var bytes = await db.Feedback.AsNoTracking().Where(f => f.Id == id).Select(f => f.Screenshot).FirstOrDefaultAsync(ct);
         if (bytes is null) return NotFound();
-        var png = bytes.Length > 4 && bytes[0] == 0x89 && bytes[1] == 0x50;
-        return File(bytes, png ? "image/png" : "image/jpeg");
+        // Only ever an image, shown in place, that can't run anything (S-114). Anything older that isn't one downloads.
+        var type = FeedbackController.ImageType(bytes);
+        Response.Headers.ContentSecurityPolicy = "default-src 'none'; sandbox";
+        Response.Headers.ContentDisposition = type is null ? $"attachment; filename=\"feedback-{id}.bin\"" : "inline";
+        return File(bytes, type ?? "application/octet-stream");
     }
 
     [HttpPost("{id:int}/done")]

@@ -179,7 +179,7 @@ public sealed class ApiTests : IDisposable
 
         (await person.PostAsJsonAsync("/api/v1/feedback", new { message = "  " }, Json)).StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        var png = "data:image/png;base64," + Convert.ToBase64String(new byte[] { 0x89, 0x50, 0x4E, 0x47, 1, 2, 3 });
+        var png = "data:image/png;base64," + Convert.ToBase64String(new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 1, 2, 3 });
         var sent = await person.PostAsJsonAsync("/api/v1/feedback",
             new { message = "The map froze", screenshot = png, context = new { page = "/map", viewport = "375x812" } }, Json);
         sent.StatusCode.Should().Be(HttpStatusCode.Created);
