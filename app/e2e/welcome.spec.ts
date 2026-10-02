@@ -28,7 +28,7 @@ test('[S-96] a new organization is asked for one need and one offer, and the car
   await page.getByRole('radio', { name: 'Supplies' }).click()
   await page.getByRole('button', { name: 'Post need' }).click()
   await expect(page.getByText('Posted. It’s on the board now.')).toBeVisible()
-  await page.getByRole('link', { name: 'Board' }).click()
+  await page.getByRole('link', { name: 'Board', exact: true }).click()
   await expect(card.getByRole('link', { name: 'Post a need' })).toHaveCount(0)
   await expect(card.getByRole('link', { name: 'Post an offer' })).toHaveClass(/primary/)
 
@@ -40,7 +40,7 @@ test('[S-96] a new organization is asked for one need and one offer, and the car
   await page.getByRole('radio', { name: 'Event help' }).click()
   await page.getByRole('button', { name: 'Post offer' }).click()
   await expect(page.getByText('Posted. It’s on the board now.')).toBeVisible()
-  await page.getByRole('link', { name: 'Board' }).click()
+  await page.getByRole('link', { name: 'Board', exact: true }).click()
   await expect(page.getByRole('searchbox', { name: 'Search everyone here' })).toBeVisible()
   await expect(card).toHaveCount(0)
 })

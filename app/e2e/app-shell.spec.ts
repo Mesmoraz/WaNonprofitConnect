@@ -35,7 +35,7 @@ test('[S-76] phones get tabs along the bottom, desktops a rail down the left', a
   await expect.poll(async () => (await tabs.boundingBox())!.x).toBeLessThan(40)
   const rail = (await tabs.boundingBox())!
   expect(rail.width).toBeLessThan(300)                                   // a narrow column on the left
-  await expect(page.getByRole('link', { name: 'Board' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Board', exact: true })).toBeVisible()
 })
 
 test('[S-75] one address serves the app, the API and deep links, and a reload keeps your place', async ({ page }) => {
