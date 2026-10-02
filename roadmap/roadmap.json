@@ -1709,6 +1709,63 @@
           "status": "done"
         }
       ]
+    },
+    {
+      "id": "S-114",
+      "epic": "E-26",
+      "lane": "backend",
+      "title": "Security hardening from the Oct 2 review",
+      "status": "in-progress",
+      "added": "2026-10-02",
+      "source": "Security review and dev audit, 2026-10-02",
+      "tasks": [
+        {
+          "id": "T-209",
+          "title": "Tighter deploy permissions",
+          "status": "ready"
+        },
+        {
+          "id": "T-210",
+          "title": "Fixes from the review, with tests",
+          "status": "ready"
+        },
+        {
+          "id": "T-211",
+          "title": "Decide one sign-in question from the review",
+          "status": "ready"
+        },
+        {
+          "id": "T-212",
+          "title": "Move to .NET 10 before .NET 8 support ends Nov 10",
+          "status": "ready"
+        }
+      ]
+    },
+    {
+      "id": "S-115",
+      "epic": "E-26",
+      "lane": "site",
+      "title": "A faster, steadier dev loop: Node 22.12+, a third off CI time, one command for local tests, lint in CI, current docs",
+      "status": "in-progress",
+      "added": "2026-10-02",
+      "source": "Security review and dev audit, 2026-10-02",
+      "tasks": [
+        {
+          "id": "T-213",
+          "title": "Taylor upgrades Node to 22.12 or newer on this machine (winget install OpenJS.NodeJS.LTS), then npm ci",
+          "status": "ready"
+        },
+        {
+          "id": "T-214",
+          "title": "CI: SQL Server starts early, NuGet and browser caches, lint, staging uses its own identity, production ships only main's own builds",
+          "status": "ready"
+        },
+        {
+          "id": "T-215",
+          "title": "Decide: stop the roadmap conflicts (stop tracking roadmap/README.md, drop the updated date, one file per changelog entry)",
+          "status": "ready"
+        }
+      ]
     }
   ]
 }
