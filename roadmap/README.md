@@ -35,9 +35,9 @@ Generated from `roadmap.json` on 2026-09-28. Don't edit this file; run `node scr
 | S-59 Relabel non-district LEAs (ESDs, technical colleges, charters, tribal compacts) with their own sub |  |  | S-93 Send feedback from inside the app: a button that captures the screen, the page, the device and recent errors with your note, so a bug report arrives ready to fix |  |
 | S-60 Render a funder's stated priorities as their quoted words, not our copy |  |  | S-101 Demo keeps its posts until you leave it, not just until a reload |  |
 | S-61 Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) |  |  | S-103 Review fixes: times read right, errors say why, one thread per post, live updates survive a sleeping phone, a lighter first load |  |
-| S-63 Decide whether WSU branch campuses become their own rows, as UW's are |  |  | S-112 A staging copy of the site: every merge goes there first, production is one button |  |
-| S-64 A separate email-domain field for confirming, where it differs from the website host |  |  | S-110 Admins can walk the front door again: a demo that starts as a new organization at the invite code |  |
-| S-78 Recruit 8 to 12 organizations in two or three clusters |  |  |  |  |
+| S-63 Decide whether WSU branch campuses become their own rows, as UW's are |  |  | S-111 Post by picking, not typing: choose what it is from a short list for each kind of help, details optional |  |
+| S-64 A separate email-domain field for confirming, where it differs from the website host |  |  | S-112 A staging copy of the site: every merge goes there first, production is one button |  |
+| S-78 Recruit 8 to 12 organizations in two or three clusters |  |  | S-110 Admins can walk the front door again: a demo that starts as a new organization at the invite code |  |
 | S-81 Apple developer account, for TestFlight in Beta |  |  |  |  |
 | S-82 Pick and buy a domain, for email sign-in and store listings |  |  |  |  |
 | S-83 Microsoft sign-in, since many nonprofits run on Microsoft 365 |  |  |  |  |
@@ -305,7 +305,7 @@ Corporate giving and volunteering platforms, once there's something to integrate
 - **S-58** Corporate giving platforms (Benevity and others), subject to APIs and agreements · Backlog
 - **S-89** A paid tier for businesses (nonprofits stay free) · Backlog
 
-### I-6 A working alpha for invited nonprofits · In progress · 2/44 stories done
+### I-6 A working alpha for invited nonprofits · In progress · 2/45 stories done
 
 Real organizations post real needs and offers, start threads, and make golden threads, on the map, on any phone or desktop. Target: live Sep 30.
 
@@ -326,7 +326,7 @@ Sign in with Google; an invite code confirms you for one organization; anyone el
 - **S-96** A welcome after joining: post one need and one offer to start · Backlog · _Alpha review, 2026-09-24_
 - **S-107** After sign-in, go back to the link you opened (a shared post, an invite) · Backlog · _Full review, 2026-09-28_
 
-#### E-24 The core loop, working · In progress · 1/16
+#### E-24 The core loop, working · In progress · 1/17
 
 Board, a need or offer, post, thread, inbox, backed by the real API.
 
@@ -355,6 +355,7 @@ Board, a need or offer, post, thread, inbox, backed by the real API.
 - **S-106** Every screen says something while it loads or fails, the map included, instead of a blank page · Backlog · _Full review, 2026-09-28_
 - **S-108** Who they serve starts empty while the board is small, so the alpha organizations see each other · Backlog · _Full review, 2026-09-28_
 - **S-109** Copy that needs a brief: the message box on an offer, "Ask a member to invite you", why Urgent is greyed out, server error sentences · Backlog · _Full review, 2026-09-28_
+- **S-111** Post by picking, not typing: choose what it is from a short list for each kind of help, details optional · In review · _Mario, in-app feedback #3 (Sep 26): "Free text should be minimal or discrete. Kinda like autotrader but with the thread focus." Taylor, Sep 28: apply it_
 
 #### E-25 The map, for real · In progress · 1/7
 

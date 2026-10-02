@@ -1603,6 +1603,16 @@
       "tasks": []
     },
     {
+      "id": "S-111",
+      "epic": "E-24",
+      "title": "Post by picking, not typing: choose what it is from a short list for each kind of help, details optional",
+      "status": "review",
+      "added": "2026-09-28",
+      "tasks": [],
+      "lane": "app",
+      "source": "Mario, in-app feedback #3 (Sep 26): \"Free text should be minimal or discrete. Kinda like autotrader but with the thread focus.\" Taylor, Sep 28: apply it"
+    },
+    {
       "id": "S-112",
       "epic": "E-26",
       "lane": "backend",
