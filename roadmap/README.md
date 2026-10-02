@@ -38,7 +38,7 @@ Generated from `roadmap.json` on 2026-09-28. Don't edit this file; run `node scr
 | S-63 Decide whether WSU branch campuses become their own rows, as UW's are |  |  | S-111 Post by picking, not typing: choose what it is from a short list for each kind of help, details optional |  |
 | S-64 A separate email-domain field for confirming, where it differs from the website host |  |  | S-112 A staging copy of the site: every merge goes there first, production is one button |  |
 | S-78 Recruit 8 to 12 organizations in two or three clusters |  |  | S-110 Admins can walk the front door again: a demo that starts as a new organization at the invite code |  |
-| S-81 Apple developer account, for TestFlight in Beta |  |  |  |  |
+| S-81 Apple developer account, for TestFlight in Beta |  |  | S-113 Automated acceptance tests: each built story proved on a phone-sized browser, on every pull request |  |
 | S-82 Pick and buy a domain, for email sign-in and store listings |  |  |  |  |
 | S-83 Microsoft sign-in, since many nonprofits run on Microsoft 365 |  |  |  |  |
 | S-85 Sign in by email for people without Google |  |  |  |  |
@@ -305,7 +305,7 @@ Corporate giving and volunteering platforms, once there's something to integrate
 - **S-58** Corporate giving platforms (Benevity and others), subject to APIs and agreements · Backlog
 - **S-89** A paid tier for businesses (nonprofits stay free) · Backlog
 
-### I-6 A working alpha for invited nonprofits · In progress · 2/45 stories done
+### I-6 A working alpha for invited nonprofits · In progress · 2/46 stories done
 
 Real organizations post real needs and offers, start threads, and make golden threads, on the map, on any phone or desktop. Target: live Sep 30.
 
@@ -370,7 +370,7 @@ A real base map, every nonprofit as a dot, clusters, and threads that drift and 
 - **S-87** Wish list: search the map for an organization or a place, and fly to it · Backlog
 - **S-105** Map legend: what gold, green, dashed and dotted mean, and what a golden thread is · Backlog · _Full review, 2026-09-28_
 
-#### E-26 Live and invited · In progress · 0/13
+#### E-26 Live and invited · In progress · 0/14
 
 Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
 
@@ -407,4 +407,9 @@ Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
     - [x] T-70 Invite code RAINIER and the find-yours hint point at organizations with nothing posted
     - [x] T-71 Waiting screen in the demo: approve it yourself in Admin
     - [ ] T-72 Check on a phone (Ready)
+- **S-113** Automated acceptance tests: each built story proved on a phone-sized browser, on every pull request · In review · _Taylor, 2026-10-02: automated tests based on acceptance criteria and the roadmap_
+    - [x] T-205 Playwright tests for the front door, board, post, the thread loop to golden, admin, the demo and the map, named by story
+    - [x] T-206 Run on every pull request against a fresh SQL Server with 13 real organizations; staging waits for them
+    - [x] T-207 Coverage by story: scripts/acceptance.js, also on each run's summary page
+    - [ ] T-208 Tests for the stories not covered yet: fair ranking, map data, installable, feedback, error logging (Ready)
 

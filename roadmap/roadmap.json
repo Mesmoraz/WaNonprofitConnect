@@ -1678,6 +1678,37 @@
           "status": "ready"
         }
       ]
+    },
+    {
+      "id": "S-113",
+      "epic": "E-26",
+      "lane": "app",
+      "title": "Automated acceptance tests: each built story proved on a phone-sized browser, on every pull request",
+      "status": "review",
+      "added": "2026-10-02",
+      "source": "Taylor, 2026-10-02: automated tests based on acceptance criteria and the roadmap",
+      "tasks": [
+        {
+          "id": "T-205",
+          "title": "Playwright tests for the front door, board, post, the thread loop to golden, admin, the demo and the map, named by story",
+          "status": "done"
+        },
+        {
+          "id": "T-206",
+          "title": "Run on every pull request against a fresh SQL Server with 13 real organizations; staging waits for them",
+          "status": "done"
+        },
+        {
+          "id": "T-207",
+          "title": "Coverage by story: scripts/acceptance.js, also on each run's summary page",
+          "status": "done"
+        },
+        {
+          "id": "T-208",
+          "title": "Tests for the stories not covered yet: fair ranking, map data, installable, feedback, error logging",
+          "status": "ready"
+        }
+      ]
     }
   ]
 }
