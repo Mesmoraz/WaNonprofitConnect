@@ -1705,8 +1705,8 @@
         },
         {
           "id": "T-208",
-          "title": "Tests for the stories not covered yet: fair ranking, map data, installable, feedback, error logging",
-          "status": "ready"
+          "title": "Tests for the rest: map tiles, map data, tapping a pin, installable and layouts, one address, the staging tag, feedback, browser errors; API tests labeled by story",
+          "status": "done"
         }
       ]
     }

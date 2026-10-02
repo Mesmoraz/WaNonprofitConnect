@@ -1,6 +1,6 @@
 // Which roadmap stories have automated tests. Reads roadmap/roadmap.json and finds story ids in test names:
 //   browser acceptance tests (app/e2e/*.spec.ts): test('[S-20] ...')
-//   API and service tests (tests/**/*.cs): a comment or name mentioning S-20
+//   API and service tests (tests/**/*.cs): [Trait("Story", "S-20")] on the test method
 // Prints a Markdown table of the stories that are built (review or done) in the alpha's epics, covered or not.
 //   node scripts/acceptance.js            the table
 //   node scripts/acceptance.js --all      every built story, not only the alpha's
@@ -29,9 +29,13 @@ for (const f of files(path.join(root, 'app', 'e2e'), '.spec.ts')) {
     for (const id of m[1].match(/S-\d+/g)) note(id, 'e2e', m[2].trim());
   }
 }
+// API and service tests carry [Trait("Story", "S-71")] on the test method.
 for (const f of files(path.join(root, 'tests'), '.cs')) {
-  const ids = new Set(fs.readFileSync(f, 'utf8').match(/\bS-\d+\b/g) ?? []);
-  for (const id of ids) note(id, 'api', path.basename(f));
+  const src = fs.readFileSync(f, 'utf8');
+  // One or more [Trait("Story", ...)] lines, any other attributes, then the method name.
+  for (const m of src.matchAll(/((?:\[[^\]\n]*Trait\("Story",[^\]\n]*\]\s*)+)(?:\[[^\]\n]*\]\s*)*public\s+(?:async\s+)?\w+(?:<\w+>)?\s+(\w+)\s*\(/g)) {
+    for (const id of m[1].match(/S-\d+/g)) note(id, 'api', m[2].replace(/_/g, ' '));
+  }
 }
 
 const all = process.argv.includes('--all');
@@ -41,7 +45,7 @@ const covered = built.filter(s => found[s.id]);
 
 const rows = built.map(s => {
   const f = found[s.id];
-  const tests = f ? [...f.e2e.map(t => `browser: ${t}`), ...[...new Set(f.api)].map(a => `API: ${a}`)].join('<br>') : '';
+  const tests = f ? [...f.e2e.map(t => `browser: ${t}`), ...f.api.map(a => `API: ${a}`)].join('<br>') : '';
   return `| ${f ? '✅' : '⬜'} | ${s.id} | ${s.title.replace(/\|/g, '/')} | ${s.status} | ${tests} |`;
 });
 

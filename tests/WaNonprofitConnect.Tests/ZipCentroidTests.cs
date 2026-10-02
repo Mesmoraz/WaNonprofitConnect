@@ -72,6 +72,7 @@ public sealed class ZipCentroidTests : IDisposable
         act.Should().Throw<InvalidDataException>().WithMessage("*INTPTLAT*");
     }
 
+    [Trait("Story", "S-74")]
     [Fact]
     public async Task Importer_reads_the_census_zip_upserts_and_skips_an_identical_file()
     {
@@ -100,6 +101,7 @@ public sealed class ZipCentroidTests : IDisposable
         again.RowsUnchanged.Should().Be(4);
     }
 
+    [Trait("Story", "S-74")]
     [Fact]
     public async Task Map_places_orgs_at_their_zip_and_draws_threads_and_suggestions()
     {
@@ -152,6 +154,7 @@ public sealed class ZipCentroidTests : IDisposable
         points.Select(p => p.Ein).Should().Equal(A, B, D); // 501(c)(3)s with a centroid; NotC3 shares 98101 but is excluded
     }
 
+    [Trait("Story", "S-49")]
     [Fact]
     public async Task With_street_addresses_orgs_sit_there_and_unmatched_ones_leave_the_dots()
     {
@@ -180,6 +183,7 @@ public sealed class ZipCentroidTests : IDisposable
         }
     }
 
+    [Trait("Story", "S-74")]
     [Fact]
     public async Task Map_points_endpoint_is_public_compact_and_cached_an_hour()
     {
