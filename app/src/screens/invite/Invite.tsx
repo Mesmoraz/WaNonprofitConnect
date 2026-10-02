@@ -37,7 +37,7 @@ export function Invite() {
         <input id="invite-code" value={code} onChange={e => setCode(e.target.value)} autoComplete="one-time-code" autoCapitalize="characters" spellCheck={false} enterKeyHint="go" />
       </form>
       {error && <p className="error" role="alert">{error}</p>}
-      {MOCK && <p className="demo">Demo: try BALLARD.</p>}
+      {MOCK && <p className="demo">Demo: try RAINIER.</p>}
       <Link className="link block" to="/find">No code? Find your organization</Link>
     </Door>
   )

@@ -33,10 +33,10 @@ Generated from `roadmap.json` on 2026-09-28. Don't edit this file; run `node scr
 | S-56 File for 501(c)(3) status |  |  | S-88 Your filters: set who you want to hear from (reach, who you serve, kind of work), with everything else in its own inbox |  |
 | S-58 Corporate giving platforms (Benevity and others), subject to APIs and agreements |  |  | S-91 Error logging and database backups, so a problem is seen and nothing is lost |  |
 | S-59 Relabel non-district LEAs (ESDs, technical colleges, charters, tribal compacts) with their own sub |  |  | S-93 Send feedback from inside the app: a button that captures the screen, the page, the device and recent errors with your note, so a bug report arrives ready to fix |  |
-| S-60 Render a funder's stated priorities as their quoted words, not our copy |  |  | S-103 Review fixes: times read right, errors say why, one thread per post, live updates survive a sleeping phone, a lighter first load |  |
-| S-61 Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) |  |  | S-112 A staging copy of the site: every merge goes there first, production is one button |  |
-| S-63 Decide whether WSU branch campuses become their own rows, as UW's are |  |  |  |  |
-| S-64 A separate email-domain field for confirming, where it differs from the website host |  |  |  |  |
+| S-60 Render a funder's stated priorities as their quoted words, not our copy |  |  | S-101 Demo keeps its posts until you leave it, not just until a reload |  |
+| S-61 Cluster circles and labels that stay readable at 900+ organizations (the B4 cap is a stopgap) |  |  | S-103 Review fixes: times read right, errors say why, one thread per post, live updates survive a sleeping phone, a lighter first load |  |
+| S-63 Decide whether WSU branch campuses become their own rows, as UW's are |  |  | S-112 A staging copy of the site: every merge goes there first, production is one button |  |
+| S-64 A separate email-domain field for confirming, where it differs from the website host |  |  | S-110 Admins can walk the front door again: a demo that starts as a new organization at the invite code |  |
 | S-78 Recruit 8 to 12 organizations in two or three clusters |  |  |  |  |
 | S-81 Apple developer account, for TestFlight in Beta |  |  |  |  |
 | S-82 Pick and buy a domain, for email sign-in and store listings |  |  |  |  |
@@ -54,7 +54,6 @@ Generated from `roadmap.json` on 2026-09-28. Don't edit this file; run `node scr
 | S-98 Organization names in normal case (the IRS list is all capitals), keeping acronyms |  |  |  |  |
 | S-99 An organization describes itself: a line about what it does, a website, a contact person |  |  |  |  |
 | S-100 Alpha numbers on the Admin page: posts, threads started and accepted, golden threads, time to first message |  |  |  |  |
-| S-101 Demo keeps its posts until you leave it, not just until a reload |  |  |  |  |
 | S-102 Check on a real phone: iPhone Safari and Android Chrome, the map most of all |  |  |  |  |
 | S-104 A closed thread says so: declined or cancelled, and what to do next |  |  |  |  |
 | S-105 Map legend: what gold, green, dashed and dotted mean, and what a golden thread is |  |  |  |  |
@@ -306,7 +305,7 @@ Corporate giving and volunteering platforms, once there's something to integrate
 - **S-58** Corporate giving platforms (Benevity and others), subject to APIs and agreements · Backlog
 - **S-89** A paid tier for businesses (nonprofits stay free) · Backlog
 
-### I-6 A working alpha for invited nonprofits · In progress · 2/43 stories done
+### I-6 A working alpha for invited nonprofits · In progress · 2/44 stories done
 
 Real organizations post real needs and offers, start threads, and make golden threads, on the map, on any phone or desktop. Target: live Sep 30.
 
@@ -370,7 +369,7 @@ A real base map, every nonprofit as a dot, clusters, and threads that drift and 
 - **S-87** Wish list: search the map for an organization or a place, and fly to it · Backlog
 - **S-105** Map legend: what gold, green, dashed and dotted mean, and what a golden thread is · Backlog · _Full review, 2026-09-28_
 
-#### E-26 Live and invited · In progress · 0/12
+#### E-26 Live and invited · In progress · 0/13
 
 Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
 
@@ -393,7 +392,8 @@ Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
 - **S-91** Error logging and database backups, so a problem is seen and nothing is lost · In review
 - **S-93** Send feedback from inside the app: a button that captures the screen, the page, the device and recent errors with your note, so a bug report arrives ready to fix · In review
 - **S-100** Alpha numbers on the Admin page: posts, threads started and accepted, golden threads, time to first message · Backlog · _Alpha review, 2026-09-24_
-- **S-101** Demo keeps its posts until you leave it, not just until a reload · Backlog · _Alpha review, 2026-09-24_
+- **S-101** Demo keeps its posts until you leave it, not just until a reload · In review · _Alpha review, 2026-09-24_
+    - [x] T-73 The demo keeps posts, threads and messages in this browser until you leave it or start over
 - **S-102** Check on a real phone: iPhone Safari and Android Chrome, the map most of all · Backlog · _Alpha review, 2026-09-24_
 - **S-112** A staging copy of the site: every merge goes there first, production is one button · In review · _Taylor, 2026-09-28: set up staging_
     - [x] T-200 Staging App Service on the same plan, its own free database, same settings
@@ -401,4 +401,9 @@ Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
     - [x] T-202 A small Staging tag on the staging copy
     - [ ] T-203 Taylor adds the staging address to the Google sign-in client (Ready)
     - [x] T-204 WebSockets on in production (Taylor, Sep 28), so live messages stop falling back to polling
+- **S-110** Admins can walk the front door again: a demo that starts as a new organization at the invite code · In review · _Taylor, 2026-09-28: a way to test the site as a fresh user, built into the demo and admin_
+    - [x] T-69 Try as a new organization: in the name menu and on Admin; starts the demo at the invite code, signed in, with no organization
+    - [x] T-70 Invite code RAINIER and the find-yours hint point at organizations with nothing posted
+    - [x] T-71 Waiting screen in the demo: approve it yourself in Admin
+    - [ ] T-72 Check on a phone (Ready)
 

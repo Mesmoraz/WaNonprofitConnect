@@ -31,9 +31,9 @@ export function WhoButton() {
       {open && (
         <div className="who-menu" role="menu">
           {me.account.isAdmin && <button role="menuitem" onClick={() => { setOpen(false); navigate('/admin') }}>Admin</button>}
-          {DEMO
-            ? <button role="menuitem" onClick={leaveDemo}>Leave the demo</button>
-            : me.account.isAdmin && <button role="menuitem" onClick={() => startDemo(me.account.name)}>Start the demo</button>}
+          {!DEMO && me.account.isAdmin && <button role="menuitem" onClick={() => startDemo(me.account.name)}>Start the demo</button>}
+          {me.account.isAdmin && <button role="menuitem" onClick={() => startDemo(me.account.name, true)}>Try as a new organization</button>}
+          {DEMO && <button role="menuitem" onClick={leaveDemo}>Leave the demo</button>}
           <button role="menuitem" onClick={() => { setOpen(false); openFeedback() }}>Send feedback</button>
           {!DEMO && <button role="menuitem" onClick={() => signOut.mutate()} disabled={signOut.isPending}>Sign out</button>}
         </div>

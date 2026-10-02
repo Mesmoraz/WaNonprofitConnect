@@ -11,21 +11,28 @@ export const DEMO = import.meta.env.VITE_MOCK !== '1' && readDemo()
 /** True when the app talks to the in-memory fake instead of the API: `npm run dev:mock`, or the demo. */
 export const MOCK = import.meta.env.VITE_MOCK === '1' || DEMO
 
-/** Start the demo as `name` at a sample organization, or leave it. Both reload, so every screen starts fresh. */
-export function startDemo(name: string) {
+/**
+ * Start the demo as `name`, from the beginning each time. `asNew`: signed in with no organization yet, so you walk
+ * the invite code (or find yours and approve your own claim in Admin) like a newly invited organization.
+ * Otherwise you start confirmed at Ballard Food Bank, which has posts and a thread waiting. Both reload.
+ */
+export function startDemo(name: string, asNew = false) {
   try {
     localStorage.setItem(DEMO_KEY, '1')
+    localStorage.removeItem(DEMO_STATE_KEY)
     localStorage.setItem('mock.session', JSON.stringify({
       account: { id: 'acct-demo', email: 'demo@example.org', name, isAdmin: true },
-      membership: { ein: '911428805', orgName: 'Ballard Food Bank', status: 'confirmed' },
+      membership: asNew ? null : { ein: '911428805', orgName: 'Ballard Food Bank', status: 'confirmed' },
     }))
   } catch { return }
   window.location.assign('/')
 }
 export function leaveDemo() {
-  try { localStorage.removeItem(DEMO_KEY); localStorage.removeItem('mock.session') } catch { /* private mode */ }
+  try { for (const k of [DEMO_KEY, DEMO_STATE_KEY, 'mock.session']) localStorage.removeItem(k) } catch { /* private mode */ }
   window.location.assign('/')
 }
+/** What the demo's organizations have posted and said, kept in this browser until you leave the demo. */
+export const DEMO_STATE_KEY = 'mock.state'
 
 /** Any non-2xx answer from the API. `status` is the HTTP status; `body` is the parsed problem, if any. */
 export class ApiError extends Error {
