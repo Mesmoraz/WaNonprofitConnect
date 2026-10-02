@@ -91,3 +91,17 @@ Approved by Taylor 2026-09-24. Round one of S-88.
 - Chips start from your organization's IRS cause code. A post shows if its organization serves a group you picked; nothing picked shows everything. Organizations with no listed group count as outside your filters (Taylor, Sep 24: they had always shown, and laptops appeared under Food).
 - At the bottom when posts are hidden: "{n} more outside your filters. Show them".
 - "Clear filters" clears these too. The map isn't filtered yet. Picks are saved to your organization, shared by everyone there; an admin can set them. When a cause code gives no group (none, or one like T70 "federated giving"), the organization's name is read instead: "Food bank" is Food, "PTA" is Education, and so on.
+
+## Welcome card (proposed, waiting for approval)
+
+Proposed 2026-09-28. Approving this pull request approves the brief; the build follows in its own pull request.
+
+- **For:** the alpha asks each organization to post one need and one offer. A newly joined organization lands on the board with only a toast. This says what to do first, and it's the first place anyone is told what a golden thread is.
+- **Where:** a card at the top of the board. It shows for a confirmed organization with no open need or no open offer, however it joined (invite code or approved claim). It keys off your posts, so it goes away once you have both.
+- Headline: "Start with one need, one offer"
+- Line: "Post one thing you need and one thing you could give. When another organization helps, it becomes a golden thread on the map." ("the map" links to the Map tab.)
+- Nothing posted yet: **Post a need** (green) and **Post an offer** (plain). Need posted: only **Post an offer** (green). Offer posted: only **Post a need** (green).
+- **Post an offer** opens Post with "We have" picked; **Post a need** with "We need".
+- Link "Not now" hides it on this device. It never comes back once both posts exist.
+- Stays: the "You're in. Welcome, {org}." toast, and "Nothing here yet. Post the first one?" under the card on an empty board.
+- Goes: nothing.
