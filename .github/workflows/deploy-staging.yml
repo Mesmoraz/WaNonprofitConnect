@@ -1,4 +1,4 @@
-# Every pull request is built and tested (a check on the PR). Every merge to main builds once and goes to
+# Every pull request is built and tested: the API tests, and the acceptance tests in app/e2e (checks on the PR). Every merge to main builds once and goes to
 # staging. A pull request with the label "staging" goes to staging too, and again on each new push, until
 # something else takes its place. "Deploy to production" ships the files of the last main deploy.
 name: Deploy to staging
@@ -68,8 +68,76 @@ jobs:
           path: site.zip
           retention-days: 30
 
+  # The acceptance tests (app/e2e): the real app and API on a fresh SQL Server, driven like a person on a phone.
+  # Nothing reaches staging, and so nothing reaches production, unless these pass.
+  acceptance:
+    if: github.event.action != 'labeled' || github.event.label.name == 'staging'
+    runs-on: ubuntu-latest
+    services:
+      sql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: 'Y'
+          MSSQL_SA_PASSWORD: Accept-${{ github.run_id }}-Tests!
+        ports: ['1433:1433']
+        options: >-
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P 'Accept-${{ github.run_id }}-Tests!' -Q 'SELECT 1'"
+          --health-interval 10s --health-timeout 5s --health-retries 20
+    env:
+      # A throwaway database in this job's own container; nothing real.
+      ConnectionStrings__Default: Server=localhost,1433;Database=helpbook_acceptance;User Id=sa;Password=Accept-${{ github.run_id }}-Tests!;TrustServerCertificate=True
+      ASPNETCORE_ENVIRONMENT: Development      # dev sign-in, admin@localhost
+      ASPNETCORE_URLS: http://localhost:5253
+      Data__LoadOnStartup: 'false'             # the tests load a sample, not the whole IRS list
+      BASE_URL: http://localhost:5253
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Build the app and the API
+        run: |
+          (cd app && npm ci && npm run build)
+          dotnet build src/WaNonprofitConnect.Api -c Release
+          dotnet build src/WaNonprofitConnect.Cli -c Release
+      - name: Start the API (it creates the tables)
+        run: |
+          nohup dotnet run --project src/WaNonprofitConnect.Api -c Release --no-build --no-launch-profile > api.log 2>&1 &
+          for i in $(seq 1 60); do
+            [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:5253/health)" = "200" ] && exit 0; sleep 2
+          done
+          cat api.log; exit 1
+      - name: Load 13 real organizations and their ZIP codes
+        run: |
+          dotnet run --project src/WaNonprofitConnect.Cli -c Release --no-build -- import-zips --file tests/acceptance/fixtures/zcta_sample.txt
+          dotnet run --project src/WaNonprofitConnect.Cli -c Release --no-build -- import bmf --state WA --file tests/acceptance/fixtures/eo_wa_sample.csv
+      - name: Install the browser
+        working-directory: app
+        run: npx playwright install --with-deps chromium
+      - name: Run the acceptance tests
+        working-directory: app
+        run: npx playwright test
+      - name: Which roadmap stories are covered
+        if: always()
+        run: node scripts/acceptance.js >> "$GITHUB_STEP_SUMMARY"
+      - name: Keep the report and the API log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: acceptance-report
+          path: |
+            app/playwright-report
+            app/test-results
+            api.log
+          retention-days: 14
+
   staging:
-    needs: build
+    needs: [build, acceptance]
     # main always; a pull request only while it carries the "staging" label.
     if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'staging')
     runs-on: ubuntu-latest

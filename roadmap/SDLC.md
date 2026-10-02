@@ -36,7 +36,7 @@ Every story that touches what a person sees goes through the same loop, and no s
 1. **Brief.** Post what the screen is for, the one action, every word of copy, and what stays and goes. Check it against `docs/MISSION.md`, `docs/TAXONOMY.md`, `docs/APP-MAP.md`, `docs/VOICE.md`.
 2. **Approve.** Taylor edits or approves line by line. Nothing is built before this.
 3. **Build.** Exactly what was approved. Anything extra that was needed to make it true (a bug found, a missing style) is called out by name when shipping.
-4. **Check.** Phone width, real taps and typing, console clean. Tests pass (`node scripts/test-prototype.js`).
+4. **Check.** Phone width, real taps and typing, console clean. The story's acceptance criteria (the approved brief, the change log's test cases) become an automated test named after it, `test('[S-12] ...')` in `app/e2e/`, and every test passes (`npm run test:e2e` in `app/`; see "Automated tests" below).
 5. **Ship.** Open a pull request (see below) with the change log entry and test cases in its description. For a screen change, label it **staging** so Taylor can run the phone test cases on https://helpbook-staging.azurewebsites.net before merging (`docs/OPERATIONS.md`). Set the story to `review`. Taylor's OK merges it, and merging moves the story to `done`.
 
 A round fits in one sitting. If it doesn't, the story is too big: split it.
@@ -89,6 +89,16 @@ Adopted 2026-09-28 (Taylor: "so I can see what the changes are and keep track of
 - **Taylor reviews and merges.** Claude never merges its own pull request, never enables auto-merge, and never force-pushes `main`.
 - The public site repo (`helpbook-site`) is only a build output and keeps its direct pushes.
 
+## Automated tests
+
+Adopted 2026-10-02 (Taylor: "automated tests to ensure functionality based off of acceptance criteria and road maps").
+
+- **Acceptance tests** (`app/e2e/*.spec.ts`, Playwright, phone-sized): the real app and API, driven like a person. Each test is named after the stories it proves, `[S-20] one organization helps another, start to golden thread`, and checks the approved words and what happens next. Write them from the brief and the change log's test cases; a step that needs a real phone stays **[needs your phone]**.
+- **API and service tests** (`tests/WaNonprofitConnect.Tests`, xUnit): rules the screens can't show, such as limits, permissions, and races.
+- **On every pull request** GitHub runs both, the acceptance tests against a fresh SQL Server loaded with 13 real organizations (`tests/acceptance/fixtures`). Nothing reaches staging unless they pass.
+- **Coverage by story:** `node scripts/acceptance.js` lists the alpha's built stories and the tests that cover each. GitHub shows the same table on every run's summary page.
+- **Locally:** run the API and the app, then `npm run test:e2e` in `app/`. Tests sign in through the Development-only sign-in and use fresh posts each run, so they also pass on a database with data in it.
+
 ## Change log and test cases
 
 **Every shipped change gets an entry in `roadmap/CHANGELOG.md`, newest first, and the same entry is given to Taylor in chat.** An entry has three parts and nothing else:
@@ -103,6 +113,6 @@ Rules for the test cases: write them for a phone, not a desktop. One action per 
 
 - The story's one action works on a phone with real taps.
 - Copy matches the approved brief and `docs/VOICE.md`.
-- Tests pass. Console is clean.
+- Its acceptance test exists and passes, with the API tests. Console is clean.
 - Pull request open with the change log entry and test cases; merged into `main` once Taylor approves.
 - Anything discovered along the way is on the roadmap.
