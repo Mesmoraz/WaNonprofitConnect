@@ -62,6 +62,7 @@ public sealed class ApiTests : IDisposable
 
     public void Dispose() => _factory.Dispose();
 
+    [Trait("Story", "S-68")]
     [Fact]
     public async Task Me_is_401_without_the_cookie()
     {
@@ -71,6 +72,7 @@ public sealed class ApiTests : IDisposable
         (await Problem(resp)).Should().Be("Sign in first.");
     }
 
+    [Trait("Story", "S-68")]
     [Fact]
     public async Task Acting_without_a_confirmed_membership_is_403()
     {
@@ -91,6 +93,7 @@ public sealed class ApiTests : IDisposable
         (await http.GetAsync("/api/v1/threads")).StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
+    [Trait("Story", "S-68"), Trait("Story", "S-69")]
     [Fact]
     public async Task Admin_makes_an_invite_and_redeeming_it_confirms()
     {
@@ -154,6 +157,7 @@ public sealed class ApiTests : IDisposable
         (await admin.PutAsJsonAsync("/api/v1/admin/orgs/000000000/filters", new { serve = new[] { "Food" } }, Json)).StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
+    [Trait("Story", "S-91")]
     [Fact]
     public async Task Browser_errors_are_accepted_without_signing_in()
     {
@@ -163,6 +167,7 @@ public sealed class ApiTests : IDisposable
         resp.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    [Trait("Story", "S-93")]
     [Fact]
     public async Task Feedback_arrives_with_who_sent_it_and_the_picture_and_only_admins_see_it()
     {
@@ -206,6 +211,7 @@ public sealed class ApiTests : IDisposable
     }
 
 
+    [Trait("Story", "S-72"), Trait("Story", "S-71")]
     [Fact]
     public async Task Board_to_golden_thread_over_http()
     {
@@ -243,6 +249,7 @@ public sealed class ApiTests : IDisposable
         close.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    [Trait("Story", "S-75")]
     [Fact]
     public async Task Unknown_api_paths_404_and_client_routes_fall_back_to_the_app()
     {

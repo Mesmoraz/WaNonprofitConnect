@@ -168,6 +168,8 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, c
     })
     map.addControl(overlay)
     mapRef.current = map
+    // For the acceptance tests (app/e2e/map.spec.ts): where a pin is drawn, so a test can tap it like a person.
+    ;(box as HTMLDivElement & { __map?: MlMap }).__map = map
     overlayRef.current = overlay
     setZoomLevel(Math.floor(map.getZoom()))
 

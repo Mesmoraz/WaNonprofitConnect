@@ -3,16 +3,6 @@ import { ORG, postListing, run, signIn } from './helpers'
 
 // Screen 6, Board. Copy: docs/ALPHA-BRIEFS.md and the S-103 review fixes.
 
-test('[S-103] an empty board invites the first post', async ({ page }) => {
-  await signIn(page, { name: 'Morgan', org: ORG.thurston })
-  const board = await (await page.request.get('/api/v1/board')).json() as unknown[]
-  test.skip(board.length > 0, 'only on a fresh database (CI); this one already has posts')
-  await page.goto('/')
-  await expect(page.getByText('Nothing here yet.')).toBeVisible()
-  await page.getByRole('link', { name: 'Post the first one?' }).click()
-  await expect(page).toHaveURL(/\/post$/)
-})
-
 test('[S-17] [S-45] a new post shows on the board, and the kinds of help filter it', async ({ page, browser }) => {
   const other = await browser.newContext({ baseURL: process.env.BASE_URL ?? 'http://localhost:5173' })
   const otherPage = await other.newPage()

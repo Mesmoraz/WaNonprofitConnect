@@ -19,6 +19,7 @@ public class BoardRankingTests
         Urgency = urgency, Views = views, CreatedAt = Now.AddDays(-daysOld), Status = ListingStatus.Open,
     };
 
+    [Trait("Story", "S-71"), Trait("Story", "S-45")]
     [Fact]
     public void Urgent_first_then_fewest_views_then_newest()
     {
@@ -69,6 +70,7 @@ public sealed class HelpbookServiceTests : IDisposable
 
     private HelpbookService Svc(AppDbContext db) => new(db, _events);
 
+    [Trait("Story", "S-71"), Trait("Story", "S-45")]
     [Fact]
     public async Task Board_ranks_fairly_and_counts_a_view_for_others_only()
     {
@@ -183,6 +185,7 @@ public sealed class HelpbookServiceTests : IDisposable
         _events.ThreadChanges.Where(x => x.Thread.Status == MatchStatus.Completed).Select(x => x.Ein).Should().BeEquivalentTo(new[] { A, B });
     }
 
+    [Trait("Story", "S-71"), Trait("Story", "S-44")]
     [Fact]
     public async Task Urgent_is_capped_at_2_needs_a_rolling_month()
     {

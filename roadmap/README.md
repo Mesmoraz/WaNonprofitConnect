@@ -411,5 +411,5 @@ Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
     - [x] T-205 Playwright tests for the front door, board, post, the thread loop to golden, admin, the demo and the map, named by story
     - [x] T-206 Run on every pull request against a fresh SQL Server with 13 real organizations; staging waits for them
     - [x] T-207 Coverage by story: scripts/acceptance.js, also on each run's summary page
-    - [ ] T-208 Tests for the stories not covered yet: fair ranking, map data, installable, feedback, error logging (Ready)
+    - [x] T-208 Tests for the rest: map tiles, map data, tapping a pin, installable and layouts, one address, the staging tag, feedback, browser errors; API tests labeled by story
 
