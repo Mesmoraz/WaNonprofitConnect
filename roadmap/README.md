@@ -7,8 +7,8 @@ Generated from `roadmap.json` on 2026-09-28. Don't edit this file; run `node scr
 | Backlog | Ready | In progress | In review | Done |
 | --- | --- | --- | --- | --- |
 | S-13 Foundations flagged from the IRS list's foundation code |  | S-79 Invite message drafted by Claude, sent by the co-founder to his contacts | S-17 Board: kind-of-help chips, fair ranking, directory search at the top | S-1 Mission statement saved and pointed at from the repo |
-| S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder ⛔ |  |  | S-18 A need or offer: who it's from, how it fits you, I can help / I need this | S-2 Voice sheet: ten rules and a words list |
-| S-23 Directory: all six kinds, filter by kind, cause, city |  |  | S-19 Post: kind of help first, then the rest | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
+| S-21 Grants screen: eight filters, a grant card, Apply leaves to the funder ⛔ |  | S-114 Security hardening from the Oct 2 review | S-18 A need or offer: who it's from, how it fits you, I can help / I need this | S-2 Voice sheet: ten rules and a words list |
+| S-23 Directory: all six kinds, filter by kind, cause, city |  | S-115 A faster, steadier dev loop: Node 22.12+, a third off CI time, one command for local tests, lint in CI, current docs | S-19 Post: kind of help first, then the rest | S-3 Taxonomy: six kinds of participant, eight kinds of help, words |
 | S-24 Profile: one layout, six shapes ⛔ |  |  | S-20 Thread and inbox: accept, message, mark done, golden | S-4 App map: five tabs, sixteen screens, three stories, order of work |
 | S-25 Map: fewer controls at once ⛔ |  |  | S-22 Grants tab shows only for confirmed organizations | S-5 Sign up: one green button, email behind a link |
 | S-26 Legend and pin colors for six kinds ⛔ |  |  | S-39 ASP.NET Identity replaces the X-Org-Ein header | S-6 Who are you here as: six kinds, button label follows the pick |
@@ -304,7 +304,7 @@ Corporate giving and volunteering platforms, once there's something to integrate
 - **S-58** Corporate giving platforms (Benevity and others), subject to APIs and agreements · Backlog
 - **S-89** A paid tier for businesses (nonprofits stay free) · Backlog
 
-### I-6 A working alpha for invited nonprofits · In progress · 2/46 stories done
+### I-6 A working alpha for invited nonprofits · In progress · 2/48 stories done
 
 Real organizations post real needs and offers, start threads, and make golden threads, on the map, on any phone or desktop. Target: live Sep 30.
 
@@ -373,7 +373,7 @@ A real base map, every nonprofit as a dot, clusters, and threads that drift and 
 - **S-87** Wish list: search the map for an organization or a place, and fly to it · Backlog
 - **S-105** Map legend: what gold, green, dashed and dotted mean, and what a golden thread is · Backlog · _Full review, 2026-09-28_
 
-#### E-26 Live and invited · In progress · 0/14
+#### E-26 Live and invited · In progress · 0/16
 
 Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
 
@@ -415,4 +415,13 @@ Hosted, installable, with privacy and terms, and 8 to 12 organizations invited.
     - [x] T-206 Run on every pull request against a fresh SQL Server with 13 real organizations; staging waits for them
     - [x] T-207 Coverage by story: scripts/acceptance.js, also on each run's summary page
     - [x] T-208 Tests for the rest: map tiles, map data, tapping a pin, installable and layouts, one address, the staging tag, feedback, browser errors; API tests labeled by story
+- **S-114** Security hardening from the Oct 2 review · In progress · _Security review and dev audit, 2026-10-02_
+    - [ ] T-209 Tighter deploy permissions (Ready)
+    - [ ] T-210 Fixes from the review, with tests (Ready)
+    - [ ] T-211 Decide one sign-in question from the review (Ready)
+    - [ ] T-212 Move to .NET 10 before .NET 8 support ends Nov 10 (Ready)
+- **S-115** A faster, steadier dev loop: Node 22.12+, a third off CI time, one command for local tests, lint in CI, current docs · In progress · _Security review and dev audit, 2026-10-02_
+    - [ ] T-213 Taylor upgrades Node to 22.12 or newer on this machine (winget install OpenJS.NodeJS.LTS), then npm ci (Ready)
+    - [ ] T-214 CI: SQL Server starts early, NuGet and browser caches, lint, staging uses its own identity, production ships only main's own builds (Ready)
+    - [ ] T-215 Decide: stop the roadmap conflicts (stop tracking roadmap/README.md, drop the updated date, one file per changelog entry) (Ready)
 
