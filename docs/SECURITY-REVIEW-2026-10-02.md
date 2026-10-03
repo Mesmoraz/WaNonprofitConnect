@@ -3,9 +3,9 @@
 Internal. An authorized test of a local copy of the app (never production or staging) plus a read of the code, the CI workflows and the Azure settings. Nothing critical or high was found.
 
 Where each finding is being fixed:
-- **M1** deploy permissions: a staging-only identity now exists (`helpbook-github-staging`, can only deploy `helpbook-staging`). The workflow switch is in the dev-workflow pull request; after it merges, the production identity loses its staging trust and is narrowed to `helpbook-alpha` only.
-- **M2, M3, L1 to L6**, and the public imports endpoint: the security-hardening pull request.
-- **L9**: the dev-workflow pull request.
+- **M1** deploy permissions: **fixed Oct 3.** Staging deploys sign in as `helpbook-github-staging`, which trusts only the `staging` environment and can only deploy `helpbook-staging`. Production signs in as `helpbook-github-deploy`, which now trusts only the `production` environment (main only) and can only deploy `helpbook-alpha`.
+- **M2, M3, L1 to L6**, and the public imports endpoint: **fixed Oct 3** in PR #13.
+- **L9**: **fixed Oct 3** in PR #12.
 - **L7** (Google sign-in falls back to email), **L8** (.NET 8 support ends Nov 10 2026), **L10** (npm audit, unused deck.gl code): written up as roadmap items, decisions for Taylor.
 
 ---
