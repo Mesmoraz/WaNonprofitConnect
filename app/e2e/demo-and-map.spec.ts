@@ -35,6 +35,6 @@ test('[S-73] [S-103] the map draws, and its code only loads when you open it', a
   await page.goto('/')
   await expect(page.getByRole('searchbox', { name: 'Search everyone here' })).toBeVisible()
   expect(mapCode, 'map code loaded before opening the map').toHaveLength(0)
-  await page.getByRole('link', { name: 'Map' }).click()
+  await page.getByRole('link', { name: 'Map', exact: true }).click()
   await expect(page.locator('canvas').first()).toBeVisible()
 })

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useCreateListing, useMe, type Cadence, type KindOfHelp, type ListingKind, type Urgency } from '../../api'
 import { HELP_LABEL } from '../../lib/words'
 import { Page } from '../../shell/Page'
@@ -41,7 +41,8 @@ export function Post() {
   const create = useCreateListing()
   const toast = useToast()
   const navigate = useNavigate()
-  const [kind, setKind] = useState<ListingKind>('Need')
+  const [params] = useSearchParams()
+  const [kind, setKind] = useState<ListingKind>(params.get('kind') === 'Offer' ? 'Offer' : 'Need')
   const [help, setHelp] = useState<KindOfHelp | null>(null)
   const [pickWhat, setPickWhat] = useState<string | null>(null)
   const [typed, setTyped] = useState('')
