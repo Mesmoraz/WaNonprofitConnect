@@ -23,7 +23,18 @@ Both run on the same plan (`helpbook-alpha-plan`, B1), so staging costs nothing 
    Careful with a PR that changes the database (a new migration): staging's database keeps the change even if the PR is closed. The PR description says so when it happens; reset staging's database before putting `main` back if it does.
 3. **Actions → Deploy to production → Run workflow.** It ships the exact files the last successful staging deploy used, then checks `/health`.
 
-GitHub signs in to Azure as the managed identity `helpbook-github-deploy`, which trusts only this repo's `main` branch and its `staging` and `production` environments, and can only deploy App Services in the `helpbook-alpha` resource group (Website Contributor). GitHub presents the repo by its permanent ids (`repo:Mesmoraz@93046683/WaNonprofitConnect@1393798469:environment:staging`), so the identity's federated credentials use that form; if the repo is renamed or moved, they still match, but a new repo needs new ones. No password or key is stored in GitHub; the ids are repository variables (`AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`).
+GitHub signs in to Azure with one of two managed identities, so a staging deploy can never touch production:
+
+| | Staging deploys | Production deploys |
+|---|---|---|
+| Identity | `helpbook-github-staging` | `helpbook-github-deploy` |
+| Trusts | this repo's `staging` environment only | this repo's `production` environment only |
+| Can deploy | the `helpbook-staging` App Service only (Website Contributor on that site) | the `helpbook-alpha` App Service only (Website Contributor on that site) |
+| Repository variable | `AZURE_STAGING_CLIENT_ID` | `AZURE_CLIENT_ID` |
+
+So a branch that edits its workflow to borrow the `staging` environment still gets a token that cannot deploy or change the production site. GitHub presents the repo by its permanent ids (`repo:Mesmoraz@93046683/WaNonprofitConnect@1393798469:environment:staging`), so the identities' federated credentials use that form; if the repo is renamed or moved, they still match, but a new repo needs new ones. No password or key is stored in GitHub; the ids are repository variables (the two above, plus `AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID`).
+
+*Deploy to production* only ships a build from a push to `main` (not from a pull request), and checks that the commit is on `main` before it deploys.
 
 By hand, if GitHub is down:
 
@@ -53,6 +64,8 @@ Logs are kept 3 days on the App Service. For longer retention or alerts, Applica
 ## The database sleeps
 
 The database is on Azure's free serverless tier: it pauses after 60 idle minutes and takes about a minute to wake (error 40613). The app retries while it wakes, and waits up to about 3 minutes at startup. The first visit after a quiet hour is slow; nothing is lost. Roadmap S-90 is the choice to pay for a database that doesn't pause.
+
+Deploys knock first so they don't wait on it: the staging workflow calls staging's `/health` as its very first step (only for builds that go to staging, so ordinary pull requests don't spend the free allowance), and *Deploy to production* calls production's `/health` before it downloads the files. The database wakes while the build and tests run, and the new version starts without the wait.
 
 ## Backups and restoring
 

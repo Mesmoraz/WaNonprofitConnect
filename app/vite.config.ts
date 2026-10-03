@@ -26,7 +26,8 @@ export default defineConfig({
   server: {
     port: 5173,
     // Poll for changes: Windows file events missed some edits, and the dev server served a stale mix (Sep 24).
-    watch: { usePolling: true, interval: 300 },
+    // Once a second still catches every save and costs less while idle. VITE_POLL=0 turns polling off.
+    watch: process.env.VITE_POLL === '0' ? {} : { usePolling: true, interval: 1000 },
     proxy: { '/api': api, '/hubs': { target: api, ws: true }, '/health': api },
   },
   build: { outDir: '../src/WaNonprofitConnect.Api/wwwroot', emptyOutDir: true, rolldownOptions: { input: { main: 'index.html', mapDev: 'map-dev.html' } } },
