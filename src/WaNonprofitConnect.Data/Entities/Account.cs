@@ -11,6 +11,11 @@ public class Account
     public string? GoogleSubject { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? LastSignInAt { get; set; }
+    /// <summary>
+    /// Goes up by one on every sign-out. Each session cookie carries the number it was made with, and a cookie with an
+    /// older number no longer works, so signing out ends the session on the server too (S-114), on every device.
+    /// </summary>
+    public int SessionVersion { get; set; }
 
     public Membership? Membership { get; set; }
 }

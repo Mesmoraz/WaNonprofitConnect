@@ -16,6 +16,7 @@ public sealed class ExchangeService
 
     // Column limits (AppDbContext). An overlong value is a 500 on SQL Server, so check or trim before saving.
     public const int MaxTitle = 200;
+    public const int MaxQuantity = 1_000_000;
     public const int MaxDescription = 4000;
     public const int MaxUnit = 40;
     public const int MaxTags = 500;
@@ -45,7 +46,7 @@ public sealed class ExchangeService
         var unit = BmfRowParser.Clean(req.Unit);
         if (unit is { Length: > MaxUnit }) throw ExchangeException.Invalid("Keep the unit under 40 characters.");
         var tags = TruncateAtBoundary(BmfRowParser.Clean(req.Tags), MaxTags, ',');
-        if (req.Quantity is < 0) throw ExchangeException.Invalid("The number can't be below 0.");
+        if (req.Quantity is < 1 or > MaxQuantity) throw ExchangeException.Invalid("Pick a number from 1 to 1,000,000.");
         if (!Enum.IsDefined(req.Kind)) throw ExchangeException.Invalid("Pick need or offer.");
         if (!Enum.IsDefined(req.Category)) throw ExchangeException.Invalid("Pick a kind of help.");
         var help = req.Help == 0 ? KindOfHelp.Things : req.Help;

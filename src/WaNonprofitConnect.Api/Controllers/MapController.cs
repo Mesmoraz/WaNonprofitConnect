@@ -2,6 +2,8 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using WaNonprofitConnect.Api.Security;
+using WaNonprofitConnect.Data.Accounts;
 using WaNonprofitConnect.Data.Exchange;
 
 namespace WaNonprofitConnect.Api.Controllers;
@@ -21,10 +23,17 @@ public sealed class MapController : ControllerBase
         _cache = cache;
     }
 
-    /// <summary>Member pins, live and golden threads (from = giver, to = receiver), and suggested threads.</summary>
+    /// <summary>
+    /// Member pins, live and golden threads (from = giver, to = receiver), and suggested threads.
+    /// Before you're confirmed, the pins only (S-114).
+    /// </summary>
     [HttpGet]
     [Authorize]
-    public Task<MapDataDto> Get(CancellationToken ct) => _helpbook.MapAsync(ct);
+    public async Task<MapDataDto> Get([FromServices] AccountService accounts, CancellationToken ct)
+    {
+        var confirmed = User.AccountId() is { } id && await accounts.FindActingEinAsync(id, ct) is not null;
+        return await _helpbook.MapAsync(confirmed, ct);
+    }
 
     /// <summary>
     /// <c>[ein, lat, lon][]</c> for every Washington 501(c)(3) with a ZIP centroid: the faint dots.

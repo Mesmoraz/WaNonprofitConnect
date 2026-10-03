@@ -13,6 +13,12 @@ using WaNonprofitConnect.Api.Realtime;
 using WaNonprofitConnect.Api.Security;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.ConfigureKestrel(k =>
+{
+    k.AddServerHeader = false; // no "Server: Kestrel" (S-114)
+    // Requests are small JSON. The two that carry more set their own limit: feedback (a picture) and client errors.
+    k.Limits.MaxRequestBodySize = 1024 * 1024;
+});
 
 // --- Data ---------------------------------------------------------------
 var connection = builder.Configuration.GetConnectionString("Default")
@@ -90,7 +96,17 @@ builder.Services.AddRateLimiter(o =>
             Window = TimeSpan.FromMinutes(1),
             QueueLimit = 0,
         }));
+    // On top of that, endpoints marked [SignedOutHourlyLimit] (feedback) take only a few an hour from one address
+    // while signed out, so no one can fill the database (S-114). Signed in, only the usual limit applies.
+    var signedOutPerHour = builder.Configuration.GetValue("RateLimit:SignedOutPerHour", 5);
+    o.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(ctx =>
+        ctx.User.Identity?.IsAuthenticated != true && ctx.GetEndpoint()?.Metadata.GetMetadata<SignedOutHourlyLimitAttribute>() is not null
+            ? RateLimitPartition.GetFixedWindowLimiter("signed-out:" + (ctx.Connection.RemoteIpAddress?.ToString() ?? "anonymous"),
+                _ => new FixedWindowRateLimiterOptions { PermitLimit = signedOutPerHour, Window = TimeSpan.FromHours(1), QueueLimit = 0 })
+            : RateLimitPartition.GetNoLimiter("none"));
 });
+if (!builder.Environment.IsDevelopment())
+    builder.Services.AddHsts(o => { o.MaxAge = TimeSpan.FromDays(365); });
 
 // Same origin in the alpha, so CORS is only for a dev server on another port (Vite proxies, so usually unused).
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
@@ -122,9 +138,15 @@ using (var scope = app.Services.CreateScope())
     else await db.Database.EnsureCreatedAsync(); // tests run on SQLite, which can't apply SQL Server migrations
 }
 
+// Security headers on everything that follows, error pages included (S-114). Report-only is a switch for trying a
+// new policy on staging first: Security__CspReportOnly=true.
+app.UseSecurityHeaders(reportOnly: app.Configuration.GetValue("Security:CspReportOnly", false));
+if (!app.Environment.IsDevelopment()) app.UseHsts();
+
 // Unhandled exceptions: logged (by the handler) with the trace id, answered as a problem document, never a bare 500.
 app.UseExceptionHandler();
 app.UseStatusCodePages();
+app.UseBadRequestAnswers(); // too big or cut off: 413 or 400, not 500
 
 if (app.Environment.IsDevelopment())
 {
@@ -154,8 +176,10 @@ if (staticRoot is not null)
     app.UseStaticFiles(staticFiles);
 }
 app.UseCors();
-app.UseRateLimiter();
+// Writes from another site's page are refused. The dev server (Cors:AllowedOrigins) and any Security:TrustedOrigins count as ours.
+app.UseSameOriginCheck(allowedOrigins.Concat(app.Configuration.GetSection("Security:TrustedOrigins").Get<string[]>() ?? Array.Empty<string>()));
 app.UseAuthentication();
+app.UseRateLimiter(); // after sign-in is known: feedback's limit depends on it
 app.UseAuthorization();
 
 app.MapHealthChecks("/health");

@@ -145,3 +145,18 @@ Added by the backend lane on Sep 23 (S-68, S-71, S-72, S-74, serving). The contr
 - `MapData.threads[].help` and `.title` come from the need. `members` also includes any organization in a thread.
 - SignalR: you join `org-{ein}` when you connect. After redeeming an invite or getting approved, reconnect to receive `threadChanged` and `messageAdded`. `threadChanged` carries that organization's own `unread`. A new message sends `messageAdded`, then `threadChanged`.
 - Unknown paths fall back to `index.html`, except `/api`, `/hubs` and `/swagger`, which 404. The app is served from `wwwroot` next to the published binaries, or the project's `wwwroot` in dev.
+
+**Security hardening (S-114, Oct 2)**
+
+From the Oct 2 security assessment. What changed for anyone calling the API:
+
+- Every response carries security headers: a Content-Security-Policy (Google sign-in, Google Fonts, OpenFreeMap, this host's WebSocket, `data:`/`blob:` images and workers, `frame-ancestors 'none'`), `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`, `X-Frame-Options: DENY` and `Cross-Origin-Opener-Policy: same-origin-allow-popups`. HSTS (a year) outside Development. No `Server` header. A new outside source (a CDN, an image host) has to be added to `Security/SecurityHeaders.cs` first. `Security__CspReportOnly=true` sends the policy as report-only, for trying a change on staging.
+- `POST /auth/signout` ends the session on the server, on every device: each cookie carries the account's session number (`Accounts.SessionVersion`, new column), and sign-out moves it on. A cookie made before that gets `401`.
+- `POST`, `PUT`, `PATCH` and `DELETE` under `/api` from another site's page get `403` ("That came from another site, so we stopped it."). Ours: the same host, `Cors:AllowedOrigins` and `Security:TrustedOrigins`. Calls with no `Origin` and no cross-site `Sec-Fetch-Site` (the CLI, scripts, tests) go through.
+- `POST /feedback` still works signed out (the crash screen can show then), but signed out it takes 5 an hour from one address (`RateLimit:SignedOutPerHour`), keeps 2,000 characters of the note and drops a picture over 1.5 MB. Signed in: 4,000 characters and 3 MB, as before. A picture must really be PNG, JPEG or WebP, or it's `400` "That picture didn't work. Send it without one." The admin screenshot is served with its real type, `inline`, and its own policy `default-src 'none'; sandbox`.
+- Bodies are 1 MB at most, except feedback (6 MB) and `POST /client-errors` (16 KB). Too big is `413` "That's too much to send at once.", never `500`.
+- `quantity` is 1 to 1,000,000; anything else is `400` "Pick a number from 1 to 1,000,000."
+- Board views are counted only for confirmed members.
+- Before you're confirmed, `GET /map` has `members` only: `threads` and `suggested` are empty. The old `GET /listings` search gives open posts only, whatever `status` you ask for.
+- `GET /imports` (the import log, with server paths) is for admins.
+- Browser text written to the log (client errors, the feedback note and page) has line breaks and control characters replaced and is cut to length, so it can't start a fake log line.

@@ -1,6 +1,4 @@
 using Google.Apis.Auth;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WaNonprofitConnect.Api.Security;
@@ -72,7 +70,7 @@ public sealed class AccountController : AppControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> SignOutAccount()
     {
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        await HttpContext.SignOutAccountAsync(); // ends the session on the server too, on every device (S-114)
         return NoContent();
     }
 
@@ -133,8 +131,6 @@ public sealed class AdminController : AppControllerBase
         await _accounts.ConfirmWithoutInviteAsync(AccountId, request.Ein, ct, code: "ADMIN");
         return (await _accounts.GetMeAsync(AccountId, ct))!;
     }
-
-    private string Email => User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "admin";
 }
 
 public sealed record ActAsRequest(string Ein);

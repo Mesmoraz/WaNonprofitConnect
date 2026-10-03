@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WaNonprofitConnect.Api.Security;
 using Microsoft.EntityFrameworkCore;
 using WaNonprofitConnect.Data;
 using WaNonprofitConnect.Data.Codes;
@@ -45,8 +47,9 @@ public sealed class StatsController : ControllerBase
         NteeMajorGroup = BmfCodes.NteeMajorGroup,
     });
 
-    /// <summary>Recent data-import runs (provenance for everything served by this API).</summary>
+    /// <summary>Recent data-import runs (provenance for everything served by this API). Admins only: it names server paths (S-114).</summary>
     [HttpGet("imports")]
+    [Authorize(Policy = AuthSetup.AdminPolicy)]
     [ProducesResponseType(typeof(IReadOnlyList<ImportRun>), StatusCodes.Status200OK)]
     public async Task<IReadOnlyList<ImportRun>> Imports([FromQuery] int take = 20, CancellationToken ct = default)
         => await _db.ImportRuns.AsNoTracking()

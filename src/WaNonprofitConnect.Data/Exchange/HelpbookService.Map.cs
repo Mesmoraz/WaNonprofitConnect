@@ -10,12 +10,14 @@ public sealed partial class HelpbookService
     /// <summary>
     /// What the map draws: member pins (orgs with a confirmed person or an open post, plus anyone in a thread),
     /// threads that are live or golden (not declined or cancelled), and up to 40 suggested threads: the best fit for each open need.
+    /// Someone not confirmed yet (<paramref name="confirmed"/> false) gets the pins only, no threads or suggestions: who is talking to whom, and
+    /// about what, is for members (S-114). No screen before confirmation shows the map.
     /// </summary>
-    public async Task<MapDataDto> MapAsync(CancellationToken ct = default)
+    public async Task<MapDataDto> MapAsync(bool confirmed = true, CancellationToken ct = default)
     {
         var now = DateTime.UtcNow;
         var threads = await _db.Matches.AsNoTracking()
-            .Where(m => m.Status != MatchStatus.Declined && m.Status != MatchStatus.Cancelled)
+            .Where(m => confirmed && m.Status != MatchStatus.Declined && m.Status != MatchStatus.Cancelled)
             .Select(m => new
             {
                 m.Id, m.Status, NeedHelp = m.NeedListing!.Help, NeedTitle = m.NeedListing.Title,
@@ -34,7 +36,7 @@ public sealed partial class HelpbookService
             .Select(p => (p.NeedListingId, p.OfferListingId)).ToHashSet();
         var offers = open.Where(l => l.Kind == ListingKind.Offer).ToList();
         var suggested = new List<(Listing Need, Listing Offer, int Score)>();
-        foreach (var need in open.Where(l => l.Kind == ListingKind.Need))
+        foreach (var need in open.Where(l => confirmed && l.Kind == ListingKind.Need))
         {
             var best = offers
                 .Where(o => o.OrgEin != need.OrgEin && !paired.Contains((need.Id, o.Id)))

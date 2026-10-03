@@ -59,6 +59,14 @@ public sealed class AccountService
         return account;
     }
 
+    /// <summary>The account's current session number (see <see cref="Account.SessionVersion"/>), or null if the account is gone.</summary>
+    public Task<int?> SessionVersionAsync(Guid accountId, CancellationToken ct = default)
+        => _db.Accounts.AsNoTracking().Where(a => a.Id == accountId).Select(a => (int?)a.SessionVersion).FirstOrDefaultAsync(ct);
+
+    /// <summary>Sign-out: every cookie made before now stops working.</summary>
+    public Task EndSessionsAsync(Guid accountId, CancellationToken ct = default)
+        => _db.Accounts.Where(a => a.Id == accountId).ExecuteUpdateAsync(s => s.SetProperty(a => a.SessionVersion, a => a.SessionVersion + 1), ct);
+
     /// <summary>Confirm the account for an EIN without an invite. Development sign-in, and admins switching organization to test.</summary>
     public async Task ConfirmWithoutInviteAsync(Guid accountId, string ein, CancellationToken ct = default, string code = "DEV")
     {

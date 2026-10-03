@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using WaNonprofitConnect.Api.Security;
 using WaNonprofitConnect.Data.Accounts;
+using WaNonprofitConnect.Data.Entities;
 using WaNonprofitConnect.Data.Exchange;
 using WaNonprofitConnect.Data.Queries;
 
@@ -74,10 +75,16 @@ public sealed class ListingsController : AppControllerBase
     public async Task<FiltersDto> SaveFilters([FromBody] SaveFiltersRequest request, CancellationToken ct)
         => await _helpbook.SaveFiltersAsync(await ActingEinAsync(ct), request.Serve, Email, ct);
 
-    /// <summary>Older paged search over listings (CLI and scripts). The app uses /board.</summary>
+    /// <summary>
+    /// Older paged search over listings (CLI and scripts). The app uses /board. Closed and done posts are for
+    /// confirmed members; anyone else signed in gets open posts only, whatever status they ask for (S-114).
+    /// </summary>
     [HttpGet("listings")]
-    public Task<PagedResult<ListingDto>> Search([FromQuery] ListingSearchRequest request, CancellationToken ct)
-        => _exchange.SearchListingsAsync(request, ct);
+    public async Task<PagedResult<ListingDto>> Search([FromQuery] ListingSearchRequest request, CancellationToken ct)
+    {
+        if (await FindActingEinAsync(ct) is null) request.Status = ListingStatus.Open;
+        return await _exchange.SearchListingsAsync(request, ct);
+    }
 
     /// <summary>One need or offer, with <c>fits</c> (your posts that pair with it) and <c>myThreadId</c> when you already have a thread on it.</summary>
     [HttpGet("listings/{id:int}")]
