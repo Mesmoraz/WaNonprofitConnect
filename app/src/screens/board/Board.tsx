@@ -103,7 +103,9 @@ export function Board() {
 
         {board.data && !listings.length && !hidden && (help
           ? <p className="empty">Nothing under {HELP_LABEL[help]} yet. <Link className="inline-link" to="/post">Post the first one?</Link></p>
-          : filterCount
+          // Only "What" (needs or offers) filters on the server. "Who they serve" can't empty a board that has
+          // posts (those show as "{n} more outside your filters"), so with no posts at all, say so.
+          : kind
             ? <p className="empty">Nothing here with those filters. <button className="inline-link" onClick={clearFilters}>Clear them?</button></p>
             : <p className="empty">Nothing here yet. <Link className="inline-link" to="/post">Post the first one?</Link></p>)}
 
