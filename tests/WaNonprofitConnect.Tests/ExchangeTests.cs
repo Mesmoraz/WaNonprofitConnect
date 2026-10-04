@@ -135,7 +135,7 @@ public sealed class ExchangeServiceTests : IDisposable
         });
 
         l.Title.Should().Be("Plywood for ramps");
-        l.Org.Name.Should().Be("ALPHA FOOD BANK");
+        l.Org.Name.Should().Be("Alpha Food Bank");
         l.City.Should().Be("SEATTLE");
         l.Zip5.Should().Be("98101");
         l.Status.Should().Be(ListingStatus.Open);
@@ -196,7 +196,7 @@ public sealed class ExchangeServiceTests : IDisposable
         await svc.SendMessageAsync(m.Id, B, new SendMessageRequest { Body = "Thursday?" });
         await svc.SendMessageAsync(m.Id, A, new SendMessageRequest { Body = "Yes." });
         var thread = await svc.GetMatchAsync(m.Id, A);
-        thread.Messages.Select(x => x.Sender.Name + ": " + x.Body).Should().Equal("BETA HABITAT: Thursday?", "ALPHA FOOD BANK: Yes.");
+        thread.Messages.Select(x => x.Sender.Name + ": " + x.Body).Should().Equal("Beta Habitat: Thursday?", "Alpha Food Bank: Yes.");
 
         m = await svc.CompleteAsync(m.Id, A);
         m.Status.Should().Be(MatchStatus.Completed);

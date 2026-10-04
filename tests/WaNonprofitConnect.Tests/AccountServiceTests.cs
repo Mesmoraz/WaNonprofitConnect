@@ -28,7 +28,7 @@ public sealed class AccountServiceTests : IDisposable
         var svc = Svc(db);
         var invite = await svc.CreateInviteAsync(A, uses: 1, AdminEmail);
         invite.Code.Should().HaveLength(AccountService.InviteLength).And.MatchRegex("^[" + AccountService.InviteAlphabet + "]+$");
-        invite.OrgName.Should().Be("ALPHA FOOD BANK");
+        invite.OrgName.Should().Be("Alpha Food Bank");
 
         var person = await svc.SignInAsync("  Sam@Example.org ", "Sam");
         person.Email.Should().Be("sam@example.org");
@@ -37,7 +37,7 @@ public sealed class AccountServiceTests : IDisposable
         var code = invite.Code.ToLowerInvariant().Insert(4, "-");
         var me = await svc.RedeemInviteAsync(person.Id, code);
 
-        me.Membership.Should().Be(new MeMembershipDto(A, "ALPHA FOOD BANK", "confirmed", 2));
+        me.Membership.Should().Be(new MeMembershipDto(A, "Alpha Food Bank", "confirmed", 2));
         (await svc.RequireActingEinAsync(person.Id)).Should().Be(A);
         (await db.Invites.AsNoTracking().SingleAsync()).Used.Should().Be(1);
 
@@ -77,7 +77,7 @@ public sealed class AccountServiceTests : IDisposable
         var person = await svc.SignInAsync("lee@example.org", "Lee");
 
         var me = await svc.ClaimAsync(person.Id, "00-0000002");
-        me.Membership.Should().Be(new MeMembershipDto(B, "BETA HABITAT", "pending", 2));
+        me.Membership.Should().Be(new MeMembershipDto(B, "Beta Habitat", "pending", 2));
         await Throws(() => svc.RequireActingEinAsync(person.Id), 403);
 
         var claims = await svc.ListClaimsAsync();

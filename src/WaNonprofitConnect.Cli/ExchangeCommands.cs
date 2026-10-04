@@ -404,7 +404,8 @@ public static class ExchangeCommands
         foreach (var msg in m.Messages) Console.WriteLine($"    [{msg.SentAt.ToLocalTime():HH:mm}] {Title(msg.Sender.Name)}: {msg.Body}");
     }
 
-    private static string Title(string s) => System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s.ToLowerInvariant());
+    // Org names come from the API in display case already (S-98); only all-caps text (cities) is re-cased here.
+    private static string Title(string s) => s.Any(char.IsLower) ? s : System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s.ToLowerInvariant());
 
     private static string? NormalizeEin(string? s) => Data.Import.BmfRowParser.NormalizeEin(s);
 }

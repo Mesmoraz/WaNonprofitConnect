@@ -105,7 +105,7 @@ public sealed class ApiTests : IDisposable
         (await person.GetAsync("/api/v1/admin/invites")).StatusCode.Should().Be(HttpStatusCode.Forbidden);
 
         var invite = await PostOk<JsonElement>(admin, "/api/v1/admin/invites", new { ein = B, uses = 1 });
-        invite.GetProperty("orgName").GetString().Should().Be("BETA HABITAT");
+        invite.GetProperty("orgName").GetString().Should().Be("Beta Habitat");
 
         var me = await PostOk<JsonElement>(person, "/api/v1/invites/redeem", new { code = invite.GetProperty("code").GetString() });
         me.GetProperty("membership").GetProperty("status").GetString().Should().Be("confirmed");
@@ -189,7 +189,7 @@ public sealed class ApiTests : IDisposable
         var list = await admin.GetFromJsonAsync<JsonElement>("/api/v1/admin/feedback", Json);
         var mine = list.EnumerateArray().Single(f => f.GetProperty("message").GetString() == "The map froze");
         mine.GetProperty("email").GetString().Should().Be("fb@example.org");
-        mine.GetProperty("orgName").GetString().Should().Be("ALPHA FOOD BANK");
+        mine.GetProperty("orgName").GetString().Should().Be("Alpha Food Bank");
         mine.GetProperty("page").GetString().Should().Be("/map");
         mine.GetProperty("hasScreenshot").GetBoolean().Should().BeTrue();
         list.EnumerateArray().Single(f => f.GetProperty("message").GetString() == "Can't sign in").GetProperty("email").ValueKind.Should().Be(JsonValueKind.Null);
@@ -247,6 +247,37 @@ public sealed class ApiTests : IDisposable
 
         var close = await alpha.PostAsync($"/api/v1/listings/{need.GetProperty("id").GetInt32()}/close", null);
         close.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Trait("Story", "S-98")]
+    [Fact]
+    public async Task Board_post_org_page_and_me_carry_the_display_name_and_the_database_keeps_the_irs_name()
+    {
+        const string Ywca = "000000098";
+        _factory.Seed(db =>
+        {
+            db.Organizations.Add(Org(db.ImportRuns.First(), Ywca, "YWCA OF OLYMPIA", "OLYMPIA", "98501", "03"));
+            db.SaveChanges();
+        });
+        using var ywca = _factory.NewClient();
+        using var beta = _factory.NewClient();
+        var me = await PostOk<JsonElement>(ywca, "/api/v1/auth/dev", new { email = "jo@ywca.org", name = "Jo", ein = Ywca });
+        me.GetProperty("membership").GetProperty("orgName").GetString().Should().Be("YWCA of Olympia");
+        await PostOk<JsonElement>(beta, "/api/v1/auth/dev", new { email = "casey@beta.org", name = "Casey", ein = B });
+
+        var need = await PostOk<JsonElement>(ywca, "/api/v1/listings",
+            new { kind = "Need", help = "Things", title = "Diapers for the shelter", quantity = 40, urgency = "Normal", cadence = "OneTime" });
+        need.GetProperty("org").GetProperty("name").GetString().Should().Be("YWCA of Olympia");
+
+        var board = await beta.GetFromJsonAsync<JsonElement>("/api/v1/board", Json);
+        board.EnumerateArray().Single(l => l.GetProperty("id").GetInt32() == need.GetProperty("id").GetInt32())
+            .GetProperty("org").GetProperty("name").GetString().Should().Be("YWCA of Olympia");
+        var page = await beta.GetFromJsonAsync<JsonElement>($"/api/v1/orgs/{Ywca}/page", Json);
+        page.GetProperty("org").GetProperty("name").GetString().Should().Be("YWCA of Olympia");
+        var found = await beta.GetFromJsonAsync<JsonElement>("/api/v1/orgs?q=ywca", Json);
+        found[0].GetProperty("name").GetString().Should().Be("YWCA of Olympia");
+
+        _factory.Seed(db => db.Organizations.Single(o => o.Ein == Ywca).Name.Should().Be("YWCA OF OLYMPIA"));
     }
 
     [Trait("Story", "S-75")]

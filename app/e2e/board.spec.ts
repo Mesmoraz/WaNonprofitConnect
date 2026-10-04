@@ -38,3 +38,29 @@ test('[S-103] searching everyone here opens the organization', async ({ page }) 
   await expect(page).toHaveURL(new RegExp(`/org/${ORG.westTools.ein}$`))
   await expect(page.getByRole('heading', { name: ORG.westTools.name })).toBeVisible()
 })
+
+test('[S-98] organization names read in normal case, keeping acronyms', async ({ page, browser }) => {
+  // The fixture has the IRS spelling, all capitals: NORTHWEST HARVEST E M M, TACOMA-PIERCE HABITAT FOR HUMANITY.
+  const other = await browser.newContext({ baseURL: process.env.BASE_URL ?? 'http://localhost:5173' })
+  const otherPage = await other.newPage()
+  await signIn(otherPage, { name: 'Kim', org: ORG.harvest })
+  const offer = await postListing(otherPage, { kind: 'Offer', help: 'Time', title: `Forklift training ${run}` })
+  await other.close()
+
+  await signIn(page, { name: 'Casey', org: ORG.computers })
+  await page.goto('/')
+  await expect(page.getByRole('button', { name: 'Casey · Computers 4 People in Need', exact: true })).toBeVisible()
+  await page.getByRole('tab', { name: 'Time' }).click()
+  const showAll = page.getByRole('button', { name: 'Show them' })
+  await expect(page.getByText(/\d+ open/)).toBeVisible()
+  if (await showAll.isVisible()) await showAll.click()
+  const card = page.locator('.listing-card', { hasText: offer.title })
+  await expect(card).toContainText('Northwest Harvest E M M')
+  await expect(card).not.toContainText('NORTHWEST HARVEST')
+
+  await page.getByRole('searchbox', { name: 'Search everyone here' }).fill('Ballard Food')
+  await expect(page.getByRole('link', { name: /Ballard Food Bank/ })).toBeVisible()
+
+  await page.goto(`/org/${ORG.habitat.ein}`)
+  await expect(page.getByRole('heading', { name: 'Tacoma-Pierce Habitat for Humanity', exact: true })).toBeVisible()
+})

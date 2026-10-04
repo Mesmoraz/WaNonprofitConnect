@@ -3,22 +3,23 @@ import { devices } from '@playwright/test'
 
 /**
  * Real Washington 501(c)(3)s from tests/acceptance/fixtures/eo_wa_sample.csv. Each test signs in as its own
- * organizations so tests don't step on each other's posts and threads.
+ * organizations so tests don't step on each other's posts and threads. Names are as the API shows them (S-98):
+ * the IRS list is all capitals, the fixture keeps it that way, and the API turns it into normal case.
  */
 export const ORG = {
-  ballard: { ein: '911428805', name: 'BALLARD FOOD BANK' },
-  toolLibrary: { ein: '465378620', name: 'SOUTHEAST SEATTLE TOOL LIBRARY' },
-  computers: { ein: '822888626', name: 'COMPUTERS 4 PEOPLE IN NEED' },
-  rebuilding: { ein: '911606330', name: 'REBUILDING TOGETHER SEATTLE' },
-  rainier: { ein: '911500768', name: 'RAINIER VALLEY FOOD BANK' },
-  westSeattle: { ein: '911464412', name: 'WEST SEATTLE FOOD BANK' },
-  treehouse: { ein: '911425676', name: 'TREEHOUSE' },
-  harvest: { ein: '910826037', name: 'NORTHWEST HARVEST E M M' },
-  habitat: { ein: '581735531', name: 'TACOMA-PIERCE HABITAT FOR HUMANITY' },
-  hopelink: { ein: '910982116', name: 'HOPELINK' },
-  westTools: { ein: '811434757', name: 'WEST SEATTLE TOOL LIBRARY' },
-  thurston: { ein: '237297837', name: 'THURSTON COUNTY FOOD BANK' },
-  spokane: { ein: '237173826', name: 'SECOND HARVEST INLAND NORTHWEST' },
+  ballard: { ein: '911428805', name: 'Ballard Food Bank' },
+  toolLibrary: { ein: '465378620', name: 'Southeast Seattle Tool Library' },
+  computers: { ein: '822888626', name: 'Computers 4 People in Need' },
+  rebuilding: { ein: '911606330', name: 'Rebuilding Together Seattle' },
+  rainier: { ein: '911500768', name: 'Rainier Valley Food Bank' },
+  westSeattle: { ein: '911464412', name: 'West Seattle Food Bank' },
+  treehouse: { ein: '911425676', name: 'Treehouse' },
+  harvest: { ein: '910826037', name: 'Northwest Harvest E M M' },
+  habitat: { ein: '581735531', name: 'Tacoma-Pierce Habitat for Humanity' },
+  hopelink: { ein: '910982116', name: 'Hopelink' },
+  westTools: { ein: '811434757', name: 'West Seattle Tool Library' },
+  thurston: { ein: '237297837', name: 'Thurston County Food Bank' },
+  spokane: { ein: '237173826', name: 'Second Harvest Inland Northwest' },
 } as const
 export type Org = (typeof ORG)[keyof typeof ORG]
 
