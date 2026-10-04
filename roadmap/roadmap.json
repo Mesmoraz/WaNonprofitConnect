@@ -1,6 +1,5 @@
 {
   "name": "Name TBD roadmap",
-  "updated": "2026-09-28",
   "statuses": [
     "backlog",
     "ready",
@@ -1372,7 +1371,8 @@
           "title": "Seen on Sep 24: the first request after a quiet spell took 50 seconds",
           "status": "ready"
         }
-      ]
+      ],
+      "blocked": "Taylor, Oct 4: stay on the free database while it's a demo"
     },
     {
       "id": "S-91",

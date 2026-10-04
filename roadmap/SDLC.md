@@ -70,7 +70,8 @@ So one part can change without dragging the others:
 ## Commands
 
 ```bash
-node scripts/roadmap.js                     # validate, regenerate roadmap/README.md, print the board
+node scripts/roadmap.js                     # validate, write roadmap/README.md (not committed), print the board
+node scripts/changelog.js                   # join roadmap/changelog/ into roadmap/CHANGELOG.md (not committed)
 node scripts/roadmap.js set S-12 review     # move an item (any id) to a status
 node scripts/roadmap.js block S-12 "waiting on OSPI directory file"
 node scripts/roadmap.js unblock S-12
@@ -101,7 +102,7 @@ Adopted 2026-10-02 (Taylor: "automated tests to ensure functionality based off o
 
 ## Change log and test cases
 
-**Every shipped change gets an entry in `roadmap/CHANGELOG.md`, newest first, and the same entry is given to Taylor in chat.** An entry has three parts and nothing else:
+**Every shipped change gets an entry, as its own file in `roadmap/changelog/` named `YYYY-MM-DD-NN-short-title.md` (NN orders entries on the same day), and the same entry is given to Taylor in chat.** One file per entry, and no generated files committed (`roadmap/README.md`, `roadmap/CHANGELOG.md`), so two pull requests never conflict over them (Taylor, Oct 4). GitHub checks both on every PR. An entry has three parts and nothing else:
 
 1. **What changed** — one line per change, in plain words, saying what a person will notice. Not the code.
 2. **Why** — only when it is not obvious, or when it came from Taylor's feedback (say so).

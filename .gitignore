@@ -15,3 +15,7 @@ src/WaNonprofitConnect.Api/wwwroot/
 node_modules/
 app/dist/
 .codex-temp/
+
+# Generated, not committed: they changed in every pull request and made the next one conflict.
+roadmap/README.md
+roadmap/CHANGELOG.md

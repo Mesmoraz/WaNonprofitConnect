@@ -16,7 +16,7 @@ real app: a React app (`app/`) served by a .NET 8 API (`src/`) on Azure, with SQ
 | Why we build it, and how every word reads | `docs/MISSION.md`, `docs/VOICE.md` (read both before any work; see `CLAUDE.md`) |
 | The alpha: scope, stack, API contract | `docs/ALPHA.md` (screen briefs in `docs/ALPHA-BRIEFS.md`) |
 | Deploying, logs, the sleeping database, backups | `docs/OPERATIONS.md` |
-| The roadmap and how work is tracked | `roadmap/SDLC.md` (rules), `roadmap/roadmap.json` (the source), `roadmap/CHANGELOG.md` |
+| The roadmap and how work is tracked | `roadmap/SDLC.md` (rules), `roadmap/roadmap.json` (the source), `roadmap/changelog/` (one file per entry) |
 | Backend quick start and CLI | `README.md` at the repo root |
 | The old clickable prototype and design brief | `docs/helpbook-prototype.html`, `docs/helpbook-step2-design.html` (historical) |
 
@@ -26,7 +26,7 @@ real app: a React app (`app/`) served by a .NET 8 API (`src/`) on Azure, with SQ
    Taylor merges. Parallel agents each use their own worktree off `origin/main`
    (`git worktree add -b <branch> ../wt-<name> origin/main`), because the main checkout may be someone else's.
 2. **Brief, approve, build, check, ship** (`roadmap/SDLC.md`). Update the roadmap in the same round with
-   `node scripts/roadmap.js set <id> <status>`, and add a `roadmap/CHANGELOG.md` entry with numbered phone tests.
+   `node scripts/roadmap.js set <id> <status>`, and add a change log entry as a new file in `roadmap/changelog/` with numbered phone tests.
 3. **Checks on every pull request** (`.github/workflows/deploy-staging.yml`):
    - `build`: installs, lints and builds the app, runs the API tests (`dotnet test`), and packs the site.
    - `acceptance`: starts the real API on a fresh SQL Server, loads 13 real organizations from

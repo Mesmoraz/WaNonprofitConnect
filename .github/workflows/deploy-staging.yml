@@ -67,6 +67,8 @@ jobs:
       - name: Install the app
         working-directory: app
         run: npm ci
+      - name: Check the roadmap and the change log
+        run: node scripts/roadmap.js && node scripts/changelog.js --check
       - name: Lint the app
         working-directory: app
         run: npm run lint

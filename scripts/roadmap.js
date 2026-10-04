@@ -16,7 +16,8 @@ const readme = path.join(root, 'roadmap', 'README.md');
 const today = () => new Date().toISOString().slice(0, 10);
 
 function load() { return JSON.parse(fs.readFileSync(file, 'utf8')); }
-function save(d) { d.updated = today(); fs.writeFileSync(file, JSON.stringify(d, null, 2) + '\n'); }
+// No "updated" date in the file: every save rewrote it, so any two pull requests conflicted on that line.
+function save(d) { delete d.updated; fs.writeFileSync(file, JSON.stringify(d, null, 2) + '\n'); }
 
 // ---- validation ------------------------------------------------------------
 function validate(d) {
@@ -71,7 +72,7 @@ const LABEL = { backlog: 'Backlog', ready: 'Ready', 'in-progress': 'In progress'
 
 // ---- Markdown board --------------------------------------------------------
 function renderMarkdown(m) {
-  const lines = [`# ${m.name}`, '', `Generated from \`roadmap.json\` on ${m.updated}. Don't edit this file; run \`node scripts/roadmap.js\`. Rules: [SDLC.md](SDLC.md).`, ''];
+  const lines = [`# ${m.name}`, '', `Generated from \`roadmap.json\` by \`node scripts/roadmap.js\` on ${today()}; not committed. Rules: [SDLC.md](SDLC.md).`, ''];
   lines.push('## Board', '');
   lines.push('| ' + m.statuses.map(s => LABEL[s]).join(' | ') + ' |');
   lines.push('| ' + m.statuses.map(() => '---').join(' | ') + ' |');
@@ -173,7 +174,7 @@ function renderHtml(m) {
 <header>
   <a href="index.html">← Name TBD</a>
   <h1>Roadmap</h1>
-  <p class="sub">${counts}. Updated ${esc(m.updated)}. Tap anything to open it.</p>
+  <p class="sub">${counts}. Updated ${esc(today())}. Tap anything to open it.</p>
   <div class="tabs"><button class="on" data-v="roadmap">Roadmap</button><button data-v="board">Board</button></div>
 </header>
 <main>
@@ -239,7 +240,7 @@ if (require.main === module) {
     } else { console.error('add task <S-id> "title" | add story <E-id> "title"'); process.exit(1); }
   } else if (cmd) { console.error('commands: set, block, unblock, add'); process.exit(1); }
   const m = regenerate(load());
-  console.log(`${m.name} · ${m.updated}`);
+  console.log(`${m.name} · ${today()}`);
   for (const s of m.statuses) console.log(`  ${LABEL[s].padEnd(12)} ${m.stories.filter(x => x.status === s).length}`);
   console.log('  README regenerated');
 }
