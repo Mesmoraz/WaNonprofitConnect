@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { MOCK, useMe, type Me } from './api'
+import { forgetReturn, peekReturn, rememberReturn } from './lib/returnTo'
 import { AppShell } from './shell/AppShell'
 import { Admin } from './screens/admin/Admin'
 import { Board } from './screens/board/Board'
@@ -24,11 +25,38 @@ const stageOf = (me: Me | null | undefined): Stage =>
   !me ? 'signedOut' : !me.membership ? 'noOrg' : me.membership.status === 'pending' ? 'pending' : 'confirmed'
 const HOME: Record<Stage, string> = { signedOut: '/signup', noOrg: '/invite', pending: '/waiting', confirmed: '/' }
 
-/** /me decides where you are: signed out → sign up, no organization → invite code, pending → waiting, confirmed → the app. */
+/**
+ * /me decides where you are: signed out → sign up, no organization → invite code, pending → waiting, confirmed → the app.
+ * A link into the app opened before you're in (a shared post, an organization) is remembered on the way to the front
+ * door, and once you're confirmed you land there instead of the board (S-107, src/lib/returnTo.ts).
+ */
 function Only({ stage }: { stage: Stage }) {
   const { data: me } = useMe()
   const s = stageOf(me)
-  return s === stage ? <Outlet /> : <Navigate to={HOME[s]} replace />
+  const { pathname, search } = useLocation()
+  const turnedAway = s !== stage && stage === 'confirmed'
+  useEffect(() => { if (turnedAway) rememberReturn(pathname + search) }, [turnedAway, pathname, search])
+
+  if (s !== stage) return <Navigate to={HOME[s]} replace />
+  if (stage === 'confirmed' && pathname === '/') {
+    const back = peekReturn()
+    if (back) return <ReturnTo to={back} />
+  }
+  return <Outlet />
+}
+
+/** Go to the remembered link, once. */
+function ReturnTo({ to }: { to: string }) {
+  useEffect(() => { forgetReturn() }, [to])
+  return <Navigate to={to} replace />
+}
+
+/** Anywhere else goes home for your stage. /admin is remembered too: an admin who signs in first lands back there. */
+function Elsewhere({ stage }: { stage: Stage }) {
+  const { pathname, search } = useLocation()
+  const admin = stage !== 'confirmed' && pathname === '/admin'
+  useEffect(() => { if (admin) rememberReturn(pathname + search) }, [admin, pathname, search])
+  return <Navigate to={HOME[stage]} replace />
 }
 
 /**
@@ -86,7 +114,7 @@ export function App() {
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/terms" element={<Terms />} />
       {me?.account.isAdmin && <Route path="/admin" element={<Admin />} />}
-      <Route path="*" element={<Navigate to={HOME[stageOf(me)]} replace />} />
+      <Route path="*" element={<Elsewhere stage={stageOf(me)} />} />
     </Routes>
   )
 }
