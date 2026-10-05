@@ -160,3 +160,10 @@ From the Oct 2 security assessment. What changed for anyone calling the API:
 - Before you're confirmed, `GET /map` has `members` only: `threads` and `suggested` are empty. The old `GET /listings` search gives open posts only, whatever `status` you ask for.
 - `GET /imports` (the import log, with server paths) is for admins.
 - Browser text written to the log (client errors, the feedback note and page) has line breaks and control characters replaced and is cut to length, so it can't start a fake log line.
+
+**Organization names in normal case (S-98, Oct 4)**
+
+- Every organization name the API sends reads in normal case, keeping acronyms: "YWCA of Olympia", "Northwest Harvest E M M", "Tacoma-Pierce Habitat for Humanity". That covers `OrgSummary.name` (board, posts, threads, map members, the org page, `/orgs`), `Me.membership.orgName`, `orgName` on admin claims, invites and feedback, `Message.senderName` when it falls back to the organization, the SignalR payloads, and the older `/orgs/search`, `/orgs/{ein}` and `/listings` routes.
+- The database keeps the IRS spelling (all capitals) for matching and imports. The rules live in one place, `OrgName.Display` in `WaNonprofitConnect.Data/OrgName.cs`, with its tests in `OrgNameTests.cs`. The app never re-cases a name.
+- A name that already has a lower-case letter (a future self-registered organization, say) is sent as it is.
+- Search still matches either spelling: it runs on the stored name.

@@ -84,7 +84,7 @@ public sealed class HelpbookServiceTests : IDisposable
         var board = await svc.BoardAsync(A, new BoardQuery());
         board[0].Id.Should().Be(urgent.Id);
         board[0].Why.Should().Be("Urgent");
-        board[0].Org.Name.Should().Be("BETA HABITAT");
+        board[0].Org.Name.Should().Be("Beta Habitat");
         board[0].Help.Should().Be(KindOfHelp.Time);
 
         var views = await db.Listings.AsNoTracking().ToDictionaryAsync(l => l.Id, l => l.Views);

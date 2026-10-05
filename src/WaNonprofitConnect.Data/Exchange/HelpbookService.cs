@@ -329,7 +329,7 @@ public sealed partial class HelpbookService
     {
         var at = OrgLocations.TryGet(o.Ein, out var street) ? street
             : o.Zip5 is not null && centroids.TryGetValue(o.Zip5, out var c) ? c : ((double, double)?)null;
-        return new OrgSummaryDto(o.Ein, o.Name, o.City, o.Zip5, o.NteeCode, at?.Item1, at?.Item2, isMember);
+        return new OrgSummaryDto(o.Ein, OrgName.Display(o.Name), o.City, o.Zip5, o.NteeCode, at?.Item1, at?.Item2, isMember);
     }
 
     private static ListingViewDto View(Listing l, IReadOnlyDictionary<string, OrgSummaryDto> orgs, DateTime now) => new(

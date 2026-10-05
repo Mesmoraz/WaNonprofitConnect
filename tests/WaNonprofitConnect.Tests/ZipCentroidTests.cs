@@ -140,7 +140,7 @@ public sealed class ZipCentroidTests : IDisposable
             need2.Id, thread.Offer.Id, thread.Offer.Title));
 
         var page = await svc.OrgPageAsync(A);
-        page!.Org.Name.Should().Be("ALPHA FOOD BANK");
+        page!.Org.Name.Should().Be("Alpha Food Bank");
         page.Listings.Select(l => l.Id).Should().Contain(need.Id);
         page.Listings.Should().OnlyContain(l => l.Org.Ein == A);
         page.Live.Should().Be(1);   // the drivers thread; the declined one doesn't count

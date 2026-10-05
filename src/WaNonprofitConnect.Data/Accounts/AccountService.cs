@@ -84,7 +84,7 @@ public sealed class AccountService
         var m = account.Membership;
         MeMembershipDto? membership = m is null || m.Status == MembershipStatus.Rejected
             ? null
-            : new MeMembershipDto(m.Ein, m.Org?.Name ?? m.Ein, m.Status == MembershipStatus.Confirmed ? "confirmed" : "pending",
+            : new MeMembershipDto(m.Ein, m.Org is null ? m.Ein : OrgName.Display(m.Org.Name), m.Status == MembershipStatus.Confirmed ? "confirmed" : "pending",
                 await UrgentCap.LeftAsync(_db, m.Ein, DateTime.UtcNow, ct));
         return new MeDto(new MeAccountDto(account.Id, account.Email, account.Name, IsAdmin(account.Email)), membership);
     }
@@ -255,9 +255,9 @@ public sealed class AccountService
     }
 
     private static ClaimDto ToClaim(Membership m) => new(
-        m.Id, m.Ein, m.Org?.Name ?? m.Ein, m.Org?.City,
+        m.Id, m.Ein, m.Org is null ? m.Ein : OrgName.Display(m.Org.Name), m.Org?.City,
         m.AccountId, m.Account?.Email ?? string.Empty, m.Account?.Name ?? string.Empty,
         m.Status.ToString().ToLowerInvariant(), m.CreatedAt, m.DecidedAt);
 
-    private static InviteDto ToInvite(Invite i) => new(i.Code, i.Ein, i.Org?.Name ?? i.Ein, i.Uses, i.Used);
+    private static InviteDto ToInvite(Invite i) => new(i.Code, i.Ein, i.Org is null ? i.Ein : OrgName.Display(i.Org.Name), i.Uses, i.Used);
 }

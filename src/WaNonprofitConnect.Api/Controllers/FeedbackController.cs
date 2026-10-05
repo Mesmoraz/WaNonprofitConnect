@@ -108,7 +108,7 @@ public sealed class AdminFeedbackController(AppDbContext db) : ControllerBase
             .Select(f => new { f.Id, f.Email, f.Name, f.Ein, f.Message, f.Context, HasScreenshot = f.Screenshot != null, f.CreatedAt, f.Status })
             .ToListAsync(ct);
         var eins = rows.Where(r => r.Ein != null).Select(r => r.Ein!).Distinct().ToList();
-        var names = await db.Organizations.AsNoTracking().Where(o => eins.Contains(o.Ein)).ToDictionaryAsync(o => o.Ein, o => o.Name, ct);
+        var names = await db.Organizations.AsNoTracking().Where(o => eins.Contains(o.Ein)).ToDictionaryAsync(o => o.Ein, o => OrgName.Display(o.Name), ct);
         return rows.Select(r => new FeedbackItem(r.Id, r.Email, r.Name, r.Ein, r.Ein != null && names.TryGetValue(r.Ein, out var n) ? n : null,
             r.Message, FeedbackController.PageOf(r.Context), r.Context, r.HasScreenshot, r.CreatedAt, r.Status)).ToList();
     }

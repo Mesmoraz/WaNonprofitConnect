@@ -69,7 +69,7 @@ public sealed record ListingDto(
         l.Id, l.Kind, OrgRef(l.OrgEin, l.Org), l.Category, l.Title, l.Description, l.Quantity, l.Unit,
         l.Urgency, l.Status, l.Tags, l.City, l.Zip5, l.CreatedAt, l.ExpiresAt);
 
-    internal static OrgRefDto OrgRef(string ein, Organization? org) => new(ein, org?.Name ?? ein, org?.City);
+    internal static OrgRefDto OrgRef(string ein, Organization? org) => new(ein, org is null ? ein : OrgName.Display(org.Name), org?.City);
 }
 
 public sealed record MatchSuggestionDto(ListingDto Listing, int Score, IReadOnlyList<string> Reasons);

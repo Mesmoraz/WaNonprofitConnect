@@ -1,3 +1,4 @@
+using WaNonprofitConnect.Data;
 using WaNonprofitConnect.Data.Codes;
 using WaNonprofitConnect.Data.Entities;
 
@@ -21,7 +22,7 @@ public sealed record OrganizationSummaryDto(
     DateOnly? TaxPeriod)
 {
     public static OrganizationSummaryDto From(Organization o) => new(
-        o.Ein, o.Name, o.City, o.State, o.Zip5, o.Subsection, o.Is501c3,
+        o.Ein, OrgName.Display(o.Name), o.City, o.State, o.Zip5, o.Subsection, o.Is501c3,
         o.FoundationCode, BmfCodes.Label(BmfCodes.Foundation, o.FoundationCode),
         o.NteeCode, o.NteeMajor, o.NteeMajor is null ? null : BmfCodes.Label(BmfCodes.NteeMajorGroup, o.NteeMajor),
         o.RevenueAmount, o.TaxPeriod);
@@ -74,7 +75,7 @@ public sealed record OrganizationDetailDto(
         return new OrganizationDetailDto(
             o.Ein,
             $"{o.Ein[..2]}-{o.Ein[2..]}",
-            o.Name,
+            OrgName.Display(o.Name),
             o.SortName,
             new AddressDto(o.Street, o.City, o.State, o.Zip),
             new CodedValue(o.Subsection, BmfCodes.Label(BmfCodes.Subsection, o.Subsection)),
