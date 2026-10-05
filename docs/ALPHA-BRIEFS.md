@@ -105,3 +105,67 @@ Approved by Taylor 2026-10-02 (PR #6, merged). Built in the welcome-card PR.
 - Link "Not now" hides it on this device. It never comes back once both posts exist.
 - Stays: the "You're in. Welcome, {org}." toast, and "Nothing here yet. Post the first one?" under the card on an empty board.
 - Goes: nothing.
+
+---
+
+# Phase A briefs (proposed Oct 4, waiting for approval)
+
+Approving the pull request that adds these approves every word below. Each one is built in its own pull request afterwards. Edit any line in the review.
+
+## Who they serve, while the board is small (S-108)
+
+- **For:** with 10 organizations, a filter set from your cause code hides most of the posts the alpha needs you to see.
+- While the board has **fewer than 30 open posts**, "Who they serve" starts with nothing picked, so you see everything. Picks your organization saved are kept.
+- The line under the chips changes, only while the board is small: "Showing everyone while the board is small. Tap to narrow it." (Was: "Set from your organization's cause code. Tap to change.", which comes back at 30 posts.)
+- Stays: the 12 groups, saving to your organization, "{n} more outside your filters. Show them".
+
+## Admin: waiting on someone (new story)
+
+- **For:** until email notices exist, Taylor nudges by hand. This shows who to nudge.
+- On Admin, under "Waiting for you", label "Waiting on someone".
+- A thread shows here when it has waited **2 days** for a yes, or has been accepted with no message for **7 days**.
+- Each row: the thread's title, then "{organization} hasn't answered · 3 days" or "Quiet since Sep 30", then the people at the organization it's waiting on, "{name} · {email}". Tap an email to copy it: toast "Copied."
+- None: "Every thread is moving."
+
+## Loading and error lines (S-106)
+
+- **For:** a blank screen on a slow phone looks broken.
+- Any screen still loading after 2 seconds shows the approved line: "Waking up. The first visit in a while can take a minute."
+- The map doesn't load: "The map didn't load. Try again?" ("Try again" is the link.)
+- A post that's gone: "This post is gone. Back to the board?" ("Back to the board" is the link.)
+- A thread that's gone, or isn't yours: "This thread is gone. Back to your inbox?" ("Back to your inbox" is the link.)
+- An organization's page that doesn't load: "That didn't work. Try again" (the approved line, as on the board).
+
+## A closed thread says so (S-104)
+
+- **For:** a declined or closed thread goes silent today, and the message box just disappears.
+- You said not this time: "You said not this time. Their post stays on the board."
+- They said not this time (approved, unchanged): "{org} said not this time. Your post stays on the board."
+- Closed (a post was closed, or the thread was cancelled): "This thread is closed. Find another on the board?" ("the board" is the link.)
+- In the inbox, the status word for both: "Closed".
+- The message box stays hidden; the messages so far stay readable.
+
+## What the map shows (S-105)
+
+- **For:** the map is the payoff, and nothing on it explains the lines.
+- A round "?" button at the top of the map, labelled for screen readers "What the map shows". The first time you open the map, the card opens by itself.
+- Card headline: "What the map shows"
+  - Gold, glowing: "Golden thread. Help that was given."
+  - Green: "In progress. They're working it out."
+  - Amber, dashed: "Started. Waiting for a yes."
+  - Grey, dotted: "Could fit. A need and an offer that might go together."
+  - "The dashes run from the one giving to the one receiving."
+  - "A pin is an organization here. A faint dot is any Washington nonprofit."
+- Button: **Close**.
+
+## Email when something waits on you (S-94)
+
+- **For:** threads stall when no one knows they were started.
+- Sent by Azure's email service from its own address, shown as "Helpbook". No domain needed. It costs about $0.25 per 1,000 emails; the alpha would send a few hundred a month at most.
+- **Someone starts a thread with your organization.** To each person at your organization. Subject: "{org} can help with {title}" on your need, or "{org} would like {title}" on your offer. Body: their first message, then the button **Open the thread**.
+- **A new message you haven't seen for an hour.** Subject: "New message from {org}". Body: the message, then **Open the thread**. At most one per thread every 6 hours.
+- **They said yes.** Subject: "{org} said yes to {title}". Body: "Work out the details in the thread." then **Open the thread**.
+- **You're approved.** Subject: "You're in at {org}". Body: "Post one need and one offer to start." then **Open Helpbook**.
+- Footer on every email: "You get these because you're with {org} on Helpbook." then the link "Stop these emails", which works in one tap, no sign-in.
+- Links open the right screen, through sign-in if needed (S-107).
+- The privacy page gets one line: "We email you when something waits on you. You can stop the emails from any of them."
