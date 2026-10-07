@@ -169,3 +169,51 @@ Approving the pull request that adds these approves every word below. Each one i
 - Footer on every email: "You get these because you're with {org} on Helpbook." then the link "Stop these emails", which works in one tap, no sign-in.
 - Links open the right screen, through sign-in if needed (S-107).
 - The privacy page gets one line: "We email you when something waits on you. You can stop the emails from any of them."
+
+---
+
+# The rest of Phase A (proposed Oct 7, waiting for approval)
+
+Approving the pull request that adds these approves every word below. Each one is built in its own pull request afterwards. Edit any line in the review.
+
+## Your organization (S-99 and S-95, a new screen)
+
+- **For:** before saying yes to a stranger, people want to know who they are (S-99). The alpha also promised up to three people per organization, and today only Taylor can add them (S-95).
+- **Where:** in your name menu as **Your organization**, above "Send feedback". Only people confirmed for an organization see it.
+- Headline: the organization's name. Under it, the same line as its page: "Seattle · Food · EIN 91-1428805".
+- Label "About you".
+  - Field "What you do", placeholder "We run a food bank and a free store in Ballard.", 140 characters. Hint: "One line. Others see it on your page."
+  - Field "Website", placeholder "yourorganization.org". Optional.
+  - Field "Who to ask": chips with the first name of each person here. Pick one. Hint: "Others see the name, not the email. Messages still go through threads."
+- Pinned button: **Save**. Toast: "Saved."
+- Label "People here": each person as "{name} · {email}", with "(you)" after yours. Only people at the organization see this list.
+- Label "Invite someone". Line: "Up to 3 people can be here. {n} left." Plain button **Make a code**. The code shows large, with the line "Send it to them yourself. It works once." Tap the code to copy it: toast "Copied." Once 3 people are here: "All 3 places are taken." and no button.
+- **On the organization's page** (what everyone else sees), under the name and its line: the "What you do" line, then the website as a link, then "Ask for {first name}". Anything not filled in is left out.
+- **Find yours:** "Already on {name}. Ask a member to invite you." becomes "Already on {name}. Ask someone there for an invite code."
+- **Stays:** the organization's page as it is, with "Needs and offers" below the new lines.
+- **Goes:** nothing.
+
+### Questions for you
+
+1. Does 3 people include the person who joined first? I'd say yes: 3 in all, as the recruiting note says. Codes you make on Admin can still go past 3.
+2. Should "What you do" also show on each post, under the organization's name? I'd keep it to the organization's page for now, so the board stays three lines a card.
+
+## Edit a need or offer (S-97)
+
+- **For:** today the only way to fix a typo or a count is to close the post and post again, which loses its threads.
+- **Where:** on your own post that's still on the board, a plain button **Edit this need** / **Edit this offer**, above the red close button. It doesn't show on a post that's closed or done.
+- It opens the Post screen filled in. Headline: "Edit your need" / "Edit your offer". The "We need" / "We have" chips don't show: a need stays a need.
+- Everything else can change, with the same words as Post.
+- Pinned button: **Save changes**. Toast: "Saved." Then back to the post.
+- If threads are open on it: line above the button "1 thread is open on this. They'll see the change." ("2 threads are open on this…" for more.)
+- On the post, after an edit, the line under the headline reads "Seattle · Posted 2 days ago · Edited".
+- **Why Urgent is greyed out** (on Post and Edit both, from S-109): when you've used Urgent twice in 30 days, the hint under "How soon" reads "You've used Urgent twice this month. You can use it again on Oct 21." instead of "Urgent is 2 a month, so it keeps meaning you can't operate without it."
+- **Goes:** nothing.
+
+## Small lines (the rest of S-109)
+
+- On an offer, the message box placeholder: "Say what you'd use it for and when." (Was "Say what you can do and when.", which fits a need, not an offer.)
+- Invite code, a wrong code: "That code didn't work. Check it and try again." Approve as it is.
+- Invite code, anything else going wrong: "That didn't work. Try again." Approve as it is.
+- When the app can't find out who you are at start: "That didn't work. Try again" ("Try again" is the link). Approve as it is.
+- Server error sentences (for example "Urgent is 2 a month. Pick This week instead.") stay as they are for now. They get a brief of their own once the alpha shows which ones people actually see.
