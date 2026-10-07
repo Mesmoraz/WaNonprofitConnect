@@ -127,7 +127,7 @@ Approving the pull request that adds these approves every word below. Each one i
 - Each row: the thread's title, then "{organization} hasn't answered · 3 days" or "Quiet since Sep 30", then the people at the organization it's waiting on, "{name} · {email}". Tap an email to copy it: toast "Copied."
 - None: "Every thread is moving."
 
-## Loading and error lines (S-106)
+## Loading and error lines (S-106, built)
 
 - **For:** a blank screen on a slow phone looks broken.
 - Any screen still loading after 2 seconds shows the approved line: "Waking up. The first visit in a while can take a minute."

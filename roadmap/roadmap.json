@@ -1589,7 +1589,7 @@
       "epic": "E-24",
       "lane": "app",
       "title": "Every screen says something while it loads or fails, the map included, instead of a blank page",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-28",
       "source": "Full review, 2026-09-28",
       "tasks": []
