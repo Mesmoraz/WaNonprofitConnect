@@ -210,6 +210,12 @@ const routes: [string, RegExp, Handler][] = [
     const ein = requireOrg(); const l = listingById(Number(m[1]))
     if (l.ein !== ein) fail(403, 'Not yours.')
     l.status = 'Closed'
+    // Its live threads close too, and a post one of them held goes back on the board (S-104, as the API does).
+    for (const t of threads.filter(x => (x.needId === l.id || x.offerId === l.id) && (x.status === 'Proposed' || x.status === 'Accepted'))) {
+      t.status = 'Cancelled'; t.respondedAt ??= now()
+      const theirs = listingById(t.needId === l.id ? t.offerId : t.needId)
+      if (theirs.status === 'Matched') theirs.status = 'Open'
+    }
     return undefined
   }],
 
