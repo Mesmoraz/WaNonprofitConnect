@@ -205,7 +205,7 @@ Approving the pull request that adds these approves every word below. Each one i
 - It opens the Post screen filled in. Headline: "Edit your need" / "Edit your offer". The "We need" / "We have" chips don't show: a need stays a need.
 - Everything else can change, with the same words as Post.
 - Pinned button: **Save changes**. Toast: "Saved." Then back to the post.
-- If threads are open on it: line above the button "1 thread is open on this. They'll see the change." ("2 threads are open on this…" for more.)
+- If threads are open on it: line above the button "1 thread is open on this. They'll see the change." (With more: "2 threads are open on this. They'll see the change.")
 - On the post, after an edit, the line under the headline reads "Seattle · Posted 2 days ago · Edited".
 - **Why Urgent is greyed out** (on Post and Edit both, from S-109): when you've used Urgent twice in 30 days, the hint under "How soon" reads "You've used Urgent twice this month. You can use it again on Oct 21." instead of "Urgent is 2 a month, so it keeps meaning you can't operate without it."
 - **Goes:** nothing.
