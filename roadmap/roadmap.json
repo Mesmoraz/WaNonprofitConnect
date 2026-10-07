@@ -1359,7 +1359,7 @@
         {
           "id": "T-50",
           "title": "Check current Azure pricing for Basic and for serverless with auto-pause off before deciding",
-          "status": "ready"
+          "status": "done"
         },
         {
           "id": "T-51",

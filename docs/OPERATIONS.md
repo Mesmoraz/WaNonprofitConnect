@@ -13,6 +13,21 @@ Internal. How to deploy, see what went wrong, and get data back. The live site i
 
 Both run on the same plan (`helpbook-alpha-plan`, B1), so staging costs nothing extra; both databases are on the free serverless offer. Staging shows a small "Staging" tag at the top and in the tab title. Everything else (settings, Google client, admins) is the same.
 
+## Database cost: what it would take to stop the slow first visit
+
+Checked Oct 7, 2026 (T-50), from Azure's public price list for West US 2. Both databases are on the free serverless offer today. It pauses after an idle hour, so the first visit after that waits up to about a minute while it wakes. The free offer also comes with no uptime guarantee (SLA).
+
+| Option | Price | First visit after a quiet hour | Notes |
+|---|---|---|---|
+| Free serverless, as today | $0 | Up to about a minute | 100,000 vCore seconds a month free. No SLA. |
+| Free serverless, auto-pause off | About $175 a month | Fast | At least 0.5 vCore runs all month (365 vCore hours at $0.52) against about 28 free hours. Not worth it. |
+| **Basic** (5 DTU, 2 GB) | **$0.161 a day, about $4.90 a month** | Fast: it never pauses | The database is 53 MB with all 42,510 Washington organizations, so 2 GB is plenty. Has an SLA. |
+| Standard S0 (10 DTU) | $0.484 a day, about $14.70 a month | Fast | Twice Basic's capacity. The step up if Basic feels slow on the map. |
+
+To move a database to Basic: in the portal, open the database, then **Compute + storage**. Turn the free offer off ("Continue using database with additional charges"), choose **Basic**, and **Apply**. The data stays, and connections drop for a few seconds. It can't go back to the free offer afterwards.
+
+Recommendation: production (`helpbook-alpha-db`) on Basic before invitations go out, and staging left on the free offer, where a slow first visit doesn't matter. Then open the map on a phone: it reads every dot at once, the heaviest query, and is the first place 5 DTU would feel slow.
+
 ## Deploy
 
 1. **Merge a pull request.** GitHub's *Deploy to staging* workflow builds once, runs the API tests, and deploys to staging (about 5 minutes). Watch it in the repo's **Actions** tab.
