@@ -169,3 +169,32 @@ Approving the pull request that adds these approves every word below. Each one i
 - Footer on every email: "You get these because you're with {org} on Helpbook." then the link "Stop these emails", which works in one tap, no sign-in.
 - Links open the right screen, through sign-in if needed (S-107).
 - The privacy page gets one line: "We email you when something waits on you. You can stop the emails from any of them."
+
+---
+
+# Admin numbers brief (S-100, proposed Oct 7, waiting for approval)
+
+Approving the pull request that adds this approves every word below. Edit any line in the review.
+
+## How it's going (Admin)
+
+- **For:** the six measures in `docs/PLAN.md`, section 6, so we learn how the alpha is going without asking anyone. Only admins see it.
+- **Where:** the first section on Admin, above "Try it as someone new". Label: "How it's going".
+- A line of totals first: "{n} posts · {n} threads started · {n} accepted · {n} golden".
+- Then six rows. Each has the number, large, then what it counts, then its goal in grey:
+  1. "2" · "Golden threads in October" · "Goal: 3 by Oct 31". The month is the current one. After October the goal line reads "Goal: 3 a month".
+  2. "4 of 12" · "Posts that got a thread within 14 days" · "Goal: 1 in 3"
+  3. "5 hours" · "Typical wait for a first answer" · "Goal: under a day". The wait runs from "I can help" or "I need this" to the other organization's first message or yes. "Typical" is the middle one: half answer faster, half slower. Shown as minutes, hours or days ("40 minutes", "5 hours", "2 days").
+  4. "3 of 8" · "Threads that became golden" · "Goal: half"
+  5. "6 of 9" · "Organizations that posted a need and an offer in their first week" · "Goal: 8 in 10"
+  6. "2 of 9" · "Organizations that have both given and received" · no goal line. This is help moving both ways.
+- A row with nothing to count yet shows "None yet" in place of the number. Other rows still show.
+- Line under the rows: "Counts real organizations only. The demo isn't counted."
+- **Stays:** everything else on Admin, in the same order below this.
+- **Goes:** nothing.
+
+### Questions for you
+
+1. **Counting while it's new.** Row 2 counts a post once it's 14 days old, or sooner if it already has a thread. Row 5 counts an organization once its first week is over, or sooner if it has already posted both. Otherwise the first two weeks would show "0 of 0". OK?
+2. **Your own test threads.** Threads you make with "Test as this organization" count like anyone's. Should they be left out? Leaving them out also hides real threads at an organization you once tested as.
+3. **Which threads count in row 4.** I'd count threads that are done, plus those still open after 30 days. That way a thread started yesterday doesn't count against us. Declined and closed threads count as not golden. OK?

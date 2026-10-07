@@ -1481,8 +1481,17 @@
       "title": "Alpha numbers on the Admin page: posts, threads started and accepted, golden threads, time to first message",
       "status": "backlog",
       "added": "2026-09-24",
-      "tasks": [],
-      "source": "Alpha review, 2026-09-24"
+      "tasks": [
+        {
+          "id": "T-225",
+          "title": "Brief the Admin numbers for approval",
+          "status": "review",
+          "added": "2026-10-07",
+          "source": "Taylor, Oct 7: write the brief for admin numbers"
+        }
+      ],
+      "source": "Alpha review, 2026-09-24",
+      "lane": "app"
     },
     {
       "id": "S-101",
