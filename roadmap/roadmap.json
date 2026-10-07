@@ -1729,6 +1729,13 @@
           "id": "T-208",
           "title": "Tests for the rest: map tiles, map data, tapping a pin, installable and layouts, one address, the staging tag, feedback, browser errors; API tests labeled by story",
           "status": "done"
+        },
+        {
+          "id": "T-223",
+          "title": "Second browsers in the acceptance tests default to port 5173 while the config uses 5253, so local runs need BASE_URL set",
+          "status": "ready",
+          "added": "2026-10-07",
+          "source": "Found running the tests locally for S-108 and S-116"
         }
       ]
     },
@@ -1788,6 +1795,16 @@
           "status": "ready"
         }
       ]
+    },
+    {
+      "id": "S-116",
+      "epic": "E-26",
+      "title": "Admin: threads waiting on someone, with who to nudge, until email notices exist",
+      "status": "review",
+      "added": "2026-10-07",
+      "tasks": [],
+      "lane": "app",
+      "source": "Next-phase plan (docs/PLAN.md, Phase A #5); brief approved by Taylor in PR #17"
     }
   ]
 }

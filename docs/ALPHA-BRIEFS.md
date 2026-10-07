@@ -119,7 +119,7 @@ Approving the pull request that adds these approves every word below. Each one i
 - The line under the chips changes, only while the board is small: "Showing everyone while the board is small. Tap to narrow it." (Was: "Set from your organization's cause code. Tap to change.", which comes back at 30 posts.)
 - Stays: the 12 groups, saving to your organization, "{n} more outside your filters. Show them".
 
-## Admin: waiting on someone (new story)
+## Admin: waiting on someone (S-116)
 
 - **For:** until email notices exist, Taylor nudges by hand. This shows who to nudge.
 - On Admin, under "Waiting for you", label "Waiting on someone".
