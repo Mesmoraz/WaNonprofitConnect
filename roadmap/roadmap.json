@@ -1759,7 +1759,14 @@
         {
           "id": "T-219",
           "title": "Move to .NET 10 before .NET 8 support ends Nov 10",
-          "status": "ready"
+          "status": "review"
+        },
+        {
+          "id": "T-226",
+          "title": "Taylor switches the staging and production App Services to .NET 10 (docs/OPERATIONS.md, Runtime), each just before the .NET 10 build reaches it",
+          "status": "ready",
+          "added": "2026-10-07",
+          "source": "Taylor, Oct 7: switch the Azure setting rather than ship the runtime in the build"
         }
       ]
     },

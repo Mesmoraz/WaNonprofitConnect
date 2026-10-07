@@ -13,6 +13,16 @@ Internal. How to deploy, see what went wrong, and get data back. The live site i
 
 Both run on the same plan (`helpbook-alpha-plan`, B1), so staging costs nothing extra; both databases are on the free serverless offer. Staging shows a small "Staging" tag at the top and in the tab title. Everything else (settings, Google client, admins) is the same.
 
+## Runtime
+
+Both App Services run **.NET 10** (stack `DOTNETCORE|10.0`), matching `net10.0` in the projects. The build doesn't carry the runtime, so the stack has to match the build: a .NET 10 build won't start on a .NET 8 stack, or the other way round. To change it, open the App Service in the Azure portal, then **Settings → Configuration → General settings**, set **Stack** to .NET and **Version** to the new one, then **Save**. Or with the Azure CLI:
+
+```bash
+az webapp config set -g helpbook-alpha -n helpbook-staging --linux-fx-version "DOTNETCORE|10.0"
+```
+
+Change staging just before a build with the new version reaches it, and production just before pressing **Deploy to production** with that build.
+
 ## Deploy
 
 1. **Merge a pull request.** GitHub's *Deploy to staging* workflow builds once, runs the API tests, and deploys to staging (about 5 minutes). Watch it in the repo's **Actions** tab.
