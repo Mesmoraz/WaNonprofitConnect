@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import fs from 'node:fs'
 import path from 'node:path'
-import { ORG, postListing, run, signIn } from './helpers'
+import { ORG, email, postListing, run, signIn } from './helpers'
 
 // The shell around every screen: the name, installing to a home screen, layouts, one address, the staging tag.
 // These need the built app (served by the API, as on Azure and in CI): `npm run build`, then BASE_URL=http://localhost:5253.
@@ -63,4 +63,22 @@ test('[S-112] the staging copy wears a Staging tag, and the real site never does
   await page.goto(new URL('/signup', staging).toString())
   await expect(page.locator('.staging-flag')).toContainText('Staging')
   await expect(page).toHaveTitle(/^Staging · /)
+
+  // The tag is a strip above the app, not over it: the first heading and the name button start below it.
+  const below = async (sel: ReturnType<typeof page.locator>) => {
+    const flag = (await page.locator('.staging-flag').boundingBox())!
+    expect((await sel.boundingBox())!.y).toBeGreaterThanOrEqual(flag.y + flag.height)
+  }
+  await below(page.getByRole('heading').first())
+  // Only the browser resolves *.localhost, so sign in from the page.
+  const ok = await page.evaluate(body => fetch('/api/v1/auth/dev', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body }).then(r => r.ok),
+    JSON.stringify({ email: email('s112-flag'), name: 'Avery', ein: ORG.computers.ein }))
+  expect(ok).toBeTruthy()
+  await page.goto(new URL('/', staging).toString())
+  await below(page.getByRole('button', { name: /Avery · / }))
+  await below(page.locator('.app-brand .logo'))
+  // Wide screens have no top bar, so the content itself must start below the strip, and the page still fits.
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await below(page.locator('#content'))
+  expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight)).toBeTruthy()
 })
