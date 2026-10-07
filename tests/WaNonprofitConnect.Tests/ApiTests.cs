@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using WaNonprofitConnect.Data;
@@ -29,6 +30,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         builder.ConfigureServices(s =>
         {
             s.RemoveAll<DbContextOptions<AppDbContext>>();
+            s.RemoveAll<IDbContextOptionsConfiguration<AppDbContext>>();   // EF Core 9+ keeps the app's UseSqlServer here too
             s.AddDbContext<AppDbContext>(o => o.UseSqlite(_connection));
         });
     }
