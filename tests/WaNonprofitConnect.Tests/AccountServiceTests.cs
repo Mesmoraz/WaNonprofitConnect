@@ -143,6 +143,26 @@ public sealed class AccountServiceTests : IDisposable
         (await svc.GetMeAsync(again.Id))!.Account.IsAdmin.Should().BeFalse();
     }
 
+    [Fact]
+    public async Task A_different_google_identity_with_a_known_email_is_refused()
+    {
+        using var db = _fx.CreateContext();
+        var svc = Svc(db);
+        var sam = await svc.SignInAsync("sam@example.org", "Sam", googleSubject: "g-1");
+
+        var other = async () => await svc.SignInAsync("sam@example.org", "Someone", googleSubject: "g-2");
+        var ex = (await other.Should().ThrowAsync<ExchangeException>()).Which;
+        ex.StatusCode.Should().Be(403);
+        ex.Message.Should().Be(AccountService.OtherGoogleAccount);
+        (await db.Accounts.AsNoTracking().SingleAsync(a => a.Id == sam.Id)).Name.Should().Be("Sam");   // untouched
+
+        // The same Google identity still gets in, and an account made before Google (no subject yet) takes its first one.
+        (await svc.SignInAsync("sam@example.org", "Sam", googleSubject: "g-1")).Id.Should().Be(sam.Id);
+        var pat = await svc.SignInAsync("pat@example.org", "Pat");
+        (await svc.SignInAsync("pat@example.org", "Pat", googleSubject: "g-3")).Id.Should().Be(pat.Id);
+        await Throws(() => svc.SignInAsync("pat@example.org", "Pat", googleSubject: "g-4"), 403);
+    }
+
     private static async Task Throws(Func<Task> act, int status)
         => (await act.Should().ThrowAsync<ExchangeException>()).Which.StatusCode.Should().Be(status);
 }
