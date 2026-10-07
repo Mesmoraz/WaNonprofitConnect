@@ -185,6 +185,30 @@ public sealed class HelpbookServiceTests : IDisposable
         _events.ThreadChanges.Where(x => x.Thread.Status == MatchStatus.Completed).Select(x => x.Ein).Should().BeEquivalentTo(new[] { A, B });
     }
 
+    [Trait("Story", "S-104")]
+    [Fact]
+    public async Task Closing_a_post_closes_its_live_threads_and_gives_the_other_post_back()
+    {
+        using var db = _fx.CreateContext();
+        var svc = Svc(db);
+        var need = await svc.CreateListingAsync(A, Post(ListingKind.Need, "Plywood"));
+        var waiting = await svc.StartThreadAsync(B, new StartThreadRequest { ListingId = need.Id, Message = "We have 40 sheets" }, "Casey");
+        var working = await svc.StartThreadAsync(C, new StartThreadRequest { ListingId = need.Id, Message = "We have 10" }, "Lee");
+        await svc.AcceptAsync(working.Id, A);
+        var other = await svc.CreateListingAsync(A, Post(ListingKind.Need, "Paint"));
+        var elsewhere = await svc.StartThreadAsync(B, new StartThreadRequest { ListingId = other.Id, Message = "Some paint" }, "Casey");
+
+        await svc.CloseListingAsync(need.Id, A);
+
+        (await svc.GetThreadAsync(waiting.Id, B)).Status.Should().Be(MatchStatus.Cancelled);
+        var closed = await svc.GetThreadAsync(working.Id, C);
+        closed.Status.Should().Be(MatchStatus.Cancelled);
+        closed.Offer.Status.Should().Be("Open");                                   // C's offer is back on the board
+        (await svc.GetThreadAsync(elsewhere.Id, B)).Status.Should().Be(MatchStatus.Proposed);   // another post's thread is untouched
+        _events.ThreadChanges.Where(x => x.Thread.Id == working.Id && x.Thread.Status == MatchStatus.Cancelled)
+            .Select(x => x.Ein).Should().BeEquivalentTo(new[] { A, C });
+    }
+
     [Trait("Story", "S-71"), Trait("Story", "S-44")]
     [Fact]
     public async Task Urgent_is_capped_at_2_needs_a_rolling_month()
