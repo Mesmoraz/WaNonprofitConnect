@@ -26,7 +26,7 @@ Checked Oct 7, 2026 (T-50), from Azure's public price list for West US 2. Both d
 
 To move a database to Basic: in the portal, open the database, then **Compute + storage**. Turn the free offer off ("Continue using database with additional charges"), choose **Basic**, and **Apply**. The data stays, and connections drop for a few seconds. It can't go back to the free offer afterwards.
 
-Recommendation: production (`helpbook-alpha-db`) on Basic before invitations go out, and staging left on the free offer, where a slow first visit doesn't matter. Then open the map on a phone: it reads every dot at once, the heaviest query, and is the first place 5 DTU would feel slow.
+Decided (Taylor, Oct 7): both stay on the free offer. No real money until Mario confirms we're making this happen. When that changes, the step is production (`helpbook-alpha-db`) on Basic, with staging left free. Then open the map on a phone: it reads every dot at once, the heaviest query, and is the first place 5 DTU would feel slow.
 
 ## Deploy
 
