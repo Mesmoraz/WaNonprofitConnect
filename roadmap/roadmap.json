@@ -1555,7 +1555,7 @@
         {
           "id": "T-67",
           "title": "Fix the lint tool (oxlint native binding missing on this machine)",
-          "status": "ready"
+          "status": "done"
         },
         {
           "id": "T-68",
@@ -1760,6 +1760,13 @@
           "id": "T-219",
           "title": "Move to .NET 10 before .NET 8 support ends Nov 10",
           "status": "ready"
+        },
+        {
+          "id": "T-231",
+          "title": "npm audit to zero: drop the unused @deck.gl/geo-layers (review L10) and take the non-breaking fix for a build tool",
+          "status": "review",
+          "added": "2026-10-07",
+          "source": "Security review Oct 2, L10"
         }
       ]
     },
