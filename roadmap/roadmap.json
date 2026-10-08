@@ -1759,7 +1759,7 @@
         {
           "id": "T-219",
           "title": "Move to .NET 10 before .NET 8 support ends Nov 10",
-          "status": "ready"
+          "status": "review"
         }
       ]
     },
