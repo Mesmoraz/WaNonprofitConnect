@@ -15,6 +15,11 @@ public sealed record ClaimDto(
     Guid AccountId, string Email, string Name,
     string Status, DateTime CreatedAt, DateTime? DecidedAt);
 
+/// <summary>A thread stalled on someone (Admin, "Waiting on someone"). Why is "unanswered" or "quiet"; Since is when it started, or its last message.</summary>
+public sealed record WaitingThreadDto(int Id, string Title, string Why, DateTime Since, int Days, IReadOnlyList<string> WaitingOn, IReadOnlyList<WaitingPersonDto> People);
+
+public sealed record WaitingPersonDto(string Name, string Email);
+
 public sealed record InviteDto(string Code, string Ein, string OrgName, int Uses, int Used);
 
 public sealed class GoogleSignInRequest { public string IdToken { get; set; } = string.Empty; }

@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { useMe, useSendMessage, useThread, useThreadAction, type ThreadAction } from '../../api'
+import { ApiError, useMe, useSendMessage, useThread, useThreadAction, type ThreadAction } from '../../api'
 import { errorLine } from '../../lib/errors'
 import { shortAgo } from '../../lib/words'
 import { BackLink } from '../../shell/Page'
+import { Slow } from '../../shell/Slow'
 import './thread.css'
 
 /**
@@ -12,7 +13,7 @@ import './thread.css'
  */
 export function ThreadScreen() {
   const id = Number(useParams().id)
-  const { data: t, isError, refetch } = useThread(id)
+  const { data: t, isError, error, refetch } = useThread(id)
   const { data: me } = useMe()
   const act = useThreadAction(id)
   const send = useSendMessage(id)
@@ -28,7 +29,11 @@ export function ThreadScreen() {
     return (
       <div className="screen thread">
         <BackLink fallback="/inbox" />
-        {isError && <p className="empty">That didn’t work. <button className="inline-link" onClick={() => refetch()}>Try again</button></p>}
+        {!isError ? <Slow />
+          // Gone, or not one of yours: the server says 404 or 403, and either way there's nothing here for you.
+          : error instanceof ApiError && (error.status === 404 || error.status === 403)
+            ? <p className="empty">This thread is gone. <Link className="inline-link" to="/inbox">Back to your inbox</Link>?</p>
+            : <p className="empty">That didn’t work. <button className="inline-link" onClick={() => refetch()}>Try again</button></p>}
       </div>
     )
   }

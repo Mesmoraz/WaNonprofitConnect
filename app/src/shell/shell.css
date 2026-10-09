@@ -1,7 +1,7 @@
 /* App shell. Phone: top bar, content, bottom tabs. >= 900px: left rail and content. Tokens only. */
 
 .app {
-  height: 100vh; height: 100dvh; display: grid; overflow: hidden;
+  height: calc(100vh - var(--staging-h)); height: calc(100dvh - var(--staging-h)); display: grid; overflow: hidden;
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-rows: auto minmax(0, 1fr) auto;
   grid-template-areas: "brand who" "content content" "tabs tabs";
@@ -87,7 +87,7 @@
 }
 
 /* ---- Front door: sign up, invite code, find yours, waiting ---- */
-.door { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; background: var(--paper); }
+.door { min-height: calc(100vh - var(--staging-h)); min-height: calc(100dvh - var(--staging-h)); display: flex; flex-direction: column; background: var(--paper); }
 .door-top {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
   padding: calc(10px + var(--safe-top)) 10px 8px 14px; border-bottom: 1px solid var(--line-2); min-height: calc(60px + var(--safe-top));

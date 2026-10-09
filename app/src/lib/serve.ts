@@ -63,13 +63,19 @@ export const passes = (picked: ServeGroup[], org: { ntee: string | null; name: s
   !picked.length || servedBy(org.ntee, org.name).some(g => picked.includes(g))
 
 /**
- * Your organization's picks, saved to it so everyone there shares them (an admin can set them too).
- * Until someone saves, they start from your organization's cause code.
+ * Below this many open posts the board is small (S-108, Taylor, Oct 4): with 10 organizations, picks from the cause
+ * code hid most of what the alpha needs them to see, so "Who they serve" starts with nothing picked.
  */
-export function useServeFilter(myEin: string, myOrg: { ntee: string | null; name: string } | undefined) {
+export const SMALL_BOARD = 30
+
+/**
+ * Your organization's picks, saved to it so everyone there shares them (an admin can set them too).
+ * Until someone saves, they start from your organization's cause code, or from nothing while the board is small.
+ */
+export function useServeFilter(myEin: string, myOrg: { ntee: string | null; name: string } | undefined, small: boolean) {
   const { data } = useFilters(myEin)
   const save = useSaveFilters(myEin)
-  const picked = (data?.serve ?? servedBy(myOrg?.ntee, myOrg?.name)).filter((g): g is ServeGroup => (SERVE_GROUPS as readonly string[]).includes(g))
+  const picked = (data?.serve ?? (small ? [] : servedBy(myOrg?.ntee, myOrg?.name))).filter((g): g is ServeGroup => (SERVE_GROUPS as readonly string[]).includes(g))
   return {
     picked,
     toggle: (g: ServeGroup) => save.mutate(picked.includes(g) ? picked.filter(x => x !== g) : [...picked, g]),

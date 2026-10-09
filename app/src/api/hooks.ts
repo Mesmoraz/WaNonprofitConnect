@@ -15,6 +15,7 @@ export const keys = {
   mapPoints: ['mapPoints'] as const,
   orgPage: (ein: string) => ['orgPage', ein] as const,
   adminClaims: ['admin', 'claims'] as const,
+  adminWaiting: ['admin', 'waiting'] as const,
   adminInvites: ['admin', 'invites'] as const,
   filters: (ein: string) => ['filters', ein] as const,
   adminFeedback: ['admin', 'feedback'] as const,
@@ -67,6 +68,7 @@ export const useOrgPage = (ein: string) => useQuery({ queryKey: keys.orgPage(ein
 
 export const useMapPoints = () => useQuery({ queryKey: keys.mapPoints, queryFn: api.mapPoints, staleTime: 3600_000 })
 
+export const useAdminWaiting = () => useQuery({ queryKey: keys.adminWaiting, queryFn: api.adminWaiting })
 export const useAdminClaims = () => useQuery({ queryKey: keys.adminClaims, queryFn: api.adminClaims })
 export const useAdminInvites = () => useQuery({ queryKey: keys.adminInvites, queryFn: api.adminInvites })
 

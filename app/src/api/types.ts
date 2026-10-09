@@ -45,6 +45,8 @@ export interface MapSuggested { needId: number; offerId: number; fromEin: string
 export interface MapData { members: OrgSummary[]; threads: MapThread[]; suggested: MapSuggested[] }
 export type MapPoint = [ein: string, lat: number, lon: number]
 
+/** A thread stalled on someone (Admin, "Waiting on someone"): unanswered for 2 days, or accepted and quiet for 7. */
+export interface WaitingThread { id: number; title: string; why: 'unanswered' | 'quiet'; since: string; days: number; waitingOn: string[]; people: { name: string; email: string }[] }
 export interface Claim { id: number; ein: string; orgName: string; city: string | null; accountId: string; email: string; name: string; status: string; createdAt: string; decidedAt: string | null }
 export interface Invite { code: string; ein: string; orgName: string; uses: number; used: number }
 

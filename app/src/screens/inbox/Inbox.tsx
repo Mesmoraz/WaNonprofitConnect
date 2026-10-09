@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useMe, useThreads, type Thread } from '../../api'
 import { inboxStatus, quantityLine, shortAgo } from '../../lib/words'
+import { Slow } from '../../shell/Slow'
 import './inbox.css'
 
 /** B8, Inbox. Waiting on you first, then newest activity. Copy: docs/ALPHA-BRIEFS.md. */
@@ -16,6 +17,7 @@ export function Inbox() {
   return (
     <div className="screen inbox">
       <h1 className="h">Inbox</h1>
+      {!threads && !isError && <Slow />}
       {isError && !threads && <p className="empty">That didn’t work. <button className="inline-link" onClick={() => refetch()}>Try again</button></p>}
       {threads && !threads.length && (
         <p className="empty">No threads yet. Find a need on <Link className="inline-link" to="/">the board</Link> you can help with.</p>

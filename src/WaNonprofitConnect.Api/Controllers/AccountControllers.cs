@@ -112,6 +112,10 @@ public sealed class AdminController : AppControllerBase
     [HttpPost("claims/{id:int}/reject")]
     public Task<ClaimDto> Reject(int id, CancellationToken ct) => _accounts.DecideClaimAsync(id, approve: false, Email, ct);
 
+    /// <summary>Threads waiting 2 days for a yes, or accepted and quiet for 7, with the people to nudge.</summary>
+    [HttpGet("waiting")]
+    public Task<IReadOnlyList<WaitingThreadDto>> Waiting(CancellationToken ct) => _accounts.ListWaitingAsync(ct: ct);
+
     [HttpGet("invites")]
     public Task<IReadOnlyList<InviteDto>> Invites(CancellationToken ct) => _accounts.ListInvitesAsync(ct);
 

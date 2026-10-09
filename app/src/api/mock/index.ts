@@ -305,6 +305,7 @@ const routes: [string, RegExp, Handler][] = [
     return meOut(session)
   }],
 
+  ['GET', /^\/admin\/waiting$/, () => { if (!requireMe().account.isAdmin) fail(403, 'Admins only.'); return [] }],   // the demo's threads are all moving
   ['GET', /^\/admin\/claims$/, () => { if (!requireMe().account.isAdmin) fail(403, 'Admins only.'); return claims.map(({ accountId: _a, ...c }) => c) }],
   ['POST', /^\/admin\/claims\/(\d+)\/(approve|reject)$/, m => {
     if (!requireMe().account.isAdmin) fail(403, 'Admins only.')
