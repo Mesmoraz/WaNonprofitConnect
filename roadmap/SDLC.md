@@ -87,7 +87,7 @@ Adopted 2026-09-28 (Taylor: "so I can see what the changes are and keep track of
 - **Nothing is committed straight to `main`.** Every round works on its own branch from an up-to-date `main`: `story/S-12-short-name` for a story, `fix/short-name` for a bug, `process/short-name` for docs and roadmap only.
 - **One pull request per round.** The title says what a person will notice. The description is the change log entry (what changed, why, test cases marked [verified] or [needs your phone]) plus any copy waiting for approval.
 - **Small commits inside it**, each one readable on its own (server, app, roadmap).
-- **Taylor reviews and merges.** Claude never merges its own pull request, never enables auto-merge, and never force-pushes `main`.
+- **Taylor reviews and merges, or tells Claude to.** Claude merges only when Taylor asks in chat (Oct 9: "Add permission to allow you to merge"), in the order it has checked, resolving conflicts and rerunning the tests as it goes. Turning on auto-fix is not approval to merge. Claude never enables auto-merge and never force-pushes `main`.
 - The public site repo (`helpbook-site`) is only a build output and keeps its direct pushes.
 
 ## Automated tests

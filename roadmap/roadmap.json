@@ -1416,13 +1416,13 @@
       "id": "S-95",
       "epic": "E-23",
       "title": "Members invite colleagues to their own organization",
-      "status": "backlog",
+      "status": "ready",
       "added": "2026-09-24",
       "tasks": [
         {
           "id": "T-228",
           "title": "Brief: invite someone from your own organization",
-          "status": "review",
+          "status": "done",
           "added": "2026-10-07",
           "source": "Taylor, Oct 7: pull the next task (the rest of Phase A needs briefs)"
         }
@@ -1465,13 +1465,13 @@
       "id": "S-97",
       "epic": "E-24",
       "title": "Edit a need or offer after posting",
-      "status": "backlog",
+      "status": "ready",
       "added": "2026-09-24",
       "tasks": [
         {
           "id": "T-229",
           "title": "Brief: edit a need or offer",
-          "status": "review",
+          "status": "done",
           "added": "2026-10-07",
           "source": "Taylor, Oct 7: pull the next task (the rest of Phase A needs briefs)"
         }
@@ -1492,13 +1492,13 @@
       "id": "S-99",
       "epic": "E-24",
       "title": "An organization describes itself: a line about what it does, a website, a contact person",
-      "status": "backlog",
+      "status": "ready",
       "added": "2026-09-24",
       "tasks": [
         {
           "id": "T-227",
           "title": "Brief: Your organization (a line, a website, who to ask)",
-          "status": "review",
+          "status": "done",
           "added": "2026-10-07",
           "source": "Taylor, Oct 7: pull the next task (the rest of Phase A needs briefs)"
         }
@@ -1510,13 +1510,13 @@
       "id": "S-100",
       "epic": "E-26",
       "title": "Alpha numbers on the Admin page: posts, threads started and accepted, golden threads, time to first message",
-      "status": "backlog",
+      "status": "ready",
       "added": "2026-09-24",
       "tasks": [
         {
           "id": "T-225",
           "title": "Brief the Admin numbers for approval",
-          "status": "review",
+          "status": "done",
           "added": "2026-10-07",
           "source": "Taylor, Oct 7: write the brief for admin numbers"
         }
@@ -1609,7 +1609,7 @@
       "epic": "E-24",
       "lane": "app",
       "title": "A closed thread says so: declined or cancelled, and what to do next",
-      "status": "review",
+      "status": "done",
       "added": "2026-09-28",
       "source": "Full review, 2026-09-28",
       "tasks": []
@@ -1619,7 +1619,7 @@
       "epic": "E-25",
       "lane": "map",
       "title": "Map legend: what gold, green, dashed and dotted mean, and what a golden thread is",
-      "status": "review",
+      "status": "done",
       "added": "2026-09-28",
       "source": "Full review, 2026-09-28",
       "tasks": []
@@ -1629,7 +1629,7 @@
       "epic": "E-24",
       "lane": "app",
       "title": "Every screen says something while it loads or fails, the map included, instead of a blank page",
-      "status": "review",
+      "status": "done",
       "added": "2026-09-28",
       "source": "Full review, 2026-09-28",
       "tasks": []
@@ -1649,7 +1649,7 @@
       "epic": "E-24",
       "lane": "app",
       "title": "Who they serve starts empty while the board is small, so the alpha organizations see each other",
-      "status": "review",
+      "status": "done",
       "added": "2026-09-28",
       "source": "Full review, 2026-09-28",
       "tasks": []
@@ -1659,14 +1659,14 @@
       "epic": "E-24",
       "lane": "app",
       "title": "Copy that needs a brief: the message box on an offer, \"Ask a member to invite you\", why Urgent is greyed out, server error sentences",
-      "status": "backlog",
+      "status": "ready",
       "added": "2026-09-28",
       "source": "Full review, 2026-09-28",
       "tasks": [
         {
           "id": "T-230",
           "title": "Brief: the small lines, folded into the briefs that touch them",
-          "status": "review",
+          "status": "done",
           "added": "2026-10-07",
           "source": "Taylor, Oct 7: pull the next task (the rest of Phase A needs briefs)"
         }
@@ -1719,7 +1719,7 @@
         {
           "id": "T-224",
           "title": "The Staging tag covered the top of the page (the demo line); it's now a strip the app sits below",
-          "status": "review",
+          "status": "done",
           "added": "2026-10-07",
           "source": "Taylor, Oct 7: the staging banner blocks information"
         }
@@ -1791,6 +1791,13 @@
           "status": "ready",
           "added": "2026-10-07",
           "source": "Found running the tests locally for S-108 and S-116"
+        },
+        {
+          "id": "T-233",
+          "title": "The S-116 Admin test waits for the list to load before choosing rows or the empty line",
+          "status": "review",
+          "added": "2026-10-09",
+          "source": "Found running the tests locally while merging, Oct 9"
         }
       ]
     },
@@ -1816,19 +1823,26 @@
         {
           "id": "T-218",
           "title": "Decided (Taylor, Oct 7): a different Google identity with a known email is refused, with an approved line; review L7",
-          "status": "review"
+          "status": "done"
         },
         {
           "id": "T-219",
           "title": "Move to .NET 10 before .NET 8 support ends Nov 10",
-          "status": "review"
+          "status": "done"
         },
         {
           "id": "T-231",
           "title": "npm audit to zero: drop the unused @deck.gl/geo-layers (review L10) and take the non-breaking fix for a build tool",
-          "status": "review",
+          "status": "done",
           "added": "2026-10-07",
           "source": "Security review Oct 2, L10"
+        },
+        {
+          "id": "T-232",
+          "title": "Switch the production App Service to .NET 10 (DOTNETCORE|10.0) just before the next Deploy to production; staging already runs .NET 10",
+          "status": "ready",
+          "added": "2026-10-09",
+          "source": "Merged #32 on Oct 9; production only changes on the button"
         }
       ]
     },
@@ -1862,7 +1876,7 @@
       "id": "S-116",
       "epic": "E-26",
       "title": "Admin: threads waiting on someone, with who to nudge, until email notices exist",
-      "status": "review",
+      "status": "done",
       "added": "2026-10-07",
       "tasks": [],
       "lane": "app",
