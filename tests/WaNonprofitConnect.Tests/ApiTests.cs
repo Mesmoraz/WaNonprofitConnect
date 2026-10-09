@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using WaNonprofitConnect.Data;
@@ -28,7 +29,9 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("Auth:Google:ClientId", "");
         builder.ConfigureServices(s =>
         {
+            // Since EF Core 9 the SQL Server setup also lives in IDbContextOptionsConfiguration; drop both.
             s.RemoveAll<DbContextOptions<AppDbContext>>();
+            s.RemoveAll<IDbContextOptionsConfiguration<AppDbContext>>();
             s.AddDbContext<AppDbContext>(o => o.UseSqlite(_connection));
         });
     }

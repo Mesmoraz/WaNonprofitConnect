@@ -1114,7 +1114,7 @@
         {
           "id": "T-57",
           "title": "Browser security headers (HSTS, no framing, no sniffing): none are sent today",
-          "status": "ready"
+          "status": "done"
         }
       ]
     },
@@ -1508,8 +1508,17 @@
       "title": "Alpha numbers on the Admin page: posts, threads started and accepted, golden threads, time to first message",
       "status": "backlog",
       "added": "2026-09-24",
-      "tasks": [],
-      "source": "Alpha review, 2026-09-24"
+      "tasks": [
+        {
+          "id": "T-225",
+          "title": "Brief the Admin numbers for approval",
+          "status": "review",
+          "added": "2026-10-07",
+          "source": "Taylor, Oct 7: write the brief for admin numbers"
+        }
+      ],
+      "source": "Alpha review, 2026-09-24",
+      "lane": "app"
     },
     {
       "id": "S-101",
@@ -1596,7 +1605,7 @@
       "epic": "E-24",
       "lane": "app",
       "title": "A closed thread says so: declined or cancelled, and what to do next",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-28",
       "source": "Full review, 2026-09-28",
       "tasks": []
@@ -1606,7 +1615,7 @@
       "epic": "E-25",
       "lane": "map",
       "title": "Map legend: what gold, green, dashed and dotted mean, and what a golden thread is",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-28",
       "source": "Full review, 2026-09-28",
       "tasks": []
@@ -1616,7 +1625,7 @@
       "epic": "E-24",
       "lane": "app",
       "title": "Every screen says something while it loads or fails, the map included, instead of a blank page",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-28",
       "source": "Full review, 2026-09-28",
       "tasks": []
@@ -1636,7 +1645,7 @@
       "epic": "E-24",
       "lane": "app",
       "title": "Who they serve starts empty while the board is small, so the alpha organizations see each other",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-28",
       "source": "Full review, 2026-09-28",
       "tasks": []
@@ -1702,6 +1711,13 @@
           "id": "T-204",
           "title": "WebSockets on in production (Taylor, Sep 28), so live messages stop falling back to polling",
           "status": "done"
+        },
+        {
+          "id": "T-224",
+          "title": "The Staging tag covered the top of the page (the demo line); it's now a strip the app sits below",
+          "status": "review",
+          "added": "2026-10-07",
+          "source": "Taylor, Oct 7: the staging banner blocks information"
         }
       ]
     },
@@ -1764,6 +1780,13 @@
           "id": "T-208",
           "title": "Tests for the rest: map tiles, map data, tapping a pin, installable and layouts, one address, the staging tag, feedback, browser errors; API tests labeled by story",
           "status": "done"
+        },
+        {
+          "id": "T-223",
+          "title": "Second browsers in the acceptance tests default to port 5173 while the config uses 5253, so local runs need BASE_URL set",
+          "status": "ready",
+          "added": "2026-10-07",
+          "source": "Found running the tests locally for S-108 and S-116"
         }
       ]
     },
@@ -1794,7 +1817,7 @@
         {
           "id": "T-219",
           "title": "Move to .NET 10 before .NET 8 support ends Nov 10",
-          "status": "ready"
+          "status": "review"
         }
       ]
     },
@@ -1823,6 +1846,16 @@
           "status": "ready"
         }
       ]
+    },
+    {
+      "id": "S-116",
+      "epic": "E-26",
+      "title": "Admin: threads waiting on someone, with who to nudge, until email notices exist",
+      "status": "review",
+      "added": "2026-10-07",
+      "tasks": [],
+      "lane": "app",
+      "source": "Next-phase plan (docs/PLAN.md, Phase A #5); brief approved by Taylor in PR #17"
     }
   ]
 }

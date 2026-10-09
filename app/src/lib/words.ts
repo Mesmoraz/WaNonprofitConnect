@@ -64,12 +64,13 @@ export function quantityLine(l: Pick<Listing, 'quantity' | 'unit' | 'kind'>) {
 /** A post that isn't open any more, in the words list's words: done, closed, or in a thread. */
 export const STATUS_WORD: Record<string, string> = { Matched: 'In a thread', Fulfilled: 'Done', Expired: 'Closed', Closed: 'Closed' }
 
-/** B8 Inbox status word, from where you stand. Declined and cancelled threads carry none (not in the briefs). */
+/** B8 Inbox status word, from where you stand. Declined and cancelled threads are both "Closed" (S-104). */
 export function inboxStatus(t: { status: string; startedByEin: string }, myEin: string | undefined) {
   switch (t.status) {
     case 'Proposed': return t.startedByEin === myEin ? 'Waiting on them' : 'Waiting on you'
     case 'Accepted': return 'In progress'
     case 'Completed': return 'Golden'
+    case 'Declined': case 'Cancelled': return 'Closed'
     default: return ''
   }
 }

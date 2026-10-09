@@ -85,7 +85,7 @@ input[type="search"]::-webkit-search-cancel-button { cursor: pointer; }
 @media (min-width: 900px) { .toast { bottom: calc(24px + var(--safe-bottom)); } }
 
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.boot { min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; background: var(--ground); padding: var(--gutter); }
+.boot { min-height: calc(100vh - var(--staging-h)); min-height: calc(100dvh - var(--staging-h)); display: grid; place-items: center; background: var(--ground); padding: var(--gutter); }
 
 textarea {
   font: inherit; font-size: 16px; color: var(--ink); background: var(--paper-2); border: 1px solid var(--line);
@@ -99,15 +99,18 @@ textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; 
 .btn.danger-outline { background: var(--warn-bg); border-color: var(--warn); color: var(--warn); gap: 8px; }
 .btn.danger-outline .x { font-size: 18px; line-height: 1; }
 
-/* On the staging copy only: a small tag at the top, so it's never mistaken for the real site. When the build knows
-   its pull request, the tag links to it; otherwise taps pass through. */
+/* On the staging copy only: a strip across the top, so it's never mistaken for the real site. When the build knows
+   its pull request, the strip links to it. It sits above the app, not over it: the app moves down by its height
+   and is that much shorter (Taylor, Oct 7: the floating tag hid the demo line). Under a notch, the strip fills the
+   space the headers already leave for it. */
+:root.staging { --staging-h: 22px; }
+:root.staging #root { padding-top: var(--staging-h); box-sizing: border-box; }
 .staging-flag {
-  position: fixed; top: calc(2px + var(--safe-top)); left: 50%; transform: translateX(-50%); z-index: 1000; pointer-events: none;
-  text-decoration: none; white-space: nowrap;
-  background: var(--need); color: var(--paper); font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
-  padding: 1px 8px; border-radius: 999px; opacity: 0.9;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000; box-sizing: border-box;
+  height: calc(var(--staging-h) + var(--safe-top)); padding: var(--safe-top) var(--gutter) 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--need); color: var(--paper); font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: none;
 }
-a.staging-flag, a.staging-flag:visited, a.staging-flag:hover {
-  pointer-events: auto; font-size: 11px; padding: 3px 10px; color: var(--paper); text-decoration: none;
-  max-width: min(360px, calc(100vw - 32px)); overflow: hidden; text-overflow: ellipsis;
-}
+.staging-flag:is(a) { display: block; line-height: var(--staging-h); text-align: center; }
+a.staging-flag, a.staging-flag:visited, a.staging-flag:hover { color: var(--paper); text-decoration: none; }

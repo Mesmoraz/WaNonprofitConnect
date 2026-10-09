@@ -118,8 +118,9 @@ Approving the pull request that adds these approves every word below. Each one i
 - While the board has **fewer than 30 open posts**, "Who they serve" starts with nothing picked, so you see everything. Picks your organization saved are kept.
 - The line under the chips changes, only while the board is small: "Showing everyone while the board is small. Tap to narrow it." (Was: "Set from your organization's cause code. Tap to change.", which comes back at 30 posts.)
 - Stays: the 12 groups, saving to your organization, "{n} more outside your filters. Show them".
+- Picks your organization saved still apply while the board is small (Taylor, Oct 7). The "Showing everyone" line shows only when nothing is picked.
 
-## Admin: waiting on someone (new story)
+## Admin: waiting on someone (S-116)
 
 - **For:** until email notices exist, Taylor nudges by hand. This shows who to nudge.
 - On Admin, under "Waiting for you", label "Waiting on someone".
@@ -127,7 +128,7 @@ Approving the pull request that adds these approves every word below. Each one i
 - Each row: the thread's title, then "{organization} hasn't answered · 3 days" or "Quiet since Sep 30", then the people at the organization it's waiting on, "{name} · {email}". Tap an email to copy it: toast "Copied."
 - None: "Every thread is moving."
 
-## Loading and error lines (S-106)
+## Loading and error lines (S-106, built)
 
 - **For:** a blank screen on a slow phone looks broken.
 - Any screen still loading after 2 seconds shows the approved line: "Waking up. The first visit in a while can take a minute."
@@ -136,7 +137,7 @@ Approving the pull request that adds these approves every word below. Each one i
 - A thread that's gone, or isn't yours: "This thread is gone. Back to your inbox?" ("Back to your inbox" is the link.)
 - An organization's page that doesn't load: "That didn't work. Try again" (the approved line, as on the board).
 
-## A closed thread says so (S-104)
+## A closed thread says so (S-104, built)
 
 - **For:** a declined or closed thread goes silent today, and the message box just disappears.
 - You said not this time: "You said not this time. Their post stays on the board."
@@ -145,7 +146,7 @@ Approving the pull request that adds these approves every word below. Each one i
 - In the inbox, the status word for both: "Closed".
 - The message box stays hidden; the messages so far stay readable.
 
-## What the map shows (S-105)
+## What the map shows (S-105, built)
 
 - **For:** the map is the payoff, and nothing on it explains the lines.
 - A round "?" button at the top of the map, labelled for screen readers "What the map shows". The first time you open the map, the card opens by itself.
@@ -172,6 +173,28 @@ Approving the pull request that adds these approves every word below. Each one i
 
 ---
 
+# Admin numbers brief (S-100, proposed Oct 7, waiting for approval)
+
+Approving the pull request that adds this approves every word below. Edit any line in the review.
+
+## How it's going (Admin)
+
+- **For:** the six measures in `docs/PLAN.md`, section 6, so we learn how the alpha is going without asking anyone. Only admins see it.
+- **Where:** the first section on Admin, above "Try it as someone new". Label: "How it's going".
+- A line of totals first: "{n} posts · {n} threads started · {n} accepted · {n} golden".
+- Then six rows. Each has the number, large, then what it counts, then its goal in grey:
+  1. "2" · "Golden threads in October" · "Goal: 3 by Oct 31". The month is the current one. After October the goal line reads "Goal: 3 a month".
+  2. "4 of 12" · "Posts that got a thread within 14 days" · "Goal: 1 in 3"
+  3. "5 hours" · "Typical wait for a first answer" · "Goal: under a day". The wait runs from "I can help" or "I need this" to the other organization's first message or yes. "Typical" is the middle one: half answer faster, half slower. Shown as minutes, hours or days ("40 minutes", "5 hours", "2 days").
+  4. "3 of 8" · "Threads that became golden" · "Goal: half"
+  5. "6 of 9" · "Organizations that posted a need and an offer in their first week" · "Goal: 8 in 10"
+  6. "2 of 9" · "Organizations that have both given and received" · no goal line. This is help moving both ways.
+- A row with nothing to count yet shows "None yet" in place of the number. Other rows still show.
+- Line under the rows: "Counts real organizations only. The demo isn't counted."
+- **Stays:** everything else on Admin, in the same order below this.
+
+---
+
 # The rest of Phase A (proposed Oct 7, waiting for approval)
 
 Approving the pull request that adds these approves every word below. Each one is built in its own pull request afterwards. Edit any line in the review.
@@ -195,6 +218,9 @@ Approving the pull request that adds these approves every word below. Each one i
 
 ### Questions for you
 
+1. **Counting while it's new.** Row 2 counts a post once it's 14 days old, or sooner if it already has a thread. Row 5 counts an organization once its first week is over, or sooner if it has already posted both. Otherwise the first two weeks would show "0 of 0". OK?
+2. **Your own test threads.** Threads you make with "Test as this organization" count like anyone's. Should they be left out? Leaving them out also hides real threads at an organization you once tested as.
+3. **Which threads count in row 4.** I'd count threads that are done, plus those still open after 30 days. That way a thread started yesterday doesn't count against us. Declined and closed threads count as not golden. OK?
 1. Does 3 people include the person who joined first? I'd say yes: 3 in all, as the recruiting note says. Codes you make on Admin can still go past 3.
 2. Should "What you do" also show on each post, under the organization's name? I'd keep it to the organization's page for now, so the board stays three lines a card.
 
