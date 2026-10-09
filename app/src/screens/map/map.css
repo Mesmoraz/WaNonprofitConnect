@@ -20,3 +20,6 @@
   background: var(--paper-2); color: var(--ink); text-decoration: none; font-size: 14px; min-height: var(--tap);
 }
 .map-card-post .k { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-3); flex: none; width: 44px; }
+
+/* While the map loads, or if it didn't (S-106): one line in the middle of where the map goes. */
+.map-note { position: absolute; inset: 0; display: grid; place-items: center; padding: var(--gutter); }

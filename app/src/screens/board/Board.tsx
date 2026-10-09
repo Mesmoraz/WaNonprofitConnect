@@ -4,6 +4,7 @@ import { useBoard, useMapData, useMe, useOrgPage, useOrgs, type KindOfHelp, type
 import { BRAND } from '../../brand'
 import { SERVE_GROUPS, SMALL_BOARD, passes, useServeFilter } from '../../lib/serve'
 import { cap, causeOf, HELPS, HELP_LABEL } from '../../lib/words'
+import { Slow } from '../../shell/Slow'
 import { ListingCard } from './ListingCard'
 import { WelcomeCard } from './WelcomeCard'
 import './board.css'
@@ -99,6 +100,7 @@ export function Board() {
           </div>
         )}
 
+        {!board.data && !board.isError && <Slow />}
         {board.isError && !board.data && (
           <p className="empty">That didn’t work. <button className="inline-link" onClick={() => board.refetch()}>Try again</button></p>
         )}

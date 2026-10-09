@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { useCloseListing, useListing, useMe, useStartThread, useThreads, type Listing } from '../../api'
+import { ApiError, useCloseListing, useListing, useMe, useStartThread, useThreads, type Listing } from '../../api'
 import { CADENCE_FULL, HELP_LABEL, URGENCY_MARK, cap, listingFacts, postedAgo, quantityLine } from '../../lib/words'
 import { Confirm } from '../../shell/Confirm'
 import { BackLink, Page } from '../../shell/Page'
+import { Slow } from '../../shell/Slow'
 import { useToast } from '../../shell/Toast'
 import { errorLine } from '../../lib/errors'
 import './listing.css'
@@ -11,7 +12,7 @@ import './listing.css'
 /** B6, a need or offer. Copy: docs/ALPHA-BRIEFS.md. */
 export function ListingScreen() {
   const id = Number(useParams().id)
-  const { data: l, isError, refetch } = useListing(id)
+  const { data: l, isError, error, refetch } = useListing(id)
   const { data: me } = useMe()
   const { data: threads } = useThreads()
   const start = useStartThread()
@@ -27,7 +28,10 @@ export function ListingScreen() {
     return (
       <Page>
         <BackLink />
-        {isError && <p className="empty">That didn’t work. <button className="inline-link" onClick={() => refetch()}>Try again</button></p>}
+        {!isError ? <Slow />
+          : error instanceof ApiError && error.status === 404
+            ? <p className="empty">This post is gone. <Link className="inline-link" to="/">Back to the board</Link>?</p>
+            : <p className="empty">That didn’t work. <button className="inline-link" onClick={() => refetch()}>Try again</button></p>}
       </Page>
     )
   }
