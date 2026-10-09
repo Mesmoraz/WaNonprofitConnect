@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
-import { useParams } from 'react-router-dom'
-import { useMe, useSendMessage, useThread, useThreadAction, type ThreadAction } from '../../api'
+import { Link, useParams } from 'react-router-dom'
+import { ApiError, useMe, useSendMessage, useThread, useThreadAction, type ThreadAction } from '../../api'
 import { errorLine } from '../../lib/errors'
 import { shortAgo } from '../../lib/words'
 import { BackLink } from '../../shell/Page'
+import { Slow } from '../../shell/Slow'
 import './thread.css'
 
 /**
@@ -12,7 +13,7 @@ import './thread.css'
  */
 export function ThreadScreen() {
   const id = Number(useParams().id)
-  const { data: t, isError, refetch } = useThread(id)
+  const { data: t, isError, error, refetch } = useThread(id)
   const { data: me } = useMe()
   const act = useThreadAction(id)
   const send = useSendMessage(id)
@@ -28,7 +29,11 @@ export function ThreadScreen() {
     return (
       <div className="screen thread">
         <BackLink fallback="/inbox" />
-        {isError && <p className="empty">That didn’t work. <button className="inline-link" onClick={() => refetch()}>Try again</button></p>}
+        {!isError ? <Slow />
+          // Gone, or not one of yours: the server says 404 or 403, and either way there's nothing here for you.
+          : error instanceof ApiError && (error.status === 404 || error.status === 403)
+            ? <p className="empty">This thread is gone. <Link className="inline-link" to="/inbox">Back to your inbox</Link>?</p>
+            : <p className="empty">That didn’t work. <button className="inline-link" onClick={() => refetch()}>Try again</button></p>}
       </div>
     )
   }
@@ -67,6 +72,9 @@ export function ThreadScreen() {
   </>
   else if (t.status === 'Completed') status = <p className="thread-status golden">Done. This is a golden thread.</p>
   else if (t.status === 'Declined' && iStarted) status = <p className="thread-status">{other.name} said not this time. Your post stays on the board.</p>
+  else if (t.status === 'Declined') status = <p className="thread-status">You said not this time. Their post stays on the board.</p>
+  // Cancelled: a post in it was closed, or the thread was called off (S-104).
+  else if (t.status === 'Cancelled') status = <p className="thread-status">This thread is closed. Find another on <Link className="inline-link" to="/">the board</Link>?</p>
 
   const closed = t.status === 'Declined' || t.status === 'Cancelled'
 

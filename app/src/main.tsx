@@ -13,7 +13,10 @@ import './styles/tokens.css'
 import './styles/app.css'
 
 watchForErrors()
-if (STAGING) document.title = `Staging · ${document.title}`
+if (STAGING) {
+  document.title = `Staging · ${document.title}`
+  document.documentElement.classList.add('staging')   // makes room for the staging strip (app.css)
+}
 
 const queryClient: QueryClient = new QueryClient({
   // A 401 anywhere means the session ended: forget Me, and the route guard sends you to sign up.

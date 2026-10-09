@@ -26,6 +26,7 @@
   --radius: 10px; --radius-lg: 14px; --gutter: 16px; --tap: 44px;
   --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: "Bricolage Grotesque", var(--font-body);
+  --staging-h: 0px;   /* the staging strip's height; 0 on the real site (app.css) */
   --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 

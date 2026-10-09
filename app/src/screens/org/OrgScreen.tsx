@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom'
 import { useOrgPage } from '../../api'
 import { causeOf, cap, formatEin } from '../../lib/words'
 import { BackLink, Page } from '../../shell/Page'
+import { Slow } from '../../shell/Slow'
 import { ListingCard } from '../board/ListingCard'
 import '../board/board.css'
 
@@ -15,7 +16,7 @@ export function OrgScreen() {
   if (isError && !page) {
     return <Page><BackLink fallback="/map" /><p className="empty">That didn’t work. <button className="inline-link" onClick={() => refetch()}>Try again</button></p></Page>
   }
-  if (!page) return <Page><BackLink fallback="/map" /></Page>
+  if (!page) return <Page><BackLink fallback="/map" /><Slow /></Page>
 
   const o = page.org
   const threads = [count(page.golden, 'golden thread', 'golden threads'), count(page.live, 'in progress', 'in progress')].filter(Boolean).join(' · ')

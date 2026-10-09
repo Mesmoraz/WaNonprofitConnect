@@ -118,8 +118,9 @@ Approving the pull request that adds these approves every word below. Each one i
 - While the board has **fewer than 30 open posts**, "Who they serve" starts with nothing picked, so you see everything. Picks your organization saved are kept.
 - The line under the chips changes, only while the board is small: "Showing everyone while the board is small. Tap to narrow it." (Was: "Set from your organization's cause code. Tap to change.", which comes back at 30 posts.)
 - Stays: the 12 groups, saving to your organization, "{n} more outside your filters. Show them".
+- Picks your organization saved still apply while the board is small (Taylor, Oct 7). The "Showing everyone" line shows only when nothing is picked.
 
-## Admin: waiting on someone (new story)
+## Admin: waiting on someone (S-116)
 
 - **For:** until email notices exist, Taylor nudges by hand. This shows who to nudge.
 - On Admin, under "Waiting for you", label "Waiting on someone".
@@ -127,7 +128,7 @@ Approving the pull request that adds these approves every word below. Each one i
 - Each row: the thread's title, then "{organization} hasn't answered · 3 days" or "Quiet since Sep 30", then the people at the organization it's waiting on, "{name} · {email}". Tap an email to copy it: toast "Copied."
 - None: "Every thread is moving."
 
-## Loading and error lines (S-106)
+## Loading and error lines (S-106, built)
 
 - **For:** a blank screen on a slow phone looks broken.
 - Any screen still loading after 2 seconds shows the approved line: "Waking up. The first visit in a while can take a minute."
@@ -136,7 +137,7 @@ Approving the pull request that adds these approves every word below. Each one i
 - A thread that's gone, or isn't yours: "This thread is gone. Back to your inbox?" ("Back to your inbox" is the link.)
 - An organization's page that doesn't load: "That didn't work. Try again" (the approved line, as on the board).
 
-## A closed thread says so (S-104)
+## A closed thread says so (S-104, built)
 
 - **For:** a declined or closed thread goes silent today, and the message box just disappears.
 - You said not this time: "You said not this time. Their post stays on the board."
@@ -145,7 +146,7 @@ Approving the pull request that adds these approves every word below. Each one i
 - In the inbox, the status word for both: "Closed".
 - The message box stays hidden; the messages so far stay readable.
 
-## What the map shows (S-105)
+## What the map shows (S-105, built)
 
 - **For:** the map is the payoff, and nothing on it explains the lines.
 - A round "?" button at the top of the map, labelled for screen readers "What the map shows". The first time you open the map, the card opens by itself.
@@ -169,3 +170,80 @@ Approving the pull request that adds these approves every word below. Each one i
 - Footer on every email: "You get these because you're with {org} on Helpbook." then the link "Stop these emails", which works in one tap, no sign-in.
 - Links open the right screen, through sign-in if needed (S-107).
 - The privacy page gets one line: "We email you when something waits on you. You can stop the emails from any of them."
+
+---
+
+# Admin numbers brief (S-100, proposed Oct 7, waiting for approval)
+
+Approving the pull request that adds this approves every word below. Edit any line in the review.
+
+## How it's going (Admin)
+
+- **For:** the six measures in `docs/PLAN.md`, section 6, so we learn how the alpha is going without asking anyone. Only admins see it.
+- **Where:** the first section on Admin, above "Try it as someone new". Label: "How it's going".
+- A line of totals first: "{n} posts · {n} threads started · {n} accepted · {n} golden".
+- Then six rows. Each has the number, large, then what it counts, then its goal in grey:
+  1. "2" · "Golden threads in October" · "Goal: 3 by Oct 31". The month is the current one. After October the goal line reads "Goal: 3 a month".
+  2. "4 of 12" · "Posts that got a thread within 14 days" · "Goal: 1 in 3"
+  3. "5 hours" · "Typical wait for a first answer" · "Goal: under a day". The wait runs from "I can help" or "I need this" to the other organization's first message or yes. "Typical" is the middle one: half answer faster, half slower. Shown as minutes, hours or days ("40 minutes", "5 hours", "2 days").
+  4. "3 of 8" · "Threads that became golden" · "Goal: half"
+  5. "6 of 9" · "Organizations that posted a need and an offer in their first week" · "Goal: 8 in 10"
+  6. "2 of 9" · "Organizations that have both given and received" · no goal line. This is help moving both ways.
+- A row with nothing to count yet shows "None yet" in place of the number. Other rows still show.
+- Line under the rows: "Counts real organizations only. The demo isn't counted."
+- **Stays:** everything else on Admin, in the same order below this.
+- **Goes:** nothing.
+
+### Questions for you
+
+1. **Counting while it's new.** Row 2 counts a post once it's 14 days old, or sooner if it already has a thread. Row 5 counts an organization once its first week is over, or sooner if it has already posted both. Otherwise the first two weeks would show "0 of 0". OK?
+2. **Your own test threads.** Threads you make with "Test as this organization" count like anyone's. Should they be left out? Leaving them out also hides real threads at an organization you once tested as.
+3. **Which threads count in row 4.** I'd count threads that are done, plus those still open after 30 days. That way a thread started yesterday doesn't count against us. Declined and closed threads count as not golden. OK?
+
+---
+
+# The rest of Phase A (proposed Oct 7, waiting for approval)
+
+Approving the pull request that adds these approves every word below. Each one is built in its own pull request afterwards. Edit any line in the review.
+
+## Your organization (S-99 and S-95, a new screen)
+
+- **For:** before saying yes to a stranger, people want to know who they are (S-99). The alpha also promised up to three people per organization, and today only Taylor can add them (S-95).
+- **Where:** in your name menu as **Your organization**, above "Send feedback". Only people confirmed for an organization see it.
+- Headline: the organization's name. Under it, the same line as its page: "Seattle · Food · EIN 91-1428805".
+- Label "About you".
+  - Field "What you do", placeholder "We run a food bank and a free store in Ballard.", 140 characters. Hint: "One line. Others see it on your page."
+  - Field "Website", placeholder "yourorganization.org". Optional.
+  - Field "Who to ask": chips with the first name of each person here. Pick one. Hint: "Others see the name, not the email. Messages still go through threads."
+- Pinned button: **Save**. Toast: "Saved."
+- Label "People here": each person as "{name} · {email}", with "(you)" after yours. Only people at the organization see this list.
+- Label "Invite someone". Line: "Up to 3 people can be here. {n} left." Plain button **Make a code**. The code shows large, with the line "Send it to them yourself. It works once." Tap the code to copy it: toast "Copied." Once 3 people are here: "All 3 places are taken." and no button.
+- **On the organization's page** (what everyone else sees), under the name and its line: the "What you do" line, then the website as a link, then "Ask for {first name}". Anything not filled in is left out.
+- **Find yours:** "Already on {name}. Ask a member to invite you." becomes "Already on {name}. Ask someone there for an invite code."
+- **Stays:** the organization's page as it is, with "Needs and offers" below the new lines.
+- **Goes:** nothing.
+
+### Questions for you
+
+1. Does 3 people include the person who joined first? I'd say yes: 3 in all, as the recruiting note says. Codes you make on Admin can still go past 3.
+2. Should "What you do" also show on each post, under the organization's name? I'd keep it to the organization's page for now, so the board stays three lines a card.
+
+## Edit a need or offer (S-97)
+
+- **For:** today the only way to fix a typo or a count is to close the post and post again, which loses its threads.
+- **Where:** on your own post that's still on the board, a plain button **Edit this need** / **Edit this offer**, above the red close button. It doesn't show on a post that's closed or done.
+- It opens the Post screen filled in. Headline: "Edit your need" / "Edit your offer". The "We need" / "We have" chips don't show: a need stays a need.
+- Everything else can change, with the same words as Post.
+- Pinned button: **Save changes**. Toast: "Saved." Then back to the post.
+- If threads are open on it: line above the button "1 thread is open on this. They'll see the change." (With more: "2 threads are open on this. They'll see the change.")
+- On the post, after an edit, the line under the headline reads "Seattle · Posted 2 days ago · Edited".
+- **Why Urgent is greyed out** (on Post and Edit both, from S-109): when you've used Urgent twice in 30 days, the hint under "How soon" reads "You've used Urgent twice this month. You can use it again on Oct 21." instead of "Urgent is 2 a month, so it keeps meaning you can't operate without it."
+- **Goes:** nothing.
+
+## Small lines (the rest of S-109)
+
+- On an offer, the message box placeholder: "Say what you'd use it for and when." (Was "Say what you can do and when.", which fits a need, not an offer.)
+- Invite code, a wrong code: "That code didn't work. Check it and try again." Approve as it is.
+- Invite code, anything else going wrong: "That didn't work. Try again." Approve as it is.
+- When the app can't find out who you are at start: "That didn't work. Try again" ("Try again" is the link). Approve as it is.
+- Server error sentences (for example "Urgent is 2 a month. Pick This week instead.") stay as they are for now. They get a brief of their own once the alpha shows which ones people actually see.
