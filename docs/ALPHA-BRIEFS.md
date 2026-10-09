@@ -192,6 +192,13 @@ Approving the pull request that adds this approves every word below. Edit any li
 - A row with nothing to count yet shows "None yet" in place of the number. Other rows still show.
 - Line under the rows: "Counts real organizations only. The demo isn't counted."
 - **Stays:** everything else on Admin, in the same order below this.
+- **Goes:** nothing.
+
+### Questions for you
+
+1. **Counting while it's new.** Row 2 counts a post once it's 14 days old, or sooner if it already has a thread. Row 5 counts an organization once its first week is over, or sooner if it has already posted both. Otherwise the first two weeks would show "0 of 0". OK?
+2. **Your own test threads.** Threads you make with "Test as this organization" count like anyone's. Should they be left out? Leaving them out also hides real threads at an organization you once tested as.
+3. **Which threads count in row 4.** I'd count threads that are done, plus those still open after 30 days. That way a thread started yesterday doesn't count against us. Declined and closed threads count as not golden. OK?
 
 ---
 
@@ -218,9 +225,6 @@ Approving the pull request that adds these approves every word below. Each one i
 
 ### Questions for you
 
-1. **Counting while it's new.** Row 2 counts a post once it's 14 days old, or sooner if it already has a thread. Row 5 counts an organization once its first week is over, or sooner if it has already posted both. Otherwise the first two weeks would show "0 of 0". OK?
-2. **Your own test threads.** Threads you make with "Test as this organization" count like anyone's. Should they be left out? Leaving them out also hides real threads at an organization you once tested as.
-3. **Which threads count in row 4.** I'd count threads that are done, plus those still open after 30 days. That way a thread started yesterday doesn't count against us. Declined and closed threads count as not golden. OK?
 1. Does 3 people include the person who joined first? I'd say yes: 3 in all, as the recruiting note says. Codes you make on Admin can still go past 3.
 2. Should "What you do" also show on each post, under the organization's name? I'd keep it to the organization's page for now, so the board stays three lines a card.
 
