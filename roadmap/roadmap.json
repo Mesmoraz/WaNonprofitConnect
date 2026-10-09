@@ -1414,8 +1414,17 @@
       "title": "Members invite colleagues to their own organization",
       "status": "backlog",
       "added": "2026-09-24",
-      "tasks": [],
-      "source": "Alpha review, 2026-09-24"
+      "tasks": [
+        {
+          "id": "T-228",
+          "title": "Brief: invite someone from your own organization",
+          "status": "review",
+          "added": "2026-10-07",
+          "source": "Taylor, Oct 7: pull the next task (the rest of Phase A needs briefs)"
+        }
+      ],
+      "source": "Alpha review, 2026-09-24",
+      "lane": "app"
     },
     {
       "id": "S-96",
@@ -1454,8 +1463,17 @@
       "title": "Edit a need or offer after posting",
       "status": "backlog",
       "added": "2026-09-24",
-      "tasks": [],
-      "source": "Alpha review, 2026-09-24"
+      "tasks": [
+        {
+          "id": "T-229",
+          "title": "Brief: edit a need or offer",
+          "status": "review",
+          "added": "2026-10-07",
+          "source": "Taylor, Oct 7: pull the next task (the rest of Phase A needs briefs)"
+        }
+      ],
+      "source": "Alpha review, 2026-09-24",
+      "lane": "app"
     },
     {
       "id": "S-98",
@@ -1472,8 +1490,17 @@
       "title": "An organization describes itself: a line about what it does, a website, a contact person",
       "status": "backlog",
       "added": "2026-09-24",
-      "tasks": [],
-      "source": "Alpha review, 2026-09-24"
+      "tasks": [
+        {
+          "id": "T-227",
+          "title": "Brief: Your organization (a line, a website, who to ask)",
+          "status": "review",
+          "added": "2026-10-07",
+          "source": "Taylor, Oct 7: pull the next task (the rest of Phase A needs briefs)"
+        }
+      ],
+      "source": "Alpha review, 2026-09-24",
+      "lane": "app"
     },
     {
       "id": "S-100",
@@ -1631,7 +1658,15 @@
       "status": "backlog",
       "added": "2026-09-28",
       "source": "Full review, 2026-09-28",
-      "tasks": []
+      "tasks": [
+        {
+          "id": "T-230",
+          "title": "Brief: the small lines, folded into the briefs that touch them",
+          "status": "review",
+          "added": "2026-10-07",
+          "source": "Taylor, Oct 7: pull the next task (the rest of Phase A needs briefs)"
+        }
+      ]
     },
     {
       "id": "S-111",
