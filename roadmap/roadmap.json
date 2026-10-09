@@ -1667,6 +1667,13 @@
           "id": "T-204",
           "title": "WebSockets on in production (Taylor, Sep 28), so live messages stop falling back to polling",
           "status": "done"
+        },
+        {
+          "id": "T-224",
+          "title": "The Staging tag covered the top of the page (the demo line); it's now a strip the app sits below",
+          "status": "review",
+          "added": "2026-10-07",
+          "source": "Taylor, Oct 7: the staging banner blocks information"
         }
       ]
     },
