@@ -72,6 +72,9 @@ export function ThreadScreen() {
   </>
   else if (t.status === 'Completed') status = <p className="thread-status golden">Done. This is a golden thread.</p>
   else if (t.status === 'Declined' && iStarted) status = <p className="thread-status">{other.name} said not this time. Your post stays on the board.</p>
+  else if (t.status === 'Declined') status = <p className="thread-status">You said not this time. Their post stays on the board.</p>
+  // Cancelled: a post in it was closed, or the thread was called off (S-104).
+  else if (t.status === 'Cancelled') status = <p className="thread-status">This thread is closed. Find another on <Link className="inline-link" to="/">the board</Link>?</p>
 
   const closed = t.status === 'Declined' || t.status === 'Cancelled'
 

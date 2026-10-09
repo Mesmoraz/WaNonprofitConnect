@@ -137,7 +137,7 @@ Approving the pull request that adds these approves every word below. Each one i
 - A thread that's gone, or isn't yours: "This thread is gone. Back to your inbox?" ("Back to your inbox" is the link.)
 - An organization's page that doesn't load: "That didn't work. Try again" (the approved line, as on the board).
 
-## A closed thread says so (S-104)
+## A closed thread says so (S-104, built)
 
 - **For:** a declined or closed thread goes silent today, and the message box just disappears.
 - You said not this time: "You said not this time. Their post stays on the board."

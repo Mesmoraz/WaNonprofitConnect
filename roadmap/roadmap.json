@@ -1114,7 +1114,7 @@
         {
           "id": "T-57",
           "title": "Browser security headers (HSTS, no framing, no sniffing): none are sent today",
-          "status": "ready"
+          "status": "done"
         }
       ]
     },
@@ -1569,7 +1569,7 @@
       "epic": "E-24",
       "lane": "app",
       "title": "A closed thread says so: declined or cancelled, and what to do next",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-09-28",
       "source": "Full review, 2026-09-28",
       "tasks": []
