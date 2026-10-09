@@ -17,7 +17,8 @@ test('[S-116] Admin lists threads waiting on someone, and leaves out one started
   await signIn(page, { name: 'Taylor', email: ADMIN_EMAIL, org: ORG.ballard })
   await page.goto('/admin')
   await expect(page.getByText('Waiting on someone')).toBeVisible()
+  // Either stalled threads or the empty line, once the list has loaded (a database with old test threads has rows).
   const rows = page.locator('.card', { hasText: /hasn’t answered|Quiet since/ })
-  if (!(await rows.count())) await expect(page.getByText('Every thread is moving.')).toBeVisible()
+  await expect(rows.first().or(page.getByText('Every thread is moving.'))).toBeVisible()
   await expect(page.getByText(need.title)).toHaveCount(0)
 })
