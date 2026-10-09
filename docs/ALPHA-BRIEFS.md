@@ -146,7 +146,7 @@ Approving the pull request that adds these approves every word below. Each one i
 - In the inbox, the status word for both: "Closed".
 - The message box stays hidden; the messages so far stay readable.
 
-## What the map shows (S-105)
+## What the map shows (S-105, built)
 
 - **For:** the map is the payoff, and nothing on it explains the lines.
 - A round "?" button at the top of the map, labelled for screen readers "What the map shows". The first time you open the map, the card opens by itself.
