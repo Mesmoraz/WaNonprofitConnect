@@ -120,7 +120,7 @@ Approving the pull request that adds these approves every word below. Each one i
 - Stays: the 12 groups, saving to your organization, "{n} more outside your filters. Show them".
 - Picks your organization saved still apply while the board is small (Taylor, Oct 7). The "Showing everyone" line shows only when nothing is picked.
 
-## Admin: waiting on someone (new story)
+## Admin: waiting on someone (S-116)
 
 - **For:** until email notices exist, Taylor nudges by hand. This shows who to nudge.
 - On Admin, under "Waiting for you", label "Waiting on someone".
