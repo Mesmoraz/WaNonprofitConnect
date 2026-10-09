@@ -118,6 +118,7 @@ Approving the pull request that adds these approves every word below. Each one i
 - While the board has **fewer than 30 open posts**, "Who they serve" starts with nothing picked, so you see everything. Picks your organization saved are kept.
 - The line under the chips changes, only while the board is small: "Showing everyone while the board is small. Tap to narrow it." (Was: "Set from your organization's cause code. Tap to change.", which comes back at 30 posts.)
 - Stays: the 12 groups, saving to your organization, "{n} more outside your filters. Show them".
+- Picks your organization saved still apply while the board is small (Taylor, Oct 7). The "Showing everyone" line shows only when nothing is picked.
 
 ## Admin: waiting on someone (new story)
 

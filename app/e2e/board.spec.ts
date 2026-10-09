@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { ORG, postListing, run, signIn } from './helpers'
+import { ADMIN_EMAIL, ORG, postListing, run, signIn } from './helpers'
 
 // Screen 6, Board. Copy: docs/ALPHA-BRIEFS.md and the S-103 review fixes.
 
@@ -63,4 +63,29 @@ test('[S-98] organization names read in normal case, keeping acronyms', async ({
 
   await page.goto(`/org/${ORG.habitat.ein}`)
   await expect(page.getByRole('heading', { name: 'Tacoma-Pierce Habitat for Humanity', exact: true })).toBeVisible()
+})
+
+test('[S-108] while the board is small, Who they serve starts with nothing picked', async ({ page }) => {
+  // The demo's board is small whatever the database holds. Rainier Valley Food Bank's cause code is Food, which
+  // a bigger board would start from.
+  await signIn(page, { name: 'Taylor', email: ADMIN_EMAIL, org: ORG.ballard })
+  await page.goto('/admin')
+  await page.getByRole('button', { name: 'Try as a new organization' }).click()
+  await page.getByLabel('Invite code').fill('RAINIER')
+  await page.getByRole('button', { name: 'Join' }).click()
+  await expect(page.getByRole('button', { name: /· Rainier Valley Food Bank/ })).toBeVisible()
+  await page.goto('/')
+  await expect(page.getByText(/\d+ open/)).toBeVisible()
+  await page.getByRole('button', { name: /^Filters/ }).click()
+  const filters = page.locator('.flt')
+  await expect(page.getByText('Showing everyone while the board is small. Tap to narrow it.')).toBeVisible()
+  await expect(filters.getByRole('button', { name: 'Food', pressed: true })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Show them' })).toHaveCount(0)
+
+  // Narrowing it still works, and the usual line comes back once something is picked.
+  await filters.getByRole('button', { name: 'Food', pressed: false }).click()
+  await expect(filters.getByRole('button', { name: 'Food', pressed: true })).toBeVisible()
+  await expect(page.getByText('Set from your organization’s cause code. Tap to change.')).toBeVisible()
+  await page.getByRole('button', { name: /· Rainier Valley Food Bank/ }).click()
+  await page.getByRole('menuitem', { name: 'Leave the demo' }).click()
 })
