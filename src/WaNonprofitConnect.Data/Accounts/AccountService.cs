@@ -31,7 +31,14 @@ public sealed class AccountService
 
     // ---- sign in -------------------------------------------------------------
 
-    /// <summary>Find or create the account. Google accounts are found by their subject first, then by email.</summary>
+    /// <summary>Approved by Taylor, Oct 7 (T-218): what a different Google identity with a known email is told.</summary>
+    public const string OtherGoogleAccount = "That Google account isn’t the one this email signed up with. Use that one, or send feedback and we’ll sort it out.";
+
+    /// <summary>
+    /// Find or create the account. Google accounts are found by their subject first, then by email. An account already
+    /// tied to one Google identity is never handed to another with the same email (security review L7): a recreated
+    /// Workspace account, or a Google account made on someone else's address, is refused, and an admin sorts it out.
+    /// </summary>
     public async Task<Account> SignInAsync(string email, string? name, string? googleSubject = null, CancellationToken ct = default)
     {
         var normalized = NormalizeEmail(email) ?? throw ExchangeException.Invalid("Enter an email address.");
@@ -41,6 +48,8 @@ public sealed class AccountService
         Account? account = null;
         if (googleSubject is not null) account = await _db.Accounts.FirstOrDefaultAsync(a => a.GoogleSubject == googleSubject, ct);
         account ??= await _db.Accounts.FirstOrDefaultAsync(a => a.Email == normalized, ct);
+        if (googleSubject is not null && account?.GoogleSubject is { } known && known != googleSubject)
+            throw ExchangeException.Forbidden(OtherGoogleAccount);
 
         var now = DateTime.UtcNow;
         if (account is null)

@@ -5,6 +5,7 @@ import { BRAND } from '../../brand'
 import { Door } from '../../shell/Door'
 import { GoogleButton } from './GoogleButton'
 import './signup.css'
+import { errorLine } from '../../lib/errors'
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined
 /** Development only: with no Google client id, sign in by email through POST /api/v1/auth/dev. */
@@ -16,13 +17,13 @@ export function SignUp() {
   const dev = useDevSignIn()
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
-  const [failed, setFailed] = useState(false)
+  const [failed, setFailed] = useState<string | null>(null)
 
   const submitDev = (e: FormEvent) => {
     e.preventDefault()
     if (!email.trim()) return
-    setFailed(false)
-    dev.mutate({ email: email.trim(), name: name.trim() }, { onError: () => setFailed(true) })
+    setFailed(null)
+    dev.mutate({ email: email.trim(), name: name.trim() }, { onError: e => setFailed(errorLine(e)) })
   }
 
   return (
@@ -35,8 +36,8 @@ export function SignUp() {
       {CLIENT_ID && (
         <GoogleButton
           clientId={CLIENT_ID}
-          onToken={t => { setFailed(false); google.mutate(t, { onError: () => setFailed(true) }) }}
-          onError={() => setFailed(true)}
+          onToken={t => { setFailed(null); google.mutate(t, { onError: e => setFailed(errorLine(e)) }) }}
+          onError={() => setFailed(errorLine(null))}
         />
       )}
 
@@ -50,7 +51,7 @@ export function SignUp() {
         </form>
       )}
 
-      {failed && <p className="error center" role="alert">That didn’t work. Try again.</p>}
+      {failed && <p className="error center" role="alert">{failed}</p>}
       <p className="hint center signup-free">Free. No forms. Your organization is already here.</p>
       <p className="hint center signup-legal">By signing in you agree to <Link to="/terms">the terms</Link> and <Link to="/privacy">the privacy page</Link>.</p>
     </Door>
