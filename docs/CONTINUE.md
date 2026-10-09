@@ -7,7 +7,7 @@ Paste this into a new conversation to pick up the work. Last updated 2026-10-02.
 
 A place where Washington's 501(c)(3)s say what they need and what they have, find each other, and hand things off.
 Public IRS data (about 35,000 WA 501(c)(3)s) is the directory, so nobody has to sign up to be found. The alpha is a
-real app: a React app (`app/`) served by a .NET 8 API (`src/`) on Azure, with SQL Server.
+real app: a React app (`app/`) served by a .NET 10 API (`src/`) on Azure, with SQL Server.
 
 ## Where things are
 
@@ -39,7 +39,7 @@ real app: a React app (`app/`) served by a .NET 8 API (`src/`) on Azure, with SQ
 
 ## Local setup (Windows)
 
-Needs: .NET 8 SDK, SQL Server 2022 LocalDB, Git, GitHub CLI (signed in as Mesmoraz), and **Node 22.12 or newer**
+Needs: .NET 10 SDK, SQL Server 2022 LocalDB, Git, GitHub CLI (signed in as Mesmoraz), and **Node 22.12 or newer**
 (`.nvmrc` says 22; `app/package.json` "engines" says `^20.19.0 || >=22.12.0`).
 
 ```powershell

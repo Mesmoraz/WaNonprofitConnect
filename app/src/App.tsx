@@ -1,8 +1,9 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { MOCK, useMe, type Me } from './api'
 import { forgetReturn, peekReturn, rememberReturn } from './lib/returnTo'
 import { AppShell } from './shell/AppShell'
+import { Slow } from './shell/Slow'
 import { Admin } from './screens/admin/Admin'
 import { Board } from './screens/board/Board'
 import { FindYours } from './screens/find/FindYours'
@@ -59,18 +60,9 @@ function Elsewhere({ stage }: { stage: Stage }) {
   return <Navigate to={HOME[stage]} replace />
 }
 
-/**
- * While we find out who you are. Usually a blink; after a quiet hour the database wakes first and it can take a
- * minute, which looked like a blank, broken page (Taylor, Sep 24). After 2 seconds, say so.
- */
+/** While we find out who you are. */
 function Booting() {
-  const [slow, setSlow] = useState(false)
-  useEffect(() => { const t = setTimeout(() => setSlow(true), 2000); return () => clearTimeout(t) }, [])
-  return (
-    <div className="boot" aria-busy="true">
-      {slow && <p className="empty" role="status">Waking up. The first visit in a while can take a minute.</p>}
-    </div>
-  )
+  return <div className="boot" aria-busy="true"><Slow /></div>
 }
 
 export function App() {

@@ -6,7 +6,7 @@ A platform for Washington State 501(c)(3) organizations to be discovered from au
 
 ## Quick start
 
-Requirements: .NET 8 SDK, SQL Server LocalDB (dev). Both install via `winget install Microsoft.DotNet.SDK.8` and the [SQL Server 2022 LocalDB MSI](https://download.microsoft.com/download/3/8/d/38de7036-2433-4207-8eae-06e247e17b25/SqlLocalDB.msi).
+Requirements: .NET 10 SDK, SQL Server LocalDB (dev). Both install via `winget install Microsoft.DotNet.SDK.10` and the [SQL Server 2022 LocalDB MSI](https://download.microsoft.com/download/3/8/d/38de7036-2433-4207-8eae-06e247e17b25/SqlLocalDB.msi).
 
 ```powershell
 dotnet build WaNonprofitConnect.sln

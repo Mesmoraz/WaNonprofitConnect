@@ -171,6 +171,59 @@ public sealed class AccountService
         return rows.Select(ToClaim).ToList();
     }
 
+    /// <summary>Days a new thread waits for a yes before it shows under "Waiting on someone".</summary>
+    public const int UnansweredDays = 2;
+    /// <summary>Days an accepted thread can go without a message before it shows there.</summary>
+    public const int QuietDays = 7;
+
+    /// <summary>
+    /// Threads stalled on someone, so an admin can nudge them by hand until email notices exist (Taylor, Oct 4):
+    /// started and not answered for 2 days (waiting on the side that didn't start it), or accepted with no message
+    /// for 7 days (waiting on whoever didn't write last, or both sides if no one has). Longest waiting first.
+    /// </summary>
+    public async Task<IReadOnlyList<WaitingThreadDto>> ListWaitingAsync(DateTime? asOf = null, CancellationToken ct = default)
+    {
+        var now = asOf ?? DateTime.UtcNow;
+        var unansweredBefore = now.AddDays(-UnansweredDays);
+        var quietBefore = now.AddDays(-QuietDays);
+        var rows = await _db.Matches.AsNoTracking()
+            .Where(m => (m.Status == MatchStatus.Proposed && m.CreatedAt <= unansweredBefore) || m.Status == MatchStatus.Accepted)
+            .Select(m => new
+            {
+                m.Id, m.Status, m.ProposedByEin, m.CreatedAt, m.RespondedAt,
+                Title = m.NeedListing!.Title, NeedEin = m.NeedListing.OrgEin, OfferEin = m.OfferListing!.OrgEin,
+                Last = m.Messages.OrderByDescending(x => x.SentAt).Select(x => new { x.SentAt, x.SenderEin }).FirstOrDefault(),
+            })
+            .ToListAsync(ct);
+
+        var stalled = new List<(int Id, string Title, bool Quiet, DateTime Since, string[] On)>();
+        foreach (var m in rows)
+        {
+            if (m.Status == MatchStatus.Proposed)
+            {
+                stalled.Add((m.Id, m.Title, false, m.CreatedAt, [m.ProposedByEin == m.NeedEin ? m.OfferEin : m.NeedEin]));
+                continue;
+            }
+            var since = m.Last?.SentAt is { } sent && sent > (m.RespondedAt ?? m.CreatedAt) ? sent : m.RespondedAt ?? m.CreatedAt;
+            if (since > quietBefore) continue;
+            string[] on = m.Last is null ? [m.NeedEin, m.OfferEin] : [m.Last.SenderEin == m.NeedEin ? m.OfferEin : m.NeedEin];
+            stalled.Add((m.Id, m.Title, true, since, on));
+        }
+        if (stalled.Count == 0) return [];
+
+        var eins = stalled.SelectMany(t => t.On).Distinct().ToList();
+        var orgs = await _db.Organizations.AsNoTracking().Where(o => eins.Contains(o.Ein)).ToDictionaryAsync(o => o.Ein, o => OrgName.Display(o.Name), ct);
+        var people = (await _db.Memberships.AsNoTracking()
+                .Where(x => eins.Contains(x.Ein) && x.Status == MembershipStatus.Confirmed)
+                .Select(x => new { x.Ein, x.Account!.Name, x.Account.Email }).ToListAsync(ct))
+            .ToLookup(x => x.Ein, x => new WaitingPersonDto(x.Name, x.Email));
+
+        return stalled.OrderBy(t => t.Since).Select(t => new WaitingThreadDto(
+            t.Id, t.Title, t.Quiet ? "quiet" : "unanswered", t.Since, (int)(now - t.Since).TotalDays,
+            t.On.Select(e => orgs.GetValueOrDefault(e, e)).ToList(),
+            t.On.SelectMany(e => people[e]).ToList())).ToList();
+    }
+
     public async Task<ClaimDto> DecideClaimAsync(int membershipId, bool approve, string adminEmail, CancellationToken ct = default)
     {
         var m = await _db.Memberships.Include(x => x.Account).Include(x => x.Org).FirstOrDefaultAsync(x => x.Id == membershipId, ct)

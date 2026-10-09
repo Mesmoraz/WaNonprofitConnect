@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { startDemo, useActAs, useAdminClaims, useAdminFeedback, useFeedbackDone, useAdminInvites, useApproveClaim, useCreateInvite, useMe, useOrgs, useRejectClaim, type OrgSummary } from '../../api'
+import { startDemo, useActAs, useAdminClaims, useAdminFeedback, useFeedbackDone, useAdminInvites, useAdminWaiting, useApproveClaim, useCreateInvite, useMe, useOrgs, useRejectClaim, type OrgSummary } from '../../api'
 import { useNavigate } from 'react-router-dom'
 import { cap } from '../../lib/words'
 import { Door } from '../../shell/Door'
@@ -22,6 +22,7 @@ export function Admin() {
   const shown = open ? hits.slice(0, 6) : []
   const { data: invites = [] } = useAdminInvites()
   const { data: claims = [] } = useAdminClaims()
+  const { data: waiting = [] } = useAdminWaiting()
   const make = useCreateInvite()
   const { data: feedback = [] } = useAdminFeedback()
   const done = useFeedbackDone()
@@ -111,6 +112,18 @@ export function Admin() {
             <button className="btn primary sm" disabled={approve.isPending} onClick={() => { setFailed(false); approve.mutate(c.id, { onError: () => setFailed(true) }) }}>Approve</button>
             <button className="btn quiet sm" disabled={reject.isPending} onClick={() => { setFailed(false); reject.mutate(c.id, { onError: () => setFailed(true) }) }}>Not this one</button>
           </div>
+        </div>
+      ))}
+
+      <div className="label">Waiting on someone</div>
+      {waiting.length === 0 && <p className="empty">Every thread is moving.</p>}
+      {waiting.map(w => (
+        <div key={w.id} className="card">
+          <span className="t">{w.title}</span>
+          <span className="m">{w.why === 'unanswered' ? `${w.waitingOn.join(' and ')} hasn’t answered · ${w.days} days` : `Quiet since ${day(w.since)}`}</span>
+          {w.people.map(p => (
+            <span key={p.email} className="m">{p.name} · <button className="inline-link" onClick={() => copy(p.email)}>{p.email}</button></span>
+          ))}
         </div>
       ))}
 
