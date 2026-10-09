@@ -112,7 +112,22 @@ public sealed partial class HelpbookService
         return view;
     }
 
-    public Task CloseListingAsync(int id, string actingEin, CancellationToken ct = default) => _exchange.CloseListingAsync(id, actingEin, ct);
+    /// <summary>
+    /// Close your post. Its live threads close with it (S-104, Taylor, Oct 4: "a post was closed" reads as a closed
+    /// thread), and cancelling puts the other organization's post back on the board if this thread held it.
+    /// </summary>
+    public async Task CloseListingAsync(int id, string actingEin, CancellationToken ct = default)
+    {
+        await _exchange.CloseListingAsync(id, actingEin, ct);
+        var live = await _db.Matches.AsNoTracking()
+            .Where(m => (m.NeedListingId == id || m.OfferListingId == id) && (m.Status == MatchStatus.Proposed || m.Status == MatchStatus.Accepted))
+            .Select(m => m.Id).ToListAsync(ct);
+        foreach (var threadId in live)
+        {
+            await _exchange.CancelAsync(threadId, actingEin, ct);
+            await ChangedAsync(threadId, actingEin, ct);
+        }
+    }
 
     // ---- threads ---------------------------------------------------------------------
 

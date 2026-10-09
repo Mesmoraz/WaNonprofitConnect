@@ -34,3 +34,5 @@
 .map-legend p { margin: 0 0 6px; font-size: 14px; color: var(--ink-2); }
 .map-legend .btn { margin-top: 4px; }
 .map-legend-swatch { width: 40px; height: 12px; flex: none; }
+/* While the map loads, or if it didn't (S-106): one line in the middle of where the map goes. */
+.map-note { position: absolute; inset: 0; display: grid; place-items: center; padding: var(--gutter); }

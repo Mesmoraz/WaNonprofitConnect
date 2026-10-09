@@ -118,8 +118,9 @@ Approving the pull request that adds these approves every word below. Each one i
 - While the board has **fewer than 30 open posts**, "Who they serve" starts with nothing picked, so you see everything. Picks your organization saved are kept.
 - The line under the chips changes, only while the board is small: "Showing everyone while the board is small. Tap to narrow it." (Was: "Set from your organization's cause code. Tap to change.", which comes back at 30 posts.)
 - Stays: the 12 groups, saving to your organization, "{n} more outside your filters. Show them".
+- Picks your organization saved still apply while the board is small (Taylor, Oct 7). The "Showing everyone" line shows only when nothing is picked.
 
-## Admin: waiting on someone (new story)
+## Admin: waiting on someone (S-116)
 
 - **For:** until email notices exist, Taylor nudges by hand. This shows who to nudge.
 - On Admin, under "Waiting for you", label "Waiting on someone".
@@ -127,7 +128,7 @@ Approving the pull request that adds these approves every word below. Each one i
 - Each row: the thread's title, then "{organization} hasn't answered · 3 days" or "Quiet since Sep 30", then the people at the organization it's waiting on, "{name} · {email}". Tap an email to copy it: toast "Copied."
 - None: "Every thread is moving."
 
-## Loading and error lines (S-106)
+## Loading and error lines (S-106, built)
 
 - **For:** a blank screen on a slow phone looks broken.
 - Any screen still loading after 2 seconds shows the approved line: "Waking up. The first visit in a while can take a minute."
@@ -136,7 +137,7 @@ Approving the pull request that adds these approves every word below. Each one i
 - A thread that's gone, or isn't yours: "This thread is gone. Back to your inbox?" ("Back to your inbox" is the link.)
 - An organization's page that doesn't load: "That didn't work. Try again" (the approved line, as on the board).
 
-## A closed thread says so (S-104)
+## A closed thread says so (S-104, built)
 
 - **For:** a declined or closed thread goes silent today, and the message box just disappears.
 - You said not this time: "You said not this time. Their post stays on the board."

@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useBoard, useMapData, useMe, useOrgPage, useOrgs, type KindOfHelp, type ListingKind } from '../../api'
 import { BRAND } from '../../brand'
-import { SERVE_GROUPS, passes, useServeFilter } from '../../lib/serve'
+import { SERVE_GROUPS, SMALL_BOARD, passes, useServeFilter } from '../../lib/serve'
 import { cap, causeOf, HELPS, HELP_LABEL } from '../../lib/words'
+import { Slow } from '../../shell/Slow'
 import { ListingCard } from './ListingCard'
 import { WelcomeCard } from './WelcomeCard'
 import './board.css'
@@ -36,7 +37,9 @@ export function Board() {
   const { data: me } = useMe()
   const myEin = me?.membership?.ein ?? ''
   const { data: mine } = useOrgPage(myEin)   // your cause code, to start "Who they serve" from
-  const serve = useServeFilter(myEin, mine?.org)
+  const whole = useBoard()                    // every open post, whatever tab you're on, to tell if the board is small
+  const small = whole.data !== undefined && whole.data.length < SMALL_BOARD
+  const serve = useServeFilter(myEin, mine?.org, small)
   const [showAll, setShowAll] = useState(false)
   const all = board.data ?? []
   const listings = showAll ? all : all.filter(l => passes(serve.picked, l.org))
@@ -90,11 +93,14 @@ export function Board() {
                 return <button key={g} className={`chip${on ? ' on' : ''}`} aria-pressed={on} onClick={() => { setShowAll(false); serve.toggle(g) }}>{g}</button>
               })}
             </div>
-            <p className="hint">Set from your organization’s cause code. Tap to change.</p>
+            <p className="hint">{small && !serve.picked.length
+              ? 'Showing everyone while the board is small. Tap to narrow it.'
+              : 'Set from your organization’s cause code. Tap to change.'}</p>
             {filterCount > 0 && <button className="btn sm quiet" onClick={clearFilters}>Clear filters</button>}
           </div>
         )}
 
+        {!board.data && !board.isError && <Slow />}
         {board.isError && !board.data && (
           <p className="empty">That didn’t work. <button className="inline-link" onClick={() => board.refetch()}>Try again</button></p>
         )}
