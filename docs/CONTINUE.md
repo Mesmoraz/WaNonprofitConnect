@@ -15,6 +15,7 @@ real app: a React app (`app/`) served by a .NET 10 API (`src/`) on Azure, with S
 |---|---|
 | Why we build it, and how every word reads | `docs/MISSION.md`, `docs/VOICE.md` (read both before any work; see `CLAUDE.md`) |
 | The alpha: scope, stack, API contract | `docs/ALPHA.md` (screen briefs in `docs/ALPHA-BRIEFS.md`) |
+| What's left in the alpha, round by round | `docs/ALPHA-PLAN.md` |
 | Deploying, logs, the sleeping database, backups | `docs/OPERATIONS.md` |
 | The roadmap and how work is tracked | `roadmap/SDLC.md` (rules), `roadmap/roadmap.json` (the source), `roadmap/changelog/` (one file per entry) |
 | Backend quick start and CLI | `README.md` at the repo root |
