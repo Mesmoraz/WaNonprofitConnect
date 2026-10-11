@@ -69,7 +69,13 @@ public sealed partial class HelpbookService
             .Where(m => m.NeedListing!.OrgEin == ein || m.OfferListing!.OrgEin == ein)
             .Select(m => m.Status).ToListAsync(ct);
         var profile = await _db.OrgProfiles.AsNoTracking().Where(p => p.Ein == ein)
-            .Select(p => new { p.About, p.Website, Contact = p.Contact == null ? null : p.Contact.Name })
+            .Select(p => new
+            {
+                p.About, p.Website,
+                // Only while that person is still confirmed here: "Test as this organization" moves a membership.
+                Contact = p.Contact != null && p.Contact.Membership != null && p.Contact.Membership.Ein == ein
+                          && p.Contact.Membership.Status == MembershipStatus.Confirmed ? p.Contact.Name : null,
+            })
             .FirstOrDefaultAsync(ct);
         return new OrgPageDto(summaries[ein], listings.Select(l => View(l, summaries, now)).ToList(),
             statuses.Count(s => s == MatchStatus.Completed),

@@ -136,6 +136,21 @@ public sealed class OrgProfileTests : IDisposable
     }
 
     [Fact]
+    public async Task Who_to_ask_is_left_out_once_that_person_is_somewhere_else()
+    {
+        using var db = _fx.CreateContext();
+        var casey = await ConfirmedAsync(db, "casey@example.org", "Casey Jones", A);
+        var taylor = await ConfirmedAsync(db, "taylor@example.org", "Taylor", A);
+        await new OrgProfileService(db).SaveAsync(casey, new SaveOrgProfileRequest("We run a food bank.", null, taylor));
+
+        // "Test as this organization" moves Taylor's one membership to B.
+        await Accounts(db).ConfirmWithoutInviteAsync(taylor, B, code: "ADMIN");
+
+        (await new HelpbookService(db).OrgPageAsync(A))!.AskFor.Should().BeNull();
+        (await new OrgProfileService(db).GetMineAsync(casey)).ContactAccountId.Should().BeNull();
+    }
+
+    [Fact]
     public async Task Import_does_not_touch_the_profile()
     {
         const string ein = "010600001";

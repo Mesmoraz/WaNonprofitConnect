@@ -58,7 +58,8 @@ public sealed partial class OrgProfileService
             .OrderBy(m => m.CreatedAt)
             .Select(m => new { m.AccountId, m.Account!.Name, m.Account.Email })
             .ToListAsync(ct);
-        return new MyOrgDto(summary, p?.About, p?.Website, p?.ContactAccountId,
+        var contact = people.Any(x => x.AccountId == p?.ContactAccountId) ? p!.ContactAccountId : null; // still here
+        return new MyOrgDto(summary, p?.About, p?.Website, contact,
             people.Select(x => new OrgPersonDto(x.AccountId, x.Name, x.Email, x.AccountId == accountId)).ToList(),
             PlacesLeft: 0); // filled in by S-95
     }
