@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { DEMO, leaveDemo, startDemo, useMe, useSignOut } from '../api'
 import { openFeedback } from './Feedback'
 
-/** Your name, with your organization behind it. Opens a small menu; your own page comes in a later round. */
+/** Your name, with your organization behind it. Opens a small menu: Your organization, Admin, feedback, sign out. */
 export function WhoButton() {
   const { data: me } = useMe()
   const signOut = useSignOut()
@@ -34,6 +34,7 @@ export function WhoButton() {
           {!DEMO && me.account.isAdmin && <button role="menuitem" onClick={() => startDemo(me.account.name)}>Start the demo</button>}
           {me.account.isAdmin && <button role="menuitem" onClick={() => startDemo(me.account.name, true)}>Try as a new organization</button>}
           {DEMO && <button role="menuitem" onClick={leaveDemo}>Leave the demo</button>}
+          {me.membership?.status === 'confirmed' && <button role="menuitem" onClick={() => { setOpen(false); navigate('/org') }}>Your organization</button>}
           <button role="menuitem" onClick={() => { setOpen(false); openFeedback() }}>Send feedback</button>
           {!DEMO && <button role="menuitem" onClick={() => signOut.mutate()} disabled={signOut.isPending}>Sign out</button>}
         </div>

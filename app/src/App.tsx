@@ -11,6 +11,7 @@ import { Inbox } from './screens/inbox/Inbox'
 import { Invite } from './screens/invite/Invite'
 import { ListingScreen } from './screens/listing/ListingScreen'
 import { OrgScreen } from './screens/org/OrgScreen'
+import { YourOrg } from './screens/org/YourOrg'
 import { Privacy, Terms } from './screens/legal/Legal'
 import { Post } from './screens/post/Post'
 import { SignUp } from './screens/signup/SignUp'
@@ -99,6 +100,7 @@ export function App() {
           <Route path="/listing/:id" element={<ListingScreen />} />
           <Route path="/thread/:id" element={<ThreadScreen />} />
           <Route path="/org/:ein" element={<OrgScreen />} />
+          <Route path="/org" element={<YourOrg />} />
           {(import.meta.env.DEV || MOCK) && <Route path="/dev/map-card" element={<Suspense fallback={null}><MapCardPreview /></Suspense>} />}
         </Route>
       </Route>

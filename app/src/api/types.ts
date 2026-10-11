@@ -40,7 +40,12 @@ export interface FeedbackItem { id: number; email: string | null; name: string |
 /** Your organization's saved board filters. serve is null until someone there saves them (start from the cause code). */
 export interface Filters { serve: string[] | null }
 /** An organization's page: its card, open needs and offers, and its live and golden thread counts. */
-export interface OrgPage { org: OrgSummary; listings: Listing[]; golden: number; live: number }
+/** about, website and askFor are what the organization says about itself (S-99); askFor is a first name, never an email. */
+export interface OrgPage { org: OrgSummary; listings: Listing[]; golden: number; live: number; about: string | null; website: string | null; askFor: string | null }
+/** Your organization (S-99). Only people at the organization get this, so it carries their emails. */
+export interface OrgPerson { accountId: string; name: string; email: string; isYou: boolean }
+export interface MyOrg { org: OrgSummary; about: string | null; website: string | null; contactAccountId: string | null; people: OrgPerson[]; placesLeft: number }
+export interface SaveMyOrg { about: string | null; website: string | null; contactAccountId: string | null }
 export interface MapSuggested { needId: number; offerId: number; fromEin: string; toEin: string }
 export interface MapData { members: OrgSummary[]; threads: MapThread[]; suggested: MapSuggested[] }
 export type MapPoint = [ein: string, lat: number, lon: number]
