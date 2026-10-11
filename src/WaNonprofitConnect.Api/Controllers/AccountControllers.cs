@@ -91,6 +91,24 @@ public sealed class AccountController : AppControllerBase
         => _accounts.ClaimAsync(AccountId, request.Ein, ct);
 }
 
+/// <summary>Your organization (S-99): what it says about itself, and the people here. Confirmed members only (403 otherwise).</summary>
+[ApiController]
+[Route("api/v1/org")]
+[Produces("application/json")]
+[Authorize]
+public sealed class OrgController : AppControllerBase
+{
+    private readonly OrgProfileService _profiles;
+    public OrgController(OrgProfileService profiles) => _profiles = profiles;
+
+    [HttpGet]
+    public Task<MyOrgDto> Get(CancellationToken ct) => _profiles.GetMineAsync(AccountId, ct);
+
+    /// <summary>Save "What you do", the website, and who to ask. Empty clears a field.</summary>
+    [HttpPut]
+    public Task<MyOrgDto> Save([FromBody] SaveOrgProfileRequest request, CancellationToken ct) => _profiles.SaveAsync(AccountId, request, ct);
+}
+
 /// <summary>Taylor's page: invite codes and the claims queue. Admins are listed in config <c>Admin:Emails</c>.</summary>
 [ApiController]
 [Route("api/v1/admin")]

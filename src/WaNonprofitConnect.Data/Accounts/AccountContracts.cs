@@ -50,3 +50,11 @@ public sealed class AccountOptions
     public bool IsAdmin(string? email)
         => email is not null && AdminEmails.Any(a => string.Equals(a.Trim(), email.Trim(), StringComparison.OrdinalIgnoreCase));
 }
+
+/// <summary>Your organization (S-99): what it says about itself, and the people here. Only people at the organization get this.</summary>
+public sealed record MyOrgDto(Exchange.OrgSummaryDto Org, string? About, string? Website, Guid? ContactAccountId, IReadOnlyList<OrgPersonDto> People, int PlacesLeft);
+
+public sealed record OrgPersonDto(Guid AccountId, string Name, string Email, bool IsYou);
+
+/// <summary>Saves all three fields. Empty or null clears one.</summary>
+public sealed record SaveOrgProfileRequest(string? About, string? Website, Guid? ContactAccountId);

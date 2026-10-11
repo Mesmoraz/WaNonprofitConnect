@@ -46,6 +46,7 @@ builder.Services.AddHttpClient<SchoolsImporter>(c =>
     c.DefaultRequestHeaders.UserAgent.ParseAdd("WaNonprofitConnect/0.1");
 });
 builder.Services.AddScoped<AccountService>();
+builder.Services.AddScoped<OrgProfileService>();
 builder.Services.AddScoped<ExchangeService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<HelpbookService>();
