@@ -23,7 +23,7 @@ const SOUNDS_LIKE: Record<ListingKind, Record<KindOfHelp, string>> = {
 const COMMON: Record<KindOfHelp, string[]> = {
   Time: ['Driving', 'Event help', 'Sorting and packing', 'Tutoring', 'Office help'],
   Skills: ['Bookkeeping', 'Legal help', 'Tech help', 'Design', 'Marketing'],
-  Things: ['Laptops', 'Food', 'Clothing', 'Furniture', 'Supplies'],
+  Things: ['Laptops', 'Food', 'Clothing', 'Furniture', 'Supplies', 'Auction items'],
   Partnership: ['A sponsor', 'Staff volunteer day', 'Event partner', 'Shared space'],
   ForSchools: ['Guest speakers', 'Field trips', 'Classroom supplies', 'Tutoring'],
   JobsAndMentoring: ['Mock interviews', 'Mentors', 'Job openings', 'Apprenticeships'],

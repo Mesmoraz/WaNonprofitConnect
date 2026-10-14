@@ -38,3 +38,15 @@ test('[S-111] "Something else" opens a box to type the title, and We have switch
   await expect(page.getByRole('heading', { name: title })).toBeVisible()
   await expect(page.getByText('Offer · Skills')).toBeVisible()
 })
+
+test('[S-117] Auction items is a pick under Things', async ({ page }) => {
+  await signIn(page, { name: 'Casey', org: ORG.computers })
+  await page.goto('/post')
+  await page.getByRole('radio', { name: 'Things' }).click()
+  await page.getByRole('radio', { name: 'Auction items' }).click()
+  await page.getByRole('button', { name: 'Post need' }).click()
+
+  await expect(page.getByText('Posted. It’s on the board now.')).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Auction items' })).toBeVisible()
+  await expect(page.getByText('Need · Things')).toBeVisible()
+})
