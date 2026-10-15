@@ -25,7 +25,8 @@ export function Inbox() {
       {sorted.map(t => {
         const mineIsNeed = t.need.org.ein === myEin
         const theirs = mineIsNeed ? t.offer : t.need
-        const what = (theirs.unit && quantityLine(theirs)) || theirs.title
+        // What it is first, then how many when there's more than one (S-119): "Laptops · 12 laptops", never just "1 unit".
+        const what = [theirs.title, (theirs.quantity ?? 0) > 1 ? quantityLine(theirs) : ''].filter(Boolean).join(' · ')
         const status = inboxStatus(t, myEin)
         return (
           <Link key={t.id} to={`/thread/${t.id}`} className={`card tap inbox-row${t.unread ? ' unread' : ''}`}>

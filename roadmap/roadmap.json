@@ -1408,7 +1408,15 @@
       "title": "Tell people when something happens: approved, a new thread, a new message (email, or nudges by hand for the alpha)",
       "status": "backlog",
       "added": "2026-09-24",
-      "tasks": [],
+      "tasks": [
+        {
+          "id": "T-240",
+          "title": "UX review: a started thread and a waiting claim both sit unseen until someone opens the app. Pick the free way to send (T-236) to unblock this",
+          "status": "ready",
+          "added": "2026-10-14",
+          "source": "UX review, Oct 14"
+        }
+      ],
       "source": "Alpha review, 2026-09-24",
       "blocked": "Taylor, Oct 7: no real money until Mario confirms we're making this happen"
     },
@@ -1881,6 +1889,91 @@
       "tasks": [],
       "lane": "app",
       "source": "Next-phase plan (docs/PLAN.md, Phase A #5); brief approved by Taylor in PR #17"
+    },
+    {
+      "id": "S-119",
+      "epic": "E-24",
+      "title": "Inbox and threads say what the thing is, and open the posts",
+      "status": "review",
+      "source": "UX review, Oct 14 (friction list; Taylor: \"add the friction list\")",
+      "added": "2026-10-14",
+      "lane": "app",
+      "tasks": [
+        {
+          "id": "T-241",
+          "title": "Inbox rows say what the thing is, with the count after it",
+          "status": "review",
+          "added": "2026-10-14",
+          "source": "UX review, Oct 14"
+        },
+        {
+          "id": "T-242",
+          "title": "A thread's two posts open when you tap them",
+          "status": "review",
+          "added": "2026-10-14",
+          "source": "UX review, Oct 14"
+        }
+      ]
+    },
+    {
+      "id": "S-120",
+      "epic": "E-24",
+      "title": "\"I can help\" says what it needs instead of looking switched off",
+      "status": "backlog",
+      "source": "UX review, Oct 14 (friction list; Taylor: \"add the friction list\")",
+      "added": "2026-10-14",
+      "lane": "app",
+      "tasks": []
+    },
+    {
+      "id": "S-121",
+      "epic": "E-24",
+      "title": "Search everyone here finds needs and offers too, not just organizations",
+      "status": "backlog",
+      "source": "UX review, Oct 14 (friction list; Taylor: \"add the friction list\")",
+      "added": "2026-10-14",
+      "lane": "app",
+      "tasks": []
+    },
+    {
+      "id": "S-122",
+      "epic": "E-24",
+      "title": "Your needs and offers in one place, on Your organization",
+      "status": "backlog",
+      "source": "UX review, Oct 14 (friction list; Taylor: \"add the friction list\")",
+      "added": "2026-10-14",
+      "lane": "app",
+      "tasks": []
+    },
+    {
+      "id": "S-123",
+      "epic": "E-24",
+      "title": "Marking done can keep a post open when only part was given",
+      "status": "backlog",
+      "source": "UX review, Oct 14 (friction list; Taylor: \"add the friction list\")",
+      "added": "2026-10-14",
+      "lane": "app",
+      "tasks": []
+    },
+    {
+      "id": "S-124",
+      "epic": "E-24",
+      "title": "Every kind of help shows on a phone, none cut off past the edge",
+      "status": "backlog",
+      "source": "UX review, Oct 14 (friction list; Taylor: \"add the friction list\")",
+      "added": "2026-10-14",
+      "lane": "app",
+      "tasks": []
+    },
+    {
+      "id": "S-125",
+      "epic": "E-24",
+      "title": "\"How many\" says how many of what",
+      "status": "backlog",
+      "source": "UX review, Oct 14 (friction list; Taylor: \"add the friction list\")",
+      "added": "2026-10-14",
+      "lane": "app",
+      "tasks": []
     }
   ]
 }
