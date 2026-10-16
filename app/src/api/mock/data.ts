@@ -119,3 +119,16 @@ export const SEED_INVITES: Record<string, string> = {
   // Nothing posted yet: the demo's "new organization" starts here.
   RAINIER: '911500768',
 }
+
+/** Other people at an organization, besides whoever is signed in: [accountId, name, email]. Names match the seed messages. */
+export const SEED_PEOPLE: Record<string, [string, string, string][]> = {
+  '911428805': [['acct-maria', 'Maria Lopez', 'maria@example.org']],
+  '811434757': [['acct-robin', 'Robin Park', 'robin@example.org']],
+  '237173826': [['acct-sam', 'Sam Ortiz', 'sam@example.org']],
+}
+
+/** What some organizations already say about themselves (S-99). The rest have said nothing, so their pages show nothing new. */
+export const SEED_PROFILES: Record<string, { about: string | null; website: string | null; contactAccountId: string | null }> = {
+  '811434757': { about: 'We lend tools to West Seattle neighbors and groups, free.', website: null, contactAccountId: 'acct-robin' },
+  '237173826': { about: 'We get food to food banks across the Inland Northwest.', website: null, contactAccountId: 'acct-sam' },
+}

@@ -1410,6 +1410,11 @@
       "added": "2026-09-24",
       "tasks": [
         {
+          "id": "T-236",
+          "title": "Decide how email is sent before there's money: a free sender (Gmail with an app password, or a free tier) or wait for Azure's email",
+          "status": "ready"
+        },
+        {
           "id": "T-240",
           "title": "UX review: a started thread and a waiting claim both sit unseen until someone opens the app. Pick the free way to send (T-236) to unblock this",
           "status": "ready",
@@ -1433,6 +1438,11 @@
           "status": "done",
           "added": "2026-10-07",
           "source": "Taylor, Oct 7: pull the next task (the rest of Phase A needs briefs)"
+        },
+        {
+          "id": "T-234",
+          "title": "Admin test memberships (Test as this organization) don't take one of the 3 places",
+          "status": "ready"
         }
       ],
       "source": "Alpha review, 2026-09-24",
@@ -1482,6 +1492,11 @@
           "status": "done",
           "added": "2026-10-07",
           "source": "Taylor, Oct 7: pull the next task (the rest of Phase A needs briefs)"
+        },
+        {
+          "id": "T-235",
+          "title": "Urgent counts from when a post became urgent, so editing a post to Urgent can't get around the 2 a month",
+          "status": "ready"
         }
       ],
       "source": "Alpha review, 2026-09-24",
@@ -1491,7 +1506,7 @@
       "id": "S-98",
       "epic": "E-24",
       "title": "Organization names in normal case (the IRS list is all capitals), keeping acronyms",
-      "status": "backlog",
+      "status": "done",
       "added": "2026-09-24",
       "tasks": [],
       "source": "Alpha review, 2026-09-24"
@@ -1500,7 +1515,7 @@
       "id": "S-99",
       "epic": "E-24",
       "title": "An organization describes itself: a line about what it does, a website, a contact person",
-      "status": "ready",
+      "status": "review",
       "added": "2026-09-24",
       "tasks": [
         {
@@ -1509,6 +1524,13 @@
           "status": "done",
           "added": "2026-10-07",
           "source": "Taylor, Oct 7: pull the next task (the rest of Phase A needs briefs)"
+        },
+        {
+          "id": "T-239",
+          "title": "Approve the line a mistyped website shows: Enter a website like yourorganization.org.",
+          "status": "ready",
+          "added": "2026-10-10",
+          "source": "Built S-99: the brief has no words for a website that isn't one"
         }
       ],
       "source": "Alpha review, 2026-09-24",
@@ -1527,6 +1549,11 @@
           "status": "done",
           "added": "2026-10-07",
           "source": "Taylor, Oct 7: write the brief for admin numbers"
+        },
+        {
+          "id": "T-237",
+          "title": "Decide: leave admin test threads out of the numbers (needs each thread to record the account that started it)",
+          "status": "ready"
         }
       ],
       "source": "Alpha review, 2026-09-24",
@@ -1553,7 +1580,13 @@
       "title": "Check on a real phone: iPhone Safari and Android Chrome, the map most of all",
       "status": "backlog",
       "added": "2026-09-24",
-      "tasks": [],
+      "tasks": [
+        {
+          "id": "T-238",
+          "title": "Run the real-phone check once Phase 1 is on staging, before the first invite goes out",
+          "status": "ready"
+        }
+      ],
       "source": "Alpha review, 2026-09-24"
     },
     {
@@ -1647,7 +1680,7 @@
       "epic": "E-23",
       "lane": "app",
       "title": "After sign-in, go back to the link you opened (a shared post, an invite)",
-      "status": "backlog",
+      "status": "done",
       "added": "2026-09-28",
       "source": "Full review, 2026-09-28",
       "tasks": []
@@ -1889,6 +1922,24 @@
       "tasks": [],
       "lane": "app",
       "source": "Next-phase plan (docs/PLAN.md, Phase A #5); brief approved by Taylor in PR #17"
+    },
+    {
+      "id": "S-117",
+      "epic": "E-24",
+      "title": "Auction items is a pick under Things when you post",
+      "status": "review",
+      "source": "Taylor, Oct 14: \"for now we just want it to be an option\"",
+      "added": "2026-10-14",
+      "tasks": []
+    },
+    {
+      "id": "S-118",
+      "epic": "E-13",
+      "title": "Help planning events, like a fundraising auction or a gala",
+      "status": "backlog",
+      "source": "Taylor, Oct 14: helping to plan these events should be an idea on the backlog",
+      "added": "2026-10-14",
+      "tasks": []
     },
     {
       "id": "S-119",
