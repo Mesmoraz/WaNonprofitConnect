@@ -17,7 +17,7 @@ namespace WaNonprofitConnect.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.31")
+                .HasAnnotation("ProductVersion", "10.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -699,6 +699,39 @@ namespace WaNonprofitConnect.Data.Migrations
                     b.ToTable("OrgPreferences");
                 });
 
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.OrgProfile", b =>
+                {
+                    b.Property<string>("Ein")
+                        .HasMaxLength(9)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(9)");
+
+                    b.Property<string>("About")
+                        .HasMaxLength(140)
+                        .HasColumnType("nvarchar(140)");
+
+                    b.Property<Guid?>("ContactAccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("Website")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Ein");
+
+                    b.HasIndex("ContactAccountId");
+
+                    b.ToTable("OrgProfiles");
+                });
+
             modelBuilder.Entity("WaNonprofitConnect.Data.Entities.Organization", b =>
                 {
                     b.Property<string>("Ein")
@@ -1148,6 +1181,24 @@ namespace WaNonprofitConnect.Data.Migrations
                         .HasForeignKey("Ein")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Org");
+                });
+
+            modelBuilder.Entity("WaNonprofitConnect.Data.Entities.OrgProfile", b =>
+                {
+                    b.HasOne("WaNonprofitConnect.Data.Entities.Account", "Contact")
+                        .WithMany()
+                        .HasForeignKey("ContactAccountId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("WaNonprofitConnect.Data.Entities.Organization", "Org")
+                        .WithMany()
+                        .HasForeignKey("Ein")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Contact");
 
                     b.Navigation("Org");
                 });

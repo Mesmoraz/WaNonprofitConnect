@@ -114,3 +114,8 @@ textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; 
 }
 .staging-flag:is(a) { display: block; line-height: var(--staging-h); text-align: center; }
 a.staging-flag, a.staging-flag:visited, a.staging-flag:hover { color: var(--paper); text-decoration: none; }
+
+/* An organization says what it does (S-99), on its page. */
+.org-about { font-size: 15px; color: var(--ink); margin: 4px 0 0; }
+.org-line { font-size: 14px; color: var(--ink-2); margin: 0; }
+.org-line a { color: var(--accent); }

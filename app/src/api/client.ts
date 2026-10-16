@@ -1,7 +1,7 @@
 import { noteFailedCall } from '../lib/telemetry'
 import type {
   BoardQuery, Claim, FeedbackItem, Filters, Invite, Listing, ListingDetail, MapData, MapPoint, Me, Message, NewListing, NewThread,
-  OrgPage, OrgSummary, Thread, ThreadAction, ThreadDetail, WaitingThread,
+  MyOrg, OrgPage, OrgSummary, SaveMyOrg, Thread, ThreadAction, ThreadDetail, WaitingThread,
 } from './types'
 
 const DEMO_KEY = 'helpbook.demo'
@@ -129,6 +129,8 @@ export const api = {
   filters: () => call<Filters>('GET', `${V1}/filters`),
   saveFilters: (serve: string[]) => call<Filters>('PUT', `${V1}/filters`, { serve }),
   orgPage: (ein: string) => call<OrgPage>('GET', `${V1}/orgs/${encodeURIComponent(ein)}/page`),
+  myOrg: () => call<MyOrg>('GET', `${V1}/org`),
+  saveMyOrg: (v: SaveMyOrg) => call<MyOrg>('PUT', `${V1}/org`, v),
 
   // Admin
   adminWaiting: () => call<WaitingThread[]>('GET', `${V1}/admin/waiting`),

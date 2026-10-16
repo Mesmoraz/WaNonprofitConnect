@@ -21,6 +21,7 @@ public class AppDbContext : DbContext
     public DbSet<Invite> Invites => Set<Invite>();
     public DbSet<ZipCentroid> ZipCentroids => Set<ZipCentroid>();
     public DbSet<OrgPreference> OrgPreferences => Set<OrgPreference>();
+    public DbSet<OrgProfile> OrgProfiles => Set<OrgProfile>();
     public DbSet<Feedback> Feedback => Set<Feedback>();
 
     /// <summary>
@@ -165,6 +166,17 @@ public class AppDbContext : DbContext
             b.Property(p => p.Serve).HasMaxLength(400).IsRequired();
             b.Property(p => p.UpdatedBy).HasMaxLength(320).IsRequired();
             b.HasOne(p => p.Org).WithMany().HasForeignKey(p => p.Ein).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<OrgProfile>(b =>
+        {
+            b.HasKey(p => p.Ein);
+            b.Property(p => p.Ein).HasMaxLength(9).IsUnicode(false);
+            b.Property(p => p.About).HasMaxLength(Data.Accounts.OrgProfileService.AboutMax);
+            b.Property(p => p.Website).HasMaxLength(Data.Accounts.OrgProfileService.WebsiteMax);
+            b.Property(p => p.UpdatedBy).HasMaxLength(320).IsRequired();
+            b.HasOne(p => p.Org).WithMany().HasForeignKey(p => p.Ein).OnDelete(DeleteBehavior.Cascade);
+            b.HasOne(p => p.Contact).WithMany().HasForeignKey(p => p.ContactAccountId).OnDelete(DeleteBehavior.SetNull);
         });
 
         modelBuilder.Entity<Account>(b =>

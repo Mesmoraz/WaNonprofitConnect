@@ -1508,7 +1508,7 @@
       "id": "S-99",
       "epic": "E-24",
       "title": "An organization describes itself: a line about what it does, a website, a contact person",
-      "status": "ready",
+      "status": "review",
       "added": "2026-09-24",
       "tasks": [
         {
@@ -1517,6 +1517,13 @@
           "status": "done",
           "added": "2026-10-07",
           "source": "Taylor, Oct 7: pull the next task (the rest of Phase A needs briefs)"
+        },
+        {
+          "id": "T-239",
+          "title": "Approve the line a mistyped website shows: Enter a website like yourorganization.org.",
+          "status": "ready",
+          "added": "2026-10-10",
+          "source": "Built S-99: the brief has no words for a website that isn't one"
         }
       ],
       "source": "Alpha review, 2026-09-24",

@@ -26,6 +26,9 @@ export function OrgScreen() {
       <h1 className="h">{o.name}</h1>
       <p className="sub">{[cap(o.city), causeOf(o.ntee), `EIN ${formatEin(o.ein)}`].filter(Boolean).join(' · ')}</p>
       {threads && <p className="sub">{threads}</p>}
+      {page.about && <p className="org-about">{page.about}</p>}
+      {page.website && <p className="org-line"><a href={page.website} target="_blank" rel="noopener nofollow ugc">{page.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}</a></p>}
+      {page.askFor && <p className="org-line">Ask for {page.askFor}</p>}
 
       <div className="label">Needs and offers</div>
       {page.listings.length

@@ -14,6 +14,7 @@ export const keys = {
   map: ['map'] as const,
   mapPoints: ['mapPoints'] as const,
   orgPage: (ein: string) => ['orgPage', ein] as const,
+  myOrg: (ein: string) => ['myOrg', ein] as const,
   adminClaims: ['admin', 'claims'] as const,
   adminWaiting: ['admin', 'waiting'] as const,
   adminInvites: ['admin', 'invites'] as const,
@@ -65,6 +66,16 @@ export function useSaveFilters(ein: string) {
 }
 
 export const useOrgPage = (ein: string) => useQuery({ queryKey: keys.orgPage(ein), queryFn: () => api.orgPage(ein), enabled: !!ein })
+
+/** Your organization (S-99): what it says about itself, and the people here. Per organization, like the filters. */
+export const useMyOrg = (ein: string) => useQuery({ queryKey: keys.myOrg(ein), queryFn: api.myOrg, enabled: !!ein })
+export function useSaveMyOrg(ein: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: api.saveMyOrg,
+    onSuccess: saved => { qc.setQueryData(keys.myOrg(ein), saved); qc.invalidateQueries({ queryKey: keys.orgPage(ein) }) },
+  })
+}
 
 export const useMapPoints = () => useQuery({ queryKey: keys.mapPoints, queryFn: api.mapPoints, staleTime: 3600_000 })
 
