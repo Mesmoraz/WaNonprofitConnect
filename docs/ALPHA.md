@@ -92,6 +92,7 @@ interface MapData { members: OrgSummary[];                                  // o
 | `GET /api/v1/map/points` | | `[ein, lat, lon][]` for every WA 501(c)(3) with a ZIP centroid. Cached a day. |
 | `GET /api/v1/admin/claims` · `POST /api/v1/admin/claims/{id}/approve` · `/reject` | | admin only |
 | `GET /api/v1/admin/invites` · `POST /api/v1/admin/invites` | `{ ein, uses }` | `{ code, ein, orgName, uses, used }` |
+| `GET /api/v1/org` · `PUT /api/v1/org` | `{ about, website, contactAccountId }` | `MyOrg` (S-99). Confirmed members only. |
 
 SignalR at `/hubs/exchange`, cookie-authenticated, joins the caller to their org's group. Events: `threadChanged(Thread)`, `messageAdded(Message)`, `listingAdded(Listing)`.
 
@@ -145,6 +146,13 @@ Added by the backend lane on Sep 23 (S-68, S-71, S-72, S-74, serving). The contr
 - `MapData.threads[].help` and `.title` come from the need. `members` also includes any organization in a thread.
 - SignalR: you join `org-{ein}` when you connect. After redeeming an invite or getting approved, reconnect to receive `threadChanged` and `messageAdded`. `threadChanged` carries that organization's own `unread`. A new message sends `messageAdded`, then `threadChanged`.
 - Unknown paths fall back to `index.html`, except `/api`, `/hubs` and `/swagger`, which 404. The app is served from `wwwroot` next to the published binaries, or the project's `wwwroot` in dev.
+
+**Your organization (S-99, Oct 10)**
+
+- `GET /api/v1/org` returns `{ org: OrgSummary, about, website, contactAccountId, people: { accountId, name, email, isYou }[], placesLeft }` for your own organization. `PUT` takes `{ about, website, contactAccountId }`, saves all three (empty or null clears one), and returns the same shape. Confirmed members only: `403` otherwise. `placesLeft` is `0` until S-95.
+- `about` is trimmed, 140 characters at most. `website` is trimmed; a bare host gets `https://`, and anything that isn't `http` or `https` is `400` "Enter a website like yourorganization.org." `contactAccountId` must be a confirmed member of the same organization, or `400`. If that person's account goes, it clears.
+- `GET /orgs/{ein}/page` also returns `about`, `website` and `askFor` (the contact's first name, never an email), each `null` when not filled in.
+- Stored in its own `OrgProfiles` table (migration `AddOrgProfile`), so the monthly IRS import never touches it.
 
 **Security hardening (S-114, Oct 2)**
 

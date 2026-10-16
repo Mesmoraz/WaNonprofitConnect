@@ -60,8 +60,12 @@ public sealed record ThreadMessageDto(int Id, int ThreadId, string SenderEin, st
 public sealed record MapThreadDto(int Id, MatchStatus Status, KindOfHelp Help, string FromEin, string ToEin, string Title,
     int NeedId = 0, int OfferId = 0, string? OfferTitle = null);
 
-/// <summary>One organization's page: who it is, its open needs and offers (newest first), and how many golden threads it has.</summary>
-public sealed record OrgPageDto(OrgSummaryDto Org, IReadOnlyList<ListingViewDto> Listings, int Golden, int Live);
+/// <summary>
+/// One organization's page: who it is, its open needs and offers (newest first), and how many golden threads it has.
+/// About, Website and AskFor are what it says about itself (S-99); AskFor is a first name, never an email.
+/// </summary>
+public sealed record OrgPageDto(OrgSummaryDto Org, IReadOnlyList<ListingViewDto> Listings, int Golden, int Live,
+    string? About = null, string? Website = null, string? AskFor = null);
 
 public sealed record MapSuggestionDto(int NeedId, int OfferId, string FromEin, string ToEin);
 

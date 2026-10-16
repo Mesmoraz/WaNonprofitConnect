@@ -2,10 +2,10 @@
 // The signed-in person survives a reload (localStorage); everything else resets to the seed.
 import { ApiError, DEMO, DEMO_STATE_KEY, httpTransport, type Transport } from '../client'
 import type {
-  Claim, Invite, Listing, ListingDetail, MapData, MapPoint, Me, Message, NewListing, NewThread, OrgPage, OrgSummary,
+  Claim, Invite, Listing, ListingDetail, MapData, MapPoint, Me, Message, MyOrg, NewListing, NewThread, OrgPage, OrgSummary, SaveMyOrg,
   Thread, ThreadAction, ThreadDetail, ThreadStatus,
 } from '../types'
-import { ORG_ROWS, SEED_INVITES, SEED_LISTINGS, SEED_MESSAGES, SEED_THREADS, ZIP } from './data'
+import { ORG_ROWS, SEED_INVITES, SEED_LISTINGS, SEED_MESSAGES, SEED_PEOPLE, SEED_PROFILES, SEED_THREADS, ZIP } from './data'
 
 const hoursAgo = (h: number) => new Date(Date.now() - h * 3600e3).toISOString()
 const now = () => new Date().toISOString()
@@ -40,12 +40,13 @@ for (const t of threads) for (const lid of [t.needId, t.offerId]) { const l = li
 const invites: Invite[] = Object.entries(SEED_INVITES).map(([code, ein]) => ({ code, ein, orgName: orgByEin(ein)?.name ?? ein, uses: 5, used: 0 }))
 const claims: Claim[] = []
 const filters: Record<string, string[]> = {}
+const profiles: Record<string, SaveMyOrg> = { ...SEED_PROFILES }
 
 let nextId = 1000
 const id = () => ++nextId
 
 // In the demo, everything done survives a reload until you leave it (dev:mock starts fresh every time).
-interface Saved { listings: ListingRow[]; threads: ThreadRow[]; messages: Message[]; invites: Invite[]; claims: Claim[]; filters: Record<string, string[]>; nextId: number; members: string[] }
+interface Saved { listings: ListingRow[]; threads: ThreadRow[]; messages: Message[]; invites: Invite[]; claims: Claim[]; filters: Record<string, string[]>; nextId: number; members: string[]; profiles?: Record<string, SaveMyOrg> }
 function restore() {
   if (!DEMO) return
   try {
@@ -53,13 +54,13 @@ function restore() {
     const s = JSON.parse(raw) as Saved
     listings.splice(0, listings.length, ...s.listings); threads.splice(0, threads.length, ...s.threads)
     messages.splice(0, messages.length, ...s.messages); invites.splice(0, invites.length, ...s.invites)
-    claims.splice(0, claims.length, ...s.claims); Object.assign(filters, s.filters); nextId = s.nextId
+    claims.splice(0, claims.length, ...s.claims); Object.assign(filters, s.filters); Object.assign(profiles, s.profiles ?? {}); nextId = s.nextId
     for (const o of orgs) o.isMember = s.members.includes(o.ein)
   } catch { /* a bad save starts the demo over */ }
 }
 function persist() {
   if (!DEMO) return
-  const s: Saved = { listings, threads, messages, invites, claims, filters, nextId, members: orgs.filter(o => o.isMember).map(o => o.ein) }
+  const s: Saved = { listings, threads, messages, invites, claims, filters, profiles, nextId, members: orgs.filter(o => o.isMember).map(o => o.ein) }
   try { localStorage.setItem(DEMO_STATE_KEY, JSON.stringify(s)) } catch { /* private mode: this visit only */ }
 }
 restore()
@@ -92,6 +93,24 @@ function meOut(me: Me): Me {
   const used = listings.filter(l => l.ein === me.membership!.ein && l.kind === 'Need' && l.urgency === 'Critical' && new Date(l.createdAt).getTime() > since).length
   return { ...me, membership: { ...me.membership, urgentLeft: Math.max(0, 2 - used) } }
 }
+/** Your organization's people (S-99): you, plus the seeded colleagues. */
+function peopleAt(ein: string, me: Me | null) {
+  const seeded = (SEED_PEOPLE[ein] ?? []).map(([accountId, name, email]) => ({ accountId, name, email, isYou: false }))
+  return me ? [{ accountId: me.account.id, name: me.account.name, email: me.account.email, isYou: true }, ...seeded.filter(p => p.accountId !== me.account.id)] : seeded
+}
+const firstName = (name: string | undefined) => name?.trim().split(/\s+/)[0] || null
+/** The same rules as the API: trimmed, a bare host gets https://, only http and https. */
+function cleanWebsite(raw: string | null | undefined): string | null {
+  let s = (raw ?? '').trim(); if (!s) return null
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = `https://${s}`
+  try { const u = new URL(s); if ((u.protocol === 'https:' || u.protocol === 'http:') && u.hostname.includes('.') && s.length <= 200) return s } catch { /* falls through */ }
+  return fail(400, 'Enter a website like yourorganization.org.')
+}
+function myOrg(): MyOrg {
+  const ein = requireOrg(), me = requireMe(), p = profiles[ein]
+  return { org: orgByEin(ein)!, about: p?.about ?? null, website: p?.website ?? null, contactAccountId: p?.contactAccountId ?? null, people: peopleAt(ein, me), placesLeft: 0 }
+}
+
 const requireOrg = (): string => {
   const me = requireMe()
   if (!me.membership || me.membership.status !== 'confirmed') fail(403, 'Your organization is not confirmed yet.')
@@ -286,6 +305,17 @@ const routes: [string, RegExp, Handler][] = [
   // The demo shows the real faint dots (public data) so the whole state looks alive; dev:mock stays offline.
   ['GET', /^\/filters$/, () => ({ serve: filters[requireOrg()] ?? null })],
   ['PUT', /^\/filters$/, (_m, b: { serve?: string[] }) => { const ein = requireOrg(); filters[ein] = b.serve ?? []; return { serve: filters[ein] } }],
+  ['GET', /^\/org$/, () => myOrg()],
+  ['PUT', /^\/org$/, (_m, b: Partial<SaveMyOrg>) => {
+    const ein = requireOrg()
+    const about = (b.about ?? '').trim() || null
+    if (about && about.length > 140) fail(400, 'Keep it to one line, 140 characters at most.')
+    const website = cleanWebsite(b.website)
+    const contact = b.contactAccountId ?? null
+    if (contact && !peopleAt(ein, session).some(p => p.accountId === contact)) fail(400, 'Pick someone at your organization.')
+    profiles[ein] = { about, website, contactAccountId: contact }
+    return myOrg()
+  }],
   ['GET', /^\/orgs\/(\d+)\/page$/, m => {
     requireMe()
     const o = orgByEin(m[1]) ?? fail(404, 'Not found.')
@@ -295,6 +325,9 @@ const routes: [string, RegExp, Handler][] = [
       listings: listings.filter(l => l.ein === o.ein && l.status === 'Open').sort((a, b) => b.createdAt.localeCompare(a.createdAt)).map(l => toListing(l)),
       golden: mine.filter(t => t.status === 'Completed').length,
       live: mine.filter(t => t.status === 'Proposed' || t.status === 'Accepted').length,
+      about: profiles[o.ein]?.about ?? null,
+      website: profiles[o.ein]?.website ?? null,
+      askFor: firstName(peopleAt(o.ein, session?.membership?.ein === o.ein ? session : null).find(x => x.accountId === profiles[o.ein]?.contactAccountId)?.name),
     } satisfies OrgPage
   }],
   ['GET', /^\/map\/points$/, () => DEMO ? httpTransport('GET', '/api/v1/map/points') : orgs.filter(o => o.lat !== null).map(o => [o.ein, o.lat!, o.lon!] as MapPoint)],
