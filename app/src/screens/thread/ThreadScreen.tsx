@@ -84,8 +84,9 @@ export function ThreadScreen() {
         <BackLink fallback="/inbox" />
         <h1 className="h">{other.name}</h1>
         <div className="thread-pair">
-          <p>Need: {t.need.title} · {t.need.org.name}</p>
-          <p>Offer: {t.offer.title} · {t.offer.org.name}</p>
+          {/* Each post opens, to check the details while you talk (S-119). */}
+          <p>Need: <Link className="inline-link" to={`/listing/${t.need.id}`}>{t.need.title}</Link> · {t.need.org.name}</p>
+          <p>Offer: <Link className="inline-link" to={`/listing/${t.offer.id}`}>{t.offer.title}</Link> · {t.offer.org.name}</p>
         </div>
         {status}
         {failed && <p className="error" role="alert">{failed}</p>}
