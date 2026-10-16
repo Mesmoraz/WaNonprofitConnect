@@ -119,3 +119,8 @@ a.staging-flag, a.staging-flag:visited, a.staging-flag:hover { color: var(--pape
 .org-about { font-size: 15px; color: var(--ink); margin: 4px 0 0; }
 .org-line { font-size: 14px; color: var(--ink-2); margin: 0; }
 .org-line a { color: var(--accent); }
+
+/* Your organization (S-95): the people here, and a code to send a colleague. */
+.org-people { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--ink-2); overflow-wrap: anywhere; }
+.org-code { align-self: flex-start; font: 600 28px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: 0.12em; color: var(--ink);
+  background: var(--paper-2); border: 1px dashed var(--ink-3); border-radius: var(--radius); padding: 10px 16px; cursor: pointer; }

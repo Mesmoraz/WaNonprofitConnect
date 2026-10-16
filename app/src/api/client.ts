@@ -131,6 +131,7 @@ export const api = {
   orgPage: (ein: string) => call<OrgPage>('GET', `${V1}/orgs/${encodeURIComponent(ein)}/page`),
   myOrg: () => call<MyOrg>('GET', `${V1}/org`),
   saveMyOrg: (v: SaveMyOrg) => call<MyOrg>('PUT', `${V1}/org`, v),
+  makeOrgCode: () => call<Invite>('POST', `${V1}/org/invites`),
 
   // Admin
   adminWaiting: () => call<WaitingThread[]>('GET', `${V1}/admin/waiting`),

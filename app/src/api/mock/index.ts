@@ -41,12 +41,14 @@ const invites: Invite[] = Object.entries(SEED_INVITES).map(([code, ein]) => ({ c
 const claims: Claim[] = []
 const filters: Record<string, string[]> = {}
 const profiles: Record<string, SaveMyOrg> = { ...SEED_PROFILES }
+/** Codes members made (S-95): each holds one of the organization's 3 places until it's used. */
+const memberCodes: string[] = []
 
 let nextId = 1000
 const id = () => ++nextId
 
 // In the demo, everything done survives a reload until you leave it (dev:mock starts fresh every time).
-interface Saved { listings: ListingRow[]; threads: ThreadRow[]; messages: Message[]; invites: Invite[]; claims: Claim[]; filters: Record<string, string[]>; nextId: number; members: string[]; profiles?: Record<string, SaveMyOrg> }
+interface Saved { listings: ListingRow[]; threads: ThreadRow[]; messages: Message[]; invites: Invite[]; claims: Claim[]; filters: Record<string, string[]>; nextId: number; members: string[]; profiles?: Record<string, SaveMyOrg>; memberCodes?: string[] }
 function restore() {
   if (!DEMO) return
   try {
@@ -54,13 +56,13 @@ function restore() {
     const s = JSON.parse(raw) as Saved
     listings.splice(0, listings.length, ...s.listings); threads.splice(0, threads.length, ...s.threads)
     messages.splice(0, messages.length, ...s.messages); invites.splice(0, invites.length, ...s.invites)
-    claims.splice(0, claims.length, ...s.claims); Object.assign(filters, s.filters); Object.assign(profiles, s.profiles ?? {}); nextId = s.nextId
+    claims.splice(0, claims.length, ...s.claims); Object.assign(filters, s.filters); Object.assign(profiles, s.profiles ?? {}); memberCodes.splice(0, memberCodes.length, ...(s.memberCodes ?? [])); nextId = s.nextId
     for (const o of orgs) o.isMember = s.members.includes(o.ein)
   } catch { /* a bad save starts the demo over */ }
 }
 function persist() {
   if (!DEMO) return
-  const s: Saved = { listings, threads, messages, invites, claims, filters, profiles, nextId, members: orgs.filter(o => o.isMember).map(o => o.ein) }
+  const s: Saved = { listings, threads, messages, invites, claims, filters, profiles, memberCodes, nextId, members: orgs.filter(o => o.isMember).map(o => o.ein) }
   try { localStorage.setItem(DEMO_STATE_KEY, JSON.stringify(s)) } catch { /* private mode: this visit only */ }
 }
 restore()
@@ -106,9 +108,12 @@ function cleanWebsite(raw: string | null | undefined): string | null {
   try { const u = new URL(s); if ((u.protocol === 'https:' || u.protocol === 'http:') && u.hostname.includes('.') && s.length <= 200) return s } catch { /* falls through */ }
   return fail(400, 'Enter a website like yourorganization.org.')
 }
+/** 3 places, the first person included: the people here and the unused codes members made (S-95). */
+const placesLeft = (ein: string, me: Me) =>
+  Math.max(0, 3 - peopleAt(ein, me).length - invites.filter(i => i.ein === ein && memberCodes.includes(i.code) && i.used < i.uses).length)
 function myOrg(): MyOrg {
   const ein = requireOrg(), me = requireMe(), p = profiles[ein]
-  return { org: orgByEin(ein)!, about: p?.about ?? null, website: p?.website ?? null, contactAccountId: p?.contactAccountId ?? null, people: peopleAt(ein, me), placesLeft: 0 }
+  return { org: orgByEin(ein)!, about: p?.about ?? null, website: p?.website ?? null, contactAccountId: p?.contactAccountId ?? null, people: peopleAt(ein, me), placesLeft: placesLeft(ein, me) }
 }
 
 const requireOrg = (): string => {
@@ -306,6 +311,16 @@ const routes: [string, RegExp, Handler][] = [
   ['GET', /^\/filters$/, () => ({ serve: filters[requireOrg()] ?? null })],
   ['PUT', /^\/filters$/, (_m, b: { serve?: string[] }) => { const ein = requireOrg(); filters[ein] = b.serve ?? []; return { serve: filters[ein] } }],
   ['GET', /^\/org$/, () => myOrg()],
+  ['POST', /^\/org\/invites$/, () => {
+    const ein = requireOrg()
+    if (placesLeft(ein, requireMe()) <= 0) fail(409, 'All 3 places are taken.')
+    const alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
+    let code = ''
+    do { code = Array.from({ length: 8 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('') } while (invites.some(i => i.code === code))
+    const invite: Invite = { code, ein, orgName: orgByEin(ein)!.name, uses: 1, used: 0 }
+    invites.push(invite); memberCodes.push(code)
+    return invite
+  }],
   ['PUT', /^\/org$/, (_m, b: Partial<SaveMyOrg>) => {
     const ein = requireOrg()
     const about = (b.about ?? '').trim() || null

@@ -1429,7 +1429,7 @@
       "id": "S-95",
       "epic": "E-23",
       "title": "Members invite colleagues to their own organization",
-      "status": "in-progress",
+      "status": "review",
       "added": "2026-09-24",
       "tasks": [
         {
@@ -1442,7 +1442,7 @@
         {
           "id": "T-234",
           "title": "Admin test memberships (Test as this organization) don't take one of the 3 places",
-          "status": "ready"
+          "status": "done"
         }
       ],
       "source": "Alpha review, 2026-09-24",

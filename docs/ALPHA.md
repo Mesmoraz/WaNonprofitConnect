@@ -93,6 +93,7 @@ interface MapData { members: OrgSummary[];                                  // o
 | `GET /api/v1/admin/claims` · `POST /api/v1/admin/claims/{id}/approve` · `/reject` | | admin only |
 | `GET /api/v1/admin/invites` · `POST /api/v1/admin/invites` | `{ ein, uses }` | `{ code, ein, orgName, uses, used }` |
 | `GET /api/v1/org` · `PUT /api/v1/org` | `{ about, website, contactAccountId }` | `MyOrg` (S-99). Confirmed members only. |
+| `POST /api/v1/org/invites` | | `201` with `{ code, ein, orgName, uses: 1, used: 0 }` (S-95). Confirmed members only. |
 
 SignalR at `/hubs/exchange`, cookie-authenticated, joins the caller to their org's group. Events: `threadChanged(Thread)`, `messageAdded(Message)`, `listingAdded(Listing)`.
 
@@ -153,6 +154,12 @@ Added by the backend lane on Sep 23 (S-68, S-71, S-72, S-74, serving). The contr
 - `about` is trimmed, 140 characters at most. `website` is trimmed; a bare host gets `https://`, and anything that isn't `http` or `https` is `400` "Enter a website like yourorganization.org." `contactAccountId` must be a confirmed member of the same organization, or `400`. If that person's account goes, it clears.
 - `GET /orgs/{ein}/page` also returns `about`, `website` and `askFor` (the contact's first name, never an email), each `null` when not filled in.
 - Stored in its own `OrgProfiles` table (migration `AddOrgProfile`), so the monthly IRS import never touches it.
+
+**Invite someone (S-95, Oct 16)**
+
+- `POST /api/v1/org/invites` makes a one-use code for your own organization. `409` "All 3 places are taken." once it's full. `403` without a confirmed membership.
+- An organization has 3 places, the first person included (Taylor, Oct 16). `placesLeft` in `GET /org` is 3, less the people here and the unused codes members have made. Memberships from "Test as this organization" (`ADMIN`) and the development sign-in (`DEV`) don't take a place, and the `ADMIN` ones aren't in `people` either. Codes made on Admin don't hold a place, so they can go past 3.
+- Two people asking for the last place at once: each adds its code, then counts again, and the later one backs out with `409`. New column `Invites.ByMember` (migration `AddInviteByMember`).
 
 **Security hardening (S-114, Oct 2)**
 
