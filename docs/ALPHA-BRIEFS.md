@@ -34,7 +34,7 @@ Approved by Taylor 2026-09-23, as written. Build exactly this. Anything else a s
 - "What is it?" (S-111, Mario's feedback, Sep 26: "Free text should be minimal or discrete"). Shows once a kind of help is picked, as chips. The chip is the title.
   - Time: Driving, Event help, Sorting and packing, Tutoring, Office help
   - Skills: Bookkeeping, Legal help, Tech help, Design, Marketing
-  - Things: Laptops, Food, Clothing, Furniture, Supplies
+  - Things: Laptops, Food, Clothing, Furniture, Supplies, Auction items (S-117, Taylor, Oct 14)
   - Partnership: A sponsor, Staff volunteer day, Event partner, Shared space
   - For schools: Guest speakers, Field trips, Classroom supplies, Tutoring
   - Jobs and mentoring: Mock interviews, Mentors, Job openings, Apprenticeships

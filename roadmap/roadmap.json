@@ -1915,6 +1915,24 @@
       "tasks": [],
       "lane": "app",
       "source": "Next-phase plan (docs/PLAN.md, Phase A #5); brief approved by Taylor in PR #17"
+    },
+    {
+      "id": "S-117",
+      "epic": "E-24",
+      "title": "Auction items is a pick under Things when you post",
+      "status": "review",
+      "source": "Taylor, Oct 14: \"for now we just want it to be an option\"",
+      "added": "2026-10-14",
+      "tasks": []
+    },
+    {
+      "id": "S-118",
+      "epic": "E-13",
+      "title": "Help planning events, like a fundraising auction or a gala",
+      "status": "backlog",
+      "source": "Taylor, Oct 14: helping to plan these events should be an idea on the backlog",
+      "added": "2026-10-14",
+      "tasks": []
     }
   ]
 }
