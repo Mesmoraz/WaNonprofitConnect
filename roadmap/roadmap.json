@@ -1408,7 +1408,13 @@
       "title": "Tell people when something happens: approved, a new thread, a new message (email, or nudges by hand for the alpha)",
       "status": "backlog",
       "added": "2026-09-24",
-      "tasks": [],
+      "tasks": [
+        {
+          "id": "T-236",
+          "title": "Decide how email is sent before there's money: a free sender (Gmail with an app password, or a free tier) or wait for Azure's email",
+          "status": "ready"
+        }
+      ],
       "source": "Alpha review, 2026-09-24",
       "blocked": "Taylor, Oct 7: no real money until Mario confirms we're making this happen"
     },
@@ -1425,6 +1431,11 @@
           "status": "done",
           "added": "2026-10-07",
           "source": "Taylor, Oct 7: pull the next task (the rest of Phase A needs briefs)"
+        },
+        {
+          "id": "T-234",
+          "title": "Admin test memberships (Test as this organization) don't take one of the 3 places",
+          "status": "ready"
         }
       ],
       "source": "Alpha review, 2026-09-24",
@@ -1474,6 +1485,11 @@
           "status": "done",
           "added": "2026-10-07",
           "source": "Taylor, Oct 7: pull the next task (the rest of Phase A needs briefs)"
+        },
+        {
+          "id": "T-235",
+          "title": "Urgent counts from when a post became urgent, so editing a post to Urgent can't get around the 2 a month",
+          "status": "ready"
         }
       ],
       "source": "Alpha review, 2026-09-24",
@@ -1483,7 +1499,7 @@
       "id": "S-98",
       "epic": "E-24",
       "title": "Organization names in normal case (the IRS list is all capitals), keeping acronyms",
-      "status": "backlog",
+      "status": "done",
       "added": "2026-09-24",
       "tasks": [],
       "source": "Alpha review, 2026-09-24"
@@ -1519,6 +1535,11 @@
           "status": "done",
           "added": "2026-10-07",
           "source": "Taylor, Oct 7: write the brief for admin numbers"
+        },
+        {
+          "id": "T-237",
+          "title": "Decide: leave admin test threads out of the numbers (needs each thread to record the account that started it)",
+          "status": "ready"
         }
       ],
       "source": "Alpha review, 2026-09-24",
@@ -1545,7 +1566,13 @@
       "title": "Check on a real phone: iPhone Safari and Android Chrome, the map most of all",
       "status": "backlog",
       "added": "2026-09-24",
-      "tasks": [],
+      "tasks": [
+        {
+          "id": "T-238",
+          "title": "Run the real-phone check once Phase 1 is on staging, before the first invite goes out",
+          "status": "ready"
+        }
+      ],
       "source": "Alpha review, 2026-09-24"
     },
     {
@@ -1639,7 +1666,7 @@
       "epic": "E-23",
       "lane": "app",
       "title": "After sign-in, go back to the link you opened (a shared post, an invite)",
-      "status": "backlog",
+      "status": "done",
       "added": "2026-09-28",
       "source": "Full review, 2026-09-28",
       "tasks": []
