@@ -210,6 +210,138 @@ public sealed class AccountServiceTests : IDisposable
         await Throws(() => svc.SignInAsync("pat@example.org", "Pat", googleSubject: "g-4"), 403);
     }
 
+    // ---- Invite someone (S-95): members make one-use codes, 3 places per organization -----------------------------
+
+    /// <summary>Someone who joined with an admin's code: a real person here, so they take a place.</summary>
+    private async Task<Guid> JoinAsync(Data.AppDbContext db, string email, string ein)
+    {
+        var svc = Svc(db);
+        var code = (await svc.CreateInviteAsync(ein, uses: 1, AdminEmail)).Code;
+        var a = await svc.SignInAsync(email, email.Split('@')[0]);
+        await svc.RedeemInviteAsync(a.Id, code);
+        return a.Id;
+    }
+
+    private static Task<int> PlacesLeftAsync(Data.AppDbContext db, Guid accountId)
+        => new OrgProfileService(db).GetMineAsync(accountId).ContinueWith(t => t.Result.PlacesLeft);
+
+    [Trait("Story", "S-95")]
+    [Fact]
+    public async Task Member_code_works_once_and_confirms_for_their_org()
+    {
+        using var db = _fx.CreateContext();
+        var casey = await JoinAsync(db, "casey@example.org", A);
+        var svc = Svc(db);
+
+        var invite = await svc.CreateMemberInviteAsync(casey);
+        invite.Should().Be(new InviteDto(invite.Code, A, "Alpha Food Bank", 1, 0));
+        var row = await db.Invites.AsNoTracking().SingleAsync(i => i.Code == invite.Code);
+        row.ByMember.Should().BeTrue();
+        row.CreatedBy.Should().Be("casey@example.org");
+
+        var sam = await svc.SignInAsync("sam@example.org", "Sam");
+        (await svc.RedeemInviteAsync(sam.Id, invite.Code)).Membership!.Ein.Should().Be(A);
+        var pat = await svc.SignInAsync("pat@example.org", "Pat");
+        await Throws(() => svc.RedeemInviteAsync(pat.Id, invite.Code), 409);
+    }
+
+    [Trait("Story", "S-95")]
+    [Fact]
+    public async Task Places_left_counts_people_and_unused_codes()
+    {
+        using var db = _fx.CreateContext();
+        var casey = await JoinAsync(db, "casey@example.org", A);
+        (await PlacesLeftAsync(db, casey)).Should().Be(2);       // the first person takes a place
+        await JoinAsync(db, "sam@example.org", A);
+        (await PlacesLeftAsync(db, casey)).Should().Be(1);
+        await Svc(db).CreateMemberInviteAsync(casey);            // an unused code holds a place
+        (await PlacesLeftAsync(db, casey)).Should().Be(0);
+    }
+
+    [Trait("Story", "S-95")]
+    [Fact]
+    public async Task Fourth_code_is_refused()
+    {
+        using var db = _fx.CreateContext();
+        var casey = await JoinAsync(db, "casey@example.org", A);
+        var svc = Svc(db);
+        await svc.CreateMemberInviteAsync(casey);
+        await svc.CreateMemberInviteAsync(casey);
+        var ex = (await svc.Invoking(s => s.CreateMemberInviteAsync(casey)).Should().ThrowAsync<ExchangeException>()).Which;
+        ex.StatusCode.Should().Be(409);
+        ex.Message.Should().Be("All 3 places are taken.");
+        (await db.Invites.AsNoTracking().CountAsync(i => i.ByMember)).Should().Be(2);
+    }
+
+    [Trait("Story", "S-95")]
+    [Fact]
+    public async Task Admin_test_membership_does_not_take_a_place()
+    {
+        using var db = _fx.CreateContext();
+        var casey = await JoinAsync(db, "casey@example.org", A);
+        var taylor = await Svc(db).SignInAsync(AdminEmail, "Taylor");
+        await Svc(db).ConfirmWithoutInviteAsync(taylor.Id, A, code: "ADMIN");   // "Test as this organization"
+
+        (await PlacesLeftAsync(db, casey)).Should().Be(2);
+        // Nor is Taylor one of the people here, or a "Who to ask" choice.
+        (await new OrgProfileService(db).GetMineAsync(casey)).People.Select(p => p.AccountId).Should().Equal(casey);
+    }
+
+    [Trait("Story", "S-95")]
+    [Fact]
+    public async Task Admin_codes_can_go_past_three()
+    {
+        using var db = _fx.CreateContext();
+        var casey = await JoinAsync(db, "casey@example.org", A);
+        await JoinAsync(db, "sam@example.org", A);
+        await JoinAsync(db, "pat@example.org", A);
+        var fourth = await JoinAsync(db, "lee@example.org", A);
+        (await Svc(db).RequireActingEinAsync(fourth)).Should().Be(A);
+        (await PlacesLeftAsync(db, casey)).Should().Be(0);
+        await Throws(() => Svc(db).CreateMemberInviteAsync(casey), 409);
+    }
+
+    [Trait("Story", "S-95")]
+    [Fact]
+    public async Task The_last_place_goes_to_one_code_when_two_ask_at_once()
+    {
+        using var db = _fx.CreateContext();
+        var casey = await JoinAsync(db, "casey@example.org", A);
+        await JoinAsync(db, "sam@example.org", A);   // 1 place left
+
+        // Another request's code landed a moment earlier, after this one counted: this one backs out.
+        db.Invites.Add(new Invite { Code = "EARLIER2", Ein = A, Uses = 1, ByMember = true, CreatedBy = "sam@example.org", CreatedAt = DateTime.UtcNow.AddSeconds(-1) });
+        await db.SaveChangesAsync();
+        await Throws(() => Svc(db).CreateMemberInviteAsync(casey), 409);
+        (await db.Invites.AsNoTracking().Where(i => i.ByMember).Select(i => i.Code).ToListAsync()).Should().Equal("EARLIER2");
+    }
+
+    [Trait("Story", "S-95")]
+    [Fact]
+    public async Task The_earlier_code_keeps_the_last_place()
+    {
+        using var db = _fx.CreateContext();
+        var casey = await JoinAsync(db, "casey@example.org", A);
+        await JoinAsync(db, "sam@example.org", A);   // 1 place left
+
+        // The other request's code is later than this one: this one keeps the place, and the other backs out when it recounts.
+        db.Invites.Add(new Invite { Code = "LATER234", Ein = A, Uses = 1, ByMember = true, CreatedBy = "sam@example.org", CreatedAt = DateTime.UtcNow.AddMinutes(1) });
+        await db.SaveChangesAsync();
+        var mine = await Svc(db).CreateMemberInviteAsync(casey);
+        (await db.Invites.AsNoTracking().AnyAsync(i => i.Code == mine.Code)).Should().BeTrue();
+    }
+
+    [Trait("Story", "S-95")]
+    [Fact]
+    public async Task Pending_member_cannot_make_a_code()
+    {
+        using var db = _fx.CreateContext();
+        var svc = Svc(db);
+        var pat = await svc.SignInAsync("pat@example.org", "Pat");
+        await svc.ClaimAsync(pat.Id, A);
+        await Throws(() => svc.CreateMemberInviteAsync(pat.Id), 403);
+    }
+
     private static async Task Throws(Func<Task> act, int status)
         => (await act.Should().ThrowAsync<ExchangeException>()).Which.StatusCode.Should().Be(status);
 }
