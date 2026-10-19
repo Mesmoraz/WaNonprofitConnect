@@ -79,7 +79,7 @@ export function Home() {
           </> : <p className="hint home-none">Nothing new this week. <Link className="inline-link" to="/board">See the whole board</Link>?</p>)}
         </section>
 
-        {whole.data && <GoTo all={whole.data} shown={shown} myEin={myEin} myOrg={org} picked={serve.picked} meet={map.data?.suggested} />}
+        {whole.data && <OnTheBoard all={whole.data} shown={shown} myEin={myEin} myOrg={org} picked={serve.picked} meet={map.data?.suggested} />}
       </div>
     </div>
   )
@@ -109,41 +109,49 @@ function Waiting({ threads, myEin }: { threads: Thread[]; myEin: string }) {
   )
 }
 
-type Chip = { label: string; n: number; to: string }
+type Row = { label: string; n: number; to: string }
+
+// "78 posts from food organizations": the groups that read as a kind of organization; the rest read "organizations serving …".
+const AS_KIND: Partial<Record<ServeGroup, string>> = {
+  Food: 'food', Housing: 'housing', Health: 'health', Education: 'education', Environment: 'environment', Animals: 'animal', 'Arts and culture': 'arts and culture',
+}
+const fromGroup = (g: ServeGroup) => AS_KIND[g] ? `from ${AS_KIND[g]} organizations` : `from organizations serving ${g.toLowerCase()}`
 
 /**
- * Quiet chips that open the Board already filtered, each with the count the Board will show. A chip with nothing
- * behind it doesn't show. At most 5: needs your offers could meet, your cause, the busiest kinds of help, Urgent, Who you serve.
+ * "On the board" (S-126, Taylor Oct 19: "Go to: Food / Things" was unclear). Rows that open the Board already filtered,
+ * the count first, the same count the Board will show. A row with nothing behind it doesn't show. At most 5: needs your
+ * offers could meet, your cause, the busiest kinds of help, urgent needs, posts that match your filters.
  */
-function GoTo({ all, shown, myEin, myOrg, picked, meet }: {
+function OnTheBoard({ all, shown, myEin, myOrg, picked, meet }: {
   all: Listing[]; shown: (l: Listing) => boolean; myEin: string; myOrg: { ntee: string | null; name: string } | undefined
   picked: ServeGroup[]; meet: { needId: number; fromEin: string }[] | undefined
 }) {
   const visible = all.filter(shown)
   const mineMeets = new Set((meet ?? []).filter(s => s.fromEin === myEin).map(s => s.needId))
   const cause = myOrg ? servedBy(myOrg.ntee, myOrg.name)[0] : undefined
+  const row = (n: number, label: (n: number) => string, to: string): Row => ({ n, label: label(n), to })
 
-  const fits: Chip = { label: 'Needs you could meet', n: visible.filter(l => mineMeets.has(l.id)).length, to: '/board?fits=1' }
-  const yourCause: Chip | null = cause ? { label: cause, n: all.filter(l => passes([cause], l.org)).length, to: `/board?serve=${encodeURIComponent(cause)}` } : null
-  const urgent: Chip = { label: 'Urgent', n: visible.filter(l => l.kind === 'Need' && l.urgency === 'Critical').length, to: '/board?urgent=1' }
+  const fits = row(visible.filter(l => mineMeets.has(l.id)).length, n => `${plural(n, 'need')} you could meet`, '/board?fits=1')
+  const yourCause = cause ? row(all.filter(l => passes([cause], l.org)).length, n => `${plural(n, 'post')} ${fromGroup(cause)}`, `/board?serve=${encodeURIComponent(cause)}`) : null
+  const urgent = row(visible.filter(l => l.kind === 'Need' && l.urgency === 'Critical').length, n => plural(n, 'urgent need'), '/board?urgent=1')
   const sameAsCause = picked.length === 1 && picked[0] === cause
-  const who: Chip | null = picked.length && !sameAsCause ? { label: 'Who you serve', n: visible.length, to: '/board' } : null
-  const kinds: Chip[] = HELPS
-    .map(h => ({ label: HELP_LABEL[h], n: visible.filter(l => l.help === h).length, to: `/board?help=${h}` }))
-    .filter(c => c.n > 0)
+  const yours = picked.length && !sameAsCause ? row(visible.length, n => `${n === 1 ? '1 post that matches' : `${n} posts that match`} your filters`, '/board') : null
+  const kinds = HELPS
+    .map(h => row(visible.filter(l => l.help === h).length, n => `${plural(n, 'post')} under ${HELP_LABEL[h]}`, `/board?help=${h}`))
+    .filter(r => r.n > 0)
     .sort((a, b) => b.n - a.n)
 
-  const some = (c: Chip | null): c is Chip => !!c && c.n > 0
-  const fixed = [fits, yourCause, urgent, who].filter(some)
+  const some = (r: Row | null): r is Row => !!r && r.n > 0
+  const fixed = [fits, yourCause, urgent, yours].filter(some)
   const busiest = kinds.slice(0, Math.max(1, 5 - fixed.length))
-  const chips = [fits, yourCause, ...busiest, urgent, who].filter(some).slice(0, 5)
-  if (!chips.length) return null
+  const rows = [fits, yourCause, ...busiest, urgent, yours].filter(some).slice(0, 5)
+  if (!rows.length) return null
 
   return (
     <section className="home-sec home-go" aria-labelledby="home-go">
-      <h2 id="home-go" className="home-h">Go to</h2>
-      <div className="chips">
-        {chips.map(c => <Link key={c.label} className="chip" to={c.to}>{c.label} · {c.n}</Link>)}
+      <h2 id="home-go" className="home-h">On the board</h2>
+      <div className="home-rows">
+        {rows.map(r => <Link key={r.to} className="home-row" to={r.to}>{r.label}</Link>)}
       </div>
     </section>
   )

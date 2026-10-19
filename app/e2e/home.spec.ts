@@ -47,15 +47,17 @@ test('[S-126] Home shows where you stand, what waits on you, who is near and wha
   expect(await fresh.locator('.listing-card').count()).toBeLessThanOrEqual(3)
   await expect(fresh.getByRole('link', { name: 'See the whole board' })).toHaveAttribute('href', '/board')
 
-  // Go to: every chip has something behind it, and opens the Board with the same count.
-  const chips = page.getByRole('region', { name: 'Go to' }).locator('.chip')
-  expect(await chips.count()).toBeGreaterThan(0)
-  expect(await chips.count()).toBeLessThanOrEqual(5)
-  for (const label of await chips.allTextContents()) expect(label).toMatch(/ · [1-9]\d*$/)
-  const first = (await chips.first().textContent())!
-  await chips.first().click()
+  // On the board: every row says what it is with its count first, and opens the Board with the same count.
+  const rows = page.getByRole('region', { name: 'On the board' }).getByRole('link')
+  expect(await rows.count()).toBeGreaterThan(0)
+  expect(await rows.count()).toBeLessThanOrEqual(5)
+  const shapes = /^[1-9]\d* (needs? you could meet|posts? from .*organizations.*|posts? under .+|urgent needs?|posts? that match(es)? your filters)$/
+  for (const label of await rows.allTextContents()) expect(label).toMatch(shapes)
+  await expect(rows.filter({ hasText: /posts? from food organizations$/ })).toHaveCount(1)   // Thurston's cause
+  const first = (await rows.first().textContent())!
+  await rows.first().click()
   await expect(page).toHaveURL(/\/board(\?|$)/)
-  await expect(page.locator('.flt-head')).toContainText(new RegExp(`^${first.split(' · ')[1]} open`))
+  await expect(page.locator('.flt-head')).toContainText(new RegExp(`^${first.split(' ')[0]} open`))
 
   // Each part opens: the thread, the map, the board.
   await page.locator('.logo').click()
@@ -80,7 +82,7 @@ test('[S-126] with nothing waiting and nothing new, Home says so and points to t
   await page.goto('/')
   await expect(page.getByRole('region', { name: 'Waiting on you' })).toContainText('Nothing waiting on you.')
   await expect(page.getByRole('region', { name: 'New this week' })).toContainText('Nothing new this week. See the whole board?')
-  await expect(page.getByRole('region', { name: 'Go to' })).toHaveCount(0)   // no chip with nothing behind it
+  await expect(page.getByRole('region', { name: 'On the board' })).toHaveCount(0)   // no row with nothing behind it
   await page.getByRole('link', { name: 'See the whole board' }).click()
   await expect(page).toHaveURL(/\/board$/)
 })

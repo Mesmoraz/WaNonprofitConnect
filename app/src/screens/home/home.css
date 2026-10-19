@@ -17,7 +17,13 @@
 .home-none { font-size: 14px; color: var(--ink-3); }
 .home-more { align-self: flex-start; font-size: 14px; }
 .home-thread { color: var(--ink); text-decoration: none; }
-.home-go .chip { color: var(--ink); text-decoration: none; display: inline-flex; align-items: center; }
+.home-rows { display: flex; flex-direction: column; border-top: 1px solid var(--line-2); }
+.home-row {
+  display: flex; align-items: center; justify-content: space-between; min-height: var(--tap); padding: 8px 2px;
+  border-bottom: 1px solid var(--line-2); color: var(--ink); text-decoration: none; font-size: 15px;
+}
+.home-row::after { content: '›'; color: var(--ink-3); font-size: 18px; margin-left: 12px; }
+.home-row:hover { color: var(--accent); }
 
 .card.near-card { padding: 0; overflow: hidden; color: var(--ink); text-decoration: none; }
 /* The live map doesn't take taps: the whole card is the link to the Map. */
@@ -39,8 +45,12 @@
 @media (min-width: 1100px) {
   .home { max-width: 1040px; }
   .home-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 28px; align-items: start; }
-  /* Left: waiting, then new. Right: near you, then go to. */
+  /* Left: waiting, then new. Right: near you, then on the board. */
   .home-near { grid-column: 2; grid-row: 1; }
   .home-new { grid-column: 1; grid-row: 2 / span 2; }
   .home-go { grid-column: 2; grid-row: 2; }
 }
+
+/* The small map is too small for MapLibre's credits line to start open (it does on narrow screens): keep it to the (i). */
+.near-card .maplibregl-ctrl-attrib.maplibregl-compact-show { padding: 0; min-height: 24px; }
+.near-card .maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner { display: none; }
