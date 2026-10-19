@@ -1,7 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { DEMO, leaveDemo, useExchangeHub, useMe, useThreads } from '../api'
 import { BRAND } from '../brand'
-import { BoardIcon, InboxIcon, MapIcon, PlusIcon } from './icons'
+import { BoardIcon, HomeIcon, InboxIcon, MapIcon, PlusIcon } from './icons'
 import { WhoButton } from './WhoButton'
 import './shell.css'
 
@@ -22,7 +22,8 @@ export function AppShell() {
         <Outlet />
       </main>
       <nav className="tabs" aria-label="Main">
-        <NavLink to="/" end className={cls}><span className="ic"><BoardIcon /></span>Board</NavLink>
+        <NavLink to="/" end className={cls}><span className="ic"><HomeIcon /></span>Home</NavLink>
+        <NavLink to="/board" className={cls}><span className="ic"><BoardIcon /></span>Board</NavLink>
         <NavLink to="/map" className={cls}><span className="ic"><MapIcon /></span>Map</NavLink>
         <NavLink to="/post" className={p => `${cls(p)} plus`}><span className="ic"><PlusIcon /></span>Post</NavLink>
         <NavLink to="/inbox" className={cls}>

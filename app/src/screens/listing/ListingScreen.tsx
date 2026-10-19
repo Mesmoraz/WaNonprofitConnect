@@ -30,7 +30,7 @@ export function ListingScreen() {
         <BackLink />
         {!isError ? <Slow />
           : error instanceof ApiError && error.status === 404
-            ? <p className="empty">This post is gone. <Link className="inline-link" to="/">Back to the board</Link>?</p>
+            ? <p className="empty">This post is gone. <Link className="inline-link" to="/board">Back to the board</Link>?</p>
             : <p className="empty">That didn’t work. <button className="inline-link" onClick={() => refetch()}>Try again</button></p>}
       </Page>
     )
@@ -56,7 +56,7 @@ export function ListingScreen() {
   const closePost = () => {
     setFailed(null)
     close.mutate(l.id, {
-      onSuccess: () => { toast('Closed. It’s off the board.'); navigate('/', { replace: true }) },
+      onSuccess: () => { toast('Closed. It’s off the board.'); navigate('/board', { replace: true }) },
       onError: e => { setConfirmClose(false); setFailed(errorLine(e)) },
     })
   }

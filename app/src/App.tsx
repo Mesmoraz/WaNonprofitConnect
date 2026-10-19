@@ -6,6 +6,7 @@ import { AppShell } from './shell/AppShell'
 import { Slow } from './shell/Slow'
 import { Admin } from './screens/admin/Admin'
 import { Board } from './screens/board/Board'
+import { Home } from './screens/home/Home'
 import { FindYours } from './screens/find/FindYours'
 import { Inbox } from './screens/inbox/Inbox'
 import { Invite } from './screens/invite/Invite'
@@ -30,7 +31,7 @@ const HOME: Record<Stage, string> = { signedOut: '/signup', noOrg: '/invite', pe
 /**
  * /me decides where you are: signed out → sign up, no organization → invite code, pending → waiting, confirmed → the app.
  * A link into the app opened before you're in (a shared post, an organization) is remembered on the way to the front
- * door, and once you're confirmed you land there instead of the board (S-107, src/lib/returnTo.ts).
+ * door, and once you're confirmed you land there instead of Home (S-107, src/lib/returnTo.ts).
  */
 function Only({ stage }: { stage: Stage }) {
   const { data: me } = useMe()
@@ -93,7 +94,8 @@ export function App() {
       </Route>
       <Route element={<Only stage="confirmed" />}>
         <Route element={<AppShell />}>
-          <Route index element={<Board />} />
+          <Route index element={<Home />} />
+          <Route path="/board" element={<Board />} />
           <Route path="/map" element={<Suspense fallback={<Booting />}><MapScreen /></Suspense>} />
           <Route path="/post" element={<Post />} />
           <Route path="/inbox" element={<Inbox />} />

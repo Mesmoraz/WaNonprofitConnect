@@ -1,0 +1,40 @@
+/* Welcome card (ALPHA-BRIEFS.md): on Home until your organization has a need and an offer. */
+.welcome { display: flex; flex-direction: column; gap: 10px; border-color: var(--accent); }
+.welcome-h { font-family: var(--font-display); font-size: 18px; line-height: 1.25; margin: 0; }
+.welcome-line { margin: 0; color: var(--ink-2); font-size: 15px; line-height: 1.45; }
+.welcome-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.welcome-actions .btn { flex: 1 1 140px; text-align: center; text-decoration: none; }
+.welcome-later { align-self: center; color: var(--ink-3); font-size: 14px; }
+
+/* Home (S-126): one calm column on a phone; two from 1100px. */
+.home { max-width: 640px; margin: 0 auto; width: 100%; gap: 14px; }
+.home-org .h { margin-bottom: 2px; }
+.home-standing { margin: 0; color: var(--ink-2); font-size: 14px; }
+.home-grid { display: flex; flex-direction: column; gap: 22px; margin-top: 6px; }
+.home-sec { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.home-h { font-size: 17px; }
+.home-cards { display: flex; flex-direction: column; gap: 8px; }
+.home-none { font-size: 14px; color: var(--ink-3); }
+.home-more { align-self: flex-start; font-size: 14px; }
+.home-thread { color: var(--ink); text-decoration: none; }
+.home-go .chip { color: var(--ink); text-decoration: none; display: inline-flex; align-items: center; }
+
+.card.near-card { padding: 0; overflow: hidden; color: var(--ink); text-decoration: none; }
+.near-pic { display: block; width: 100%; height: auto; max-height: 260px; background: var(--paper-2); }
+.near-ground { fill: var(--paper-2); }
+.near-ring { fill: none; stroke: var(--ink-3); stroke-opacity: 0.5; stroke-dasharray: 3 4; }
+.near-org { fill: var(--ink-3); opacity: 0.55; }
+.near-thread { fill: none; stroke: var(--thread-golden); stroke-width: 2; stroke-linecap: round; }
+.near-halo { fill: var(--accent); opacity: 0.18; }
+.near-you { fill: var(--accent); stroke: var(--paper); stroke-width: 2; }
+.near-line { display: block; padding: 10px 13px 12px; font-size: 14px; color: var(--ink-2); }
+.near-open { color: var(--accent); text-decoration: underline; }
+
+@media (min-width: 1100px) {
+  .home { max-width: 1040px; }
+  .home-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 28px; align-items: start; }
+  /* Left: waiting, then new. Right: near you, then go to. */
+  .home-near { grid-column: 2; grid-row: 1; }
+  .home-new { grid-column: 1; grid-row: 2 / span 2; }
+  .home-go { grid-column: 2; grid-row: 2; }
+}

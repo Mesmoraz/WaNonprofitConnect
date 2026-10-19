@@ -2,11 +2,10 @@ import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useBoard, useMapData, useMe, useOrgPage, useOrgs, type KindOfHelp, type ListingKind } from '../../api'
 import { BRAND } from '../../brand'
-import { SERVE_GROUPS, SMALL_BOARD, passes, useServeFilter } from '../../lib/serve'
+import { SERVE_GROUPS, SMALL_BOARD, passes, useServeFilter, type ServeGroup } from '../../lib/serve'
 import { cap, causeOf, HELPS, HELP_LABEL } from '../../lib/words'
 import { Slow } from '../../shell/Slow'
 import { ListingCard } from './ListingCard'
-import { WelcomeCard } from './WelcomeCard'
 import './board.css'
 
 function useDebounced<T>(value: T, ms: number) {
@@ -22,6 +21,10 @@ export function Board() {
   const [params, setParams] = useSearchParams()
   const help = (params.get('help') ?? '') as KindOfHelp | ''
   const kind = (params.get('kind') ?? '') as ListingKind | ''
+  // From Home's "Go to" chips (S-126): urgent needs, needs your open offers could meet, one group under "Who they serve".
+  const urgent = params.get('urgent') === '1'
+  const fits = params.get('fits') === '1'
+  const serveParam = (SERVE_GROUPS as readonly string[]).includes(params.get('serve') ?? '') ? params.get('serve') as ServeGroup : null
   const [q, setQ] = useState(params.get('q') ?? '')
   const [filtersOpen, setFiltersOpen] = useState(false)
   const term = useDebounced(q.trim(), 200)
@@ -40,12 +43,18 @@ export function Board() {
   const whole = useBoard()                    // every open post, whatever tab you're on, to tell if the board is small
   const small = whole.data !== undefined && whole.data.length < SMALL_BOARD
   const serve = useServeFilter(myEin, mine?.org, small)
+  const picked = serveParam ? [serveParam] : serve.picked
+  const toggleServe = (g: ServeGroup) => { if (serveParam) set('serve', ''); serve.toggle(g) }
   const [showAll, setShowAll] = useState(false)
-  const all = board.data ?? []
-  const listings = showAll ? all : all.filter(l => passes(serve.picked, l.org))
+  const meet = new Set(map.data?.suggested.filter(s => s.fromEin === myEin).map(s => s.needId))
+  const all = (board.data ?? []).filter(l => (!urgent || (l.kind === 'Need' && l.urgency === 'Critical')) && (!fits || meet.has(l.id)))
+  const listings = showAll ? all : all.filter(l => passes(picked, l.org))
   const hidden = all.length - listings.length
-  const filterCount = (kind ? 1 : 0) + serve.picked.length
-  const clearFilters = () => { set('kind', ''); serve.clear() }
+  const filterCount = (kind ? 1 : 0) + (urgent ? 1 : 0) + (fits ? 1 : 0) + picked.length
+  const clearFilters = () => {
+    setParams(p => { const n = new URLSearchParams(p); for (const k of ['kind', 'urgent', 'fits', 'serve']) n.delete(k); return n }, { replace: true })
+    serve.clear()
+  }
 
   return (
     <div className="screen board">
@@ -53,8 +62,6 @@ export function Board() {
       <span className="search-wrap">
         <input id="boardq" type="search" placeholder="Search everyone here" autoComplete="off" value={q} onChange={e => setQ(e.target.value)} />
       </span>
-
-      {!searching && myEin && <WelcomeCard key={myEin} ein={myEin} mine={mine?.listings} />}
 
       {searching ? (
         orgs.data && term.length >= 2 && (orgs.data.length ? orgs.data.map(o => (
@@ -89,11 +96,11 @@ export function Board() {
             <div className="label">Who they serve</div>
             <div className="chips">
               {SERVE_GROUPS.map(g => {
-                const on = serve.picked.includes(g)
-                return <button key={g} className={`chip${on ? ' on' : ''}`} aria-pressed={on} onClick={() => { setShowAll(false); serve.toggle(g) }}>{g}</button>
+                const on = picked.includes(g)
+                return <button key={g} className={`chip${on ? ' on' : ''}`} aria-pressed={on} onClick={() => { setShowAll(false); toggleServe(g) }}>{g}</button>
               })}
             </div>
-            <p className="hint">{small && !serve.picked.length
+            <p className="hint">{small && !picked.length
               ? 'Showing everyone while the board is small. Tap to narrow it.'
               : 'Set from your organization’s cause code. Tap to change.'}</p>
             {filterCount > 0 && <button className="btn sm quiet" onClick={clearFilters}>Clear filters</button>}
@@ -111,7 +118,7 @@ export function Board() {
           ? <p className="empty">Nothing under {HELP_LABEL[help]} yet. <Link className="inline-link" to="/post">Post the first one?</Link></p>
           // Only "What" (needs or offers) filters on the server. "Who they serve" can't empty a board that has
           // posts (those show as "{n} more outside your filters"), so with no posts at all, say so.
-          : kind
+          : kind || urgent || fits
             ? <p className="empty">Nothing here with those filters. <button className="inline-link" onClick={clearFilters}>Clear them?</button></p>
             : <p className="empty">Nothing here yet. <Link className="inline-link" to="/post">Post the first one?</Link></p>)}
 

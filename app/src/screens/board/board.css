@@ -38,11 +38,3 @@
   .board .card { box-shadow: 0 1px 0 var(--line-2); }
 }
 .board-hidden { text-align: center; font-size: 14px; padding: 6px 0; }
-
-/* Welcome card (ALPHA-BRIEFS.md): top of the board until your organization has a need and an offer. */
-.welcome { display: flex; flex-direction: column; gap: 10px; border-color: var(--accent); }
-.welcome-h { font-family: var(--font-display); font-size: 18px; line-height: 1.25; margin: 0; }
-.welcome-line { margin: 0; color: var(--ink-2); font-size: 15px; line-height: 1.45; }
-.welcome-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-.welcome-actions .btn { flex: 1 1 140px; text-align: center; text-decoration: none; }
-.welcome-later { align-self: center; color: var(--ink-3); font-size: 14px; }
