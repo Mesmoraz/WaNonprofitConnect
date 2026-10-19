@@ -247,3 +247,18 @@ Approving the pull request that adds these approves every word below. Each one i
 - Invite code, anything else going wrong: "That didn't work. Try again." Approve as it is.
 - When the app can't find out who you are at start: "That didn't work. Try again" ("Try again" is the link). Approve as it is.
 - Server error sentences (for example "Urgent is 2 a month. Pick This week instead.") stay as they are for now. They get a brief of their own once the alpha shows which ones people actually see.
+
+---
+
+# Map threads, one line per pair (S-127, approved Oct 19)
+
+Approved by Taylor 2026-10-19 in chat, as written. Taylor, on seeing Home's small map: "instead of adding MORE lines we make the lines look different if there are multiple connections."
+
+- **For:** the map reads at a glance. Several threads between the same two places are one line that looks fuller, not more lines.
+- **One line per pair.** Every thread between the same two places is one curve, in the color of the furthest along: golden, then in progress, then started, then could fit.
+- **More threads, a juicier line:** thicker with each thread up to 5; small bright sparks run along it, one per thread up to 5, from the one giving to the one receiving; a golden pair glows stronger the more golden threads it has.
+- **A number on the line** when there's more than one: a small round badge in the middle, "4".
+- **Confetti when a thread turns golden** while you're looking at the map: a short burst of gold confetti at both pins. None when the phone asks for reduced motion.
+- **Tapping a line with a number** opens a card "{Org A} and {Org B}" with one row per thread: its title and where it stands (Golden, In progress, Waiting for a yes, Could fit). Tap a row to open it. (Where an end is a cluster, the tap opens the cluster, as tapping the cluster does.)
+- **Legend:** one new line, "A thicker line with a number is several threads between the same two places."
+- **Home's small map** gets the same look; it's the same map.
