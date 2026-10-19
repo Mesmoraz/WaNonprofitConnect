@@ -20,7 +20,7 @@ export function Inbox() {
       {!threads && !isError && <Slow />}
       {isError && !threads && <p className="empty">That didn’t work. <button className="inline-link" onClick={() => refetch()}>Try again</button></p>}
       {threads && !threads.length && (
-        <p className="empty">No threads yet. Find a need on <Link className="inline-link" to="/">the board</Link> you can help with.</p>
+        <p className="empty">No threads yet. Find a need on <Link className="inline-link" to="/board">the board</Link> you can help with.</p>
       )}
       {sorted.map(t => {
         const mineIsNeed = t.need.org.ein === myEin

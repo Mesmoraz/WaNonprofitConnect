@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { ORG, signIn } from './helpers'
 
-// Welcome card (docs/ALPHA-BRIEFS.md, approved in PR #6): top of the board until your organization has a need and an offer.
+// Welcome card (docs/ALPHA-BRIEFS.md, approved in PR #6): on Home (S-126) until your organization has a need and an offer.
 
 /** Start from nothing: close whatever Tacoma-Pierce Habitat has open from earlier runs. */
 async function closeOpenPosts(page: Page) {
@@ -18,19 +18,20 @@ test('[S-96] a new organization is asked for one need and one offer, and the car
   await expect(card).toBeVisible()
   await expect(card).toContainText('Post one thing you need and one thing you could give. When another organization helps, it becomes a golden thread on the map.')
   await expect(card.getByRole('link', { name: 'the map' })).toHaveAttribute('href', '/map')
-  await expect(card.getByRole('link', { name: 'Post a need' })).toHaveClass(/primary/)
+  // Home has no green button (S-126): both are plain.
+  await expect(card.getByRole('link', { name: 'Post a need' })).not.toHaveClass(/primary/)
   await expect(card.getByRole('link', { name: 'Post an offer' })).not.toHaveClass(/primary/)
 
-  // Post a need: back on the board, only "Post an offer" is left, and it's the green one.
+  // Post a need: back on Home, only "Post an offer" is left.
   await card.getByRole('link', { name: 'Post a need' }).click()
   await expect(page.getByRole('heading', { name: 'What do you need?' })).toBeVisible()
   await page.getByRole('radio', { name: 'Things' }).click()
   await page.getByRole('radio', { name: 'Supplies' }).click()
   await page.getByRole('button', { name: 'Post need' }).click()
   await expect(page.getByText('Posted. It’s on the board now.')).toBeVisible()
-  await page.getByRole('link', { name: 'Board', exact: true }).click()
+  await page.getByRole('link', { name: 'Home', exact: true }).click()
   await expect(card.getByRole('link', { name: 'Post a need' })).toHaveCount(0)
-  await expect(card.getByRole('link', { name: 'Post an offer' })).toHaveClass(/primary/)
+  await expect(card.getByRole('link', { name: 'Post an offer' })).toBeVisible()
 
   // Post an offer: Post opens on "We have", and afterwards the card is gone.
   await card.getByRole('link', { name: 'Post an offer' }).click()
@@ -40,8 +41,8 @@ test('[S-96] a new organization is asked for one need and one offer, and the car
   await page.getByRole('radio', { name: 'Event help' }).click()
   await page.getByRole('button', { name: 'Post offer' }).click()
   await expect(page.getByText('Posted. It’s on the board now.')).toBeVisible()
-  await page.getByRole('link', { name: 'Board', exact: true }).click()
-  await expect(page.getByRole('searchbox', { name: 'Search everyone here' })).toBeVisible()
+  await page.getByRole('link', { name: 'Home', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'Waiting on you' })).toBeVisible()
   await expect(card).toHaveCount(0)
 })
 
@@ -54,6 +55,6 @@ test('[S-96] "Not now" hides the welcome card on this device', async ({ page }) 
   await card.getByRole('button', { name: 'Not now' }).click()
   await expect(card).toHaveCount(0)
   await page.reload()
-  await expect(page.getByRole('searchbox', { name: 'Search everyone here' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Waiting on you' })).toBeVisible()
   await expect(card).toHaveCount(0)
 })

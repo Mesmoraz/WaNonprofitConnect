@@ -43,6 +43,6 @@ test('[S-104] closing a post closes its thread, which points back to the board',
   await expect(helper.page.locator(`a.inbox-row[href="${path}"]`)).toContainText('Closed')
   await helper.page.goto(path)
   await helper.page.getByRole('link', { name: 'the board' }).click()
-  await expect(helper.page).toHaveURL(/\/$/)
+  await expect(helper.page).toHaveURL(/\/board$/)
   await poster.context.close(); await helper.context.close()
 })

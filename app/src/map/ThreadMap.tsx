@@ -150,7 +150,7 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
   return layers
 }
 
-export function ThreadMap({ data, points, me, selected, onSelect, initialView, className, style }: ThreadMapProps) {
+export function ThreadMap({ data, points, me, selected, onSelect, initialView, still, className, style }: ThreadMapProps) {
   const boxRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MlMap | null>(null)
   const overlayRef = useRef<MapboxOverlay | null>(null)
@@ -180,6 +180,7 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, c
       maxBounds: MAX_BOUNDS,
       minZoom: 4, maxZoom: 16,
       dragRotate: false, pitchWithRotate: false, touchPitch: false, maxPitch: 0,
+      interactive: !still,
       renderWorldCopies: false,
       // Default attribution: full line on wide screens, the (i) button, open at first, on narrow ones.
       pixelRatio: Math.min(window.devicePixelRatio || 1, 2),   // cheap phones with 3x screens stay smooth

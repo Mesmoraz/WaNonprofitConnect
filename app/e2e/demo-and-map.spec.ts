@@ -32,7 +32,8 @@ test('[S-73] [S-103] the map draws, and its code only loads when you open it', a
   const mapCode: string[] = []
   page.on('request', r => { if (/\/assets\/map-|maplibre/.test(r.url())) mapCode.push(r.url()) })
   await signIn(page, { name: 'Casey', org: ORG.computers })
-  await page.goto('/')
+  // The Board, not Home: Home's "Near you" is a small live map (S-126), loaded once the rest of Home is up.
+  await page.goto('/board')
   await expect(page.getByRole('searchbox', { name: 'Search everyone here' })).toBeVisible()
   expect(mapCode, 'map code loaded before opening the map').toHaveLength(0)
   await page.getByRole('link', { name: 'Map', exact: true }).click()

@@ -92,7 +92,7 @@ Approved by Taylor 2026-09-24. Round one of S-88.
 - At the bottom when posts are hidden: "{n} more outside your filters. Show them".
 - "Clear filters" clears these too. The map isn't filtered yet. Picks are saved to your organization, shared by everyone there; an admin can set them. When a cause code gives no group (none, or one like T70 "federated giving"), the organization's name is read instead: "Food bank" is Food, "PTA" is Education, and so on.
 
-## Welcome card
+## Welcome card (moves to Home, S-126)
 
 Approved by Taylor 2026-10-02 (PR #6, merged). Built in the welcome-card PR.
 
@@ -247,6 +247,25 @@ Approving the pull request that adds these approves every word below. Each one i
 - Invite code, anything else going wrong: "That didn't work. Try again." Approve as it is.
 - When the app can't find out who you are at start: "That didn't work. Try again" ("Try again" is the link). Approve as it is.
 - Server error sentences (for example "Urgent is 2 a month. Pick This week instead.") stay as they are for now. They get a brief of their own once the alpha shows which ones people actually see.
+
+---
+
+# Home (S-126, approved Oct 19)
+
+Approved by Taylor 2026-10-19 in chat, as written. Built in its own pull request afterwards.
+
+## Home (a new first tab)
+
+- **For:** a calm place to land and re-center. It shows where you stand and puts the Board, the Map, or a thread waiting on you one tap away. It puts the next possible golden thread in front of you.
+- **Where:** a new first tab. Tabs: Home, Board, Map, Post, Inbox. `/` is Home; the Board moves to `/board`. The logo goes to Home. A link opened before signing in still lands where it pointed (S-107).
+- No green button. Home is for finding your way, not one action; Post is one tap away in the tabs. (An approved exception to voice rule 6.)
+- **Your organization:** your name, then "Spokane · Food". One line: "2 needs, 1 offer open · 3 golden threads" with the link "Your page" (your organization's page). Without an open need or an open offer, the Welcome card shows here instead of that line, with its approved words.
+- **Waiting on you:** heading "Waiting on you". Up to 3 threads where the next step is yours, each with one line under its title: "{Org} started a thread" or "1 new message". Tap opens the thread. With none: "Nothing waiting on you."
+- **Near you:** heading "Near you". A small live map around your organization, about 25 mi each way: your pin, every nonprofit as a faint dot, organizations here as pins, and their threads. It doesn't pan or zoom on Home, and it loads after the rest of Home. Tap opens the Map on the same place. Line: "12 organizations, 2 golden threads within 25 mi. Open the map" (Changed by Taylor Oct 19, after seeing the still picture on staging: "I'd rather it truly be a live map that's small of a radius around the organization.")
+- **New this week:** heading "New this week". The 3 newest needs and offers from the last 7 days that pass your "Who they serve" filter, as short board cards. Link "See the whole board". With none: "Nothing new this week. See the whole board?" ("See the whole board" is the link.)
+- **On the board:** heading "On the board". Up to 5 quiet rows, each opening the Board already filtered, the count first: "4 needs you could meet" (from the map's suggested pairs for your offers), your cause ("78 posts from food organizations"), the busiest kinds of help ("78 posts under Things"), "2 urgent needs", and "12 posts that match your filters". A row with nothing behind it doesn't show. (Was "Go to" with chips like "Food · 6"; changed by Taylor Oct 19: "a little unclear as to what that means exactly and why they are there".)
+- **Stays:** the Board, Map, Post, and Inbox as they are.
+- **Goes:** the Welcome card from the top of the Board (it moves to Home).
 
 ---
 

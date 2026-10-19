@@ -29,7 +29,7 @@ test('[S-93] feedback sent from the name menu reaches Admin', async ({ page, bro
 
 test('[S-91] an error in someone’s browser is sent to the server log', async ({ page }) => {
   await signIn(page, { name: 'Casey', org: ORG.computers })
-  await page.goto('/')
+  await page.goto('/board')
   await expect(page.getByRole('searchbox', { name: 'Search everyone here' })).toBeVisible()
 
   // Most browsers send it as a beacon, which still goes out as the page closes. Chrome doesn't show a beacon's body to tests.
@@ -44,6 +44,6 @@ test('[S-91] an error in someone’s browser is sent to the server log', async (
   const fetched = page.waitForRequest(r => r.url().includes('/api/v1/client-errors') && r.method() === 'POST')
   await page.evaluate(m => { setTimeout(() => { throw new Error(m) }) }, `e2e fetch ${run}`)
   const body = (await fetched).postDataJSON() as { kind: string; message: string; url: string }
-  expect(body).toMatchObject({ kind: 'error', url: '/' })
+  expect(body).toMatchObject({ kind: 'error', url: '/board' })
   expect(body.message).toContain(`e2e fetch ${run}`)
 })
