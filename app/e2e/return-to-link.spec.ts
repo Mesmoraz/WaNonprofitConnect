@@ -37,7 +37,7 @@ test('[S-107] signed out, a shared post opens after you sign in', async ({ page,
   await expect(page).toHaveURL(new RegExp(`/listing/${post.id}$`))
   await expect(page.getByRole('heading', { name: post.title })).toBeVisible()
 
-  // Used once: home is the board again.
+  // Used once: home is Home again.
   await page.goto('/')
   await expect(page).toHaveURL(/\/$/)
 })

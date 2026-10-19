@@ -1839,6 +1839,11 @@
           "status": "review",
           "added": "2026-10-09",
           "source": "Found running the tests locally while merging, Oct 9"
+        },
+        {
+          "id": "T-243",
+          "title": "Local e2e: the second-phone helper defaults to port 5173, so tests with two people fail unless BASE_URL=http://localhost:5253 is set",
+          "status": "ready"
         }
       ]
     },
@@ -2030,9 +2035,10 @@
       "id": "S-126",
       "epic": "E-24",
       "title": "Home: a calm first tab that points you to the board, the map, and what's waiting",
-      "status": "ready",
+      "status": "done",
       "added": "2026-10-19",
-      "tasks": []
+      "tasks": [],
+      "lane": "app"
     }
   ]
 }

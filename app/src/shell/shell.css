@@ -18,7 +18,7 @@
 @media (max-width: 899px) { .app-content { --safe-bottom: 0px; } }
 
 .tabs {
-  grid-area: tabs; display: grid; grid-template-columns: repeat(4, 1fr);
+  grid-area: tabs; display: grid; grid-template-columns: repeat(5, 1fr);
   background: var(--paper); border-top: 1px solid var(--line-2); padding-bottom: var(--safe-bottom);
 }
 .tab {
