@@ -33,7 +33,8 @@ test('[S-73] [S-103] the map draws, and its code only loads when you open it', a
   page.on('request', r => { if (/\/assets\/map-|maplibre/.test(r.url())) mapCode.push(r.url()) })
   await signIn(page, { name: 'Casey', org: ORG.computers })
   await page.goto('/')
-  await expect(page.getByRole('searchbox', { name: 'Search everyone here' })).toBeVisible()
+  // Home's "Near you" is a still picture, not the map (S-126), so it loads none of the map's code either.
+  await expect(page.locator('.near-card svg')).toBeVisible()
   expect(mapCode, 'map code loaded before opening the map').toHaveLength(0)
   await page.getByRole('link', { name: 'Map', exact: true }).click()
   await expect(page.locator('canvas').first()).toBeVisible()

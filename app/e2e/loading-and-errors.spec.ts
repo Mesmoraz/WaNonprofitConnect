@@ -20,7 +20,7 @@ test('[S-106] a post or thread that is gone says so, with the way back', async (
   await page.goto('/listing/999999999')
   await expect(page.getByText('This post is gone. Back to the board?')).toBeVisible()
   await page.getByRole('link', { name: 'Back to the board' }).click()
-  await expect(page).toHaveURL(/\/$/)
+  await expect(page).toHaveURL(/\/board$/)
 
   await page.goto('/thread/999999999')
   await expect(page.getByText('This thread is gone. Back to your inbox?')).toBeVisible()

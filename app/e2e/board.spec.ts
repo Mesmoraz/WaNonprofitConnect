@@ -11,7 +11,7 @@ test('[S-17] [S-45] a new post shows on the board, and the kinds of help filter 
   await other.close()
 
   await signIn(page, { name: 'Casey', org: ORG.computers })
-  await page.goto('/')
+  await page.goto('/board')
   // "Who they serve" can hide it; this test is about the board itself.
   const card = page.locator('.listing-card', { hasText: offer.title })
   const showAll = page.getByRole('button', { name: 'Show them' })
@@ -32,7 +32,7 @@ test('[S-17] [S-45] a new post shows on the board, and the kinds of help filter 
 
 test('[S-103] searching everyone here opens the organization', async ({ page }) => {
   await signIn(page, { name: 'Casey', org: ORG.computers })
-  await page.goto('/')
+  await page.goto('/board')
   await page.getByRole('searchbox', { name: 'Search everyone here' }).fill('West Seattle Tool')
   await page.getByRole('link', { name: new RegExp(ORG.westTools.name) }).click()
   await expect(page).toHaveURL(new RegExp(`/org/${ORG.westTools.ein}$`))
@@ -48,7 +48,7 @@ test('[S-98] organization names read in normal case, keeping acronyms', async ({
   await other.close()
 
   await signIn(page, { name: 'Casey', org: ORG.computers })
-  await page.goto('/')
+  await page.goto('/board')
   await expect(page.getByRole('button', { name: 'Casey · Computers 4 People in Need', exact: true })).toBeVisible()
   await page.getByRole('tab', { name: 'Time' }).click()
   const showAll = page.getByRole('button', { name: 'Show them' })
@@ -74,7 +74,7 @@ test('[S-108] while the board is small, Who they serve starts with nothing picke
   await page.getByLabel('Invite code').fill('RAINIER')
   await page.getByRole('button', { name: 'Join' }).click()
   await expect(page.getByRole('button', { name: /· Rainier Valley Food Bank/ })).toBeVisible()
-  await page.goto('/')
+  await page.goto('/board')
   await expect(page.getByText(/\d+ open/)).toBeVisible()
   await page.getByRole('button', { name: /^Filters/ }).click()
   const filters = page.locator('.flt')
