@@ -34,6 +34,8 @@ export interface ThreadMapProps {
   onSelect: (sel: MapSelection | null) => void;
   /** Where to open. Default: the whole state. Read once, on mount. */
   initialView?: { center: [number, number]; zoom: number };
+  /** A small map that doesn't move (Home's "Near you", S-126): no pan, zoom or taps; the page around it handles the tap. */
+  still?: boolean;
   className?: string;
   style?: CSSProperties;
 }

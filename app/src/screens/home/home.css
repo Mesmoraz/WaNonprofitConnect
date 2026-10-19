@@ -20,9 +20,15 @@
 .home-go .chip { color: var(--ink); text-decoration: none; display: inline-flex; align-items: center; }
 
 .card.near-card { padding: 0; overflow: hidden; color: var(--ink); text-decoration: none; }
-.near-pic { display: block; width: 100%; height: auto; max-height: 260px; background: var(--paper-2); }
+/* The live map doesn't take taps: the whole card is the link to the Map. */
+.near-frame { position: relative; display: block; overflow: hidden; background: var(--paper-2); }
+.near-frame > * { pointer-events: none; }
+.near-pic { display: block; width: 100%; height: 100%; }
 .near-ground { fill: var(--paper-2); }
-.near-ring { fill: none; stroke: var(--ink-3); stroke-opacity: 0.5; stroke-dasharray: 3 4; }
+.near-ring {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 50%;
+  border: 1.5px dashed var(--ink-3); opacity: 0.55;
+}
 .near-org { fill: var(--ink-3); opacity: 0.55; }
 .near-thread { fill: none; stroke: var(--thread-golden); stroke-width: 2; stroke-linecap: round; }
 .near-halo { fill: var(--accent); opacity: 0.18; }

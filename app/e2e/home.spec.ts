@@ -36,9 +36,10 @@ test('[S-126] Home shows where you stand, what waits on you, who is near and wha
   const row = waiting.getByRole('link', { name: new RegExp(need.title) })
   await expect(row).toContainText(`${ORG.harvest.name} started a thread`)
 
-  // Near you: a still picture and its line.
+  // Near you: a small live map around Thurston, and its line.
   const near = page.getByRole('region', { name: 'Near you' })
   await expect(near.getByRole('link')).toHaveText(/^\d+ organizations?, \d+ golden threads? within 25 mi\. Open the map$/)
+  await expect(near.locator('canvas').first()).toBeVisible()
 
   // New this week: the newest posts, as board cards, and the whole board one tap away.
   const fresh = page.getByRole('region', { name: 'New this week' })
@@ -63,7 +64,8 @@ test('[S-126] Home shows where you stand, what waits on you, who is near and wha
   await expect(page).toHaveURL(/\/thread\/\d+$/)
   await page.getByRole('link', { name: 'Home', exact: true }).click()
   await near.getByRole('link').click()
-  await expect(page).toHaveURL(/\/map$/)
+  await expect(page).toHaveURL(/\/map\?at=47\.\d+,-122\.\d+,\d+\.\d+$/)   // the full map, opened on the same place
+  await expect(page.locator('canvas').first()).toBeVisible()
   await page.getByRole('link', { name: 'Home', exact: true }).click()
   await fresh.getByRole('link', { name: 'See the whole board' }).click()
   await expect(page).toHaveURL(/\/board$/)
