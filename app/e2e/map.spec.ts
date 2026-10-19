@@ -52,6 +52,7 @@ test('[S-84] tapping an organization on the map opens its card, then its page', 
   const ballard = map.members.find(m => m.ein === ORG.ballard.ein)!
   expect(ballard.lat).not.toBeNull()
 
+  await page.addInitScript(() => localStorage.setItem('helpbook.mapLegendSeen', '1'))   // the legend sits over the middle of a phone
   await page.goto('/map')
   const at = await screenPoint(page, ballard.lon!, ballard.lat!)
   const card = page.getByRole('dialog', { name: 'Details' })
