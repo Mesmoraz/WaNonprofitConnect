@@ -25,6 +25,7 @@ export function MapLegend({ onClose }: { onClose: () => void }) {
       </ul>
       <p>The dashes run from the one giving to the one receiving.</p>
       <p>A pin is an organization here. A faint dot is any Washington nonprofit.</p>
+      <p>A thicker line with a number is several threads between the same two places.</p>
       <button className="btn sm" onClick={onClose}>Close</button>
     </div>
   )

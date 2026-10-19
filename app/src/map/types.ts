@@ -23,7 +23,8 @@ export interface MapData {
 /** `GET /api/v1/map/points`: every WA 501(c)(3) as [ein, lat, lon]. */
 export type MapPoint = [string, number, number];
 
-export type MapSelection = { kind: 'org'; id: string } | { kind: 'thread'; id: number };
+/** pair: two organizations' EINs as "a|b", from tapping a line that carries more than one thread (S-127). */
+export type MapSelection = { kind: 'org'; id: string } | { kind: 'thread'; id: number } | { kind: 'pair'; id: string };
 
 export interface ThreadMapProps {
   data: MapData;

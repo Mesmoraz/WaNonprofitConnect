@@ -11,8 +11,8 @@ import { FlowExtension, SoftGlowExtension } from './extensions'
 import { MAX_BOUNDS, STYLE_DARK, STYLE_LIGHT, WA_BOUNDS, firstSymbolId, quietStyle } from './basemap'
 import { jitter, pointAt, type LonLat } from './geometry'
 import {
-  DASH_WRAP, buildArcs, buildGlows, buildIndex, buildNodes, degrees, liveThreads, placeLabels, scopeOf,
-  type GlowArc, type LabelDatum, type MapNode, type ThreadArc,
+  DASH_WRAP, buildArcs, buildBadges, buildGlows, buildIndex, buildNodes, degrees, liveThreads, placeLabels, scopeOf,
+  type Badge, type GlowArc, type LabelDatum, type MapNode, type ThreadArc,
 } from './model'
 import { useMapTheme, useReducedMotion, withAlpha, type MapTheme, type RGBA } from './theme'
 import type { ThreadMapProps } from './types'
@@ -20,6 +20,9 @@ import type { ThreadMapProps } from './types'
 const FONT = '"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif'
 const FLOW_PX_PER_S = 24          // dash drift speed; 48 px wrap / 24 = one seamless loop every 2 s
 const MOVER_MS = 1700             // one trip along a selected thread, like the prototype's 1.6 s
+const SPARK_MS = 2600             // one trip along any other line: calmer, since every line has its sparks (S-127)
+const CONFETTI_MS = 1400          // a burst at both pins when a thread turns golden while you look (S-127)
+const CONFETTI_PER_PIN = 26
 const PICK_PIN_PX = 6
 const HOVER_GROW = 1.45          // a pin under the mouse eases up to this size
 const PICK_THREAD_PX = 7          // + the stroke itself ≈ a 16 px wide target
@@ -37,6 +40,8 @@ interface Frame {
   arcs: ThreadArc[]
   glows: GlowArc[]
   movers: ThreadArc[]
+  badges: Badge[]
+  confetti: Confetto[]
   labels: LabelDatum[]
   counts: { position: LonLat; text: string; color: RGBA }[]
   fontsReady: boolean
@@ -47,17 +52,25 @@ interface Frame {
 }
 
 type Mover = { position: LonLat; color: RGBA }
+type Confetto = { position: LonLat; color: RGBA; size: number }
+/** One golden moment: where it pops and when. Each piece flies out on its own heading and falls. */
+type Burst = { at: LonLat[]; start: number; pieces: { angle: number; speed: number; size: number; color: RGBA }[] }
 /** @deck.gl/mapbox reads `beforeId` off each layer in interleaved mode. */
 type Seat = { beforeId?: string }
 
 function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
   const t = f.theme
   const shift = animate ? ((now / 1000) * FLOW_PX_PER_S) % DASH_WRAP : 0
+  // Sparks: one per thread on each line (S-127), evenly spaced, each running the way its thread gives.
   const movers: Mover[] = animate
-    ? f.movers.map((a, i) => ({
-        position: pointAt(a, ((now / MOVER_MS) + i * 0.29) % 1),
-        color: a.state === 'Completed' ? t.goldenGlow : a.state === 'Accepted' ? t.offer : t.need,
-      }))
+    ? f.movers.flatMap((a, i) => {
+        const color = a.state === 'Completed' ? t.goldenGlow : a.state === 'Accepted' ? t.offer : t.need
+        const lap = now / (a.related ? MOVER_MS : SPARK_MS) + i * 0.29
+        return a.sparks.map((dir, k) => {
+          const s = (lap + k / a.sparks.length) % 1
+          return { position: pointAt(a, dir === 1 ? s : 1 - s), color }
+        })
+      })
     : []
   const layers: LayersList = [
     f.dots && new ScatterplotLayer<unknown, Seat>({
@@ -93,6 +106,15 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
       radiusUnits: 'pixels', getRadius: 3.6, getPosition: d => d.position, getFillColor: d => d.color,
       stroked: true, lineWidthUnits: 'pixels', getLineWidth: 1, getLineColor: withAlpha(t.paper, 0.9),
     }),
+    f.badges.length > 0 && new ScatterplotLayer<Badge>({
+      id: 'wm-badges', data: f.badges, pickable: false,
+      radiusUnits: 'pixels', getRadius: 9, getPosition: d => d.position, getFillColor: d => d.fill,
+      stroked: true, lineWidthUnits: 'pixels', getLineWidth: 1.5, getLineColor: d => d.line,
+    }),
+    f.confetti.length > 0 && new ScatterplotLayer<Confetto>({
+      id: 'wm-confetti', data: f.confetti, pickable: false,
+      radiusUnits: 'pixels', getRadius: d => d.size, getPosition: d => d.position, getFillColor: d => d.color,
+    }),
     new ScatterplotLayer<MapNode>({
       id: 'wm-pins', data: f.nodes, pickable: true,
       radiusUnits: 'pixels', getPosition: d => d.position, getFillColor: d => d.fill,
@@ -107,6 +129,12 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
         id: 'wm-counts', data: f.counts, pickable: false,
         getPosition: d => d.position, getText: d => d.text, getSize: 11, sizeUnits: 'pixels',
         getColor: d => d.color, fontFamily: FONT, fontWeight: 700, characterSet: '0123456789+',
+        getTextAnchor: 'middle', getAlignmentBaseline: 'center',
+      }),
+      new TextLayer<Badge>({
+        id: 'wm-badge-text', data: f.badges, pickable: false,
+        getPosition: d => d.position, getText: d => d.text, getSize: 11, sizeUnits: 'pixels',
+        getColor: d => d.ink, fontFamily: FONT, fontWeight: 700, characterSet: '0123456789',
         getTextAnchor: 'middle', getAlignmentBaseline: 'center',
       }),
       new TextLayer<LabelDatum>({
@@ -194,6 +222,16 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, c
       }
       const arc = pick(x, y, PICK_THREAD_PX, 'wm-threads')?.object as ThreadArc | undefined
       if (arc && arc.id != null) { onSelectRef.current({ kind: 'thread', id: arc.id }); return }
+      if (arc && arc.count > 1) {
+        // A line that carries several: between two organizations, their card lists them; to a cluster, open the cluster.
+        if (arc.pair) { onSelectRef.current({ kind: 'pair', id: arc.pair.join('|') }); return }
+        const sc = indexRef.current?.sc
+        if (sc && arc.cluster) {
+          const z = Math.min(sc.getClusterExpansionZoom(arc.cluster.clusterId) + 0.05, 15)
+          map.flyTo({ center: arc.cluster.position, zoom: Math.max(z, map.getZoom() + 1), speed: 1.4 })
+        }
+        return
+      }
       onSelectRef.current(null)
     })
 
@@ -207,7 +245,8 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, c
         hoverQueued = false
         const { x, y } = e.point
         const pin = pick(x, y, PICK_PIN_PX, 'wm-pins')?.object as MapNode | undefined
-        const hit = !!pin || (pick(x, y, PICK_THREAD_PX, 'wm-threads')?.object as ThreadArc | undefined)?.id != null
+        const line = pick(x, y, PICK_THREAD_PX, 'wm-threads')?.object as ThreadArc | undefined
+        const hit = !!pin || (!!line && (line.id != null || line.count > 1))
         const was = hoverRef.current.pin
         hoverRef.current = { pin: pin?.id, hit }
         if (was !== pin?.id && frameRef.current) {
@@ -263,7 +302,59 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, c
   const { nodes, nodeOf } = useMemo(() => buildNodes(index, zoomLevel, deg, scope, me, theme), [index, zoomLevel, deg, scope, me, theme])
   const arcs = useMemo(() => buildArcs(data, threads, nodeOf, scope, theme), [data, threads, nodeOf, scope, theme])
   const glows = useMemo(() => buildGlows(arcs, scope, theme), [arcs, scope, theme])
-  const movers = useMemo(() => (reduced ? [] : arcs.filter(a => a.related && a.state !== 'suggested')), [arcs, reduced])
+  const movers = useMemo(() => (reduced ? [] : arcs.filter(a => a.sparks.length > 0)), [arcs, reduced])
+  const badges = useMemo(() => buildBadges(arcs, scope, theme), [arcs, scope, theme])
+  // For the acceptance tests (app/e2e/map-threads.spec.ts): where each line's middle is, so a test can tap it like a person.
+  useEffect(() => {
+    const box = boxRef.current as (HTMLDivElement & { __lines?: unknown }) | null
+    if (box) box.__lines = arcs.map(a => ({ pair: a.pair, count: a.count, middle: pointAt(a, 0.5) }))
+  }, [arcs])
+
+  // ---- Confetti when a thread turns golden while you're looking (S-127) ----------------------------
+  const burstsRef = useRef<Burst[]>([])
+  const goldenRef = useRef<Set<number> | null>(null)
+  useEffect(() => {
+    const now = new Set(threads.filter(t => t.status === 'Completed').map(t => t.id))
+    const before = goldenRef.current
+    goldenRef.current = now
+    if (!before || reduced) return                          // the first look isn't a moment; reduced motion skips it
+    const fresh = threads.filter(t => t.status === 'Completed' && !before.has(t.id))
+    if (!fresh.length) return
+    const colors = [theme.golden, theme.goldenGlow, theme.offer, theme.need, theme.paper]
+    for (const t of fresh) {
+      const at = [nodeOf.get(t.fromEin)?.position, nodeOf.get(t.toEin)?.position].filter((p): p is LonLat => !!p)
+      if (!at.length) continue
+      const pieces = Array.from({ length: CONFETTI_PER_PIN }, (_, i) => ({
+        angle: -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.4,   // mostly up, then gravity brings them down
+        speed: 140 + Math.random() * 160,
+        size: 2 + Math.random() * 2.5,
+        color: colors[i % colors.length],
+      }))
+      burstsRef.current.push({ at, start: performance.now(), pieces })
+      const box = boxRef.current as (HTMLDivElement & { __bursts?: number }) | null
+      if (box) box.__bursts = (box.__bursts ?? 0) + 1        // for the acceptance tests
+    }
+  }, [threads]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const confettiNow = (now: number): Confetto[] => {
+    const map = mapRef.current
+    burstsRef.current = burstsRef.current.filter(b => now - b.start < CONFETTI_MS)
+    if (!map || !burstsRef.current.length) return []
+    const out: Confetto[] = []
+    for (const b of burstsRef.current) {
+      const s = (now - b.start) / 1000, fade = 1 - (now - b.start) / CONFETTI_MS
+      for (const origin of b.at) {
+        const o = map.project(origin)
+        for (const p of b.pieces) {
+          const x = o.x + Math.cos(p.angle) * p.speed * s
+          const y = o.y + Math.sin(p.angle) * p.speed * s + 0.5 * 520 * s * s
+          const ll = map.unproject([x, y])
+          out.push({ position: [ll.lng, ll.lat], color: withAlpha(p.color, Math.max(0, fade)), size: p.size })
+        }
+      }
+    }
+    return out
+  }
   const counts = useMemo(() => nodes.filter(n => !n.single).map(n => ({
     position: n.position, text: String(n.members.length), color: [255, 255, 255, scope.active && !n.related ? 110 : 255] as RGBA,
   })), [nodes, scope])
@@ -284,7 +375,7 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, c
     const id = underRef.current, map = mapRef.current
     return !swappingRef.current && id && map?.getLayer(id) ? id : undefined
   }
-  frameRef.current = { theme, dots, nodes, arcs, glows, movers, labels, counts, fontsReady, under: under(), hover: hoverRef.current.pin }
+  frameRef.current = { theme, dots, nodes, arcs, glows, movers, badges, confetti: [], labels, counts, fontsReady, under: under(), hover: hoverRef.current.pin }
 
   // ---- Drawing: static redraw on change, plus a light animation loop when motion is allowed --------
   useEffect(() => {
@@ -304,7 +395,8 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, c
       if (last && dt > 28) { if (++slowFrames > 90) minGap = 32 } else slowFrames = Math.max(0, slowFrames - 1)
       last = now
       const overlay = overlayRef.current, f = frameRef.current
-      if (overlay && f && (f.arcs.length || f.movers.length)) { f.under = under(); overlay.setProps({ layers: buildLayers(f, now, true) }) }
+      if (f) f.confetti = confettiNow(now)
+      if (overlay && f && (f.arcs.length || f.movers.length || f.confetti.length)) { f.under = under(); overlay.setProps({ layers: buildLayers(f, now, true) }) }
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)

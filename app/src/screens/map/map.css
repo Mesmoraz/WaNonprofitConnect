@@ -36,3 +36,12 @@
 .map-legend-swatch { width: 40px; height: 12px; flex: none; }
 /* While the map loads, or if it didn't (S-106): one line in the middle of where the map goes. */
 .map-note { position: absolute; inset: 0; display: grid; place-items: center; padding: var(--gutter); }
+
+/* Two organizations and every thread between them (S-127): one row each, title then where it stands. */
+.map-card-rows { display: flex; flex-direction: column; border-top: 1px solid var(--line-2); margin-top: 4px; max-height: 45vh; overflow-y: auto; }
+.map-card-row {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: var(--tap); padding: 6px 2px;
+  border-bottom: 1px solid var(--line-2); color: var(--ink); text-decoration: none; text-align: left; font-size: 14px; width: 100%;
+}
+.map-card-row .r-title { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.map-card-row .r-state { flex: none; color: var(--ink-2); font-size: 13px; }

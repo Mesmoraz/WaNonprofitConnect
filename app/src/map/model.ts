@@ -1,5 +1,5 @@
 import Supercluster, { type ClusterProperties, type PointFeature } from 'supercluster'
-import { curve, type Arc, type LonLat } from './geometry'
+import { curve, pointAt, type Arc, type LonLat } from './geometry'
 import { withAlpha, type MapTheme, type RGBA } from './theme'
 import type { MapData, MapSelection, MapThread, OrgSummary } from './types'
 
@@ -25,7 +25,7 @@ export function degrees(threads: MapThread[]): Map<string, number> {
 }
 
 // ---- Selection scope: what stays bright while something is selected ----------------------------
-export interface Scope { active: boolean; orgs: Set<string>; threads: Set<number>; selectedOrg: string | null }
+export interface Scope { active: boolean; orgs: Set<string>; threads: Set<number>; selectedOrg: string | null; pair?: boolean }
 
 export function scopeOf(sel: MapSelection | null | undefined, threads: MapThread[]): Scope {
   const orgs = new Set<string>(), ids = new Set<number>()
@@ -33,6 +33,13 @@ export function scopeOf(sel: MapSelection | null | undefined, threads: MapThread
     orgs.add(sel.id)
     for (const t of threads) if (t.fromEin === sel.id || t.toEin === sel.id) { ids.add(t.id); orgs.add(t.fromEin); orgs.add(t.toEin) }
     return { active: true, orgs, threads: ids, selectedOrg: sel.id }
+  }
+  if (sel?.kind === 'pair') {
+    // Two organizations and everything between them (S-127): a line with a number, tapped.
+    const [a, b] = sel.id.split('|')
+    orgs.add(a); orgs.add(b)
+    for (const t of threads) if ((t.fromEin === a && t.toEin === b) || (t.fromEin === b && t.toEin === a)) ids.add(t.id)
+    return { active: true, orgs, threads: ids, selectedOrg: null, pair: true }
   }
   if (sel?.kind === 'thread') {
     const t = threads.find(x => x.id === sel.id)
@@ -145,62 +152,114 @@ export function buildNodes(index: Index, zoom: number, deg: Map<string, number>,
 }
 
 // ---- Threads as arcs between nodes ---------------------------------------------------------------
+/**
+ * One line per pair of places (S-127, Taylor Oct 19: "instead of adding MORE lines, make the lines look different").
+ * Every thread and suggestion between the same two pins is one curve: the color of the furthest along, thicker with
+ * each one, a spark running along it for each real thread, and a number in the middle when there's more than one.
+ */
 export interface ThreadArc extends Arc {
   key: string
-  id: number | null          // null for suggested
+  id: number | null          // a lone thread's id; null for a lone suggestion or a line that carries several
   state: ArcState
   fromEin: string; toEin: string; title: string
   related: boolean
   color: RGBA; width: number; dash: [number, number]
+  /** How many threads and suggestions the line carries, and how many of those are golden. */
+  count: number; golden: number
+  /** One spark per real thread, up to 5: 1 runs from `from` to `to`, -1 runs back (that one gives the other way). */
+  sparks: (1 | -1)[]
+  /** Both ends' organizations when each end is a single pin; null when either end is a cluster. */
+  pair: [string, string] | null
+  /** Otherwise the end that is a cluster: tapping the line opens it, as tapping the cluster would. */
+  cluster: { position: LonLat; clusterId: number } | null
 }
 
 const BASE_W: Record<ArcState, number> = { suggested: 1.5, Proposed: 2, Accepted: 2.25, Completed: 3 }
 const BASE_A: Record<ArcState, number> = { suggested: 0.5, Proposed: 0.85, Accepted: 0.85, Completed: 1 }
+const RANK: Record<ArcState, number> = { suggested: 0, Proposed: 1, Accepted: 2, Completed: 3 }
+export const FULLEST = 5                     // past 5 a line stops getting thicker and sparkier
+const PER_MORE_W = 1.1                       // px added for each thread after the first
 
 export function stateColor(state: ArcState, theme: MapTheme): RGBA {
   return state === 'Completed' ? theme.golden : state === 'Accepted' ? theme.offer : state === 'Proposed' ? theme.need : theme.ink3
 }
 
+type Item = { key: string; id: number | null; state: ArcState; fromEin: string; toEin: string; title: string; related: boolean; from: MapNode; to: MapNode }
+
 export function buildArcs(data: MapData, threads: MapThread[], nodeOf: Map<string, MapNode>, scope: Scope, theme: MapTheme): ThreadArc[] {
-  const out: ThreadArc[] = []
-  const pairCount = new Map<string, number>()
+  const groups = new Map<string, Item[]>()
   const add = (key: string, id: number | null, state: ArcState, fromEin: string, toEin: string, title: string, related: boolean) => {
-    const a = nodeOf.get(fromEin), b = nodeOf.get(toEin)
-    if (!a || !b || a === b) return           // both ends in one cluster: nothing to draw yet
-    const pair = a.id < b.id ? `${a.id}|${b.id}` : `${b.id}|${a.id}`
-    const k = pairCount.get(pair) ?? 0
-    pairCount.set(pair, k + 1)
-    const arc = curve(a.position, b.position, 0.16 + 0.09 * k)   // fan out repeats between the same two places
-    const dim = scope.active && !related
-    const alpha = dim ? (state === 'suggested' ? 0.06 : 0.12) : scope.active ? (state === 'suggested' ? 0.75 : 1) : BASE_A[state]
-    out.push({
-      ...arc, key, id, state, fromEin, toEin, title, related,
-      color: withAlpha(stateColor(state, theme), alpha),
-      width: BASE_W[state] + (scope.active && related ? 1.25 : 0),
-      dash: DASH[state],
-    })
+    const from = nodeOf.get(fromEin), to = nodeOf.get(toEin)
+    if (!from || !to || from === to) return           // both ends in one cluster: nothing to draw yet
+    const pair = from.id < to.id ? `${from.id}|${to.id}` : `${to.id}|${from.id}`
+    const list = groups.get(pair) ?? []
+    list.push({ key, id, state, fromEin, toEin, title, related, from, to })
+    groups.set(pair, list)
   }
   for (const s of data.suggested) {
-    const rel = scope.active && (scope.orgs.has(s.fromEin) && scope.orgs.has(s.toEin)) && (scope.selectedOrg === s.fromEin || scope.selectedOrg === s.toEin)
+    const rel = scope.active && (scope.orgs.has(s.fromEin) && scope.orgs.has(s.toEin)) && (!!scope.pair || scope.selectedOrg === s.fromEin || scope.selectedOrg === s.toEin)
     add(`s:${s.needId}:${s.offerId}`, null, 'suggested', s.fromEin, s.toEin, '', rel)
   }
   for (const t of threads) add(`t:${t.id}`, t.id, t.status as ArcState, t.fromEin, t.toEin, t.title, scope.threads.has(t.id))
-  const rank: Record<ArcState, number> = { suggested: 0, Proposed: 1, Accepted: 2, Completed: 3 }
-  out.sort((x, y) => (+x.related - +y.related) || (rank[x.state] - rank[y.state]))
+
+  const out: ThreadArc[] = []
+  for (const [pairKey, items] of groups) {
+    // The line runs the way its furthest-along thread gives, and takes that thread's look.
+    const lead = items.reduce((a, b) => (RANK[b.state] > RANK[a.state] ? b : a))
+    const state = lead.state
+    const related = items.some(i => i.related)
+    const count = items.length
+    const fuller = Math.min(count, FULLEST) - 1
+    const dim = scope.active && !related
+    const alpha = dim ? (state === 'suggested' ? 0.06 : 0.12) : scope.active ? (state === 'suggested' ? 0.75 : 1) : BASE_A[state]
+    const sparks = items.filter(i => i.state !== 'suggested').slice(0, FULLEST).map(i => (i.from === lead.from ? 1 : -1) as 1 | -1)
+    out.push({
+      ...curve(lead.from.position, lead.to.position, 0.16),
+      key: count === 1 ? lead.key : `p:${pairKey}`,
+      id: count === 1 ? lead.id : null,
+      state, fromEin: lead.fromEin, toEin: lead.toEin, title: lead.title, related,
+      color: withAlpha(stateColor(state, theme), alpha),
+      width: BASE_W[state] + PER_MORE_W * fuller + (scope.active && related ? 1.25 : 0),
+      dash: DASH[state],
+      count, golden: items.filter(i => i.state === 'Completed').length, sparks,
+      pair: lead.from.single && lead.to.single ? [lead.from.members[0].ein, lead.to.members[0].ein] : null,
+      cluster: [lead.to, lead.from].filter(n => !n.single && n.clusterId != null).map(n => ({ position: n.position, clusterId: n.clusterId! }))[0] ?? null,
+    })
+  }
+  out.sort((x, y) => (+x.related - +y.related) || (RANK[x.state] - RANK[y.state]))
   return out
 }
 
 export interface GlowArc { path: LonLat[]; color: RGBA; width: number }
 
-/** Golden threads always glow. Selected in-progress threads glow a little too, like the prototype. */
+/** Golden threads always glow, brighter and wider the more golden threads a line carries. Selected in-progress ones glow a little. */
 export function buildGlows(arcs: ThreadArc[], scope: Scope, theme: MapTheme): GlowArc[] {
   const out: GlowArc[] = []
   for (const a of arcs) {
     const dim = scope.active && !a.related
-    if (a.state === 'Completed') out.push({ path: a.path, color: withAlpha(theme.goldenGlow, dim ? 0.08 : a.related ? 0.8 : 0.55), width: a.related ? 18 : 12 })
+    const more = Math.max(0, Math.min(a.golden, FULLEST) - 1)
+    if (a.state === 'Completed') out.push({
+      path: a.path,
+      color: withAlpha(theme.goldenGlow, dim ? 0.08 : Math.min(0.95, (a.related ? 0.8 : 0.55) + 0.07 * more)),
+      width: (a.related ? 18 : 12) + 3 * more,
+    })
     else if (a.related && a.state === 'Accepted') out.push({ path: a.path, color: withAlpha(theme.offer, 0.45), width: 12 })
   }
   return out
+}
+
+/** The number in the middle of a line that carries more than one thread. */
+export interface Badge { position: LonLat; text: string; fill: RGBA; ink: RGBA; line: RGBA }
+export function buildBadges(arcs: ThreadArc[], scope: Scope, theme: MapTheme): Badge[] {
+  return arcs.filter(a => a.count > 1).map(a => {
+    const dim = scope.active && !a.related
+    return {
+      position: pointAt(a, 0.5), text: String(a.count),
+      fill: withAlpha(stateColor(a.state, theme), dim ? 0.25 : 1),
+      ink: (a.state === 'Completed' ? [27, 36, 48, dim ? 90 : 255] : [255, 255, 255, dim ? 110 : 255]) as RGBA,
+      line: withAlpha(theme.paper, dim ? 0.3 : 0.95),
+    }
+  })
 }
 
 // ---- Labels ----------------------------------------------------------------------------------------
