@@ -2025,6 +2025,15 @@
       "added": "2026-10-14",
       "lane": "app",
       "tasks": []
+    },
+    {
+      "id": "S-127",
+      "epic": "E-25",
+      "title": "Map: one line per pair of places that gets fuller with each thread, with sparks, a number, and confetti when one turns golden",
+      "status": "review",
+      "added": "2026-10-19",
+      "tasks": [],
+      "lane": "map"
     }
   ]
 }
