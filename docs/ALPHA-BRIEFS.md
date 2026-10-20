@@ -325,13 +325,13 @@ Taylor, Oct 20, on Home for a just-joined organization: "the home page doesn't f
 - **After your first post** (one open need or one open offer, no thread yet): the card goes. In its place, one line: "Your need is on the board. Post an offer too?" or "Your offer is on the board. Post a need too?" ("Post an offer too" / "Post a need too" is the link and opens Post with that kind picked.) It goes once you have both, as the Welcome card did.
 - **Once you have a need and an offer, or any thread:** the S-126 line, as now: "2 needs, 1 offer open · 3 golden threads · Your page".
 - **Waiting on you:** doesn't show until your organization has had a thread. After that, as now, "Nothing waiting on you." when there's nothing.
-- **New this week:** leaves out your own posts (with the Busy demo it showed two of Ballard's own). With none: as now.
+- **Just posted** (was "New this week"): heading "Just posted". The same 3 newest needs and offers from the last 7 days, now leaving out your own posts (with the Busy demo it showed two of Ballard's own). With none: "Nothing posted in the last 7 days. See the whole board?" ("See the whole board" is the link.) Taylor, Oct 20, on staging: Home said nothing was new this week while the board showed 2 needs marked "This week". "This week" stays the word for how soon a need is needed (VOICE.md rule 4: one name per thing).
 - **Near you, with no one near:** "No other organizations within 25 mi yet. Open the map" (was "0 organizations, 0 golden threads within 25 mi.", seen with the Empty board demo). With organizations but no golden threads: "3 organizations within 25 mi. Open the map".
 - **At the bottom of Home, always:** "Not sure what to do next? Start here." ("Start here" is the link. It opens the question card at the top of Home, even after "Not now" or once you have posts.)
 
 ## Stays and goes
 
-- **Stays:** your name and city; Near you, New this week, and On the board as S-126 built them; the tabs; the "You're in. Welcome, {org}." toast.
+- **Stays:** your name and city; Near you and On the board as S-126 built them; the tabs; the "You're in. Welcome, {org}." toast.
 - **Goes:** the Welcome card ("Start with one need, one offer", its two buttons, its line). Its golden thread line moves into the second step; "Not now" moves to the question card.
 
 ## Checked against
