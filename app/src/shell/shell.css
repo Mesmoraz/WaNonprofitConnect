@@ -132,4 +132,6 @@
   margin: 0; padding: 0 var(--gutter); height: 34px; display: flex; align-items: center; justify-content: center; gap: 6px;
   border-bottom: 1px solid var(--line-2); background: var(--paper-2); white-space: nowrap; overflow: hidden;
 }
+.demo-bar .inline-link { margin-left: 12px; flex: none; }
+.demo-bar .demo-name { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .app-content:has(> .demo-bar) > .map-screen { height: calc(100% - 34px); }

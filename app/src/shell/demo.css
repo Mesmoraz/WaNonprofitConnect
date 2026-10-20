@@ -1,0 +1,18 @@
+/* The demo's settings (Admin, Demo; and the sheet from the demo bar). */
+.demo-panel { display: flex; flex-direction: column; gap: 16px; }
+.demo-panel > .field-label { margin-bottom: -10px; }
+.demo-presets { display: grid; gap: 8px; }
+@media (min-width: 560px) { .demo-presets { grid-template-columns: 1fr 1fr; } }
+.demo-preset { text-align: left; width: 100%; }
+.demo-field { display: flex; flex-direction: column; gap: 6px; }
+.demo-field .field-label { margin: 0; display: flex; justify-content: space-between; gap: 8px; }
+.demo-n { font-weight: 400; color: var(--ink-3); }
+.demo-field select {
+  font: inherit; font-size: 16px; color: var(--ink); background: var(--paper-2); border: 1px solid var(--line); border-radius: 8px;
+  padding: 10px 12px; width: 100%; min-height: var(--tap);
+}
+.demo-field select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.demo-field input[type="range"] { padding: 0; border: 0; background: none; accent-color: var(--accent); min-height: var(--tap); }
+
+.demo-sheet { max-width: 520px; max-height: calc(100dvh - 2 * var(--gutter)); overflow: auto; display: flex; flex-direction: column; gap: 14px; }
+.demo-sheet .confirm-title { margin: 0; }

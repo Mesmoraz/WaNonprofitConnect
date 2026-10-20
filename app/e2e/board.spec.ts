@@ -70,7 +70,8 @@ test('[S-108] while the board is small, Who they serve starts with nothing picke
   // a bigger board would start from.
   await signIn(page, { name: 'Taylor', email: ADMIN_EMAIL, org: ORG.ballard })
   await page.goto('/admin')
-  await page.getByRole('button', { name: 'Try as a new organization' }).click()
+  await page.getByRole('radio', { name: /^A new organization/ }).click()
+  await page.getByRole('button', { name: 'Start the demo' }).click()
   await page.getByLabel('Invite code').fill('RAINIER')
   await page.getByRole('button', { name: 'Join' }).click()
   await expect(page.getByRole('button', { name: /· Rainier Valley Food Bank/ })).toBeVisible()

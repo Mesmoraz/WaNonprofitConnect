@@ -4,13 +4,14 @@ import { ADMIN_EMAIL, ORG, signIn } from './helpers'
 test('[S-110] [S-101] an admin can walk the front door again as a new organization, in the demo', async ({ page }) => {
   await signIn(page, { name: 'Taylor', email: ADMIN_EMAIL, org: ORG.ballard })
   await page.goto('/admin')
-  await page.getByRole('button', { name: 'Try as a new organization' }).click()
+  await page.getByRole('radio', { name: /^A new organization/ }).click()
+  await page.getByRole('button', { name: 'Start the demo' }).click()
   await expect(page).toHaveURL(/\/invite$/)
   await expect(page.getByText('Demo: try RAINIER.')).toBeVisible()
   await page.getByLabel('Invite code').fill('RAINIER')
   await page.getByRole('button', { name: 'Join' }).click()
   await expect(page.getByRole('button', { name: /· Rainier Valley Food Bank/ })).toBeVisible()
-  await expect(page.getByText('Demo: sample organizations. Only you see this.')).toBeVisible()
+  await expect(page.getByText('Demo: A new organization.')).toBeVisible()
 
   // What you post in the demo survives a reload (S-101).
   await page.goto('/post')
@@ -25,7 +26,44 @@ test('[S-110] [S-101] an admin can walk the front door again as a new organizati
   await page.getByRole('button', { name: /· Rainier Valley Food Bank/ }).click()
   await page.getByRole('menuitem', { name: 'Leave the demo' }).click()
   await expect(page.getByRole('button', { name: new RegExp(`· ${ORG.ballard.name}`) })).toBeVisible()
-  await expect(page.getByText('Demo: sample organizations.')).toHaveCount(0)
+  await expect(page.getByText(/^Demo: /)).toHaveCount(0)
+})
+
+test('[S-128] an admin picks what the demo shows, and changes it while in the demo', async ({ page }) => {
+  await signIn(page, { name: 'Taylor', email: ADMIN_EMAIL, org: ORG.ballard })
+  // Only an admin's Admin page starts a demo from a link; for anyone else /admin isn't there.
+  await page.goto('/admin?demo=busy')
+  await expect(page.getByText('Demo: Busy.')).toBeVisible()
+  await expect(page).not.toHaveURL(/demo=/)
+  await page.goto('/inbox')
+  await expect(page.getByRole('link', { name: /Waiting on you/ })).toHaveCount(3)
+  await expect(page.getByRole('link', { name: 'Inbox' })).toContainText('3')
+
+  // Settings, from the demo bar: change one thing and the screen behind redraws.
+  await page.getByRole('button', { name: 'Settings' }).click()
+  const sheet = page.getByRole('dialog', { name: 'Demo settings' })
+  await sheet.getByRole('radiogroup', { name: 'Waiting on you' }).getByRole('radio', { name: '0' }).click()
+  await expect(page.getByText('Demo: Busy, changed.')).toBeVisible()
+  await expect(page.getByRole('link', { name: /Waiting on you/ })).toHaveCount(0)
+
+  // A preset: nothing posted anywhere.
+  await sheet.getByRole('radio', { name: /^Empty board/ }).click()
+  await expect(page.getByText('Demo: Empty board.')).toBeVisible()
+  await expect(page.getByText(/^No threads yet./)).toBeVisible()   // the inbox behind the sheet, emptied
+  await sheet.getByRole('button', { name: 'Done' }).click()
+  await page.goto('/board')
+  await expect(page.getByText('Nothing here yet.')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Leave the demo' }).click()
+  await expect(page.getByText(/^Demo: /)).toHaveCount(0)
+})
+
+test('[S-128] someone who isn’t an admin gets nothing from a demo link', async ({ page }) => {
+  await signIn(page, { name: 'Casey', org: ORG.computers })
+  await page.goto('/admin?demo=busy')
+  await expect(page.getByRole('link', { name: 'Board' })).toBeVisible()
+  await expect(page.getByText(/^Demo: /)).toHaveCount(0)
+  await expect(page.getByRole('heading', { name: 'Admin' })).toHaveCount(0)
 })
 
 test('[S-73] [S-103] the map draws, and its code only loads when you open it', async ({ page }) => {
