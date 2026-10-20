@@ -19,7 +19,8 @@ export function isReturnPath(path: unknown): path is string {
   // Browsers treat "\" like "/" ("/\evil.example" is off-site), and control characters can hide either.
   // eslint-disable-next-line no-control-regex
   if (/[\\\u0000-\u001f\u007f]/.test(path)) return false
-  if (path === '/' || NOT_KEPT.test(path)) return false
+  // Home, with or without a query (a demo link like /?demo=new-org), is where you land anyway.
+  if (/^\/([?#]|$)/.test(path) || NOT_KEPT.test(path)) return false
   return true
 }
 

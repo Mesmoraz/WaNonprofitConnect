@@ -2,7 +2,7 @@ import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-qu
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import { ApiError, keys } from './api'
+import { ApiError, keys, MOCK } from './api'
 import { App } from './App'
 import { Crashed } from './shell/Crashed'
 import { FeedbackHost, PageTrail } from './shell/Feedback'
@@ -21,7 +21,10 @@ if (STAGING) {
 const queryClient: QueryClient = new QueryClient({
   // A 401 anywhere means the session ended: forget Me, and the route guard sends you to sign up.
   queryCache: new QueryCache({
-    onError: err => { if (err instanceof ApiError && err.isUnauthorized) queryClient.setQueryData(keys.me, null) },
+    // In the demo, a query that goes to the real server (feedback) can be refused without the demo's session ending.
+    onError: (err, query) => {
+      if (err instanceof ApiError && err.isUnauthorized && !(MOCK && query.meta?.realServer)) queryClient.setQueryData(keys.me, null)
+    },
   }),
   defaultOptions: {
     queries: {
