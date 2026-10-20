@@ -5,8 +5,9 @@ namespace WaNonprofitConnect.Data.Accounts;
 public sealed record MeAccountDto(Guid Id, string Email, string Name, bool IsAdmin);
 
 /// <summary><see cref="Status"/> is "confirmed" or "pending". A rejected claim shows as no membership.
-/// <see cref="UrgentLeft"/> is how many urgent needs the organization can still post this rolling month (0 to 2).</summary>
-public sealed record MeMembershipDto(string Ein, string OrgName, string Status, int UrgentLeft);
+/// <see cref="UrgentLeft"/> is how many urgent needs the organization can still post this rolling month (0 to 2).
+/// <see cref="UrgentAgainOn"/> is when one comes back, only when none are left ("You can use it again on Oct 21").</summary>
+public sealed record MeMembershipDto(string Ein, string OrgName, string Status, int UrgentLeft, DateTime? UrgentAgainOn = null);
 
 public sealed record MeDto(MeAccountDto Account, MeMembershipDto? Membership);
 

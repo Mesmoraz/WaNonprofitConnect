@@ -26,7 +26,8 @@ public sealed record ListingViewDto(
     OrgSummaryDto Org,
     DateTime CreatedAt,
     int Views,
-    string Why)
+    string Why,
+    DateTime? EditedAt = null)
 {
     /// <summary>Your open posts of the opposite kind that pair with this one, best first. On your own post: other organizations' posts that could fit.</summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -35,6 +36,10 @@ public sealed record ListingViewDto(
     /// <summary>Your open thread on this post, if you have one ("Open your thread"). Null otherwise.</summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int? MyThreadId { get; init; }
+
+    /// <summary>On your own post, from GET /listings/{id}: how many threads on it are still going ("1 thread is open on this"). Null otherwise.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? OpenThreads { get; init; }
 }
 
 public sealed record ThreadDto(

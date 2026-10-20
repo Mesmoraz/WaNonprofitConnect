@@ -21,6 +21,9 @@ public sealed class CreateListingRequest
     public int? ExpiresInDays { get; set; }
 }
 
+/// <summary>Edit a post (S-97). No Kind: a need stays a need. Tags and how long it lasts don't change.</summary>
+public sealed record UpdateListingRequest(KindOfHelp Help, string Title, string? Description, decimal? Quantity, string? Unit, Urgency Urgency, Cadence Cadence);
+
 public sealed class ListingSearchRequest
 {
     public ListingKind? Kind { get; set; }
