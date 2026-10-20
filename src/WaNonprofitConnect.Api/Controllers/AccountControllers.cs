@@ -107,6 +107,12 @@ public sealed class OrgController : AppControllerBase
     /// <summary>Save "What you do", the website, and who to ask. Empty clears a field.</summary>
     [HttpPut]
     public Task<MyOrgDto> Save([FromBody] SaveOrgProfileRequest request, CancellationToken ct) => _profiles.SaveAsync(AccountId, request, ct);
+
+    /// <summary>Make a one-use invite code for a colleague (S-95). 409 "All 3 places are taken." once the organization is full.</summary>
+    [HttpPost("invites")]
+    [ProducesResponseType(typeof(InviteDto), 201)]
+    public async Task<IActionResult> MakeCode([FromServices] AccountService accounts, CancellationToken ct)
+        => StatusCode(201, await accounts.CreateMemberInviteAsync(AccountId, ct));
 }
 
 /// <summary>Taylor's page: invite codes and the claims queue. Admins are listed in config <c>Admin:Emails</c>.</summary>
@@ -150,7 +156,7 @@ public sealed class AdminController : AppControllerBase
     [HttpPost("act-as")]
     public async Task<MeDto> ActAs([FromBody] ActAsRequest request, CancellationToken ct)
     {
-        await _accounts.ConfirmWithoutInviteAsync(AccountId, request.Ein, ct, code: "ADMIN");
+        await _accounts.ConfirmWithoutInviteAsync(AccountId, request.Ein, ct, code: AccountService.AdminTestCode);
         return (await _accounts.GetMeAsync(AccountId, ct))!;
     }
 }

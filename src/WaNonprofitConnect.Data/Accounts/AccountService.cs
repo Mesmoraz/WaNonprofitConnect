@@ -17,6 +17,11 @@ public sealed class AccountService
     public const string InviteAlphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
     public const int InviteLength = 8;
     public const int MaxInviteUses = 50;
+    /// <summary>People per organization in the alpha (S-95), the first one included. Admin codes can still go past it.</summary>
+    public const int PlacesPerOrg = 3;
+    public const string PlacesTaken = "All 3 places are taken.";
+    /// <summary>Memberships made by "Test as this organization" (ADMIN) or the development sign-in (DEV). They aren't people here.</summary>
+    public const string AdminTestCode = "ADMIN", DevCode = "DEV";
 
     private readonly AppDbContext _db;
     private readonly AccountOptions _options;
@@ -77,7 +82,7 @@ public sealed class AccountService
         => _db.Accounts.Where(a => a.Id == accountId).ExecuteUpdateAsync(s => s.SetProperty(a => a.SessionVersion, a => a.SessionVersion + 1), ct);
 
     /// <summary>Confirm the account for an EIN without an invite. Development sign-in, and admins switching organization to test.</summary>
-    public async Task ConfirmWithoutInviteAsync(Guid accountId, string ein, CancellationToken ct = default, string code = "DEV")
+    public async Task ConfirmWithoutInviteAsync(Guid accountId, string ein, CancellationToken ct = default, string code = DevCode)
     {
         var org = await RequireOrgAsync(ein, ct);
         await SetMembershipAsync(accountId, org.Ein, MembershipStatus.Confirmed, MembershipVia.Invite, code, ct);
@@ -254,6 +259,52 @@ public sealed class AccountService
         _db.Invites.Add(invite);
         await _db.SaveChangesAsync(ct);
         return ToInvite(invite);
+    }
+
+    /// <summary>
+    /// Places left at an organization (S-95): 3, less the people here (not test memberships) and the unused codes members
+    /// have made. Codes an admin makes don't hold a place, so they can go past 3.
+    /// </summary>
+    public async Task<int> PlacesLeftAsync(string ein, CancellationToken ct = default)
+    {
+        var (people, unused) = await PlacesTakenAsync(ein, ct);
+        return Math.Max(0, PlacesPerOrg - people - unused.Count);
+    }
+
+    /// <summary>
+    /// A member makes a one-use code for a colleague (S-95). Two people asking for the last place at once: each adds its
+    /// code, then counts again, and the later code backs out. That holds at any isolation level, on SQLite and SQL Server.
+    /// </summary>
+    public async Task<InviteDto> CreateMemberInviteAsync(Guid accountId, CancellationToken ct = default)
+    {
+        var ein = await RequireActingEinAsync(accountId, ct);
+        var email = await _db.Accounts.Where(a => a.Id == accountId).Select(a => a.Email).FirstAsync(ct);
+        string code;
+        do { code = NewCode(); } while (await _db.Invites.AnyAsync(i => i.Code == code, ct));
+        var invite = new Invite { Code = code, Ein = ein, Uses = 1, Used = 0, ByMember = true, CreatedBy = email, CreatedAt = DateTime.UtcNow };
+        _db.Invites.Add(invite);
+        await _db.SaveChangesAsync(ct);
+
+        var (people, unused) = await PlacesTakenAsync(ein, ct);
+        if (unused.IndexOf(code) >= PlacesPerOrg - people)
+        {
+            _db.Invites.Remove(invite);
+            await _db.SaveChangesAsync(ct);
+            throw ExchangeException.Conflict(PlacesTaken);
+        }
+        invite.Org = await _db.Organizations.FirstAsync(o => o.Ein == ein, ct);
+        return ToInvite(invite);
+    }
+
+    /// <summary>People who take a place, and unused member-made codes oldest first (ties by code).</summary>
+    private async Task<(int People, List<string> Unused)> PlacesTakenAsync(string ein, CancellationToken ct)
+    {
+        var people = await _db.Memberships.CountAsync(m => m.Ein == ein && m.Status == MembershipStatus.Confirmed
+            && m.InviteCode != AdminTestCode && m.InviteCode != DevCode, ct);
+        var unused = (await _db.Invites.AsNoTracking().Where(i => i.Ein == ein && i.ByMember && i.Used < i.Uses)
+                .Select(i => new { i.Code, i.CreatedAt }).ToListAsync(ct))
+            .OrderBy(i => i.CreatedAt).ThenBy(i => i.Code, StringComparer.Ordinal).Select(i => i.Code).ToList();
+        return (people, unused);
     }
 
     public async Task<IReadOnlyList<InviteDto>> ListInvitesAsync(CancellationToken ct = default)

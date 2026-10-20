@@ -54,8 +54,10 @@ public class Invite
     public Organization? Org { get; set; }
     public int Uses { get; set; } = 1;
     public int Used { get; set; }
-    /// <summary>Email of the admin who made it.</summary>
+    /// <summary>Email of whoever made it: an admin, or a member (S-95).</summary>
     public string CreatedBy { get; set; } = string.Empty;
+    /// <summary>Made by a member from Your organization (S-95): works once, and holds one of the organization's 3 places until it's used.</summary>
+    public bool ByMember { get; set; }
     public DateTime CreatedAt { get; set; }
 }
 

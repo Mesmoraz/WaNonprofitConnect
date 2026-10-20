@@ -35,7 +35,7 @@ export function FindYours() {
         <button key={o.ein} className={`card tap${pick?.ein === o.ein ? ' sel' : ''}`} aria-pressed={pick?.ein === o.ein} onClick={() => setPick(o)}>
           <span className="t">{o.name}</span>
           <span className="m">{line2(o)}</span>
-          {o.isMember && <span className="m verified">Already on {BRAND.name}. Ask a member to invite you.</span>}
+          {o.isMember && <span className="m verified">Already on {BRAND.name}. Ask someone there for an invite code.</span>}
         </button>
       ))}
 

@@ -76,6 +76,11 @@ export function useSaveMyOrg(ein: string) {
     onSuccess: saved => { qc.setQueryData(keys.myOrg(ein), saved); qc.invalidateQueries({ queryKey: keys.orgPage(ein) }) },
   })
 }
+/** Invite someone (S-95): a one-use code for a colleague. Places left changes, so Your organization reloads. */
+export function useMakeOrgCode(ein: string) {
+  const qc = useQueryClient()
+  return useMutation({ mutationFn: api.makeOrgCode, onSettled: () => qc.invalidateQueries({ queryKey: keys.myOrg(ein) }) })
+}
 
 export const useMapPoints = () => useQuery({ queryKey: keys.mapPoints, queryFn: api.mapPoints, staleTime: 3600_000 })
 

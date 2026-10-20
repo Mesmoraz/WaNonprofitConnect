@@ -30,7 +30,8 @@ public sealed partial class OrgProfileService
         if (about is { Length: > AboutMax }) throw ExchangeException.Invalid($"Keep it to one line, {AboutMax} characters at most.");
         var website = CleanWebsite(req.Website);
         if (req.ContactAccountId is { } contact
-            && !await _db.Memberships.AnyAsync(m => m.AccountId == contact && m.Ein == ein && m.Status == MembershipStatus.Confirmed, ct))
+            && !await _db.Memberships.AnyAsync(m => m.AccountId == contact && m.Ein == ein && m.Status == MembershipStatus.Confirmed
+                && m.InviteCode != AccountService.AdminTestCode, ct))
             throw ExchangeException.Invalid("Pick someone at your organization.");
 
         var p = await _db.OrgProfiles.FirstOrDefaultAsync(x => x.Ein == ein, ct);
@@ -54,14 +55,14 @@ public sealed partial class OrgProfileService
         var summary = (await new HelpbookService(_db).OrgSummariesAsync(new[] { org }, ct))[ein];
         var p = await _db.OrgProfiles.AsNoTracking().FirstOrDefaultAsync(x => x.Ein == ein, ct);
         var people = await _db.Memberships.AsNoTracking()
-            .Where(m => m.Ein == ein && m.Status == MembershipStatus.Confirmed)
+            .Where(m => m.Ein == ein && m.Status == MembershipStatus.Confirmed && m.InviteCode != AccountService.AdminTestCode) // not "Test as this organization"
             .OrderBy(m => m.CreatedAt)
             .Select(m => new { m.AccountId, m.Account!.Name, m.Account.Email })
             .ToListAsync(ct);
         var contact = people.Any(x => x.AccountId == p?.ContactAccountId) ? p!.ContactAccountId : null; // still here
         return new MyOrgDto(summary, p?.About, p?.Website, contact,
             people.Select(x => new OrgPersonDto(x.AccountId, x.Name, x.Email, x.AccountId == accountId)).ToList(),
-            PlacesLeft: 0); // filled in by S-95
+            await _accounts.PlacesLeftAsync(ein, ct));
     }
 
     private static string? Clean(string? s) => string.IsNullOrWhiteSpace(s) ? null : s.Trim();
