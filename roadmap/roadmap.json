@@ -2079,7 +2079,7 @@
       "id": "S-129",
       "epic": "E-24",
       "title": "Home asks what brings you here, and each answer is one step from what you came to do",
-      "status": "in-progress",
+      "status": "ready",
       "added": "2026-10-20",
       "tasks": [
         {
@@ -2104,7 +2104,8 @@
         }
       ],
       "source": "Taylor, 2026-10-20, on Home for a just-joined organization: a new user won’t understand what to do; make it question oriented, or a Get started here with a flow chart of options",
-      "lane": "app"
+      "lane": "app",
+      "blocked": "brief waiting on Taylor's approval in chat"
     }
   ]
 }
