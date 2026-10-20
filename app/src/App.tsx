@@ -14,7 +14,7 @@ import { ListingScreen } from './screens/listing/ListingScreen'
 import { OrgScreen } from './screens/org/OrgScreen'
 import { YourOrg } from './screens/org/YourOrg'
 import { Privacy, Terms } from './screens/legal/Legal'
-import { Post } from './screens/post/Post'
+import { EditPost, Post } from './screens/post/Post'
 import { SignUp } from './screens/signup/SignUp'
 import { ThreadScreen } from './screens/thread/ThreadScreen'
 import { Waiting } from './screens/waiting/Waiting'
@@ -100,6 +100,7 @@ export function App() {
           <Route path="/post" element={<Post />} />
           <Route path="/inbox" element={<Inbox />} />
           <Route path="/listing/:id" element={<ListingScreen />} />
+          <Route path="/listing/:id/edit" element={<EditPost />} />
           <Route path="/thread/:id" element={<ThreadScreen />} />
           <Route path="/org/:ein" element={<OrgScreen />} />
           <Route path="/org" element={<YourOrg />} />

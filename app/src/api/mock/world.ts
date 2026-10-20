@@ -8,7 +8,8 @@ import {
 } from './data'
 import { THREAD_MAX, type DemoSettings } from './settings'
 
-export interface ListingRow extends Omit<Listing, 'org' | 'why'> { ein: string }
+/** urgentSince: when a need became Urgent, by posting or editing (S-97). Seeded rows leave it out and count from createdAt. */
+export interface ListingRow extends Omit<Listing, 'org' | 'why'> { ein: string; urgentSince?: string }
 export interface ThreadRow { id: number; status: ThreadStatus; needId: number; offerId: number; startedByEin: string; createdAt: string; respondedAt: string | null; completedAt: string | null; readBy: Record<string, string> }
 export interface World { orgs: OrgSummary[]; listings: ListingRow[]; threads: ThreadRow[]; messages: Message[]; invites: Invite[]; profiles: Record<string, SaveMyOrg> }
 

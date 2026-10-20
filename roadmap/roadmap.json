@@ -1483,7 +1483,7 @@
       "id": "S-97",
       "epic": "E-24",
       "title": "Edit a need or offer after posting",
-      "status": "ready",
+      "status": "review",
       "added": "2026-09-24",
       "tasks": [
         {
@@ -1496,7 +1496,7 @@
         {
           "id": "T-235",
           "title": "Urgent counts from when a post became urgent, so editing a post to Urgent can't get around the 2 a month",
-          "status": "ready"
+          "status": "done"
         }
       ],
       "source": "Alpha review, 2026-09-24",
@@ -1700,7 +1700,7 @@
       "epic": "E-24",
       "lane": "app",
       "title": "Copy that needs a brief: the message box on an offer, \"Ask a member to invite you\", why Urgent is greyed out, server error sentences",
-      "status": "ready",
+      "status": "review",
       "added": "2026-09-28",
       "source": "Full review, 2026-09-28",
       "tasks": [

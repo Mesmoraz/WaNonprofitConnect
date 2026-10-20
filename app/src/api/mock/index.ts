@@ -2,7 +2,7 @@
 // The signed-in person survives a reload (localStorage); everything else is built from the seed and the demo's settings.
 import { ApiError, DEMO, DEMO_STATE_KEY, httpTransport, type Transport } from '../client'
 import type {
-  Claim, Invite, Listing, ListingDetail, MapData, MapPoint, Me, Message, MyOrg, NewListing, NewThread, OrgPage, OrgSummary, SaveMyOrg,
+  Claim, Invite, Listing, ListingDetail, ListingEdit, MapData, MapPoint, Me, Message, MyOrg, NewListing, NewThread, OrgPage, OrgSummary, SaveMyOrg,
   Thread, ThreadAction, ThreadDetail, ThreadStatus,
 } from '../types'
 import { SEED_PEOPLE } from './data'
@@ -94,12 +94,21 @@ let session: Me | null = loadSession()
 
 const fail = (status: number, title: string): never => { throw new ApiError(status, { status, title }, title) }
 const requireMe = (): Me => session ?? fail(401, 'Sign in first.')
-/** Me as the API returns it: membership carries urgentLeft (2 Urgent needs per 30 days). */
+const URGENT_WINDOW = 30 * 864e5
+/** When each of an organization's needs became urgent in the last 30 days, oldest first (as UrgentCap counts them). */
+function urgentUses(ein: string, except?: number) {
+  const since = Date.now() - URGENT_WINDOW
+  return listings.filter(l => l.ein === ein && l.kind === 'Need' && l.id !== except)
+    .map(l => l.urgentSince ?? (l.urgency === 'Critical' ? l.createdAt : null))
+    .filter((d): d is string => !!d && new Date(d).getTime() > since)
+    .sort()
+}
+/** Me as the API returns it: membership carries urgentLeft (2 Urgent needs per 30 days) and, with none left, urgentAgainOn. */
 function meOut(me: Me): Me {
   if (!me.membership) return me
-  const since = Date.now() - 30 * 864e5
-  const used = listings.filter(l => l.ein === me.membership!.ein && l.kind === 'Need' && l.urgency === 'Critical' && new Date(l.createdAt).getTime() > since).length
-  return { ...me, membership: { ...me.membership, urgentLeft: Math.max(0, 2 - used) } }
+  const used = urgentUses(me.membership.ein)
+  const urgentAgainOn = used.length >= 2 ? new Date(new Date(used[used.length - 2]).getTime() + URGENT_WINDOW).toISOString() : null
+  return { ...me, membership: { ...me.membership, urgentLeft: Math.max(0, 2 - used.length), urgentAgainOn } }
 }
 /** Your organization's people (S-99): you, plus the seeded colleagues. */
 function peopleAt(ein: string, me: Me | null) {
@@ -226,15 +235,34 @@ const routes: [string, RegExp, Handler][] = [
     const own = l.ein === ein
     const fitting = listings.filter(x => x.status === 'Open' && x.kind !== l.kind && fits(l, x) && (own ? x.ein !== ein : x.ein === ein))
       .sort((a, b) => shared(l, b) - shared(l, a) || b.createdAt.localeCompare(a.createdAt)).slice(0, 6).map(x => toListing(x))
-    return { ...toListing(l), fits: fitting } satisfies ListingDetail
+    const openThreads = own ? threads.filter(t => (t.needId === l.id || t.offerId === l.id) && (t.status === 'Proposed' || t.status === 'Accepted')).length : undefined
+    return { ...toListing(l), fits: fitting, openThreads } satisfies ListingDetail
   }],
   ['POST', /^\/listings$/, (_m, b: NewListing) => {
     const ein = requireOrg()
     if (!b.title?.trim()) fail(400, 'Add a title.')
-    if (b.kind === 'Need' && b.urgency === 'Critical' && meOut(requireMe()).membership!.urgentLeft === 0) fail(409, 'No Urgent needs left this month.')
-    const row: ListingRow = { id: id(), kind: b.kind, help: b.help, title: b.title.trim(), description: b.description ?? null, quantity: b.quantity ?? null, unit: b.unit ?? null, urgency: b.urgency, cadence: b.cadence, status: 'Open', ein, createdAt: now(), views: 0 }
+    if (b.kind === 'Need' && b.urgency === 'Critical' && meOut(requireMe()).membership!.urgentLeft === 0) fail(409, 'Urgent is 2 a month. Pick This week instead.')
+    const at = now()
+    const row: ListingRow = { id: id(), kind: b.kind, help: b.help, title: b.title.trim(), description: b.description ?? null, quantity: b.quantity ?? null, unit: b.unit ?? null, urgency: b.kind === 'Need' ? b.urgency : 'Normal', cadence: b.cadence, status: 'Open', ein, createdAt: at, views: 0, urgentSince: b.kind === 'Need' && b.urgency === 'Critical' ? at : undefined }
     listings.push(row)
     return toListing(row)
+  }],
+  // Edit your post (S-97), with the API's rules: not a closed or done one, and making a need urgent counts once.
+  ['PUT', /^\/listings\/(\d+)$/, (m, b: ListingEdit) => {
+    const ein = requireOrg(); const l = listingById(Number(m[1]))
+    if (l.ein !== ein) fail(403, 'Only the organization that posted this can change it.')
+    if (l.status !== 'Open' && l.status !== 'Matched') fail(409, 'That post isn’t open any more.')
+    if (!b.title?.trim()) fail(400, 'Say what it is.')
+    const urgency = l.kind === 'Need' ? b.urgency : 'Normal'
+    if (urgency === 'Critical' && l.urgency !== 'Critical') {
+      const counted = !!l.urgentSince && Date.now() - new Date(l.urgentSince).getTime() < URGENT_WINDOW
+      if (!counted) {
+        if (urgentUses(ein, l.id).length >= 2) fail(409, 'Urgent is 2 a month. Pick This week instead.')
+        l.urgentSince = now()
+      }
+    }
+    Object.assign(l, { help: b.help, title: b.title.trim(), description: b.description ?? null, quantity: b.quantity ?? null, unit: b.unit ?? null, urgency, cadence: b.cadence, editedAt: now() })
+    return toListing(l)
   }],
   ['POST', /^\/listings\/(\d+)\/close$/, m => {
     const ein = requireOrg(); const l = listingById(Number(m[1]))

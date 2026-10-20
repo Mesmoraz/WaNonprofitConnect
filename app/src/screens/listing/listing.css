@@ -9,3 +9,6 @@
 .fit-card .pills { display: flex; gap: 6px; margin-bottom: 6px; }
 
 .listing-close-hint { margin-top: 12px; }
+
+/* Your own post: Edit above Close (S-97). */
+.listing-own { display: flex; flex-direction: column; gap: 8px; }
