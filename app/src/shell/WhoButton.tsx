@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DEMO, leaveDemo, startDemo, useMe, useSignOut } from '../api'
+import { presetById } from '../api/mock/settings'
 import { openFeedback } from './Feedback'
 
 /** Your name, with your organization behind it. Opens a small menu: Your organization, Admin, feedback, sign out. */
@@ -32,7 +33,7 @@ export function WhoButton() {
         <div className="who-menu" role="menu">
           {me.account.isAdmin && <button role="menuitem" onClick={() => { setOpen(false); navigate('/admin') }}>Admin</button>}
           {!DEMO && me.account.isAdmin && <button role="menuitem" onClick={() => startDemo(me.account.name)}>Start the demo</button>}
-          {me.account.isAdmin && <button role="menuitem" onClick={() => startDemo(me.account.name, true)}>Try as a new organization</button>}
+          {me.account.isAdmin && <button role="menuitem" onClick={() => startDemo(me.account.name, presetById('new-org')!.settings)}>Try as a new organization</button>}
           {DEMO && <button role="menuitem" onClick={leaveDemo}>Leave the demo</button>}
           {me.membership?.status === 'confirmed' && <button role="menuitem" onClick={() => { setOpen(false); navigate('/org') }}>Your organization</button>}
           <button role="menuitem" onClick={() => { setOpen(false); openFeedback() }}>Send feedback</button>

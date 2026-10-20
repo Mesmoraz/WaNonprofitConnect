@@ -1,10 +1,14 @@
-import { useState } from 'react'
-import { startDemo, useActAs, useAdminClaims, useAdminFeedback, useFeedbackDone, useAdminInvites, useAdminWaiting, useApproveClaim, useCreateInvite, useMe, useOrgs, useRejectClaim, type OrgSummary } from '../../api'
-import { useNavigate } from 'react-router-dom'
+import { lazy, Suspense, useEffect, useState } from 'react'
+import { MOCK, startDemo, useActAs, useAdminClaims, useAdminFeedback, useFeedbackDone, useAdminInvites, useAdminWaiting, useApproveClaim, useCreateInvite, useMe, useOrgs, useRejectClaim, type OrgSummary } from '../../api'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { loadSettings, settingsFromQuery } from '../../api/mock/settings'
 import { cap } from '../../lib/words'
 import { Door } from '../../shell/Door'
 import { useToast } from '../../shell/Toast'
 import './admin.css'
+
+// The demo's settings panel loads only on this page (it carries the sample organizations' names).
+const DemoSettingsPanel = lazy(() => import('../../shell/DemoSettings').then(m => ({ default: m.DemoSettingsPanel })))
 
 const pretty = (json: string) => { try { return JSON.stringify(JSON.parse(json), null, 2) } catch { return json } }
 const day = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
@@ -32,6 +36,14 @@ export function Admin() {
   const approve = useApproveClaim()
   const reject = useRejectClaim()
   const n = Math.max(1, Math.min(50, Number(uses) || 0))
+  const [demo, setDemo] = useState(loadSettings)
+  // A link with demo settings (Copy a link to this demo) starts that demo. This page is admins only, so no one
+  // else gets there. In the demo itself the mock reads the link instead.
+  const [search] = useSearchParams()
+  useEffect(() => {
+    const fromLink = MOCK ? null : settingsFromQuery(search)
+    if (fromLink && me) startDemo(me.account.name, fromLink)
+  }, [search, me])
 
   const makeCode = () => {
     if (!pick) return
@@ -57,9 +69,12 @@ export function Admin() {
     <Door back="/" who cta={<button className="btn primary" disabled={!pick || make.isPending} onClick={makeCode}>Make code</button>}>
       <h1 className="h">Admin</h1>
 
-      <div className="label">Try it as someone new</div>
-      <p className="hint">A demo that starts at the invite code. Nothing you do there reaches the real site.</p>
-      <button className="btn quiet" onClick={() => startDemo(me?.account.name ?? 'You', true)}>Try as a new organization</button>
+      <div className="label">Demo</div>
+      <p className="hint">Sample organizations that live in this browser. Nothing you do there reaches the real site.</p>
+      <Suspense fallback={<p className="hint">Loading</p>}>
+        <DemoSettingsPanel value={demo} onChange={setDemo} />
+      </Suspense>
+      <button className="btn quiet" onClick={() => startDemo(me?.account.name ?? 'You', demo)}>Start the demo</button>
 
       <div className="label">Invite codes</div>
       <label className="field-label" htmlFor="adminq">Find the organization</label>

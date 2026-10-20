@@ -1,9 +1,13 @@
+import { lazy, Suspense, useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { DEMO, leaveDemo, useExchangeHub, useMe, useThreads } from '../api'
 import { BRAND } from '../brand'
 import { BoardIcon, HomeIcon, InboxIcon, MapIcon, PlusIcon } from './icons'
 import { WhoButton } from './WhoButton'
+import { loadSettings, settingsName } from '../api/mock/settings'
 import './shell.css'
+
+const DemoSettingsSheet = lazy(() => import('./DemoSettings').then(m => ({ default: m.DemoSettingsSheet })))
 
 /** The signed-in, confirmed app: top bar and bottom tabs on a phone, a left rail from 900px. Alpha tabs only; no Grants. */
 export function AppShell() {
@@ -11,6 +15,8 @@ export function AppShell() {
   useExchangeHub(true, me?.membership?.ein)
   const { data: threads } = useThreads()
   const unread = threads?.reduce((n, t) => n + t.unread, 0) ?? 0
+  const [demo, setDemo] = useState(loadSettings)
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const cls = ({ isActive }: { isActive: boolean }) => `tab${isActive ? ' active' : ''}`
 
   return (
@@ -18,7 +24,14 @@ export function AppShell() {
       <div className="app-brand"><NavLink to="/" className="logo">{BRAND.name}</NavLink></div>
       <div className="app-who"><WhoButton /></div>
       <main className="app-content" id="content">
-        {DEMO && <p className="demo demo-bar">Demo: sample organizations. Only you see this. <button className="inline-link" onClick={leaveDemo}>Leave the demo</button></p>}
+        {DEMO && (
+          <p className="demo demo-bar">
+            <span className="demo-name">Demo: {settingsName(demo)}.</span>
+            {me?.account.isAdmin && <button className="inline-link" onClick={() => setSettingsOpen(true)}>Settings</button>}
+            <button className="inline-link" onClick={leaveDemo}>Leave the demo</button>
+          </p>
+        )}
+        {settingsOpen && <Suspense fallback={null}><DemoSettingsSheet value={demo} onChange={setDemo} onClose={() => setSettingsOpen(false)} /></Suspense>}
         <Outlet />
       </main>
       <nav className="tabs" aria-label="Main">
