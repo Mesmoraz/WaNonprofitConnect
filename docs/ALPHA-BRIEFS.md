@@ -326,6 +326,7 @@ Taylor, Oct 20, on Home for a just-joined organization: "the home page doesn't f
 - **Once you have a need and an offer, or any thread:** the S-126 line, as now: "2 needs, 1 offer open · 3 golden threads · Your page".
 - **Waiting on you:** doesn't show until your organization has had a thread. After that, as now, "Nothing waiting on you." when there's nothing.
 - **New this week:** leaves out your own posts (with the Busy demo it showed two of Ballard's own). With none: as now.
+- **Near you, with no one near:** "No other organizations within 25 mi yet. Open the map" (was "0 organizations, 0 golden threads within 25 mi.", seen with the Empty board demo). With organizations but no golden threads: "3 organizations within 25 mi. Open the map".
 - **At the bottom of Home, always:** "Not sure what to do next? Start here." ("Start here" is the link. It opens the question card at the top of Home, even after "Not now" or once you have posts.)
 
 ## Stays and goes
