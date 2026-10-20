@@ -1,51 +1,53 @@
 // In-memory fake of the /api/v1 contract, for `npm run dev:mock`. Same routes, same shapes, same errors.
-// The signed-in person survives a reload (localStorage); everything else resets to the seed.
+// The signed-in person survives a reload (localStorage); everything else is built from the seed and the demo's settings.
 import { ApiError, DEMO, DEMO_STATE_KEY, httpTransport, type Transport } from '../client'
 import type {
   Claim, Invite, Listing, ListingDetail, MapData, MapPoint, Me, Message, MyOrg, NewListing, NewThread, OrgPage, OrgSummary, SaveMyOrg,
   Thread, ThreadAction, ThreadDetail, ThreadStatus,
 } from '../types'
-import { ORG_ROWS, SEED_INVITES, SEED_LISTINGS, SEED_MESSAGES, SEED_PEOPLE, SEED_PROFILES, SEED_THREADS, ZIP } from './data'
+import { SEED_PEOPLE } from './data'
+import { DEFAULT_SETTINGS, loadSettings, saveSettings, settingsFromQuery, settingsToQuery, stripSettingsFromUrl, type DemoSettings } from './settings'
+import { buildWorld, fits, mapOf, shared, type ListingRow, type ThreadRow } from './world'
 
-const hoursAgo = (h: number) => new Date(Date.now() - h * 3600e3).toISOString()
 const now = () => new Date().toISOString()
 
 // ---- State ------------------------------------------------------------------
 
-interface ListingRow extends Omit<Listing, 'org' | 'why'> { ein: string }
-interface ThreadRow { id: number; status: ThreadStatus; needId: number; offerId: number; startedByEin: string; createdAt: string; respondedAt: string | null; completedAt: string | null; readBy: Record<string, string> }
-
-const orgs: OrgSummary[] = ORG_ROWS.map(([ein, name, city, zip, ntee]) => {
-  const c = ZIP[zip]
-  return { ein, name, city, zip5: zip, ntee, lat: c ? c[0] : null, lon: c ? c[1] : null, isMember: false }
-})
-const orgByEin = (ein: string) => orgs.find(o => o.ein === ein)
-
-const listings: ListingRow[] = SEED_LISTINGS.map(s => ({
-  id: s.id, kind: s.kind, help: s.help, title: s.title, description: s.desc || null, quantity: s.qty, unit: s.unit,
-  urgency: s.urgency, cadence: s.cadence, status: 'Open', ein: s.ein, createdAt: hoursAgo(s.hoursAgo), views: (s.id * 7) % 11,
-}))
-
-const threads: ThreadRow[] = SEED_THREADS.map(([id, needId, offerId, by, status, h, done]) => {
-  const st = status === 'Completed' ? 'Fulfilled' : status === 'Accepted' ? 'Matched' : 'Open'
-  for (const lid of [needId, offerId]) { const l = listings.find(x => x.id === lid); if (l) l.status = st }
-  return { id, status, needId, offerId, startedByEin: by, createdAt: hoursAgo(h), respondedAt: status === 'Proposed' ? null : hoursAgo(h - 1), completedAt: done === null ? null : hoursAgo(done), readBy: {} }
-})
-
-const messages: Message[] = SEED_MESSAGES.map(([threadId, senderEin, senderName, body, h], i) => ({ id: i + 1, threadId, senderEin, senderName, body, sentAt: hoursAgo(h) }))
-
-// Organizations with a thread or a confirmed person count as members.
-for (const t of threads) for (const lid of [t.needId, t.offerId]) { const l = listings.find(x => x.id === lid); const o = l && orgByEin(l.ein); if (o) o.isMember = true }
-
-const invites: Invite[] = Object.entries(SEED_INVITES).map(([code, ein]) => ({ code, ein, orgName: orgByEin(ein)?.name ?? ein, uses: 5, used: 0 }))
+// The world the demo's settings build (./world.ts). Rebuilt in place when an admin changes the settings.
+const settings: DemoSettings = { ...DEFAULT_SETTINGS }
+const orgs: OrgSummary[] = []
+const listings: ListingRow[] = []
+const threads: ThreadRow[] = []
+const messages: Message[] = []
+const invites: Invite[] = []
 const claims: Claim[] = []
 const filters: Record<string, string[]> = {}
-const profiles: Record<string, SaveMyOrg> = { ...SEED_PROFILES }
+const profiles: Record<string, SaveMyOrg> = {}
 /** Codes members made (S-95): each holds one of the organization's 3 places until it's used. */
 const memberCodes: string[] = []
+const orgByEin = (ein: string) => orgs.find(o => o.ein === ein)
 
-let nextId = 1000
+let nextId = 10000
 const id = () => ++nextId
+
+function build(s: DemoSettings) {
+  Object.assign(settings, s)
+  const w = buildWorld(s, session?.account.name)
+  orgs.splice(0, orgs.length, ...w.orgs); listings.splice(0, listings.length, ...w.listings)
+  threads.splice(0, threads.length, ...w.threads); messages.splice(0, messages.length, ...w.messages)
+  invites.splice(0, invites.length, ...w.invites); claims.splice(0); memberCodes.splice(0)
+  for (const k of Object.keys(filters)) delete filters[k]
+  for (const k of Object.keys(profiles)) delete profiles[k]
+  Object.assign(profiles, w.profiles)
+  nextId = 10000
+}
+/** You, as these settings say: confirmed at the sample organization, or with no organization yet ('new'). */
+function placeSession(s: DemoSettings) {
+  if (!session) return
+  const o = s.you === 'new' ? null : orgByEin(s.you)
+  session = { ...session, membership: o ? { ein: o.ein, orgName: o.name, status: 'confirmed' } : null }
+  saveSession(session)
+}
 
 // In the demo, everything done survives a reload until you leave it (dev:mock starts fresh every time).
 interface Saved { listings: ListingRow[]; threads: ThreadRow[]; messages: Message[]; invites: Invite[]; claims: Claim[]; filters: Record<string, string[]>; nextId: number; members: string[]; profiles?: Record<string, SaveMyOrg>; memberCodes?: string[] }
@@ -65,7 +67,6 @@ function persist() {
   const s: Saved = { listings, threads, messages, invites, claims, filters, profiles, memberCodes, nextId, members: orgs.filter(o => o.isMember).map(o => o.ein) }
   try { localStorage.setItem(DEMO_STATE_KEY, JSON.stringify(s)) } catch { /* private mode: this visit only */ }
 }
-restore()
 
 const SESSION_KEY = 'mock.session'
 function loadSession(): Me | null {
@@ -76,15 +77,20 @@ function saveSession(me: Me | null) {
 }
 let session: Me | null = loadSession()
 
-// ---- Helpers ----------------------------------------------------------------
+// A link with demo settings (?demo=busy&waiting=0) starts that demo over; otherwise the saved settings, and what
+// was done in the demo since, come back.
+{
+  const fromLink = typeof window === 'undefined' ? null : settingsFromQuery(new URLSearchParams(window.location.search))
+  if (fromLink) {
+    saveSettings(fromLink); stripSettingsFromUrl()
+    try { localStorage.removeItem(DEMO_STATE_KEY) } catch { /* private mode */ }
+  }
+  build(fromLink ?? loadSettings())
+  if (fromLink) placeSession(fromLink)
+  restore()
+}
 
-// A light copy of the API's MatchScorer: a fit needs the same kind of help AND a word in common
-// (stop words dropped, plurals folded), so canned vegetables never "fit" a laptop need.
-const STOP = new Set('a an and any are as at be by for from have has in is it need needs needed of on or our some spare surplus extra the to we with looking want wanted offer offering donate donation free please new used good'.split(' '))
-const words = (l: { title: string; description: string | null }) => new Set(`${l.title} ${l.description ?? ''}`.toLowerCase().split(/[^a-z0-9]+/)
-  .filter(w => w.length >= 3 && !STOP.has(w)).map(w => (w.length > 3 && w.endsWith('s') && !w.endsWith('ss') ? w.slice(0, -1) : w)))
-const shared = (a: ListingRow, b: ListingRow) => { const wa = words(a); return [...words(b)].filter(w => wa.has(w)).length }
-const fits = (a: ListingRow, b: ListingRow) => a.help === b.help && shared(a, b) > 0
+// ---- Helpers ----------------------------------------------------------------
 
 const fail = (status: number, title: string): never => { throw new ApiError(status, { status, title }, title) }
 const requireMe = (): Me => session ?? fail(401, 'Sign in first.')
@@ -293,19 +299,13 @@ const routes: [string, RegExp, Handler][] = [
     return toThread(t, ein)
   }],
 
-  ['GET', /^\/map$/, () => {
-    requireOrg()
-    const memberEins = new Set(listings.map(l => l.ein))
-    const members = orgs.filter(o => o.isMember || memberEins.has(o.ein))
-    const mapThreads = threads.filter(t => t.status !== 'Declined' && t.status !== 'Cancelled').map(t => {
-      const need = listingById(t.needId), offer = listingById(t.offerId)
-      return { id: t.id, status: t.status, help: need.help, fromEin: offer.ein, toEin: need.ein, title: need.title, needId: need.id, offerId: offer.id, offerTitle: offer.title }
-    })
-    const open = listings.filter(l => l.status === 'Open')
-    const suggested = open.filter(n => n.kind === 'Need').flatMap(n => open
-      .filter(o => o.kind === 'Offer' && o.ein !== n.ein && fits(n, o))
-      .map(o => ({ needId: n.id, offerId: o.id, fromEin: o.ein, toEin: n.ein })))
-    return { members, threads: mapThreads, suggested } satisfies MapData
+  ['GET', /^\/map$/, () => { requireOrg(); return mapOf({ orgs, listings, threads }, settings.fits) satisfies MapData }],
+  // An admin changes the demo's settings (Admin, Demo; or the demo bar's Settings). The demo starts over with them.
+  ['POST', /^\/demo\/settings$/, (_m, b: DemoSettings) => {
+    requireMe()
+    const s = settingsFromQuery(new URLSearchParams(settingsToQuery({ ...DEFAULT_SETTINGS, ...b }))) ?? DEFAULT_SETTINGS
+    saveSettings(s); build(s); placeSession(s)
+    return meOut(requireMe())
   }],
   // The demo shows the real faint dots (public data) so the whole state looks alive; dev:mock stays offline.
   ['GET', /^\/filters$/, () => ({ serve: filters[requireOrg()] ?? null })],

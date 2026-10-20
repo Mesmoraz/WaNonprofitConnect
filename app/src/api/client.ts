@@ -1,4 +1,6 @@
 import { noteFailedCall } from '../lib/telemetry'
+import { ORG_NAMES } from './mock/names'
+import { loadSettings, saveSettings, SETTINGS_KEY, type DemoSettings } from './mock/settings'
 import type {
   BoardQuery, Claim, FeedbackItem, Filters, Invite, Listing, ListingDetail, MapData, MapPoint, Me, Message, NewListing, NewThread,
   MyOrg, OrgPage, OrgSummary, SaveMyOrg, Thread, ThreadAction, ThreadDetail, WaitingThread,
@@ -12,23 +14,26 @@ export const DEMO = import.meta.env.VITE_MOCK !== '1' && readDemo()
 export const MOCK = import.meta.env.VITE_MOCK === '1' || DEMO
 
 /**
- * Start the demo as `name`, from the beginning each time. `asNew`: signed in with no organization yet, so you walk
- * the invite code (or find yours and approve your own claim in Admin) like a newly invited organization.
- * Otherwise you start confirmed at Ballard Food Bank, which has posts and a thread waiting. Both reload.
+ * Start the demo as `name`, from the beginning each time, with these settings (Admin, Demo). By default the ones it
+ * last used. When `settings.you` is 'new' you're signed in with no organization yet, so you walk the invite code (or
+ * find yours and approve your own claim in Admin) like a newly invited organization. Otherwise you start confirmed
+ * at that sample organization. Both reload.
  */
-export function startDemo(name: string, asNew = false) {
+export function startDemo(name: string, settings: DemoSettings = loadSettings()) {
+  const org = settings.you === 'new' ? null : ORG_NAMES[settings.you]
   try {
     localStorage.setItem(DEMO_KEY, '1')
     localStorage.removeItem(DEMO_STATE_KEY)
+    saveSettings(settings)
     localStorage.setItem('mock.session', JSON.stringify({
       account: { id: 'acct-demo', email: 'demo@example.org', name, isAdmin: true },
-      membership: asNew ? null : { ein: '911428805', orgName: 'Ballard Food Bank', status: 'confirmed' },
+      membership: org ? { ein: settings.you, orgName: org, status: 'confirmed' } : null,
     }))
   } catch { return }
   window.location.assign('/')
 }
 export function leaveDemo() {
-  try { for (const k of [DEMO_KEY, DEMO_STATE_KEY, 'mock.session']) localStorage.removeItem(k) } catch { /* private mode */ }
+  try { for (const k of [DEMO_KEY, DEMO_STATE_KEY, SETTINGS_KEY, 'mock.session']) localStorage.removeItem(k) } catch { /* private mode */ }
   window.location.assign('/')
 }
 /** What the demo's organizations have posted and said, kept in this browser until you leave the demo. */
@@ -144,4 +149,6 @@ export const api = {
   adminFeedback: () => httpTransport('GET', `${V1}/admin/feedback`) as Promise<FeedbackItem[]>,
   feedbackDone: (id: number) => httpTransport('POST', `${V1}/admin/feedback/${id}/done`) as Promise<void>,
   actAs: (ein: string) => call<Me>('POST', `${V1}/admin/act-as`, { ein }),
+  /** The demo only (the mock answers it): start the demo over with these settings. */
+  demoSettings: (s: DemoSettings) => call<Me>('POST', `${V1}/demo/settings`, s),
 }
