@@ -2048,6 +2048,32 @@
       "added": "2026-10-19",
       "tasks": [],
       "lane": "map"
+    },
+    {
+      "id": "S-128",
+      "epic": "E-26",
+      "title": "Every demo uses the same sample data, and an admin picks what it shows",
+      "status": "review",
+      "added": "2026-10-20",
+      "source": "Taylor, 2026-10-19: the demos have different data; an admin control panel for every case in between",
+      "lane": "app",
+      "tasks": [
+        {
+          "id": "T-244",
+          "title": "One seed for the demo, dev:mock and the map test page; the map's 26 sample threads join it",
+          "status": "done"
+        },
+        {
+          "id": "T-245",
+          "title": "Demo settings and presets in Admin, a Settings sheet on the demo bar, and links that start a demo (admins only)",
+          "status": "done"
+        },
+        {
+          "id": "T-246",
+          "title": "Acceptance tests: a preset from a link, a live change, and a demo link for someone who isn't an admin",
+          "status": "done"
+        }
+      ]
     }
   ]
 }
