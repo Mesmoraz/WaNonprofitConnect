@@ -33,7 +33,8 @@ export function MapScreen() {
     <div className="map-screen">
       {map && <ThreadMap data={map} points={points} me={me?.membership?.ein} selected={sel} onSelect={select} initialView={view} className="map-fill" />}
       <button className="map-help" aria-label="What the map shows" aria-expanded={legend} onClick={() => { setSel(null); setLegend(o => !o) }}>?</button>
-      {legend && !sel && <div className="map-card-dock"><MapLegend onClose={() => setLegend(false)} /></div>}
+      {/* Once the map is there: before, it would cover "The map didn't load. Try again?" */}
+      {legend && !sel && map && <div className="map-card-dock"><MapLegend onClose={() => setLegend(false)} /></div>}
       {!map && (
         <div className="map-note">
           {isError
@@ -43,7 +44,7 @@ export function MapScreen() {
       )}
       {sel && (
         <div className="map-card-dock">
-          <MapDetailCard selection={sel} onClose={() => setSel(null)} />
+          <MapDetailCard selection={sel} onClose={() => setSel(null)} onSelect={select} />
         </div>
       )}
     </div>

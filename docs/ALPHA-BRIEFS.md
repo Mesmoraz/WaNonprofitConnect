@@ -266,3 +266,18 @@ Approved by Taylor 2026-10-19 in chat, as written. Built in its own pull request
 - **On the board:** heading "On the board". Up to 5 quiet rows, each opening the Board already filtered, the count first: "4 needs you could meet" (from the map's suggested pairs for your offers), your cause ("78 posts from food organizations"), the busiest kinds of help ("78 posts under Things"), "2 urgent needs", and "12 posts that match your filters". A row with nothing behind it doesn't show. (Was "Go to" with chips like "Food · 6"; changed by Taylor Oct 19: "a little unclear as to what that means exactly and why they are there".)
 - **Stays:** the Board, Map, Post, and Inbox as they are.
 - **Goes:** the Welcome card from the top of the Board (it moves to Home).
+
+---
+
+# Map threads, one line per pair (S-127, approved Oct 19)
+
+Approved by Taylor 2026-10-19 in chat, as written. Taylor, on seeing Home's small map: "instead of adding MORE lines we make the lines look different if there are multiple connections."
+
+- **For:** the map reads at a glance. Several threads between the same two places are one line that looks fuller, not more lines.
+- **One line per pair.** Every thread between the same two places is one curve, in the color of the furthest along: golden, then in progress, then started, then could fit.
+- **More threads, a juicier line:** thicker with each thread up to 5; small bright sparks run along it, one per thread up to 5, from the one giving to the one receiving; a golden pair glows stronger the more golden threads it has.
+- **A number on the line** when there's more than one: a small round badge in the middle, "4".
+- **Confetti when a thread turns golden** while you're looking at the map: a short burst of gold confetti at both pins. None when the phone asks for reduced motion.
+- **Tapping a line with a number** opens a card "{Org A} and {Org B}" with one row per thread: its title and where it stands (Golden, In progress, Waiting for a yes, Could fit). Tap a row to open it. (Where an end is a cluster, the tap opens the cluster, as tapping the cluster does.)
+- **Legend:** one new line, "A thicker line with a number is several threads between the same two places."
+- **Home's small map** gets the same look; it's the same map.
