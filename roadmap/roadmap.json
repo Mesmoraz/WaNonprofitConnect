@@ -2106,6 +2106,37 @@
       "lane": "map"
     },
     {
+      "id": "S-132",
+      "epic": "E-24",
+      "title": "Home asks what brings you here, and each answer is one step from what you came to do",
+      "status": "ready",
+      "added": "2026-10-20",
+      "tasks": [
+        {
+          "id": "T-247",
+          "title": "Brief Home's question card, approved line by line",
+          "status": "done"
+        },
+        {
+          "id": "T-248",
+          "title": "Build the question card and the states after it",
+          "status": "ready"
+        },
+        {
+          "id": "T-249",
+          "title": "Acceptance tests from the brief",
+          "status": "ready"
+        },
+        {
+          "id": "T-250",
+          "title": "Check at phone size across the demo presets",
+          "status": "ready"
+        }
+      ],
+      "source": "Taylor, 2026-10-20, on Home for a just-joined organization: a new user won’t understand what to do; make it question oriented, or a Get started here with a flow chart of options Brief approved Oct 21 (\"merge\", PR #43).",
+      "lane": "app"
+    },
+    {
       "id": "S-133",
       "epic": "E-26",
       "title": "The demo stays signed in when the real server refuses an admin's feedback list, and a demo link isn't kept as where to return",

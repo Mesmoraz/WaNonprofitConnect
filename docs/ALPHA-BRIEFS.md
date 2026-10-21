@@ -330,3 +330,63 @@ Checked against the mission: Need → Match → Golden Thread → Action → Imp
 - **No open posts:** the toggles aren't there. The strip at the top still works.
 - **Your own threads** stay faint while a toggle is on.
 - **Backend:** `GET /api/v1/map/fits?for=needs|offers` returns pairs for your organization: your post, their post, their EIN, score. Same scoring as a post's "Could fit" today.
+
+---
+
+# Home asks what brings you here (S-132, approved Oct 21)
+
+Approved by Taylor 2026-10-21 in chat ("merge"), as written. Built in its own pull request afterwards.
+
+Taylor, Oct 20, on Home for a just-joined organization: "the home page doesn't feel very intuitive quite yet. Like a new user won't understand what to do. Maybe make it more question oriented? 'Are you looking for something specific'? Or like a 'Get started here' button with a flow chart of options?"
+
+**What's wrong now** (seen with the Just joined, First post, A message is waiting, and Busy demos): a new organization lands on a card that asks for two posts, then sections that say "Nothing waiting on you" and "Nothing new this week", and rows of counts. Nothing asks what you came for. Someone who came to find help, or to give it, has to guess that posting is how. Once an organization has posts and threads, Home works; this changes Home for the first days and leaves the rest alone.
+
+## The question card (replaces the Welcome card)
+
+- **For:** a new organization picks what it came to do and is one tap from it. It's also where a new organization first hears what a golden thread is.
+- **The one action:** pick an answer. Still no green button on Home (the S-126 exception); the answers are the actions.
+- **When it shows:** at the top of Home, under your name, while your organization has no open post and no thread. "Not now" hides it on this device, as the Welcome card's did. Anyone can bring it back from the link at the bottom of Home (below).
+- Headline: "What brings you here today?"
+- Line: "Pick one. We'll show you the next step."
+- Four answers, each a full-width row with a short line under it (two by two on a wide screen):
+  1. **We need something** · "Volunteers, skills, things, or a partner."
+  2. **We have something to give** · "Time, skills, or things you can spare."
+  3. **Who's near us?** · "Organizations and golden threads around {city}." (No city: "around Washington".)
+  4. **Just looking** · "See everything posted."
+- **Who's near us?** opens the Map on your place (the same place "Near you" opens). **Just looking** opens the Board.
+- Link: "Not now".
+
+### The second step (the flow chart)
+
+**We need something** and **We have something to give** open a second step in the same card, no new page:
+
+- Headline: "Two ways to start"
+- After **We need something**:
+  - **Post what you need** · "Others here can offer to help." Opens Post with "We need" picked.
+  - **See what's offered** · "{n} offers on the board now." Opens the Board showing offers. None: "Nothing offered yet."
+  - Field "Looking for something specific?", placeholder "Laptops, drivers, a cooler", button **Search**. Opens the Board with that search. (Taylor's "Are you looking for something specific?")
+- After **We have something to give**:
+  - **Find a need you could meet** · "{n} needs on the board now." Opens the Board showing needs. None: "Nothing needed yet."
+  - **Post what you have** · "Others can ask for it." Opens Post with "We have" picked.
+- Under the choices, both: "When another organization helps, it becomes a golden thread on the map." ("the map" links to the Map, as the Welcome card's did.)
+- Link: "Pick another answer" (back to the four answers).
+
+## How Home changes after that
+
+- **After your first post** (one open need or one open offer, no thread yet): the card goes. In its place, one line: "Your need is on the board. Post an offer too?" or "Your offer is on the board. Post a need too?" ("Post an offer too" / "Post a need too" is the link and opens Post with that kind picked.) It goes once you have both, as the Welcome card did.
+- **Once you have a need and an offer, or any thread:** the S-126 line, as now: "2 needs, 1 offer open · 3 golden threads · Your page".
+- **Waiting on you:** doesn't show until your organization has had a thread. After that, as now, "Nothing waiting on you." when there's nothing.
+- **Just posted** (was "New this week"): heading "Just posted". The same 3 newest needs and offers from the last 7 days, now leaving out your own posts (with the Busy demo it showed two of Ballard's own). With none: "Nothing posted in the last 7 days. See the whole board?" ("See the whole board" is the link.) Taylor, Oct 20, on staging: Home said nothing was new this week while the board showed 2 needs marked "This week". "This week" stays the word for how soon a need is needed (VOICE.md rule 4: one name per thing).
+- **Near you, with no one near:** "No other organizations within 25 mi yet. Open the map" (was "0 organizations, 0 golden threads within 25 mi.", seen with the Empty board demo). With organizations but no golden threads: "3 organizations within 25 mi. Open the map".
+- **At the bottom of Home, always:** "Not sure what to do next? Start here." ("Start here" is the link. It opens the question card at the top of Home, even after "Not now" or once you have posts.)
+
+## Stays and goes
+
+- **Stays:** your name and city; Near you and On the board as S-126 built them; the tabs; the "You're in. Welcome, {org}." toast.
+- **Goes:** the Welcome card ("Start with one need, one offer", its two buttons, its line). Its golden thread line moves into the second step; "Not now" moves to the question card.
+
+## Checked against
+
+- **MISSION.md:** each answer is a start on Need → Match → Golden Thread. "We need something" and "We have something to give" are the two ends of a thread; "Who's near us?" is the map of the threads; "Just looking" is how a curious organization finds its way in.
+- **VOICE.md:** headlines 6 words or fewer ("What brings you here today?" is 5, "Two ways to start" is 4); one line under each; "We'll" only as a promise; thread and golden thread, never connection or match; sentence case; digits; no exclamation marks or em-dashes. The answers are written as the organization talking ("We need something"), since it's their answer to a question.
+- **Tests (when built):** `[S-132]` acceptance tests for a new organization: the four answers, each second step, the search, "Not now" and "Start here", the one line after a first post, and the S-126 line after both.
