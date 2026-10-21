@@ -26,7 +26,8 @@ public sealed record ListingViewDto(
     OrgSummaryDto Org,
     DateTime CreatedAt,
     int Views,
-    string Why)
+    string Why,
+    DateTime? EditedAt = null)
 {
     /// <summary>Your open posts of the opposite kind that pair with this one, best first. On your own post: other organizations' posts that could fit.</summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -35,6 +36,10 @@ public sealed record ListingViewDto(
     /// <summary>Your open thread on this post, if you have one ("Open your thread"). Null otherwise.</summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int? MyThreadId { get; init; }
+
+    /// <summary>On your own post, from GET /listings/{id}: how many threads on it are still going ("1 thread is open on this"). Null otherwise.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? OpenThreads { get; init; }
 }
 
 public sealed record ThreadDto(
@@ -69,7 +74,11 @@ public sealed record OrgPageDto(OrgSummaryDto Org, IReadOnlyList<ListingViewDto>
 
 public sealed record MapSuggestionDto(int NeedId, int OfferId, string FromEin, string ToEin);
 
-public sealed record MapDataDto(IReadOnlyList<OrgSummaryDto> Members, IReadOnlyList<MapThreadDto> Threads, IReadOnlyList<MapSuggestionDto> Suggested);
+/// <summary>How many open needs and offers an organization has: its pin's ring on the map (S-129).</summary>
+public sealed record MapOpenDto(string Ein, int Needs, int Offers);
+
+public sealed record MapDataDto(IReadOnlyList<OrgSummaryDto> Members, IReadOnlyList<MapThreadDto> Threads, IReadOnlyList<MapSuggestionDto> Suggested,
+    IReadOnlyList<MapOpenDto> Open);
 
 public sealed class BoardQuery
 {

@@ -94,12 +94,17 @@ public sealed partial class HelpbookService
             }
         }
 
+        int? openThreads = listing.OrgEin == viewerEin
+            ? await LiveThreads(id).CountAsync(ct)
+            : null;
+
         var best = fits.OrderByDescending(f => f.Score).ThenByDescending(f => f.Listing.CreatedAt).Take(MaxFits).Select(f => f.Listing).ToList();
         var orgs = await OrgSummariesAsync(best.Select(l => l.Org!).Append(listing.Org!), ct);
         return View(listing, orgs, now) with
         {
             Fits = best.Select(l => View(l, orgs, now)).ToList(),
             MyThreadId = myThreadId,
+            OpenThreads = openThreads,
         };
     }
 
@@ -112,6 +117,15 @@ public sealed partial class HelpbookService
         return view;
     }
 
+    /// <summary>Edit your post (S-97). Both sides of each live thread on it hear, so they see the change.</summary>
+    public async Task<ListingViewDto> UpdateListingAsync(int id, string actingEin, UpdateListingRequest req, CancellationToken ct = default)
+    {
+        await _exchange.UpdateListingAsync(id, actingEin, req, ct);
+        foreach (var threadId in await LiveThreads(id).Select(m => m.Id).ToListAsync(ct))
+            await ChangedAsync(threadId, actingEin, ct);
+        return await LoadViewAsync(id, ct);
+    }
+
     /// <summary>
     /// Close your post. Its live threads close with it (S-104, Taylor, Oct 4: "a post was closed" reads as a closed
     /// thread), and cancelling puts the other organization's post back on the board if this thread held it.
@@ -119,9 +133,7 @@ public sealed partial class HelpbookService
     public async Task CloseListingAsync(int id, string actingEin, CancellationToken ct = default)
     {
         await _exchange.CloseListingAsync(id, actingEin, ct);
-        var live = await _db.Matches.AsNoTracking()
-            .Where(m => (m.NeedListingId == id || m.OfferListingId == id) && (m.Status == MatchStatus.Proposed || m.Status == MatchStatus.Accepted))
-            .Select(m => m.Id).ToListAsync(ct);
+        var live = await LiveThreads(id).Select(m => m.Id).ToListAsync(ct);
         foreach (var threadId in live)
         {
             await _exchange.CancelAsync(threadId, actingEin, ct);
@@ -304,6 +316,11 @@ public sealed partial class HelpbookService
         => _db.Listings.AsNoTracking().Include(l => l.Org)
             .Where(l => l.Status == ListingStatus.Open && (l.ExpiresAt == null || l.ExpiresAt > now));
 
+    /// <summary>Threads on this post still going: waiting for a yes, or accepted.</summary>
+    private IQueryable<Match> LiveThreads(int listingId)
+        => _db.Matches.AsNoTracking()
+            .Where(m => (m.NeedListingId == listingId || m.OfferListingId == listingId) && (m.Status == MatchStatus.Proposed || m.Status == MatchStatus.Accepted));
+
     private IQueryable<Match> Threads()
         => _db.Matches
             .Include(m => m.NeedListing!).ThenInclude(l => l.Org)
@@ -350,7 +367,7 @@ public sealed partial class HelpbookService
     private static ListingViewDto View(Listing l, IReadOnlyDictionary<string, OrgSummaryDto> orgs, DateTime now) => new(
         l.Id, l.Kind, l.Help, l.Title, l.Description, l.Quantity, l.Unit, l.Urgency, l.Cadence, l.Status.ToString(),
         orgs.TryGetValue(l.OrgEin, out var org) ? org : new OrgSummaryDto(l.OrgEin, l.OrgEin, null, null, null, null, null, false),
-        l.CreatedAt, l.Views, BoardRanking.Why(l, now));
+        l.CreatedAt, l.Views, BoardRanking.Why(l, now), l.EditedAt);
 
     private static ThreadDto ToThread(Match m, IReadOnlyDictionary<string, OrgSummaryDto> orgs, string viewerEin, DateTime now, bool withMessages = false)
     {

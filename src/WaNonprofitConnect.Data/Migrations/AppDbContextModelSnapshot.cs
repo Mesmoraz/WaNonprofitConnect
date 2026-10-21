@@ -248,6 +248,9 @@ namespace WaNonprofitConnect.Data.Migrations
                         .HasMaxLength(4000)
                         .HasColumnType("nvarchar(4000)");
 
+                    b.Property<DateTime?>("EditedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("ExpiresAt")
                         .HasColumnType("datetime2");
 
@@ -301,6 +304,9 @@ namespace WaNonprofitConnect.Data.Migrations
 
                     b.Property<int>("Urgency")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("UrgentSince")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Views")
                         .HasColumnType("int");
