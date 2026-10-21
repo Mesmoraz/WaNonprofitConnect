@@ -4,3 +4,6 @@
 .post-qty input { max-width: 160px; }
 .post-qty .hint { margin-top: 6px; }
 .post-more { margin: 4px 0 0; }
+
+/* Edit: "1 thread is open on this." above Save changes (S-97). */
+.post-live { margin: 0 0 8px; text-align: center; }

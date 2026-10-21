@@ -2,7 +2,7 @@ import { noteFailedCall } from '../lib/telemetry'
 import { ORG_NAMES } from './mock/names'
 import { loadSettings, saveSettings, SETTINGS_KEY, type DemoSettings } from './mock/settings'
 import type {
-  BoardQuery, Claim, FeedbackItem, Filters, Invite, Listing, ListingDetail, MapData, MapPoint, Me, Message, NewListing, NewThread,
+  BoardQuery, Claim, FeedbackItem, Filters, Invite, Listing, ListingDetail, ListingEdit, MapData, MapPoint, Me, Message, NewListing, NewThread,
   MyOrg, OrgPage, OrgSummary, SaveMyOrg, Thread, ThreadAction, ThreadDetail, WaitingThread,
 } from './types'
 
@@ -119,6 +119,7 @@ export const api = {
   board: (query: BoardQuery = {}) => call<Listing[]>('GET', `${V1}/board${qs({ help: query.help, kind: query.kind, q: query.q })}`),
   listing: (id: number) => call<ListingDetail>('GET', `${V1}/listings/${id}`),
   createListing: (body: NewListing) => call<Listing>('POST', `${V1}/listings`, body),
+  updateListing: (id: number, body: ListingEdit) => call<Listing>('PUT', `${V1}/listings/${id}`, body),
   closeListing: (id: number) => call<void>('POST', `${V1}/listings/${id}/close`),
 
   // Threads

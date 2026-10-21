@@ -83,6 +83,7 @@ interface MapData { members: OrgSummary[];                                  // o
 | `GET /api/v1/board?help=&kind=&q=` | | `Listing[]`, fairly ranked; counts a view per listing returned in the top 12 |
 | `GET /api/v1/listings/{id}` | | `Listing` plus `fits: Listing[]` (your listings that pair with it, best first) |
 | `POST /api/v1/listings` | `{ kind, help, title, description?, quantity?, unit?, urgency, cadence }` | `Listing` |
+| `PUT /api/v1/listings/{id}` | `{ help, title, description?, quantity?, unit?, urgency, cadence }` (no `kind`: a need stays a need) | `Listing` (S-97). Not yours `403`; closed or done `409` |
 | `POST /api/v1/listings/{id}/close` | | 204 |
 | `GET /api/v1/threads` | | `Thread[]` for your org, newest activity first |
 | `POST /api/v1/threads` | `{ listingId, myListingId?, message }` | `Thread`. With no `myListingId` the API creates the matching need or offer for you from the listing's kind of help, so "I can help" is one tap. |
@@ -128,16 +129,16 @@ Added by the backend lane on Sep 23 (S-68, S-71, S-72, S-74, serving). The contr
 
 **Additions**
 
-- `Me.membership.urgentLeft: number` (0 to 2). Approved by Taylor (B7). An organization can post 2 urgent (Critical) needs in any rolling 30 days, closed or done ones included. The next one gets `409` with the title "Urgent is 2 a month. Pick This week instead."
+- `Me.membership.urgentLeft: number` (0 to 2). Approved by Taylor (B7). An organization can post 2 urgent (Critical) needs in any rolling 30 days, closed or done ones included. The next one gets `409` with the title "Urgent is 2 a month. Pick This week instead." Each counts from when the need became urgent, by posting or by an edit (S-97); editing an urgent need keeps its place, and editing one back down doesn't give it back. `Me.membership.urgentAgainOn: string | null` is when one comes back, only when none are left (S-109).
 - `POST /api/v1/auth/dev` also takes an optional `ein` (Development only). It confirms you for that organization straight away, with no invite. It's for local work and the CLI demo.
-- `GET /api/v1/listings/{id}` also returns `myThreadId: number` when you already have a live thread on that post (for B6's "Open your thread"). The field is left out when there isn't one. On your own post, `fits` lists other organizations' posts that could fit (B6's "Could fit").
+- `GET /api/v1/listings/{id}` also returns `myThreadId: number` when you already have a live thread on that post (for B6's "Open your thread"). The field is left out when there isn't one. On your own post, `fits` lists other organizations' posts that could fit (B6's "Could fit"), and `openThreads: number` counts its threads still going (S-97). Every `Listing` has `editedAt: string | null`, when its poster last changed it.
 - `GET /api/v1/admin/claims` returns `{ id, ein, orgName, city, accountId, email, name, status, createdAt, decidedAt }[]`, pending ones only, oldest first. `?all=true` includes decided ones. Approve and reject return the same shape. `status` is lower case.
 - The old `/api/v1/matches` routes and `GET /api/v1/listings` (the paged search) are still there for the CLI. They use the same records as `/threads`. The old paged org search moved to `GET /api/v1/orgs/search`.
 
 **Pinned down**
 
 - Status codes: `POST /listings`, `POST /threads` and `POST /threads/{id}/messages` return `201` with the body. `POST /listings/{id}/close` returns `204`. Every error is a problem document, and its `title` is the plain sentence to show. Without the cookie you get `401` (never a redirect). Without a confirmed membership, anything that acts for an organization gets `403`.
-- Nulls are written as `null`, not left out. Only `fits`, `myThreadId` and `messages` are left out where they don't apply.
+- Nulls are written as `null`, not left out. Only `fits`, `myThreadId`, `openThreads` and `messages` are left out where they don't apply.
 - Who can read: the board, a post, threads and `/map` need you to be signed in. The board, a post and the map work before you're confirmed (`fits` is then empty). `/orgs` and `/map/points` are public. `/orgs` only searches Washington 501(c)(3)s, needs `q`, and takes `limit` up to 50.
 - `why`: "Urgent" (Critical), "This week" (High), otherwise "New" (under 7 days old), otherwise "Seen least". The same rule applies to posts inside threads.
 - Board: up to 200 open, unexpired posts. Views are counted for the top 12, but never for your own posts. `help`, `kind` and `q` filter the list, and the filters combine.

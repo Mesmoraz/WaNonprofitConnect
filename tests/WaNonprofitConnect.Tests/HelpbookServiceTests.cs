@@ -236,7 +236,7 @@ public sealed class HelpbookServiceTests : IDisposable
 
         // Older than 30 days no longer counts.
         await db.Listings.Where(l => l.OrgEin == A && l.Urgency == Urgency.Critical)
-            .ExecuteUpdateAsync(s => s.SetProperty(l => l.CreatedAt, DateTime.UtcNow.AddDays(-31)));
+            .ExecuteUpdateAsync(s => s.SetProperty(l => l.CreatedAt, DateTime.UtcNow.AddDays(-31)).SetProperty(l => l.UrgentSince, DateTime.UtcNow.AddDays(-31)));
         (await accounts.GetMeAsync(person.Id))!.Membership!.UrgentLeft.Should().Be(2);
 
         // Urgency is for needs only; an offer is posted as ordinary.
@@ -294,6 +294,138 @@ public sealed class HelpbookServiceTests : IDisposable
         using var db = _fx.CreateContext();
         await Throws(() => Svc(db).CreateListingAsync(A, new CreateListingRequest { Kind = ListingKind.Need, Title = "x" }), 400);
     }
+
+    // ---- edit a need or offer (S-97) --------------------------------------------------
+
+    [Trait("Story", "S-97")]
+    [Fact]
+    public async Task Only_the_poster_can_edit()
+    {
+        using var db = _fx.CreateContext();
+        var svc = Svc(db);
+        var need = await svc.CreateListingAsync(A, Post(ListingKind.Need, "Plywood"));
+        await Throws(() => svc.UpdateListingAsync(need.Id, B, Edit("Plywood sheets")), 403);
+        await Throws(() => svc.UpdateListingAsync(999_999, A, Edit("Gone")), 404);
+    }
+
+    [Trait("Story", "S-97")]
+    [Fact]
+    public async Task Closed_post_cannot_be_edited()
+    {
+        using var db = _fx.CreateContext();
+        var svc = Svc(db);
+        var need = await svc.CreateListingAsync(A, Post(ListingKind.Need, "Plywood"));
+        await svc.CloseListingAsync(need.Id, A);
+        await Throws(() => svc.UpdateListingAsync(need.Id, A, Edit("Plywood sheets")), 409);
+    }
+
+    [Trait("Story", "S-97")]
+    [Fact]
+    public async Task Edit_keeps_kind_and_open_threads()
+    {
+        using var db = _fx.CreateContext();
+        var svc = Svc(db);
+        var need = await svc.CreateListingAsync(A, Post(ListingKind.Need, "Laptops", quantity: 12, unit: "laptops"));
+        var thread = await svc.StartThreadAsync(B, new StartThreadRequest { ListingId = need.Id, Message = "We have 6" }, "Casey");
+
+        var edited = await svc.UpdateListingAsync(need.Id, A, Edit("Laptops for intake", quantity: 6, unit: "laptops", help: KindOfHelp.Skills));
+
+        edited.Kind.Should().Be(ListingKind.Need);
+        edited.Title.Should().Be("Laptops for intake");
+        edited.Quantity.Should().Be(6);
+        edited.Help.Should().Be(KindOfHelp.Skills);
+        edited.EditedAt.Should().NotBeNull();
+        (await svc.GetThreadAsync(thread.Id, B)).Status.Should().Be(MatchStatus.Proposed);
+        var mine = await svc.GetListingAsync(need.Id, A);
+        mine!.OpenThreads.Should().Be(1);
+        mine.EditedAt.Should().NotBeNull();
+        (await svc.GetListingAsync(need.Id, B))!.OpenThreads.Should().BeNull();   // only the poster sees the count
+    }
+
+    [Trait("Story", "S-97")]
+    [Fact]
+    public async Task Edit_rebuilds_search_text()
+    {
+        using var db = _fx.CreateContext();
+        var svc = Svc(db);
+        var need = await svc.CreateListingAsync(A, Post(ListingKind.Need, "Laptops"));
+        await svc.UpdateListingAsync(need.Id, A, Edit("Desks"));
+
+        (await svc.BoardAsync(null, new BoardQuery { Q = "desk" })).Select(l => l.Id).Should().Contain(need.Id);
+        (await svc.BoardAsync(null, new BoardQuery { Q = "laptop" })).Select(l => l.Id).Should().NotContain(need.Id);
+    }
+
+    [Trait("Story", "S-97")]
+    [Fact]
+    public async Task Editing_to_urgent_counts_once()
+    {
+        using var db = _fx.CreateContext();
+        var svc = Svc(db);
+        await svc.CreateListingAsync(A, Post(ListingKind.Need, "Cooler died", urgency: Urgency.Critical));
+        await svc.CreateListingAsync(A, Post(ListingKind.Need, "Van died", urgency: Urgency.Critical));
+        var third = await svc.CreateListingAsync(A, Post(ListingKind.Need, "Roof leak", urgency: Urgency.High));
+
+        var ex = (await svc.Invoking(s => s.UpdateListingAsync(third.Id, A, Edit("Roof leak", urgency: Urgency.Critical)))
+            .Should().ThrowAsync<ExchangeException>()).Which;
+        ex.StatusCode.Should().Be(409);
+        ex.Message.Should().Be(UrgentCap.Message);
+    }
+
+    [Trait("Story", "S-97")]
+    [Fact]
+    public async Task Editing_an_urgent_post_keeps_its_place()
+    {
+        using var db = _fx.CreateContext();
+        var svc = Svc(db);
+        var urgent = await svc.CreateListingAsync(A, Post(ListingKind.Need, "Cooler died", urgency: Urgency.Critical));
+        (await UrgentCap.LeftAsync(db, A, DateTime.UtcNow)).Should().Be(1);
+
+        await svc.UpdateListingAsync(urgent.Id, A, Edit("Walk-in cooler died", urgency: Urgency.Critical));
+        (await UrgentCap.LeftAsync(db, A, DateTime.UtcNow)).Should().Be(1);
+
+        // Taking Urgent off doesn't give it back, and putting it back on is the same use.
+        await svc.UpdateListingAsync(urgent.Id, A, Edit("Walk-in cooler died", urgency: Urgency.High));
+        (await UrgentCap.LeftAsync(db, A, DateTime.UtcNow)).Should().Be(1);
+        await svc.CreateListingAsync(A, Post(ListingKind.Need, "Van died", urgency: Urgency.Critical));
+        (await svc.UpdateListingAsync(urgent.Id, A, Edit("Walk-in cooler died", urgency: Urgency.Critical))).Urgency.Should().Be(Urgency.Critical);
+        (await UrgentCap.LeftAsync(db, A, DateTime.UtcNow)).Should().Be(0);
+    }
+
+    [Trait("Story", "S-97"), Trait("Story", "S-109")]
+    [Fact]
+    public async Task Urgent_again_on_is_when_the_oldest_leaves_the_window()
+    {
+        using var db = _fx.CreateContext();
+        var svc = Svc(db);
+        var now = new DateTime(2026, 10, 10, 12, 0, 0, DateTimeKind.Utc);
+        var first = await svc.CreateListingAsync(A, Post(ListingKind.Need, "Cooler died", urgency: Urgency.Critical));
+        var second = await svc.CreateListingAsync(A, Post(ListingKind.Need, "Van died", urgency: Urgency.Critical));
+        await db.Listings.Where(l => l.Id == first.Id).ExecuteUpdateAsync(s => s.SetProperty(l => l.UrgentSince, new DateTime(2026, 9, 21, 9, 0, 0, DateTimeKind.Utc)));
+        await db.Listings.Where(l => l.Id == second.Id).ExecuteUpdateAsync(s => s.SetProperty(l => l.UrgentSince, new DateTime(2026, 10, 1, 9, 0, 0, DateTimeKind.Utc)));
+
+        (await UrgentCap.AgainOnAsync(db, A, now)).Should().Be(new DateTime(2026, 10, 21, 9, 0, 0, DateTimeKind.Utc));
+        (await UrgentCap.AgainOnAsync(db, B, now)).Should().BeNull();   // some left: no date
+    }
+
+    [Trait("Story", "S-97")]
+    [Fact]
+    public async Task Edit_tells_both_sides_of_a_live_thread()
+    {
+        using var db = _fx.CreateContext();
+        var svc = Svc(db);
+        var need = await svc.CreateListingAsync(A, Post(ListingKind.Need, "Plywood"));
+        var thread = await svc.StartThreadAsync(B, new StartThreadRequest { ListingId = need.Id, Message = "We have 40 sheets" }, "Casey");
+        _events.ThreadChanges.Clear();
+
+        await svc.UpdateListingAsync(need.Id, A, Edit("Plywood, 3/4 inch"));
+
+        _events.ThreadChanges.Where(x => x.Thread.Id == thread.Id).Select(x => x.Ein).Should().BeEquivalentTo(new[] { A, B });
+        _events.ThreadChanges.Should().OnlyContain(x => x.Thread.Need.Title == "Plywood, 3/4 inch");
+    }
+
+    private static UpdateListingRequest Edit(string title, KindOfHelp help = KindOfHelp.Things, Urgency urgency = Urgency.Normal,
+        decimal? quantity = null, string? unit = null, string? description = null)
+        => new(help, title, description, quantity, unit, urgency, Cadence.OneTime);
 
     private static CreateListingRequest Post(ListingKind kind, string title, KindOfHelp help = KindOfHelp.Things, Urgency urgency = Urgency.Normal,
         decimal? quantity = null, string? unit = null)

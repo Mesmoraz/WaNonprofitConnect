@@ -38,25 +38,13 @@ public sealed class ExchangeService
     public async Task<ListingDto> CreateListingAsync(string actingEin, CreateListingRequest req, CancellationToken ct = default)
     {
         var org = await RequireOrgAsync(actingEin, ct);
-        var title = req.Title?.Trim();
-        if (string.IsNullOrWhiteSpace(title)) throw ExchangeException.Invalid("Say what it is.");
-        if (title.Length > MaxTitle) throw ExchangeException.Invalid("Keep it under 200 characters.");
-        var description = BmfRowParser.Clean(req.Description);
-        if (description is { Length: > MaxDescription }) throw ExchangeException.Invalid("Keep the details under 4,000 characters.");
-        var unit = BmfRowParser.Clean(req.Unit);
-        if (unit is { Length: > MaxUnit }) throw ExchangeException.Invalid("Keep the unit under 40 characters.");
-        var tags = TruncateAtBoundary(BmfRowParser.Clean(req.Tags), MaxTags, ',');
-        if (req.Quantity is < 1 or > MaxQuantity) throw ExchangeException.Invalid("Pick a number from 1 to 1,000,000.");
         if (!Enum.IsDefined(req.Kind)) throw ExchangeException.Invalid("Pick need or offer.");
         if (!Enum.IsDefined(req.Category)) throw ExchangeException.Invalid("Pick a kind of help.");
-        var help = req.Help == 0 ? KindOfHelp.Things : req.Help;
-        if (!Enum.IsDefined(help)) throw ExchangeException.Invalid("Pick a kind of help.");
-        var cadence = Enum.IsDefined(req.Cadence) ? req.Cadence : Cadence.OneTime;
-        // "How soon" is for needs only; an offer never jumps the board.
-        var urgency = req.Kind == ListingKind.Offer || !Enum.IsDefined(req.Urgency) ? Urgency.Normal : req.Urgency;
+        var f = Fields(req.Kind, req.Help, req.Title, req.Description, req.Quantity, req.Unit, req.Urgency, req.Cadence);
+        var tags = TruncateAtBoundary(BmfRowParser.Clean(req.Tags), MaxTags, ',');
 
         var now = DateTime.UtcNow;
-        if (urgency == Urgency.Critical && await UrgentCap.LeftAsync(_db, org.Ein, now, ct) <= 0)
+        if (f.Urgency == Urgency.Critical && await UrgentCap.LeftAsync(_db, org.Ein, now, ct) <= 0)
             throw ExchangeException.Conflict(UrgentCap.Message);
 
         var listing = new Listing
@@ -64,17 +52,18 @@ public sealed class ExchangeService
             Kind = req.Kind,
             OrgEin = org.Ein,
             Org = org,
-            Help = help,
-            Cadence = cadence,
+            Help = f.Help,
+            Cadence = f.Cadence,
             Category = req.Category,
-            Title = title,
-            Description = description,
+            Title = f.Title,
+            Description = f.Description,
             Quantity = req.Quantity,
-            Unit = unit,
-            Urgency = urgency,
+            Unit = f.Unit,
+            Urgency = f.Urgency,
+            UrgentSince = f.Urgency == Urgency.Critical ? now : null,
             Status = ListingStatus.Open,
             Tags = tags,
-            SearchText = MatchScorer.BuildSearchText(title, description, tags),
+            SearchText = MatchScorer.BuildSearchText(f.Title, f.Description, tags),
             City = org.City,
             Zip5 = org.Zip5,
             CreatedAt = now,
@@ -88,6 +77,66 @@ public sealed class ExchangeService
         var dto = ListingDto.From(listing);
         await _notifier.ListingCreatedAsync(dto, ct);
         return dto;
+    }
+
+    /// <summary>
+    /// Change your own post (S-97): everything but whether it's a need or an offer. Not once it's closed or done.
+    /// The same rules as posting. Making a need urgent counts toward the cap; one that was already urgent keeps its place.
+    /// </summary>
+    public async Task<ListingDto> UpdateListingAsync(int id, string actingEin, UpdateListingRequest req, CancellationToken ct = default)
+    {
+        var ein = await RequireEinAsync(actingEin, ct);
+        var l = await _db.Listings.Include(x => x.Org).FirstOrDefaultAsync(x => x.Id == id, ct)
+                ?? throw ExchangeException.NotFound(PostGone);
+        if (l.OrgEin != ein) throw ExchangeException.Forbidden("Only the organization that posted this can change it.");
+        if (l.Status is not (ListingStatus.Open or ListingStatus.Matched)) throw ExchangeException.Conflict(NotOpen);
+        var f = Fields(l.Kind, req.Help, req.Title, req.Description, req.Quantity, req.Unit, req.Urgency, req.Cadence);
+
+        var now = DateTime.UtcNow;
+        if (f.Urgency == Urgency.Critical && l.Urgency != Urgency.Critical)
+        {
+            // Back to urgent within the 30 days is the same use; otherwise it's a new one.
+            var counted = (l.UrgentSince ?? DateTime.MinValue) > now.AddDays(-UrgentCap.WindowDays);
+            if (!counted)
+            {
+                if (await UrgentCap.LeftAsync(_db, ein, now, ct, except: l.Id) <= 0) throw ExchangeException.Conflict(UrgentCap.Message);
+                l.UrgentSince = now;
+            }
+        }
+
+        l.Help = f.Help;
+        l.Title = f.Title;
+        l.Description = f.Description;
+        l.Quantity = req.Quantity;
+        l.Unit = f.Unit;
+        l.Urgency = f.Urgency;
+        l.Cadence = f.Cadence;
+        l.SearchText = MatchScorer.BuildSearchText(f.Title, f.Description, l.Tags);
+        l.EditedAt = now;
+        l.UpdatedAt = now;
+        await _db.SaveChangesAsync(ct);
+        return ListingDto.From(l);
+    }
+
+    private sealed record ListingFields(KindOfHelp Help, string Title, string? Description, string? Unit, Urgency Urgency, Cadence Cadence);
+
+    /// <summary>The rules a post's own fields follow, when it's posted and when it's edited.</summary>
+    private static ListingFields Fields(ListingKind kind, KindOfHelp help, string? title, string? description, decimal? quantity, string? unit, Urgency urgency, Cadence cadence)
+    {
+        title = title?.Trim();
+        if (string.IsNullOrWhiteSpace(title)) throw ExchangeException.Invalid("Say what it is.");
+        if (title.Length > MaxTitle) throw ExchangeException.Invalid("Keep it under 200 characters.");
+        description = BmfRowParser.Clean(description);
+        if (description is { Length: > MaxDescription }) throw ExchangeException.Invalid("Keep the details under 4,000 characters.");
+        unit = BmfRowParser.Clean(unit);
+        if (unit is { Length: > MaxUnit }) throw ExchangeException.Invalid("Keep the unit under 40 characters.");
+        if (quantity is < 1 or > MaxQuantity) throw ExchangeException.Invalid("Pick a number from 1 to 1,000,000.");
+        help = help == 0 ? KindOfHelp.Things : help;
+        if (!Enum.IsDefined(help)) throw ExchangeException.Invalid("Pick a kind of help.");
+        cadence = Enum.IsDefined(cadence) ? cadence : Cadence.OneTime;
+        // "How soon" is for needs only; an offer never jumps the board.
+        urgency = kind == ListingKind.Offer || !Enum.IsDefined(urgency) ? Urgency.Normal : urgency;
+        return new ListingFields(help, title, description, unit, urgency, cadence);
     }
 
     public async Task<ListingDto?> GetListingAsync(int id, CancellationToken ct = default)

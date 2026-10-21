@@ -102,6 +102,12 @@ public sealed class ListingsController : AppControllerBase
         return CreatedAtAction(nameof(Get), new { id = dto.Id }, dto);
     }
 
+    /// <summary>Edit your own need or offer (S-97). 403 if it isn't yours, 409 once it's closed or done.</summary>
+    [HttpPut("listings/{id:int}")]
+    [ProducesResponseType(typeof(ListingViewDto), 200)]
+    public async Task<ActionResult<ListingViewDto>> Update(int id, [FromBody] UpdateListingRequest request, CancellationToken ct)
+        => await _helpbook.UpdateListingAsync(id, await ActingEinAsync(ct), request, ct);
+
     /// <summary>Older scored suggestions for a listing (CLI demo).</summary>
     [HttpGet("listings/{id:int}/matches")]
     public Task<IReadOnlyList<MatchSuggestionDto>> Suggest(int id, [FromQuery] int take = 10, CancellationToken ct = default)

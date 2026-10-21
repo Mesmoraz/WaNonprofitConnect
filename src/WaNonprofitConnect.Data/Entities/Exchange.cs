@@ -61,6 +61,10 @@ public class Listing
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public DateTime? ExpiresAt { get; set; }
+    /// <summary>When its poster last changed it (S-97), shown as "· Edited". Null if never edited.</summary>
+    public DateTime? EditedAt { get; set; }
+    /// <summary>When this need became Urgent, by posting or by an edit. The 2-a-month cap counts from here, so editing a post to Urgent counts like posting one.</summary>
+    public DateTime? UrgentSince { get; set; }
 
     public ICollection<Match> MatchesAsNeed { get; set; } = new List<Match>();
     public ICollection<Match> MatchesAsOffer { get; set; } = new List<Match>();
