@@ -91,6 +91,7 @@ interface MapData { members: OrgSummary[];                                  // o
 | `POST /api/v1/threads/{id}/messages` | `{ body }` | `Message` |
 | `POST /api/v1/threads/{id}/accept`, `/decline`, `/complete`, `/cancel` | | `Thread` |
 | `GET /api/v1/map` | | `MapData` |
+| `GET /api/v1/map/fits?for=needs\|offers` | | `{ myId, myTitle, post: Listing }[]`: other organizations' open posts that fit one of yours, best first, up to 12 (S-130). Confirmed members only. |
 | `GET /api/v1/map/points` | | `[ein, lat, lon][]` for every WA 501(c)(3) with a ZIP centroid. Cached a day. |
 | `GET /api/v1/admin/claims` · `POST /api/v1/admin/claims/{id}/approve` · `/reject` | | admin only |
 | `GET /api/v1/admin/invites` · `POST /api/v1/admin/invites` | `{ ein, uses }` | `{ code, ein, orgName, uses, used }` |

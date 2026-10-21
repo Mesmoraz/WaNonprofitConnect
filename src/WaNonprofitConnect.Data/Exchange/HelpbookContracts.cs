@@ -74,6 +74,12 @@ public sealed record OrgPageDto(OrgSummaryDto Org, IReadOnlyList<ListingViewDto>
 
 public sealed record MapSuggestionDto(int NeedId, int OfferId, string FromEin, string ToEin);
 
+/// <summary>
+/// One fit for your organization (S-130): another organization's open post, and which of yours it fits best.
+/// For needs, Post is an offer that could fit one of your needs; for offers, a need you could help with.
+/// </summary>
+public sealed record MapFitDto(int MyId, string MyTitle, ListingViewDto Post);
+
 /// <summary>How many open needs and offers an organization has: its pin's ring on the map (S-129).</summary>
 public sealed record MapOpenDto(string Ein, int Needs, int Offers);
 
