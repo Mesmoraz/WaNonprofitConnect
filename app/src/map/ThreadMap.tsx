@@ -7,11 +7,11 @@ import type { LayersList, PickingInfo } from '@deck.gl/core'
 import { PathLayer, ScatterplotLayer, TextLayer } from '@deck.gl/layers'
 import { PathStyleExtension } from '@deck.gl/extensions'
 import { shimTransformForDeck } from './compat'
-import { FlowExtension, SoftGlowExtension } from './extensions'
+import { FlowExtension, RingExtension, SoftGlowExtension, type RingExtensionProps } from './extensions'
 import { MAX_BOUNDS, STYLE_DARK, STYLE_LIGHT, WA_BOUNDS, firstSymbolId, quietStyle } from './basemap'
 import { jitter, pointAt, type LonLat } from './geometry'
 import {
-  DASH_WRAP, buildArcs, buildBadges, buildGlows, buildIndex, buildNodes, degrees, liveThreads, placeLabels, scopeOf,
+  DASH_WRAP, buildArcs, buildBadges, buildGlows, buildIndex, buildNodes, degrees, openCounts, placeLabels, scopeOf, shownThreads,
   type Badge, type GlowArc, type LabelDatum, type MapNode, type ThreadArc,
 } from './model'
 import { useMapTheme, useReducedMotion, withAlpha, type MapTheme, type RGBA } from './theme'
@@ -32,6 +32,7 @@ const dashExt = new PathStyleExtension({ dash: true, dashMode: 'path' })
 const flowExt = new FlowExtension()
 const glowPathExt = new SoftGlowExtension({ shape: 'path' })
 const glowPointExt = new SoftGlowExtension({ shape: 'point' })
+const ringExt = new RingExtension()
 
 interface Frame {
   theme: MapTheme
@@ -64,7 +65,7 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
   // Sparks: one per thread on each line (S-127), evenly spaced, each running the way its thread gives.
   const movers: Mover[] = animate
     ? f.movers.flatMap((a, i) => {
-        const color = a.state === 'Completed' ? t.goldenGlow : a.state === 'Accepted' ? t.offer : t.need
+        const color = t.goldenGlow
         const lap = now / (a.related ? MOVER_MS : SPARK_MS) + i * 0.29
         return a.sparks.map((dir, k) => {
           const s = (lap + k / a.sparks.length) % 1
@@ -121,6 +122,17 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
       getRadius: d => (d.id === f.hover ? d.radius * HOVER_GROW : d.radius),
       updateTriggers: { getRadius: f.hover }, transitions: { getRadius: { duration: 160 } },
       stroked: true, lineWidthUnits: 'pixels', getLineWidth: d => d.lineWidth, getLineColor: d => d.line,
+    }),
+    new ScatterplotLayer<MapNode, Seat & RingExtensionProps<MapNode>>({
+      // What's open there (S-129): green offers, and the amber share of it is needs.
+      id: 'wm-rings', data: f.nodes.filter(n => n.ringWidth > 0), pickable: false,
+      radiusUnits: 'pixels', getPosition: d => d.position,
+      getRadius: d => (d.id === f.hover ? d.ringRadius * HOVER_GROW : d.ringRadius),
+      updateTriggers: { getRadius: f.hover, needColor: t.key }, transitions: { getRadius: { duration: 160 } },
+      filled: false, stroked: true, lineWidthUnits: 'pixels',
+      getLineWidth: d => (d.id === f.hover ? d.ringWidth * HOVER_GROW : d.ringWidth), getLineColor: d => d.ring,
+      getNeedShare: d => d.needShare, needColor: t.need,
+      extensions: [ringExt],
     }),
   ]
   if (f.fontsReady) {
@@ -294,14 +306,16 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, s
   }, [])
 
   // ---- Derived data, memoized step by step --------------------------------------------------------
-  const threads = useMemo(() => liveThreads(data.threads), [data.threads])
-  const deg = useMemo(() => degrees(threads), [threads])
+  const threads = useMemo(() => shownThreads(data.threads, me), [data.threads, me])
+  const deg = useMemo(() => degrees(threads.filter(t => t.status === 'Completed')), [threads])
+  const open = useMemo(() => openCounts(data), [data])
   const scope = useMemo(() => scopeOf(selected, threads), [selected?.kind, selected?.id, threads])
   const standaloneKey = [...scope.orgs].sort().join(',')
   const index = useMemo(() => buildIndex(data.members, scope.orgs), [data.members, standaloneKey])
   indexRef.current = index
-  const { nodes, nodeOf } = useMemo(() => buildNodes(index, zoomLevel, deg, scope, me, theme), [index, zoomLevel, deg, scope, me, theme])
-  const arcs = useMemo(() => buildArcs(data, threads, nodeOf, scope, theme), [data, threads, nodeOf, scope, theme])
+  const { nodes, nodeOf } = useMemo(() => buildNodes(index, zoomLevel, deg, open, scope, me, theme), [index, zoomLevel, deg, open, scope, me, theme])
+  // No "Could fit" lines for everyone (S-129); S-130's toggles will draw them for you alone.
+  const arcs = useMemo(() => buildArcs([], threads, nodeOf, scope, theme), [threads, nodeOf, scope, theme])
   const glows = useMemo(() => buildGlows(arcs, scope, theme), [arcs, scope, theme])
   const movers = useMemo(() => (reduced ? [] : arcs.filter(a => a.sparks.length > 0)), [arcs, reduced])
   const badges = useMemo(() => buildBadges(arcs, scope, theme), [arcs, scope, theme])
@@ -357,8 +371,8 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, s
     return out
   }
   const counts = useMemo(() => nodes.filter(n => !n.single).map(n => ({
-    position: n.position, text: String(n.members.length), color: [255, 255, 255, scope.active && !n.related ? 110 : 255] as RGBA,
-  })), [nodes, scope])
+    position: n.position, text: String(n.members.length), color: n.countColor,
+  })), [nodes])
   const dots = useMemo(() => {
     if (!points?.length) return null
     const value = new Float32Array(points.length * 2)

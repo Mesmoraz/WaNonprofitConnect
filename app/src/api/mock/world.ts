@@ -158,5 +158,11 @@ export function mapOf(w: Pick<World, 'orgs' | 'listings' | 'threads'>, couldFit 
   const suggested = !couldFit ? [] : open.filter(n => n.kind === 'Need').flatMap(n => open
     .filter(o => o.kind === 'Offer' && o.ein !== n.ein && fits(n, o))
     .map(o => ({ needId: n.id, offerId: o.id, fromEin: o.ein, toEin: n.ein })))
-  return { members, threads, suggested }
+  const counts = new Map<string, { ein: string; needs: number; offers: number }>()
+  for (const l of open) {
+    const c = counts.get(l.ein) ?? { ein: l.ein, needs: 0, offers: 0 }
+    if (l.kind === 'Need') c.needs++; else c.offers++
+    counts.set(l.ein, c)
+  }
+  return { members, threads, suggested, open: [...counts.values()] }
 }
