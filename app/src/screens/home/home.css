@@ -6,15 +6,21 @@
 .welcome-actions .btn { flex: 1 1 140px; text-align: center; text-decoration: none; }
 .welcome-later { align-self: center; color: var(--ink-3); font-size: 14px; }
 
-/* Home (S-126): one calm column on a phone; two from 1100px. */
+/* Home (S-126): one calm column on a phone; two from 1100px, each column stacking on its own. */
 .home { max-width: 640px; margin: 0 auto; width: 100%; gap: 14px; }
 .home-org .h { margin-bottom: 2px; }
 .home-standing { margin: 0; color: var(--ink-2); font-size: 14px; }
 .home-grid { display: flex; flex-direction: column; gap: 22px; margin-top: 6px; }
+/* On a phone the two column groups open up into the one column, in the approved order: waiting, near, new, the board. */
+.home-col { display: contents; }
+.home-waiting { order: 1; }
+.home-near { order: 2; }
+.home-new { order: 3; }
+.home-go { order: 4; }
 .home-sec { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .home-h { font-size: 17px; }
 .home-cards { display: flex; flex-direction: column; gap: 8px; }
-.home-none { font-size: 14px; color: var(--ink-3); }
+.home .home-none { font-size: 14px; color: var(--ink-3); }   /* .home first: the shared .hint (12px) loads after this file */
 .home-more { align-self: flex-start; font-size: 14px; }
 .home-thread { color: var(--ink); text-decoration: none; }
 .home-rows { display: flex; flex-direction: column; border-top: 1px solid var(--line-2); }
@@ -43,12 +49,21 @@
 .near-open { color: var(--accent); text-decoration: underline; }
 
 @media (min-width: 1100px) {
-  .home { max-width: 1040px; }
-  .home-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 28px; align-items: start; }
+  .home { max-width: 1200px; }
+  .home-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; align-items: start; }
   /* Left: waiting, then new. Right: near you, then on the board. */
-  .home-near { grid-column: 2; grid-row: 1; }
-  .home-new { grid-column: 1; grid-row: 2 / span 2; }
-  .home-go { grid-column: 2; grid-row: 2; }
+  .home-col { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+}
+
+/* A wide monitor is read from further away: one step up in type. */
+@media (min-width: 1400px) {
+  .home .h { font-size: 26px; }
+  .home .sub, .home .home-standing { font-size: 16px; }
+  .home .home-h { font-size: 20px; }
+  .home .home-none, .home .home-more, .home .near-line { font-size: 16px; }
+  .home .home-row { font-size: 17px; }
+  .home .card .t { font-size: 17px; }
+  .home .card .m { font-size: 15px; }
 }
 
 /* The small map is too small for MapLibre's credits line to start open (it does on narrow screens): keep it to the (i). */

@@ -56,30 +56,34 @@ export function Home() {
       )}
 
       <div className="home-grid">
-        <section className="home-sec" aria-labelledby="home-waiting">
-          <h2 id="home-waiting" className="home-h">Waiting on you</h2>
-          {threads.data ? <Waiting threads={threads.data} myEin={myEin} /> : !threads.isError && <Slow />}
-          {threads.isError && !threads.data && <p className="hint">That didn’t work. <button className="inline-link" onClick={() => threads.refetch()}>Try again</button></p>}
-        </section>
+        {/* Two columns from 1100px, each stacking on its own so a short section leaves no hole. On a phone they open up into one column. */}
+        <div className="home-col">
+          <section className="home-sec home-waiting" aria-labelledby="home-waiting">
+            <h2 id="home-waiting" className="home-h">Waiting on you</h2>
+            {threads.data ? <Waiting threads={threads.data} myEin={myEin} /> : !threads.isError && <Slow />}
+            {threads.isError && !threads.data && <p className="hint">That didn’t work. <button className="inline-link" onClick={() => threads.refetch()}>Try again</button></p>}
+          </section>
 
-        <section className="home-sec home-near" aria-labelledby="home-near">
-          <h2 id="home-near" className="home-h">Near you</h2>
-          {map.data && <NearYou data={map.data} me={org} />}
-          {!map.data && !map.isError && <Slow />}
-          {map.isError && !map.data && <p className="hint">That didn’t work. <button className="inline-link" onClick={() => map.refetch()}>Try again</button></p>}
-        </section>
+          <section className="home-sec home-new" aria-labelledby="home-new">
+            <h2 id="home-new" className="home-h">New this week</h2>
+            {!whole.data && !whole.isError && <Slow />}
+            {whole.isError && !whole.data && <p className="hint">That didn’t work. <button className="inline-link" onClick={() => whole.refetch()}>Try again</button></p>}
+            {whole.data && (fresh.length ? <>
+              <div className="home-cards">{fresh.map(l => <ListingCard key={l.id} l={l} />)}</div>
+              <Link className="inline-link home-more" to="/board">See the whole board</Link>
+            </> : <p className="hint home-none">Nothing new this week. <Link className="inline-link" to="/board">See the whole board</Link>?</p>)}
+          </section>
+        </div>
+        <div className="home-col">
+          <section className="home-sec home-near" aria-labelledby="home-near">
+            <h2 id="home-near" className="home-h">Near you</h2>
+            {map.data && <NearYou data={map.data} me={org} />}
+            {!map.data && !map.isError && <Slow />}
+            {map.isError && !map.data && <p className="hint">That didn’t work. <button className="inline-link" onClick={() => map.refetch()}>Try again</button></p>}
+          </section>
 
-        <section className="home-sec home-new" aria-labelledby="home-new">
-          <h2 id="home-new" className="home-h">New this week</h2>
-          {!whole.data && !whole.isError && <Slow />}
-          {whole.isError && !whole.data && <p className="hint">That didn’t work. <button className="inline-link" onClick={() => whole.refetch()}>Try again</button></p>}
-          {whole.data && (fresh.length ? <>
-            <div className="home-cards">{fresh.map(l => <ListingCard key={l.id} l={l} />)}</div>
-            <Link className="inline-link home-more" to="/board">See the whole board</Link>
-          </> : <p className="hint home-none">Nothing new this week. <Link className="inline-link" to="/board">See the whole board</Link>?</p>)}
-        </section>
-
-        {whole.data && <OnTheBoard all={whole.data} shown={shown} myEin={myEin} myOrg={org} picked={serve.picked} meet={map.data?.suggested} />}
+          {whole.data && <OnTheBoard all={whole.data} shown={shown} myEin={myEin} myOrg={org} picked={serve.picked} meet={map.data?.suggested} />}
+        </div>
       </div>
     </div>
   )

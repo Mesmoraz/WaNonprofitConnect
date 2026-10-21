@@ -2104,6 +2104,14 @@
       "tasks": [],
       "source": "Taylor, 2026-10-20: the strip and filter are their own story",
       "lane": "map"
+    },
+    {
+      "id": "S-132",
+      "epic": "E-24",
+      "title": "Home on a wide monitor: wider, no holes under short sections, larger type",
+      "status": "review",
+      "added": "2026-10-21",
+      "tasks": []
     }
   ]
 }
