@@ -2079,7 +2079,7 @@
       "id": "S-129",
       "epic": "E-25",
       "title": "Map: pins show open needs and offers, and only golden threads are drawn",
-      "status": "ready",
+      "status": "in-progress",
       "added": "2026-10-20",
       "source": "Taylor, 2026-10-20: the map should show where needs and offers are open, draw a thread only once it is met, and offer toggles that show what fits you",
       "lane": "map",
@@ -2094,6 +2094,16 @@
       "source": "Taylor, 2026-10-20: the map should show where needs and offers are open, draw a thread only once it is met, and offer toggles that show what fits you",
       "lane": "map",
       "tasks": []
+    },
+    {
+      "id": "S-131",
+      "epic": "E-25",
+      "title": "Map: a strip that counts what's open in view, a list of it, and kind of help chips",
+      "status": "backlog",
+      "added": "2026-10-20",
+      "tasks": [],
+      "source": "Taylor, 2026-10-20: the strip and filter are their own story",
+      "lane": "map"
     }
   ]
 }

@@ -282,30 +282,39 @@ Approved by Taylor 2026-10-19 in chat, as written. Taylor, on seeing Home's smal
 - **Legend:** one new line, "A thicker line with a number is several threads between the same two places."
 - **Home's small map** gets the same look; it's the same map.
 
-# The map shows what's open (S-129 and S-130, proposed Oct 20, waiting for approval)
+# The map shows what's open (S-129 approved Oct 20; S-131 and S-130 to follow)
 
 Taylor, Oct 20: "I want the map to also be a place where people can intuitively see where there are available offers and available needs to be picked up. ... all of the threads make it seem like all needs and offers are completed. I think a thread should ONLY exist if the thread is being met and is complete." And: a toggle to "find offers that might suit your need" and "find needs that you can fulfill" that draws temporary threads for your view. "The map needs to be made to be more usable and visually striking."
 
+Taylor's answers, Oct 20: (1) "threads should only be shown as complete": on the map, a line is a golden thread; the voice sheet's words stay. (2) Your own threads that are underway "should appear maybe as faint lines". (3) "Help with is great." (4) The strip and the filter are a story of their own (S-131).
+
 Checked against the mission: Need → Match → Golden Thread → Action → Impact. Today the map shows the third step and hides the first. This puts the needs and offers back on the map, and keeps the gold for help that was given.
 
-## S-129: Pins show what's open, lines are golden only (map lane, with a small backend change)
+## S-129: Pins show what's open, lines are golden only (map lane, with a small backend change). Approved Oct 20
 
 - **For:** see at a glance where help is wanted and where it's on offer, near you.
 - **The one action:** tap a pin with something open and see what it is.
 - **Pins say what's open.** A pin is a ring: the amber part is open needs, the green part is open offers, in proportion. Bigger with more open posts (up to 6). An organization with nothing open is a small grey pin. A cluster is the same ring for everyone inside it, with the count in the middle.
-- **Lines are golden threads only.** Started and in-progress threads are no longer drawn. Neither are the "Could fit" lines the map draws for everyone today. Golden threads keep their glow, sparks, number and confetti (S-127), and the base map gets a little quieter so they stand out more.
-- **A strip at the top:** "14 needs · 9 offers in view". Tap it and a list slides up: one row per open post in view, nearest first. Each row: kind of help chip, title, organization · city. Tap a row to open the post.
-- **Kind of help filter:** chips under the strip: All, Time, Skills, Things, Partnership, For schools, Jobs and mentoring. One at a time. Pins, the strip and the list follow it.
+- **Lines are golden threads only.** Other organizations' started and in-progress threads are no longer drawn. Neither are the "Could fit" lines the map draws for everyone today.
+- **Your own threads that are underway** show as faint, thin lines from your pin, so you can still find them. Tap one to open it as today.
+- **Golden threads keep their glow**, sparks, number and confetti (S-127), and the base map gets a little quieter so they stand out more.
 - **Tapping a pin:** the card says "{n} needs · {n} offers · {n} golden threads" and lists the open posts, then "See their needs and offers" as today.
 - **Legend, rewritten:**
   - "What the map shows"
   - [amber ring] "Amber is open needs."
   - [green ring] "Green is open offers."
   - [gold line] "A golden thread. Help that was given."
+  - [faint line] "Your threads that are underway."
   - "A bigger pin has more open. A faint dot is any Washington nonprofit."
-- **Backend:** `MapData.members[]` gets `needs` and `offers` (open post counts) and `help` (the kinds of help open there). `GET /api/v1/map/open` returns the open posts with each one's place, for the strip and the list. Signed-in and confirmed, like `threads` today.
+- **Backend:** `MapData` gets `open`: for each organization with open posts, how many needs and how many offers.
 - **Goes:** started, in-progress and "Could fit" lines on the shared map; the four-line legend.
 - **Stays:** clusters, faint dots, your amber-ringed pin, golden glow, sparks, numbers, confetti. Home's small map gets the same pins.
+
+## S-131: What's open in view (map lane and backend), after S-129
+
+- **A strip at the top:** "14 needs · 9 offers in view". Tap it and a list slides up: one row per open post in view, nearest first. Each row: kind of help chip, title, organization · city. Tap a row to open the post.
+- **Kind of help filter:** chips under the strip: All, Time, Skills, Things, Partnership, For schools, Jobs and mentoring. One at a time. Pins, the strip and the list follow it.
+- **Backend:** `GET /api/v1/map/open` returns the open posts with each one's place and kind of help, for the strip, the list and the chips.
 
 ## S-130: Find what fits you (map lane and backend)
 
@@ -313,17 +322,11 @@ Checked against the mission: Need → Match → Golden Thread → Action → Imp
 - **The one action:** turn on a toggle and tap a line.
 - **Two toggles** sit above the map's bottom edge, only when your organization has something open:
   - "Offers for your needs"
-  - "Needs you can help with"
+  - "Needs you can help with" (Taylor, Oct 20: "help with is great")
   - One on at a time. Tap again to turn it off.
 - **When one is on:** thin dashed lines run from your pin to each organization that fits, up to 12, best fit first. Green dashes for an offer coming to you, amber for a need you could meet. Your pin pulses. Everything else on the map dims. The lines go when you turn it off. Nobody else sees them.
 - **A card slides up:** "5 offers could fit your needs" (or "4 needs you could help with"). One row per fit: their post's title, organization · city · miles, and which of your posts it fits ("For your: Winter coats"). Tap a row or a line to open their post, where "I can help" or "I need this" starts a thread as today.
 - **Empty:** "Nothing fits your needs yet. We'll tell you when something does." (Only if we keep that promise. Otherwise: "Nothing fits your needs yet. Check the board?" with "Check the board" as the link.)
 - **No open posts:** the toggles aren't there. The strip at the top still works.
+- **Your own threads** stay faint while a toggle is on.
 - **Backend:** `GET /api/v1/map/fits?for=needs|offers` returns pairs for your organization: your post, their post, their EIN, score. Same scoring as a post's "Could fit" today.
-
-## Questions for Taylor
-
-1. **The word "thread."** The voice sheet says a thread is "a need and an offer, matched, in progress" and a golden thread is one that's done. Your note says a thread should only exist once it's met. Keep the words as they are and just stop drawing in-progress threads on the map? Or change the voice sheet so "thread" means done, and in-progress ones get another name (the inbox calls them threads today)?
-2. **Your own in-progress threads.** With only golden lines drawn, your org's threads that are underway vanish from the map. Show your own (only yours, faint) or leave them to the inbox?
-3. **Toggle words.** "Offers for your needs" and "Needs you can help with", or your "Find offers that might suit your need" and "Find needs you can meet"? (The voice sheet bans "fulfill.")
-4. **The strip and filter.** In S-129 or a story of their own after?
