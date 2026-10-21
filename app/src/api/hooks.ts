@@ -181,7 +181,8 @@ export function useActAs() {
   const qc = useQueryClient()
   return useMutation({ mutationFn: api.actAs, onSuccess: (me: Me) => { qc.setQueryData(keys.me, me); qc.invalidateQueries({ predicate: q => q.queryKey !== keys.me }) } })
 }
-export const useAdminFeedback = () => useQuery({ queryKey: keys.adminFeedback, queryFn: api.adminFeedback, refetchInterval: 60_000 })
+/** From the real server even in the demo, so a 401 here doesn't mean the demo's session ended (main.tsx). */
+export const useAdminFeedback = () => useQuery({ queryKey: keys.adminFeedback, queryFn: api.adminFeedback, refetchInterval: 60_000, meta: { realServer: true } })
 export function useFeedbackDone() {
   const qc = useQueryClient()
   return useMutation({ mutationFn: api.feedbackDone, onSuccess: () => qc.invalidateQueries({ queryKey: keys.adminFeedback }) })

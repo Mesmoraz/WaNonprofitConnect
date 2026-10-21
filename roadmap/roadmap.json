@@ -2104,6 +2104,36 @@
       "tasks": [],
       "source": "Taylor, 2026-10-20: the strip and filter are their own story",
       "lane": "map"
+    },
+    {
+      "id": "S-133",
+      "epic": "E-26",
+      "title": "The demo stays signed in when the real server refuses an admin's feedback list, and a demo link isn't kept as where to return",
+      "status": "review",
+      "added": "2026-10-20",
+      "tasks": [],
+      "source": "Polish walk, Oct 20: Admin in dev:mock with the API running signed the demo out",
+      "lane": "app"
+    },
+    {
+      "id": "S-134",
+      "epic": "E-24",
+      "title": "Empty board: say nothing's here without the \"0 open · 0 done\" count above it",
+      "status": "backlog",
+      "added": "2026-10-20",
+      "tasks": [],
+      "source": "Polish walk, Oct 20, Empty board demo (needs a brief: changes what the board says)",
+      "lane": "app"
+    },
+    {
+      "id": "S-135",
+      "epic": "E-24",
+      "title": "Editing a post's count keeps an old unit as it was (\"2 unit\"): drop or pluralize the unit when the count changes",
+      "status": "backlog",
+      "added": "2026-10-20",
+      "tasks": [],
+      "source": "Polish walk, Oct 20: editing a seeded post from 1 to 2 read \"2 unit\" (only posts with a unit: the seed and the CLI)",
+      "lane": "app"
     }
   ]
 }
