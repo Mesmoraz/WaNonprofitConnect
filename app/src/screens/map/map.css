@@ -45,3 +45,18 @@
 }
 .map-card-row .r-title { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .map-card-row .r-state { flex: none; color: var(--ink-2); font-size: 13px; }
+
+/* The toggles (S-130): two pills above the bottom edge, or above the card while one is open. */
+.map-toggles { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.map-toggle {
+  min-height: var(--tap); padding: 0 12px; border-radius: 999px; border: 1px solid var(--line-2);
+  background: var(--paper); color: var(--ink); font-size: 13px; font-weight: 600; box-shadow: var(--shadow);
+}
+.map-toggle[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.map-fits .t { display: block; margin-bottom: 4px; }
+.map-fit-row {
+  display: grid; gap: 2px; padding: 8px 2px; min-height: var(--tap); border-bottom: 1px solid var(--line-2);
+  color: var(--ink); text-decoration: none; font-size: 14px;
+}
+.map-fit-row .r-title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.map-fit-row .r-meta, .map-fit-row .r-for { color: var(--ink-2); font-size: 13px; }
