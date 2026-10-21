@@ -69,7 +69,11 @@ public sealed record OrgPageDto(OrgSummaryDto Org, IReadOnlyList<ListingViewDto>
 
 public sealed record MapSuggestionDto(int NeedId, int OfferId, string FromEin, string ToEin);
 
-public sealed record MapDataDto(IReadOnlyList<OrgSummaryDto> Members, IReadOnlyList<MapThreadDto> Threads, IReadOnlyList<MapSuggestionDto> Suggested);
+/// <summary>How many open needs and offers an organization has: its pin's ring on the map (S-129).</summary>
+public sealed record MapOpenDto(string Ein, int Needs, int Offers);
+
+public sealed record MapDataDto(IReadOnlyList<OrgSummaryDto> Members, IReadOnlyList<MapThreadDto> Threads, IReadOnlyList<MapSuggestionDto> Suggested,
+    IReadOnlyList<MapOpenDto> Open);
 
 public sealed class BoardQuery
 {

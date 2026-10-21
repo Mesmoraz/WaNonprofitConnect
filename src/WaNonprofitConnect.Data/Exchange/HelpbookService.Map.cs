@@ -9,7 +9,8 @@ public sealed partial class HelpbookService
 
     /// <summary>
     /// What the map draws: member pins (orgs with a confirmed person or an open post, plus anyone in a thread),
-    /// threads that are live or golden (not declined or cancelled), and up to 40 suggested threads: the best fit for each open need.
+    /// threads that are live or golden (not declined or cancelled), up to 40 suggested threads (the best fit for each open need),
+    /// and every organization's count of open needs and offers (S-129). Open posts are on the board for everyone, so the counts are too.
     /// Someone not confirmed yet (<paramref name="confirmed"/> false) gets the pins only, no threads or suggestions: who is talking to whom, and
     /// about what, is for members (S-114). No screen before confirmation shows the map.
     /// </summary>
@@ -27,8 +28,13 @@ public sealed partial class HelpbookService
             .ToListAsync(ct);
 
         var open = await OpenListings(now).OrderByDescending(l => l.CreatedAt).Take(MaxCandidates * 2).ToListAsync(ct);
+        var openCounts = (await OpenListings(now).GroupBy(l => new { l.OrgEin, l.Kind })
+                .Select(g => new { g.Key.OrgEin, g.Key.Kind, N = g.Count() }).ToListAsync(ct))
+            .GroupBy(x => x.OrgEin)
+            .Select(g => new MapOpenDto(g.Key, g.Where(x => x.Kind == ListingKind.Need).Sum(x => x.N), g.Where(x => x.Kind == ListingKind.Offer).Sum(x => x.N)))
+            .OrderBy(o => o.Ein).ToList();
         var memberEins = await _db.Memberships.AsNoTracking().Where(m => m.Status == MembershipStatus.Confirmed).Select(m => m.Ein).Distinct().ToListAsync(ct);
-        var eins = memberEins.Concat(open.Select(l => l.OrgEin)).Concat(threads.SelectMany(t => new[] { t.FromEin, t.ToEin })).ToHashSet();
+        var eins = memberEins.Concat(openCounts.Select(o => o.Ein)).Concat(threads.SelectMany(t => new[] { t.FromEin, t.ToEin })).ToHashSet();
         var orgs = await _db.Organizations.AsNoTracking().Where(o => eins.Contains(o.Ein)).ToListAsync(ct);
         var summaries = await OrgSummariesAsync(orgs, ct);
 
@@ -53,7 +59,8 @@ public sealed partial class HelpbookService
             threads.Select(t => new MapThreadDto(t.Id, t.Status, t.NeedHelp == 0 ? KindOfHelp.Things : t.NeedHelp, t.FromEin, t.ToEin, t.NeedTitle,
                 t.NeedListingId, t.OfferListingId, t.OfferTitle)).ToList(),
             suggested.OrderByDescending(s => s.Score).ThenByDescending(s => s.Need.CreatedAt).Take(MaxSuggested)
-                .Select(s => new MapSuggestionDto(s.Need.Id, s.Offer.Id, s.Offer.OrgEin, s.Need.OrgEin)).ToList());
+                .Select(s => new MapSuggestionDto(s.Need.Id, s.Offer.Id, s.Offer.OrgEin, s.Need.OrgEin)).ToList(),
+            openCounts);
     }
 
     /// <summary>Every Washington 501(c)(3) that has a ZIP centroid, as (ein, lat, lon). Projects only those columns: ~35k rows.</summary>

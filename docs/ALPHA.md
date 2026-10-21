@@ -67,7 +67,8 @@ interface Thread { id: number; status: ThreadStatus; need: Listing; offer: Listi
 interface Message { id: number; threadId: number; senderEin: string; senderName: string; body: string; sentAt: string }
 interface MapData { members: OrgSummary[];                                  // orgs with a confirmed member or a listing
                     threads: { id: number; status: ThreadStatus; help: KindOfHelp; fromEin: string; toEin: string; title: string }[];  // from = giver (offer side)
-                    suggested: { needId: number; offerId: number; fromEin: string; toEin: string }[] }
+                    suggested: { needId: number; offerId: number; fromEin: string; toEin: string }[];
+                    open: { ein: string; needs: number; offers: number }[] }   // open posts per org: its pin's ring (S-129)
 ```
 
 | Method and path | Body | Returns |
