@@ -9,6 +9,18 @@ public sealed partial class HelpbookService
     public const int MaxMapFits = 12;
 
     /// <summary>
+    /// Every open need and offer, each with its organization and place (S-131): the map counts what's in view, lists it, and
+    /// filters it by kind of help. Open posts are on the board for everyone signed in, so these are too. Newest first, up to 500.
+    /// </summary>
+    public async Task<IReadOnlyList<ListingViewDto>> MapOpenAsync(CancellationToken ct = default)
+    {
+        var now = DateTime.UtcNow;
+        var open = await OpenListings(now).OrderByDescending(l => l.CreatedAt).Take(MaxCandidates).ToListAsync(ct);
+        var orgs = await OrgSummariesAsync(open.Select(l => l.Org!).DistinctBy(o => o.Ein), ct);
+        return open.Select(l => View(l, orgs, now)).ToList();
+    }
+
+    /// <summary>
     /// What fits your organization, for the map's toggles (S-130): with <paramref name="forNeeds"/>, other organizations' open
     /// offers that fit one of your open needs; otherwise their open needs that one of your offers fits. Each post once, paired
     /// with the post of yours it fits best; posts already in a thread together are left out. Best fit first, up to 12.

@@ -159,6 +159,27 @@ public sealed class ZipCentroidTests : IDisposable
         points.Select(p => p.Ein).Should().Equal(A, B, D); // 501(c)(3)s with a centroid; NotC3 shares 98101 but is excluded
     }
 
+    [Trait("Story", "S-131")]
+    [Fact]
+    public async Task Map_open_lists_every_open_post_with_its_place_newest_first()
+    {
+        using var db = _fx.CreateContext();
+        db.ZipCentroids.Add(new ZipCentroid { Zip5 = "98101", Lat = 47.61, Lon = -122.33 });
+        await db.SaveChangesAsync();
+        var svc = new HelpbookService(db);
+        var first = await svc.CreateListingAsync(A, new CreateListingRequest { Kind = ListingKind.Need, Help = KindOfHelp.Time, Title = "Drivers" });
+        var second = await svc.CreateListingAsync(B, new CreateListingRequest { Kind = ListingKind.Offer, Help = KindOfHelp.Things, Title = "Crates" });
+
+        var open = await svc.MapOpenAsync();
+
+        open.Select(l => l.Id).Should().ContainInOrder(second.Id, first.Id);
+        var drivers = open.Single(l => l.Id == first.Id);
+        drivers.Kind.Should().Be(ListingKind.Need);
+        drivers.Help.Should().Be(KindOfHelp.Time);
+        drivers.Org.Ein.Should().Be(A);
+        drivers.Org.Lat.Should().Be(47.61);   // A is in 98101
+    }
+
     [Trait("Story", "S-130")]
     [Fact]
     public async Task Map_fits_pair_your_posts_with_others_best_first_and_leave_out_threads()
