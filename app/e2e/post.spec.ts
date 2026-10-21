@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { ORG, signIn } from './helpers'
+import { ORG, phone, postListing, run, signIn } from './helpers'
 
 // B7 Post, with the pick-a-title change (S-111). Copy: docs/ALPHA-BRIEFS.md.
 
@@ -49,4 +49,73 @@ test('[S-117] Auction items is a pick under Things', async ({ page }) => {
   await expect(page.getByText('Posted. It’s on the board now.')).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Auction items' })).toBeVisible()
   await expect(page.getByText('Need · Things')).toBeVisible()
+})
+
+// Edit a need or offer (S-97) and the small lines folded into it (S-109). Copy: docs/ALPHA-BRIEFS.md.
+
+test('[S-97] edit a need: fix the title and count, threads stay', async ({ page, browser }) => {
+  await signIn(page, { name: 'Robin', org: ORG.rainier })
+  const need = await postListing(page, { kind: 'Need', title: `Folding tables ${run}` })
+  const thurston = await phone(browser)
+  await signIn(thurston.page, { name: 'Lee', org: ORG.thurston })
+  const started = await thurston.page.request.post('/api/v1/threads', { data: { listingId: need.id, message: 'We have 4 tables.' } })
+  expect(started.ok(), await started.text()).toBeTruthy()
+  const thread = await started.json() as { id: number }
+
+  await page.goto(`/listing/${need.id}`)
+  await page.getByRole('link', { name: 'Edit this need' }).click()
+  await expect(page.getByRole('heading', { name: 'Edit your need' })).toBeVisible()
+  await expect(page.getByRole('radio', { name: 'We need' })).toHaveCount(0)    // a need stays a need
+  await expect(page.getByRole('radio', { name: 'Something else' })).toHaveAttribute('aria-checked', 'true')
+  await expect(page.getByText('1 thread is open on this. They’ll see the change.')).toBeVisible()
+
+  const title = `Folding tables, 8 ft ${run}`
+  await page.getByRole('textbox', { name: 'What is it?' }).fill(title)
+  await page.getByLabel('How many').fill('6')
+  await page.getByRole('button', { name: 'Save changes' }).click()
+
+  await expect(page.getByText('Saved.')).toBeVisible()
+  await expect(page).toHaveURL(new RegExp(`/listing/${need.id}$`))
+  await expect(page.getByRole('heading', { name: title })).toBeVisible()
+  await expect(page.getByText(/· Edited$/)).toBeVisible()
+  await expect(page.getByText('6 needed')).toBeVisible()
+
+  // The other organization's thread is still there, with the new title.
+  await thurston.page.goto(`/thread/${thread.id}`)
+  await expect(thurston.page.getByText(title).first()).toBeVisible()
+  await expect(thurston.page.getByText(`Waiting for ${ORG.rainier.name} to accept.`)).toBeVisible()
+  await thurston.context.close()
+})
+
+test('[S-97] a closed post has no Edit', async ({ page }) => {
+  await signIn(page, { name: 'Robin', org: ORG.rainier })
+  const offer = await postListing(page, { kind: 'Offer', title: `Spare chairs ${run}` })
+  await page.goto(`/listing/${offer.id}`)
+  await expect(page.getByRole('link', { name: 'Edit this offer' })).toBeVisible()
+  expect((await page.request.post(`/api/v1/listings/${offer.id}/close`)).ok()).toBeTruthy()
+  await page.reload()
+  await expect(page.getByRole('link', { name: 'Edit this offer' })).toHaveCount(0)
+})
+
+test('[S-109] an offer asks what you’d use it for', async ({ page, browser }) => {
+  const giver = await phone(browser)
+  await signIn(giver.page, { name: 'Lee', org: ORG.thurston })
+  const offer = await postListing(giver.page, { kind: 'Offer', title: `Pallet jack ${run}` })
+  await giver.context.close()
+
+  await signIn(page, { name: 'Robin', org: ORG.rainier })
+  await page.goto(`/listing/${offer.id}`)
+  await expect(page.getByLabel(`Message to ${ORG.thurston.name}`)).toHaveAttribute('placeholder', 'Say what you’d use it for and when.')
+})
+
+test('[S-109] Urgent says when it comes back', async ({ page }) => {
+  await signIn(page, { name: 'Sam', org: ORG.spokane })
+  // Use up this month's 2 (earlier runs may already have).
+  for (let i = 0; i < 2; i++) {
+    const res = await page.request.post('/api/v1/listings', { data: { kind: 'Need', help: 'Things', title: `Freezer died ${run} ${i}`, urgency: 'Critical', cadence: 'OneTime' } })
+    expect([201, 409]).toContain(res.status())
+  }
+  await page.goto('/post')
+  await expect(page.getByRole('radio', { name: 'Urgent' })).toBeDisabled()
+  await expect(page.getByText(/^You’ve used Urgent twice this month\. You can use it again on [A-Z][a-z]{2} \d{1,2}\.$/)).toBeVisible()
 })

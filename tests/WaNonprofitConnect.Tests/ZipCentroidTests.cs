@@ -150,6 +150,11 @@ public sealed class ZipCentroidTests : IDisposable
         map.Suggested.Should().Contain(new MapSuggestionDto(need.Id, offer.Id, C, A));
         map.Suggested.Should().NotContain(s => s.NeedId == need2.Id && s.OfferId == thread.Offer.Id); // already a thread
 
+        // S-129: each pin's ring, from its open posts.
+        map.Open.Should().Contain(new MapOpenDto(C, 0, 1));
+        map.Open.Single(o => o.Ein == A).Should().Match<MapOpenDto>(o => o.Needs >= 1 && o.Offers == 0);
+        map.Open.Should().NotContain(o => o.Ein == D);   // a member with nothing open has no ring
+
         var points = await svc.MapPointsAsync();
         points.Select(p => p.Ein).Should().Equal(A, B, D); // 501(c)(3)s with a centroid; NotC3 shares 98101 but is excluded
     }

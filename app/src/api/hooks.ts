@@ -1,6 +1,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { api } from './client'
-import type { BoardQuery, Me, NewListing, NewThread, ThreadAction } from './types'
+import type { BoardQuery, ListingEdit, Me, NewListing, NewThread, ThreadAction } from './types'
 
 /** Query keys in one place so the SignalR hook and mutations invalidate the same things. */
 export const keys = {
@@ -123,6 +123,17 @@ export function useCreateListing() {
   return useMutation({
     mutationFn: (body: NewListing) => api.createListing(body),
     onSuccess: () => { qc.invalidateQueries({ queryKey: keys.boardAll }); qc.invalidateQueries({ queryKey: keys.map }); qc.invalidateQueries({ queryKey: keys.me }); qc.invalidateQueries({ queryKey: ['orgPage'] }) },
+  })
+}
+/** Edit your post (S-97). Its threads change with it, so those are refetched too. */
+export function useUpdateListing(id: number) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (body: ListingEdit) => api.updateListing(id, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.boardAll }); qc.invalidateQueries({ queryKey: keys.listing(id) }); qc.invalidateQueries({ queryKey: keys.threads })
+      qc.invalidateQueries({ queryKey: keys.map }); qc.invalidateQueries({ queryKey: keys.me }); qc.invalidateQueries({ queryKey: ['orgPage'] })
+    },
   })
 }
 export function useCloseListing() {

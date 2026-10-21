@@ -8,7 +8,8 @@ import {
 } from './data'
 import { THREAD_MAX, type DemoSettings } from './settings'
 
-export interface ListingRow extends Omit<Listing, 'org' | 'why'> { ein: string }
+/** urgentSince: when a need became Urgent, by posting or editing (S-97). Seeded rows leave it out and count from createdAt. */
+export interface ListingRow extends Omit<Listing, 'org' | 'why'> { ein: string; urgentSince?: string }
 export interface ThreadRow { id: number; status: ThreadStatus; needId: number; offerId: number; startedByEin: string; createdAt: string; respondedAt: string | null; completedAt: string | null; readBy: Record<string, string> }
 export interface World { orgs: OrgSummary[]; listings: ListingRow[]; threads: ThreadRow[]; messages: Message[]; invites: Invite[]; profiles: Record<string, SaveMyOrg> }
 
@@ -158,5 +159,11 @@ export function mapOf(w: Pick<World, 'orgs' | 'listings' | 'threads'>, couldFit 
   const suggested = !couldFit ? [] : open.filter(n => n.kind === 'Need').flatMap(n => open
     .filter(o => o.kind === 'Offer' && o.ein !== n.ein && fits(n, o))
     .map(o => ({ needId: n.id, offerId: o.id, fromEin: o.ein, toEin: n.ein })))
-  return { members, threads, suggested }
+  const counts = new Map<string, { ein: string; needs: number; offers: number }>()
+  for (const l of open) {
+    const c = counts.get(l.ein) ?? { ein: l.ein, needs: 0, offers: 0 }
+    if (l.kind === 'Need') c.needs++; else c.offers++
+    counts.set(l.ein, c)
+  }
+  return { members, threads, suggested, open: [...counts.values()] }
 }

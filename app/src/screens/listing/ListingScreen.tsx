@@ -62,7 +62,10 @@ export function ListingScreen() {
   }
 
   const cta = own
-    ? open && <button className="btn danger-outline" onClick={() => setConfirmClose(true)}><span className="x" aria-hidden>×</span>{isNeed ? 'Close this need' : 'Close this offer'}</button>
+    ? open && <div className="listing-own">
+      <Link className="btn" to={`/listing/${l.id}/edit`}>{isNeed ? 'Edit this need' : 'Edit this offer'}</Link>
+      <button className="btn danger-outline" onClick={() => setConfirmClose(true)}><span className="x" aria-hidden>×</span>{isNeed ? 'Close this need' : 'Close this offer'}</button>
+    </div>
     : existingId
       ? <Link className="btn primary" to={`/thread/${existingId}`}>Open your thread</Link>
       : open && <button className="btn primary" onClick={startThread} disabled={start.isPending || (!pick && !message.trim())}>{isNeed ? 'I can help' : 'I need this'}</button>
@@ -74,7 +77,7 @@ export function ListingScreen() {
       <h1 className="h">{l.title}</h1>
       <div>
         <p className="listing-org">{l.org.name}</p>
-        <p className="sub">{[cap(l.org.city), postedAgo(l.createdAt)].filter(Boolean).join(' · ')}</p>
+        <p className="sub">{[cap(l.org.city), postedAgo(l.createdAt), l.editedAt && 'Edited'].filter(Boolean).join(' · ')}</p>
       </div>
       {qty && <p className="listing-qty">{qty}</p>}
       {l.description && <p className="listing-desc">{l.description}</p>}
@@ -94,7 +97,7 @@ export function ListingScreen() {
           ? l.fits.map(f => <FitCard key={f.id} l={f} selected={pick === f.id} onPick={() => setPick(p => p === f.id ? null : f.id)} />)
           : <p className="hint">{`Nothing of yours fits yet. You can still ${l.kind === 'Offer' ? 'ask' : 'help'}.`}</p>}
         <label className="field-label listing-msg-label" htmlFor="msg">Message to {l.org.name}</label>
-        <textarea id="msg" rows={3} placeholder="Say what you can do and when." value={message} onChange={e => setMessage(e.target.value)} />
+        <textarea id="msg" rows={3} placeholder={isNeed ? 'Say what you can do and when.' : 'Say what you’d use it for and when.'} value={message} onChange={e => setMessage(e.target.value)} />
       </>}
 
       {failed && <p className="error" role="alert">{failed}</p>}

@@ -1,7 +1,7 @@
 import Supercluster, { type ClusterProperties, type PointFeature } from 'supercluster'
 import { curve, pointAt, type Arc, type LonLat } from './geometry'
 import { withAlpha, type MapTheme, type RGBA } from './theme'
-import type { MapData, MapSelection, MapThread, OrgSummary } from './types'
+import type { MapData, MapSelection, MapSuggested, MapThread, OrgSummary } from './types'
 
 // Everything here is plain data in, plain data out: no map, no deck. ThreadMap memoizes each step.
 
@@ -13,8 +13,17 @@ export const DASH: Record<ArcState, [number, number]> = {
 }
 export const DASH_WRAP = 48
 
-const LIVE = new Set(['Proposed', 'Accepted', 'Completed'])
-export const liveThreads = (threads: MapThread[]) => threads.filter(t => LIVE.has(t.status))
+const UNDERWAY = new Set(['Proposed', 'Accepted'])
+/**
+ * The threads the map draws (S-129, Taylor Oct 20: "threads should only be shown as complete"): every golden thread,
+ * and your own that are underway, faintly ("yours should appear maybe as faint lines").
+ */
+export const shownThreads = (threads: MapThread[], me: string | undefined) =>
+  threads.filter(t => t.status === 'Completed' || (!!me && UNDERWAY.has(t.status) && (t.fromEin === me || t.toEin === me)))
+
+/** Open needs and offers by organization: each pin's ring. */
+export type OpenCounts = Map<string, { needs: number; offers: number }>
+export const openCounts = (data: MapData): OpenCounts => new Map((data.open ?? []).map(o => [o.ein, { needs: o.needs, offers: o.offers }]))
 
 export const placed = (o: OrgSummary): o is OrgSummary & { lat: number; lon: number } => o.lat != null && o.lon != null
 
@@ -103,15 +112,26 @@ export interface MapNode {
   related: boolean
   selected: boolean
   me: boolean
+  /** Open needs and offers here (a cluster: everyone inside it). */
+  needs: number; offers: number
   // baked visuals
   fill: RGBA; line: RGBA; lineWidth: number; heat: RGBA; heatRadius: number
+  /** The ring (S-129): drawn as a stroke this wide at ringRadius; the first needShare of it, clockwise from the top, is amber. */
+  ring: RGBA; ringRadius: number; ringWidth: number; needShare: number
+  /** The count on a cluster: dark on the ring's light middle, light on a grey cluster with nothing open. */
+  countColor: RGBA
 }
 
-export function pinRadius(single: boolean, deg: number, count: number) {
-  return single ? 5.5 + Math.min(4, deg) : Math.min(20, 9 + 3.5 * Math.sqrt(count))
+export const MOST_OPEN = 6                    // past 6 open posts a pin stops growing
+
+/** A pin grows with what it has open; a cluster with how many it holds. Nothing open: a small grey pin. */
+export function pinRadius(single: boolean, open: number, count: number) {
+  if (!single) return Math.min(20, 9 + 3.5 * Math.sqrt(count))
+  return open === 0 ? 4.5 : 7 + 1.1 * (Math.min(open, MOST_OPEN) - 1)
 }
 
-export function buildNodes(index: Index, zoom: number, deg: Map<string, number>, scope: Scope, me: string | undefined, theme: MapTheme) {
+/** deg: golden threads per organization (their warmth). */
+export function buildNodes(index: Index, zoom: number, deg: Map<string, number>, open: OpenCounts, scope: Scope, me: string | undefined, theme: MapTheme) {
   const nodes: MapNode[] = [], nodeOf = new Map<string, MapNode>()
   const make = (id: string, position: LonLat, members: OrgSummary[], clusterId: number | null) => {
     const single = members.length === 1
@@ -120,16 +140,24 @@ export function buildNodes(index: Index, zoom: number, deg: Map<string, number>,
     const selected = single && scope.selectedOrg === members[0].ein
     const isMe = !!me && members.some(o => o.ein === me)
     const dim = scope.active && !related
-    const memberish = members.some(o => o.isMember)
-    const radius = pinRadius(single, d, members.length)
-    const fillA = (dim ? 0.4 : 1) * (memberish ? 1 : 0.7)
+    let needs = 0, offers = 0
+    for (const o of members) { const c = open.get(o.ein); if (c) { needs += c.needs; offers += c.offers } }
+    const total = needs + offers
+    const radius = pinRadius(single, total, members.length)
+    const a = dim ? 0.35 : 1
+    const ringWidth = total ? Math.max(3, radius * (single ? 0.5 : 0.3)) : 0   // a cluster keeps room for its count
     const n: MapNode = {
-      id, position, members, clusterId, single, deg: d, radius, related, selected, me: isMe,
-      fill: withAlpha(theme.offer, fillA),
-      line: selected ? theme.ink : isMe ? theme.need : withAlpha(theme.paper, dim ? 0.5 : 1),
-      lineWidth: selected || isMe ? 3 : 1.5,
-      heat: withAlpha(theme.offer, (d >= 3 ? 0.6 : 0.38) * (dim ? 0.25 : 1) * (d > 0 || !single ? 1 : 0)),
-      heatRadius: radius + Math.min(22, 8 + 3.5 * Math.sqrt(d + members.length)),
+      id, position, members, clusterId, single, deg: d, radius, related, selected, me: isMe, needs, offers,
+      // A ring around a light middle when something is open; a plain grey pin when nothing is.
+      fill: withAlpha(total ? theme.paper : theme.ink3, a * (total ? 1 : 0.85)),
+      line: selected || isMe ? withAlpha(theme.ink, a) : withAlpha(theme.paper, dim ? 0.5 : 1),
+      lineWidth: selected ? 3 : isMe ? 2.5 : 1.25,
+      // Warmth is golden threads: a place that has given or received glows gold.
+      heat: withAlpha(theme.goldenGlow, (d >= 3 ? 0.55 : 0.4) * (dim ? 0.25 : 1) * (d > 0 ? 1 : 0)),
+      heatRadius: radius + Math.min(24, 10 + 4 * Math.sqrt(d)),
+      ring: withAlpha(theme.offer, a), ringRadius: Math.max(0, radius - ringWidth / 2), ringWidth,
+      needShare: total ? needs / total : 0,
+      countColor: (total ? withAlpha(theme.ink, dim ? 0.45 : 1) : [255, 255, 255, dim ? 110 : 255]) as RGBA,
     }
     nodes.push(n)
     for (const o of members) nodeOf.set(o.ein, n)
@@ -174,19 +202,20 @@ export interface ThreadArc extends Arc {
   cluster: { position: LonLat; clusterId: number } | null
 }
 
-const BASE_W: Record<ArcState, number> = { suggested: 1.5, Proposed: 2, Accepted: 2.25, Completed: 3 }
-const BASE_A: Record<ArcState, number> = { suggested: 0.5, Proposed: 0.85, Accepted: 0.85, Completed: 1 }
+// Started and in progress are only ever your own now (S-129), and drawn faint.
+const BASE_W: Record<ArcState, number> = { suggested: 1.5, Proposed: 1.5, Accepted: 1.75, Completed: 3.25 }
+const BASE_A: Record<ArcState, number> = { suggested: 0.5, Proposed: 0.4, Accepted: 0.5, Completed: 1 }
 const RANK: Record<ArcState, number> = { suggested: 0, Proposed: 1, Accepted: 2, Completed: 3 }
 export const FULLEST = 5                     // past 5 a line stops getting thicker and sparkier
 const PER_MORE_W = 1.1                       // px added for each thread after the first
 
 export function stateColor(state: ArcState, theme: MapTheme): RGBA {
-  return state === 'Completed' ? theme.golden : state === 'Accepted' ? theme.offer : state === 'Proposed' ? theme.need : theme.ink3
+  return state === 'Completed' ? theme.golden : state === 'suggested' ? theme.ink3 : theme.ink2
 }
 
 type Item = { key: string; id: number | null; state: ArcState; fromEin: string; toEin: string; title: string; related: boolean; from: MapNode; to: MapNode }
 
-export function buildArcs(data: MapData, threads: MapThread[], nodeOf: Map<string, MapNode>, scope: Scope, theme: MapTheme): ThreadArc[] {
+export function buildArcs(suggested: MapSuggested[], threads: MapThread[], nodeOf: Map<string, MapNode>, scope: Scope, theme: MapTheme): ThreadArc[] {
   const groups = new Map<string, Item[]>()
   const add = (key: string, id: number | null, state: ArcState, fromEin: string, toEin: string, title: string, related: boolean) => {
     const from = nodeOf.get(fromEin), to = nodeOf.get(toEin)
@@ -196,7 +225,7 @@ export function buildArcs(data: MapData, threads: MapThread[], nodeOf: Map<strin
     list.push({ key, id, state, fromEin, toEin, title, related, from, to })
     groups.set(pair, list)
   }
-  for (const s of data.suggested) {
+  for (const s of suggested) {
     const rel = scope.active && (scope.orgs.has(s.fromEin) && scope.orgs.has(s.toEin)) && (!!scope.pair || scope.selectedOrg === s.fromEin || scope.selectedOrg === s.toEin)
     add(`s:${s.needId}:${s.offerId}`, null, 'suggested', s.fromEin, s.toEin, '', rel)
   }
@@ -211,15 +240,16 @@ export function buildArcs(data: MapData, threads: MapThread[], nodeOf: Map<strin
     const count = items.length
     const fuller = Math.min(count, FULLEST) - 1
     const dim = scope.active && !related
-    const alpha = dim ? (state === 'suggested' ? 0.06 : 0.12) : scope.active ? (state === 'suggested' ? 0.75 : 1) : BASE_A[state]
-    const sparks = items.filter(i => i.state !== 'suggested').slice(0, FULLEST).map(i => (i.from === lead.from ? 1 : -1) as 1 | -1)
+    const alpha = dim ? (state === 'Completed' ? 0.12 : 0.06) : scope.active ? (state === 'Completed' ? 1 : 0.75) : BASE_A[state]
+    // Sparks are for golden threads: help that was given, running the way it went.
+    const sparks = items.filter(i => i.state === 'Completed').slice(0, FULLEST).map(i => (i.from === lead.from ? 1 : -1) as 1 | -1)
     out.push({
       ...curve(lead.from.position, lead.to.position, 0.16),
       key: count === 1 ? lead.key : `p:${pairKey}`,
       id: count === 1 ? lead.id : null,
       state, fromEin: lead.fromEin, toEin: lead.toEin, title: lead.title, related,
       color: withAlpha(stateColor(state, theme), alpha),
-      width: BASE_W[state] + PER_MORE_W * fuller + (scope.active && related ? 1.25 : 0),
+      width: BASE_W[state] + (state === 'Completed' ? PER_MORE_W * fuller : 0) + (scope.active && related ? 1.25 : 0),
       dash: DASH[state],
       count, golden: items.filter(i => i.state === 'Completed').length, sparks,
       pair: lead.from.single && lead.to.single ? [lead.from.members[0].ein, lead.to.members[0].ein] : null,
@@ -232,7 +262,7 @@ export function buildArcs(data: MapData, threads: MapThread[], nodeOf: Map<strin
 
 export interface GlowArc { path: LonLat[]; color: RGBA; width: number }
 
-/** Golden threads always glow, brighter and wider the more golden threads a line carries. Selected in-progress ones glow a little. */
+/** Golden threads always glow, brighter and wider the more golden threads a line carries. */
 export function buildGlows(arcs: ThreadArc[], scope: Scope, theme: MapTheme): GlowArc[] {
   const out: GlowArc[] = []
   for (const a of arcs) {
@@ -243,7 +273,6 @@ export function buildGlows(arcs: ThreadArc[], scope: Scope, theme: MapTheme): Gl
       color: withAlpha(theme.goldenGlow, dim ? 0.08 : Math.min(0.95, (a.related ? 0.8 : 0.55) + 0.07 * more)),
       width: (a.related ? 18 : 12) + 3 * more,
     })
-    else if (a.related && a.state === 'Accepted') out.push({ path: a.path, color: withAlpha(theme.offer, 0.45), width: 12 })
   }
   return out
 }
@@ -256,7 +285,7 @@ export function buildBadges(arcs: ThreadArc[], scope: Scope, theme: MapTheme): B
     return {
       position: pointAt(a, 0.5), text: String(a.count),
       fill: withAlpha(stateColor(a.state, theme), dim ? 0.25 : 1),
-      ink: (a.state === 'Completed' ? [27, 36, 48, dim ? 90 : 255] : [255, 255, 255, dim ? 110 : 255]) as RGBA,
+      ink: (a.state === 'Completed' ? [27, 36, 48, dim ? 90 : 255] : [255, 255, 255, dim ? 110 : 255]) as RGBA,   // dark on gold, light on grey
       line: withAlpha(theme.paper, dim ? 0.3 : 0.95),
     }
   })

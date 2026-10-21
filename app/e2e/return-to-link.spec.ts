@@ -68,7 +68,7 @@ test('[S-107] a link with a query keeps it', async ({ page }) => {
   await expect(page).toHaveURL(/\/post\?kind=Offer$/)
 })
 
-test('[S-107] [S-130] Home with a query (a demo link) isn’t kept, so you land on plain Home', async ({ page }) => {
+test('[S-107] [S-133] Home with a query (a demo link) isn’t kept, so you land on plain Home', async ({ page }) => {
   await page.goto('/?demo=new-org')
   await expect(page).toHaveURL(/\/signup$/)
   await signIn(page, { name: 'Morgan', email: email('s107-home-query'), ein: RAINIER })

@@ -11,6 +11,8 @@ export interface Membership {
   ein: string; orgName: string; status: 'confirmed' | 'pending'
   /** Urgent needs the org can still post: 2 minus those posted in the last 30 days. Added by the backend lane after ALPHA.md. */
   urgentLeft?: number
+  /** With no Urgent left: when one comes back (S-109, "You can use it again on Oct 21"). Null while any are left. */
+  urgentAgainOn?: string | null
 }
 export interface Me { account: Account; membership: Membership | null }
 
@@ -23,8 +25,11 @@ export interface Listing {
   id: number; kind: ListingKind; help: KindOfHelp; title: string; description: string | null
   quantity: number | null; unit: string | null; urgency: Urgency; cadence: Cadence; status: string
   org: OrgSummary; createdAt: string; views: number; why: string
+  /** When its poster last changed it (S-97): "· Edited". */
+  editedAt?: string | null
 }
-export interface ListingDetail extends Listing { fits: Listing[]; myThreadId?: number }
+/** openThreads only on your own post: threads on it still going ("1 thread is open on this"). */
+export interface ListingDetail extends Listing { fits: Listing[]; myThreadId?: number; openThreads?: number }
 
 export interface Thread {
   id: number; status: ThreadStatus; need: Listing; offer: Listing; startedByEin: string
@@ -47,7 +52,9 @@ export interface OrgPerson { accountId: string; name: string; email: string; isY
 export interface MyOrg { org: OrgSummary; about: string | null; website: string | null; contactAccountId: string | null; people: OrgPerson[]; placesLeft: number }
 export interface SaveMyOrg { about: string | null; website: string | null; contactAccountId: string | null }
 export interface MapSuggested { needId: number; offerId: number; fromEin: string; toEin: string }
-export interface MapData { members: OrgSummary[]; threads: MapThread[]; suggested: MapSuggested[] }
+/** How many open needs and offers an organization has: its pin's ring (S-129). */
+export interface MapOpen { ein: string; needs: number; offers: number }
+export interface MapData { members: OrgSummary[]; threads: MapThread[]; suggested: MapSuggested[]; open: MapOpen[] }
 export type MapPoint = [ein: string, lat: number, lon: number]
 
 /** A thread stalled on someone (Admin, "Waiting on someone"): unanswered for 2 days, or accepted and quiet for 7. */
@@ -60,5 +67,7 @@ export interface NewListing {
   kind: ListingKind; help: KindOfHelp; title: string; description?: string
   quantity?: number; unit?: string; urgency: Urgency; cadence: Cadence
 }
+/** Edit a post (S-97): everything but whether it's a need or an offer. */
+export type ListingEdit = Omit<NewListing, 'kind'>
 export interface NewThread { listingId: number; myListingId?: number; message: string }
 export type ThreadAction = 'accept' | 'decline' | 'complete' | 'cancel'

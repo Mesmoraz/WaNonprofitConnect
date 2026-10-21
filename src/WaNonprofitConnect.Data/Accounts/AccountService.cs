@@ -96,10 +96,13 @@ public sealed class AccountService
         if (account is null) return null;
 
         var m = account.Membership;
-        MeMembershipDto? membership = m is null || m.Status == MembershipStatus.Rejected
-            ? null
-            : new MeMembershipDto(m.Ein, m.Org is null ? m.Ein : OrgName.Display(m.Org.Name), m.Status == MembershipStatus.Confirmed ? "confirmed" : "pending",
-                await UrgentCap.LeftAsync(_db, m.Ein, DateTime.UtcNow, ct));
+        MeMembershipDto? membership = null;
+        if (m is not null && m.Status != MembershipStatus.Rejected)
+        {
+            var now = DateTime.UtcNow;
+            membership = new MeMembershipDto(m.Ein, m.Org is null ? m.Ein : OrgName.Display(m.Org.Name), m.Status == MembershipStatus.Confirmed ? "confirmed" : "pending",
+                await UrgentCap.LeftAsync(_db, m.Ein, now, ct), await UrgentCap.AgainOnAsync(_db, m.Ein, now, ct));
+        }
         return new MeDto(new MeAccountDto(account.Id, account.Email, account.Name, IsAdmin(account.Email)), membership);
     }
 
