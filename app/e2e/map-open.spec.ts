@@ -7,6 +7,7 @@ type Member = { ein: string; name: string; lat: number | null; lon: number | nul
 type MapBox = HTMLElement & {
   __map: { loaded(): boolean; jumpTo(o: object): void; project(p: [number, number]): { x: number; y: number } }
   __lines?: { pair: [string, string] | null; count: number }[]
+  __linesZoom?: number
 }
 
 async function members(page: Page) {
@@ -91,9 +92,8 @@ test('[S-129] only golden threads are drawn for everyone; your own underway are 
   await other.page.addInitScript(() => localStorage.setItem('helpbook.mapLegendSeen', '1'))
   const theirs = async () => {
     await between(other.page, a, b)
-    // Both ends are their own pins at this zoom once the map has re-grouped: a line between them, or none, has a pair.
-    await other.page.waitForFunction(() => ((document.querySelector('.wm-root') as MapBox).__lines ?? []).some(l => !!l.pair))
-    await other.page.waitForTimeout(500)
+    // Wait for the lines worked out at this zoom, where both ends are their own pins. (There may be none at all.)
+    await other.page.waitForFunction(() => ((document.querySelector('.wm-root') as MapBox).__linesZoom ?? 0) >= 12)
     return lineCount(other.page, a.ein, b.ein)
   }
   const before = await theirs()

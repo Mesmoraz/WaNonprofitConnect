@@ -321,9 +321,9 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, s
   const badges = useMemo(() => buildBadges(arcs, scope, theme), [arcs, scope, theme])
   // For the acceptance tests (app/e2e/map-threads.spec.ts): where each line's middle is, so a test can tap it like a person.
   useEffect(() => {
-    const box = boxRef.current as (HTMLDivElement & { __lines?: unknown }) | null
-    if (box) box.__lines = arcs.map(a => ({ pair: a.pair, count: a.count, middle: pointAt(a, 0.5) }))
-  }, [arcs])
+    const box = boxRef.current as (HTMLDivElement & { __lines?: unknown; __linesZoom?: number }) | null
+    if (box) { box.__lines = arcs.map(a => ({ pair: a.pair, count: a.count, middle: pointAt(a, 0.5) })); box.__linesZoom = zoomLevel }
+  }, [arcs]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---- Confetti when a thread turns golden while you're looking (S-127) ----------------------------
   const burstsRef = useRef<Burst[]>([])
