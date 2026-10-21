@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useBoard, useMapData, useMe, useOrgPage, useThreads, type Listing, type Thread } from '../../api'
 import { SMALL_BOARD, passes, servedBy, useServeFilter, type ServeGroup } from '../../lib/serve'
@@ -6,16 +6,22 @@ import { cap, causeOf, HELPS, HELP_LABEL } from '../../lib/words'
 import { Slow } from '../../shell/Slow'
 import { ListingCard } from '../board/ListingCard'
 import { NearYou } from './NearYou'
-import { WelcomeCard } from './WelcomeCard'
+import { placeOf } from './place'
+import { QuestionCard } from './QuestionCard'
 import '../board/board.css'
 import './home.css'
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000
 const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`
 
+// "Not now" on the question card (S-132), per organization, on this device.
+const ASK_HIDDEN = (ein: string) => `helpbook.ask.hidden.${ein}`
+const askHidden = (ein: string) => { try { return localStorage.getItem(ASK_HIDDEN(ein)) === '1' } catch { return false } }
+
 /**
  * Home (S-126, docs/ALPHA-BRIEFS.md): a calm place to land. Where you stand, what's waiting on you, who's near,
- * what's new, and the board already filtered. No green button: Post is one tap away in the tabs.
+ * what's just been posted, and the board already filtered. No green button: Post is one tap away in the tabs.
+ * Until your organization has posted or had a thread, it starts with a question (S-132, "Home asks what brings you here").
  */
 export function Home() {
   const { data: me } = useMe()
@@ -39,28 +45,52 @@ export function Home() {
   const [now] = useState(() => Date.now())   // "this week" from when Home opened
   const shown = (l: Listing) => passes(serve.picked, l.org)
   const fresh = (whole.data ?? [])
-    .filter(l => now - new Date(l.createdAt).getTime() < WEEK_MS && shown(l))
+    .filter(l => now - new Date(l.createdAt).getTime() < WEEK_MS && shown(l) && l.org.ein !== myEin)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
     .slice(0, 3)
 
+  // Where you are with the question card (S-132): until you've posted or had a thread it asks; after one post, one line nudges
+  // for the other kind; then the counts line. "Start here" at the bottom brings the question back any time.
+  const [dismissed, setDismissed] = useState(false)
+  const hidden = dismissed || (!!myEin && askHidden(myEin))
+  const [asked, setAsked] = useState(false)
+  const top = useRef<HTMLElement>(null)
+  useEffect(() => { if (asked) top.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }) }, [asked])
+  const hadThread = threads.data ? threads.data.length > 0 : threads.isError   // can't tell: as if you had one
+  const known = !!mine && (!!threads.data || threads.isError)
+  const fresh0 = known && !hadThread && needs + offers === 0
+  const showAsk = asked || (fresh0 && !hidden)
+  const nudge = known && !hadThread && !showAsk && (needs > 0) !== (offers > 0)
+  const notNow = () => {
+    try { localStorage.setItem(ASK_HIDDEN(myEin), '1') } catch { /* private mode: this visit only */ }
+    setDismissed(true); setAsked(false)
+  }
+  const visible = (whole.data ?? []).filter(shown)
+  const count = (kind: Listing['kind']) => whole.data ? visible.filter(l => l.kind === kind).length : undefined
+
   return (
     <div className="screen home">
-      <header className="home-org">
+      <header className="home-org" ref={top}>
         <h1 className="h">{org?.name ?? me?.membership?.orgName}</h1>
         {org && <p className="sub">{[cap(org.city), causeOf(org.ntee)].filter(Boolean).join(' · ')}</p>}
       </header>
-      {myEin && (
-        <WelcomeCard key={myEin} ein={myEin} mine={mine?.listings} otherwise={
-          <p className="home-standing">{standing && <>{standing} · </>}<Link className="inline-link" to={`/org/${myEin}`}>Your page</Link></p>
-        } />
-      )}
+      {myEin && known && (showAsk
+        ? <QuestionCard city={cap(org?.city ?? null) || null} mapTo={placeOf(map.data, org).to} offers={count('Offer')} needs={count('Need')} onNotNow={notNow} />
+        : nudge
+          ? <p className="home-standing">
+            {needs ? 'Your need is on the board. ' : 'Your offer is on the board. '}
+            <Link className="inline-link" to={needs ? '/post?kind=Offer' : '/post'}>{needs ? 'Post an offer too' : 'Post a need too'}</Link>?
+          </p>
+          : <p className="home-standing">{standing && <>{standing} · </>}<Link className="inline-link" to={`/org/${myEin}`}>Your page</Link></p>)}
 
-      <div className="home-grid">
-        <section className="home-sec" aria-labelledby="home-waiting">
-          <h2 id="home-waiting" className="home-h">Waiting on you</h2>
-          {threads.data ? <Waiting threads={threads.data} myEin={myEin} /> : !threads.isError && <Slow />}
-          {threads.isError && !threads.data && <p className="hint">That didn’t work. <button className="inline-link" onClick={() => threads.refetch()}>Try again</button></p>}
-        </section>
+      <div className={`home-grid${hadThread ? '' : ' no-waiting'}`}>
+        {/* Not until your organization has had a thread (S-132): before that it can only say "nothing". */}
+        {hadThread && (
+          <section className="home-sec" aria-labelledby="home-waiting">
+            <h2 id="home-waiting" className="home-h">Waiting on you</h2>
+            {threads.data ? <Waiting threads={threads.data} myEin={myEin} /> : <p className="hint">That didn’t work. <button className="inline-link" onClick={() => threads.refetch()}>Try again</button></p>}
+          </section>
+        )}
 
         <section className="home-sec home-near" aria-labelledby="home-near">
           <h2 id="home-near" className="home-h">Near you</h2>
@@ -70,17 +100,19 @@ export function Home() {
         </section>
 
         <section className="home-sec home-new" aria-labelledby="home-new">
-          <h2 id="home-new" className="home-h">New this week</h2>
+          <h2 id="home-new" className="home-h">Just posted</h2>
           {!whole.data && !whole.isError && <Slow />}
           {whole.isError && !whole.data && <p className="hint">That didn’t work. <button className="inline-link" onClick={() => whole.refetch()}>Try again</button></p>}
           {whole.data && (fresh.length ? <>
             <div className="home-cards">{fresh.map(l => <ListingCard key={l.id} l={l} />)}</div>
             <Link className="inline-link home-more" to="/board">See the whole board</Link>
-          </> : <p className="hint home-none">Nothing new this week. <Link className="inline-link" to="/board">See the whole board</Link>?</p>)}
+          </> : <p className="hint home-none">Nothing posted in the last 7 days. <Link className="inline-link" to="/board">See the whole board</Link>?</p>)}
         </section>
 
         {whole.data && <OnTheBoard all={whole.data} shown={shown} myEin={myEin} myOrg={org} picked={serve.picked} meet={map.data?.suggested} />}
       </div>
+
+      {myEin && <p className="home-start">Not sure what to do next? <button className="inline-link" onClick={() => setAsked(true)}>Start here</button>.</p>}
     </div>
   )
 }

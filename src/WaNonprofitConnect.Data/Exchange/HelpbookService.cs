@@ -30,7 +30,7 @@ public sealed partial class HelpbookService
 
     /// <summary>
     /// Open needs and offers, fairly ranked. Counts a view for each listing in the top 12 that isn't the viewer's own,
-    /// and only when the viewer is a confirmed member (<paramref name="viewerEin"/> set): anyone else signed in can
+    /// not on a search, and only when the viewer is a confirmed member (<paramref name="viewerEin"/> set): anyone else signed in can
     /// look, but can't move the "Seen least" ranking (S-114).
     /// </summary>
     public async Task<IReadOnlyList<ListingViewDto>> BoardAsync(string? viewerEin, BoardQuery query, CancellationToken ct = default)
@@ -39,7 +39,8 @@ public sealed partial class HelpbookService
         var q = OpenListings(now);
         if (query.Help is { } help) q = q.Where(l => l.Help == help);
         if (query.Kind is { } kind) q = q.Where(l => l.Kind == kind);
-        if (BmfRowParser.Clean(query.Q) is { } text)
+        var text = BmfRowParser.Clean(query.Q);
+        if (text is not null)
         {
             foreach (var term in MatchScorer.Tokens(BmfRowParser.Normalize(text)))
             {
@@ -51,7 +52,8 @@ public sealed partial class HelpbookService
         var rows = await q.OrderByDescending(l => l.CreatedAt).Take(MaxCandidates).ToListAsync(ct);
         var ranked = BoardRanking.Rank(rows).Take(MaxBoard).ToList();
 
-        var seen = viewerEin is null ? new List<int>()
+        // A search (S-132) isn't being seen on the board, so it doesn't move "Seen least".
+        var seen = viewerEin is null || text is not null ? new List<int>()
             : ranked.Take(BoardRanking.CountedPositions).Where(l => l.OrgEin != viewerEin).Select(l => l.Id).ToList();
         if (seen.Count > 0)
             await _db.Listings.Where(l => seen.Contains(l.Id)).ExecuteUpdateAsync(s => s.SetProperty(l => l.Views, l => l.Views + 1), ct);

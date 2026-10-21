@@ -423,6 +423,19 @@ public sealed class HelpbookServiceTests : IDisposable
         _events.ThreadChanges.Should().OnlyContain(x => x.Thread.Need.Title == "Plywood, 3/4 inch");
     }
 
+    [Trait("Story", "S-132")]
+    [Fact]
+    public async Task A_search_finds_posts_by_their_words_and_counts_no_views()
+    {
+        using var db = _fx.CreateContext();
+        var svc = Svc(db);
+        var cooler = await svc.CreateListingAsync(A, Post(ListingKind.Need, "Walk-in cooler"));
+        await svc.CreateListingAsync(A, Post(ListingKind.Need, "Laptops"));
+
+        (await svc.BoardAsync(B, new BoardQuery { Q = "cooler" })).Select(l => l.Id).Should().Equal(cooler.Id);
+        (await db.Listings.AsNoTracking().SingleAsync(l => l.Id == cooler.Id)).Views.Should().Be(0);
+    }
+
     private static UpdateListingRequest Edit(string title, KindOfHelp help = KindOfHelp.Things, Urgency urgency = Urgency.Normal,
         decimal? quantity = null, string? unit = null, string? description = null)
         => new(help, title, description, quantity, unit, urgency, Cadence.OneTime);

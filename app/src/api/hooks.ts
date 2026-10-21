@@ -34,8 +34,8 @@ export const useOrgs = (q: string) => {
   return useQuery({ queryKey: keys.orgs(term), queryFn: () => api.orgs(term), enabled: term.length >= 2, placeholderData: keepPreviousData, staleTime: 5 * 60_000 })
 }
 
-export const useBoard = (query: BoardQuery = {}) =>
-  useQuery({ queryKey: keys.board(query), queryFn: () => api.board(query), placeholderData: keepPreviousData, staleTime: 30_000 })
+export const useBoard = (query: BoardQuery = {}, enabled = true) =>
+  useQuery({ queryKey: keys.board(query), queryFn: () => api.board(query), placeholderData: keepPreviousData, staleTime: 30_000, enabled })
 
 export const useListing = (id: number) =>
   useQuery({ queryKey: keys.listing(id), queryFn: () => api.listing(id), enabled: Number.isFinite(id) })

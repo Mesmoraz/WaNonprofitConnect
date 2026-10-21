@@ -36,6 +36,8 @@ export function Board() {
   const board = useBoard({ help: help || undefined, kind: kind || undefined })
   const map = useMapData()
   const orgs = useOrgs(searching ? term : '')
+  // Search finds needs and offers too (S-132, Taylor Oct 21), so Home's "Looking for something specific?" lands somewhere.
+  const found = useBoard({ q: term }, searching && term.length >= 2)
   const done = map.data?.threads.filter(t => t.status === 'Completed').length
   const { data: me } = useMe()
   const myEin = me?.membership?.ein ?? ''
@@ -63,8 +65,13 @@ export function Board() {
         <input id="boardq" type="search" placeholder="Search everyone here" autoComplete="off" value={q} onChange={e => setQ(e.target.value)} />
       </span>
 
-      {searching ? (
-        orgs.data && term.length >= 2 && (orgs.data.length ? orgs.data.map(o => (
+      {searching ? term.length >= 2 && <>
+        <div className="label">Needs and offers</div>
+        {found.data && (found.data.length
+          ? <div className="board-grid">{found.data.map(l => <ListingCard key={l.id} l={l} />)}</div>
+          : <p className="hint">Nothing posted with that word yet.</p>)}
+        <div className="label">Organizations</div>
+        {orgs.data && (orgs.data.length ? orgs.data.map(o => (
           <Link key={o.ein} to={`/org/${o.ein}`} className="card tap">
             <span className="t">{o.name}</span>
             <span className="m">
@@ -72,8 +79,8 @@ export function Board() {
               {o.isMember && <> · <span className="verified">on {BRAND.name}</span></>}
             </span>
           </Link>
-        )) : <p className="empty">No one by that name. Try an EIN.</p>)
-      ) : <>
+        )) : <p className="empty">No one by that name. Try an EIN.</p>)}
+      </> : <>
         <div className="seg" role="tablist" aria-label="Kind of help">
           {([''] as (KindOfHelp | '')[]).concat(HELPS).map(h => (
             <button key={h || 'all'} role="tab" aria-selected={help === h} className={`seg-item${help === h ? ' on' : ''}`} onClick={() => set('help', h)}>

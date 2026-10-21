@@ -222,9 +222,9 @@ const routes: [string, RegExp, Handler][] = [
     requireOrg()
     const help = q.get('help'), kind = q.get('kind'), term = (q.get('q') ?? '').trim().toLowerCase()
     const open = listings.filter(l => l.status === 'Open' && (!help || l.help === help) && (!kind || l.kind === kind)
-      && (!term || l.title.toLowerCase().includes(term) || (l.description ?? '').toLowerCase().includes(term) || orgByEin(l.ein)!.name.toLowerCase().includes(term)))
+      && (!term || l.title.toLowerCase().includes(term) || (l.description ?? '').toLowerCase().includes(term)))   // as the API: the post's words, not its organization's name
     const ranked = rank(open)
-    for (const l of ranked.slice(0, 12)) listingById(l.id).views++
+    if (!term) for (const l of ranked.slice(0, 12)) listingById(l.id).views++   // a search isn't being seen on the board
     return ranked
   }],
   ['GET', /^\/listings\/(\d+)$/, m => {
