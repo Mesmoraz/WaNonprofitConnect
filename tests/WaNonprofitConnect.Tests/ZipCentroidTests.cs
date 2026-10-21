@@ -159,6 +159,34 @@ public sealed class ZipCentroidTests : IDisposable
         points.Select(p => p.Ein).Should().Equal(A, B, D); // 501(c)(3)s with a centroid; NotC3 shares 98101 but is excluded
     }
 
+    [Trait("Story", "S-130")]
+    [Fact]
+    public async Task Map_fits_pair_your_posts_with_others_best_first_and_leave_out_threads()
+    {
+        using var db = _fx.CreateContext();
+        var svc = new HelpbookService(db);
+        var need = await svc.CreateListingAsync(A, new CreateListingRequest { Kind = ListingKind.Need, Help = KindOfHelp.Things, Title = "Laptops for intake" });
+        var offer = await svc.CreateListingAsync(C, new CreateListingRequest { Kind = ListingKind.Offer, Help = KindOfHelp.Things, Title = "Refurbished laptops" });
+        var mine = await svc.CreateListingAsync(A, new CreateListingRequest { Kind = ListingKind.Offer, Help = KindOfHelp.Time, Title = "Saturday drivers" });
+        var theirNeed = await svc.CreateListingAsync(B, new CreateListingRequest { Kind = ListingKind.Need, Help = KindOfHelp.Time, Title = "Drivers for deliveries" });
+        var ownOffer = await svc.CreateListingAsync(A, new CreateListingRequest { Kind = ListingKind.Offer, Help = KindOfHelp.Things, Title = "Our own laptops" });
+
+        var forNeeds = await svc.MapFitsAsync(A, forNeeds: true);
+        forNeeds.Should().Contain(f => f.Post.Id == offer.Id && f.MyId == need.Id && f.MyTitle == "Laptops for intake");
+        forNeeds.Should().NotContain(f => f.Post.Id == ownOffer.Id);           // never your own posts
+        forNeeds.Should().OnlyContain(f => f.Post.Kind == ListingKind.Offer);
+
+        var forOffers = await svc.MapFitsAsync(A, forNeeds: false);
+        forOffers.Should().Contain(f => f.Post.Id == theirNeed.Id && f.MyId == mine.Id);
+        forOffers.Should().OnlyContain(f => f.Post.Kind == ListingKind.Need);
+
+        // Once your offer is in a thread on their need, the pair isn't a "could fit" any more.
+        await svc.StartThreadAsync(B, new StartThreadRequest { ListingId = mine.Id, MyListingId = theirNeed.Id, Message = "Yes please" }, "Bo");
+        (await svc.MapFitsAsync(A, forNeeds: false)).Should().NotContain(f => f.Post.Id == theirNeed.Id && f.MyId == mine.Id);
+
+        (await svc.MapFitsAsync(D, forNeeds: true)).Should().BeEmpty();        // nothing open, nothing fits
+    }
+
     [Trait("Story", "S-49")]
     [Fact]
     public async Task With_street_addresses_orgs_sit_there_and_unmatched_ones_leave_the_dots()

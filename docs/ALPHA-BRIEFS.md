@@ -316,7 +316,7 @@ Checked against the mission: Need → Match → Golden Thread → Action → Imp
 - **Kind of help filter:** chips under the strip: All, Time, Skills, Things, Partnership, For schools, Jobs and mentoring. One at a time. Pins, the strip and the list follow it.
 - **Backend:** `GET /api/v1/map/open` returns the open posts with each one's place and kind of help, for the strip, the list and the chips.
 
-## S-130: Find what fits you (map lane and backend)
+## S-130: Find what fits you (map lane and backend). Approved Oct 21 (Taylor: "Start S-130")
 
 - **For:** see, on the map, who could help with your needs and whose needs you could help with.
 - **The one action:** turn on a toggle and tap a line.
@@ -326,7 +326,9 @@ Checked against the mission: Need → Match → Golden Thread → Action → Imp
   - One on at a time. Tap again to turn it off.
 - **When one is on:** thin dashed lines run from your pin to each organization that fits, up to 12, best fit first. Green dashes for an offer coming to you, amber for a need you could meet. Your pin pulses. Everything else on the map dims. The lines go when you turn it off. Nobody else sees them.
 - **A card slides up:** "5 offers could fit your needs" (or "4 needs you could help with"). One row per fit: their post's title, organization · city · miles, and which of your posts it fits ("For your: Winter coats"). Tap a row or a line to open their post, where "I can help" or "I need this" starts a thread as today.
-- **Empty:** "Nothing fits your needs yet. We'll tell you when something does." (Only if we keep that promise. Otherwise: "Nothing fits your needs yet. Check the board?" with "Check the board" as the link.)
+- **Empty:** "Nothing fits your needs yet. Check the board?" with "Check the board" as the link. (Nothing tells you when a fit shows up yet, so no promise.) For offers: "Nothing you can help with yet. Check the board?"
+- **Each toggle only when it can find something:** "Offers for your needs" when you have a need open, "Needs you can help with" when you have an offer open.
+- **Turning one on frames the map** on you and every organization that fits, above the card. Tapping a pin still opens its card; closing it brings the list back.
 - **No open posts:** the toggles aren't there. The strip at the top still works.
 - **Your own threads** stay faint while a toggle is on.
 - **Backend:** `GET /api/v1/map/fits?for=needs|offers` returns pairs for your organization: your post, their post, their EIN, score. Same scoring as a post's "Could fit" today.

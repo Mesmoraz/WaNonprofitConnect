@@ -1,6 +1,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { api } from './client'
-import type { BoardQuery, ListingEdit, Me, NewListing, NewThread, ThreadAction } from './types'
+import type { BoardQuery, ListingEdit, MapFitsFor, Me, NewListing, NewThread, ThreadAction } from './types'
 
 /** Query keys in one place so the SignalR hook and mutations invalidate the same things. */
 export const keys = {
@@ -13,6 +13,7 @@ export const keys = {
   thread: (id: number) => ['thread', id] as const,
   map: ['map'] as const,
   mapPoints: ['mapPoints'] as const,
+  mapFits: (forWhat: MapFitsFor) => ['map', 'fits', forWhat] as const,
   orgPage: (ein: string) => ['orgPage', ein] as const,
   myOrg: (ein: string) => ['myOrg', ein] as const,
   adminClaims: ['admin', 'claims'] as const,
@@ -52,6 +53,9 @@ export function useThread(id: number) {
 }
 
 export const useMapData = (enabled = true) => useQuery({ queryKey: keys.map, queryFn: api.map, enabled, staleTime: 60_000 })
+/** The map's toggles (S-130): what fits your needs, or your offers. Off (null) fetches nothing. Under the map's key, so it refreshes with it. */
+export const useMapFits = (forWhat: MapFitsFor | null) =>
+  useQuery({ queryKey: keys.mapFits(forWhat ?? 'needs'), queryFn: () => api.mapFits(forWhat!), enabled: !!forWhat, staleTime: 60_000 })
 
 /** Your organization's saved filters, per organization (switching organization switches them). */
 export const useFilters = (ein: string) => useQuery({ queryKey: keys.filters(ein), queryFn: api.filters, enabled: !!ein, staleTime: 5 * 60_000 })

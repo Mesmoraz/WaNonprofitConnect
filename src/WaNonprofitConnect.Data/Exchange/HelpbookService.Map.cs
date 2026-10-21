@@ -6,6 +6,44 @@ namespace WaNonprofitConnect.Data.Exchange;
 public sealed partial class HelpbookService
 {
     public const int MaxSuggested = 40;
+    public const int MaxMapFits = 12;
+
+    /// <summary>
+    /// What fits your organization, for the map's toggles (S-130): with <paramref name="forNeeds"/>, other organizations' open
+    /// offers that fit one of your open needs; otherwise their open needs that one of your offers fits. Each post once, paired
+    /// with the post of yours it fits best; posts already in a thread together are left out. Best fit first, up to 12.
+    /// </summary>
+    public async Task<IReadOnlyList<MapFitDto>> MapFitsAsync(string ein, bool forNeeds, CancellationToken ct = default)
+    {
+        var now = DateTime.UtcNow;
+        var mineKind = forNeeds ? ListingKind.Need : ListingKind.Offer;
+        var theirKind = forNeeds ? ListingKind.Offer : ListingKind.Need;
+        var mine = await OpenListings(now).Where(l => l.OrgEin == ein && l.Kind == mineKind).ToListAsync(ct);
+        if (mine.Count == 0) return [];
+        var theirs = await OpenListings(now).Where(l => l.OrgEin != ein && l.Kind == theirKind)
+            .OrderByDescending(l => l.CreatedAt).Take(MaxCandidates).ToListAsync(ct);
+        var mineIds = mine.Select(l => l.Id).ToList();
+        var paired = (await _db.Matches.AsNoTracking()
+                .Where(m => mineIds.Contains(m.NeedListingId) || mineIds.Contains(m.OfferListingId))
+                .Select(m => new { m.NeedListingId, m.OfferListingId }).ToListAsync(ct))
+            .Select(p => (p.NeedListingId, p.OfferListingId)).ToHashSet();
+
+        var fits = new List<(Listing Mine, Listing Theirs, int Score)>();
+        foreach (var t in theirs)
+        {
+            var best = mine
+                .Select(m => (Mine: m, Need: forNeeds ? m : t, Offer: forNeeds ? t : m))
+                .Where(x => !paired.Contains((x.Need.Id, x.Offer.Id)))
+                .Select(x => (x.Mine, Match: MatchScorer.Score(x.Need, x.Offer, now)))
+                .Where(x => x.Match.IsFit)
+                .OrderByDescending(x => x.Match.Score)
+                .FirstOrDefault();
+            if (best.Mine is not null) fits.Add((best.Mine, t, best.Match.Score));
+        }
+        var top = fits.OrderByDescending(f => f.Score).ThenByDescending(f => f.Theirs.CreatedAt).Take(MaxMapFits).ToList();
+        var orgs = await OrgSummariesAsync(top.Select(f => f.Theirs.Org!), ct);
+        return top.Select(f => new MapFitDto(f.Mine.Id, f.Mine.Title, View(f.Theirs, orgs, now))).ToList();
+    }
 
     /// <summary>
     /// What the map draws: member pins (orgs with a confirmed person or an open post, plus anyone in a thread),
