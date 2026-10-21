@@ -172,7 +172,7 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
   return layers
 }
 
-export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap, initialView, still, className, style }: ThreadMapProps) {
+export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap, onViewChange, initialView, still, className, style }: ThreadMapProps) {
   const boxRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MlMap | null>(null)
   const overlayRef = useRef<MapboxOverlay | null>(null)
@@ -181,6 +181,8 @@ export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap
   onSelectRef.current = onSelect
   const onFitTapRef = useRef(onFitTap)
   onFitTapRef.current = onFitTap
+  const onViewRef = useRef(onViewChange)
+  onViewRef.current = onViewChange
   const indexRef = useRef<ReturnType<typeof buildIndex> | null>(null)
   const underRef = useRef<string | undefined>(undefined)
   const swappingRef = useRef(true)   // true until a real style has loaded
@@ -227,7 +229,12 @@ export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap
     setZoomLevel(Math.floor(map.getZoom()))
 
     map.on('zoom', () => { const z = Math.floor(map.getZoom()); setZoomLevel(prev => (prev === z ? prev : z)) })
-    map.on('moveend', () => setViewTick(v => v + 1))
+    const tellView = () => {
+      const b = map.getBounds(), c = map.getCenter()
+      onViewRef.current?.({ west: b.getWest(), south: b.getSouth(), east: b.getEast(), north: b.getNorth(), center: [c.lng, c.lat] })
+    }
+    map.on('load', tellView)
+    map.on('moveend', () => { setViewTick(v => v + 1); tellView() })
     map.on('style.load', () => { swappingRef.current = false; setViewTick(v => v + 1) })   // re-seat our layers under the new labels
 
     const pick = (x: number, y: number, radius: number, layerId: string): PickingInfo | null =>
