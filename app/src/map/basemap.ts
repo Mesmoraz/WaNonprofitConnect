@@ -22,10 +22,10 @@ export function quietStyle(style: StyleSpecification, theme: MapTheme): StyleSpe
       if (l.type === 'background') return { ...l, paint: { ...l.paint, 'background-color': rgb(theme.ground) } }
       if (l.type === 'line' && ROADS.test(l.id)) {
         const cur = l.paint?.['line-opacity']
-        return { ...l, paint: { ...l.paint, 'line-opacity': typeof cur === 'number' ? cur * 0.55 : 0.55 } }
+        return { ...l, paint: { ...l.paint, 'line-opacity': typeof cur === 'number' ? cur * 0.4 : 0.4 } }
       }
       if (l.type === 'symbol') {
-        const paint = { ...l.paint, 'text-opacity': theme.dark ? 0.75 : 0.6, 'icon-opacity': 0.4 }
+        const paint = { ...l.paint, 'text-opacity': theme.dark ? 0.65 : 0.5, 'icon-opacity': 0.4 }
         return { ...l, paint }
       }
       return l

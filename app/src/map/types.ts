@@ -14,10 +14,14 @@ export interface OrgSummary {
 export interface MapThread { id: number; status: ThreadStatus; help: KindOfHelp; fromEin: string; toEin: string; title: string }
 export interface MapSuggested { needId: number; offerId: number; fromEin: string; toEin: string }
 
+export interface MapOpen { ein: string; needs: number; offers: number }
+
 export interface MapData {
   members: OrgSummary[];
   threads: MapThread[];      // from = giver (offer side)
   suggested: MapSuggested[];
+  /** Open posts per organization: its pin's ring (S-129). Older data without it draws every pin grey. */
+  open?: MapOpen[];
 }
 
 /** `GET /api/v1/map/points`: every WA 501(c)(3) as [ein, lat, lon]. */

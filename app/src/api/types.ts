@@ -47,7 +47,9 @@ export interface OrgPerson { accountId: string; name: string; email: string; isY
 export interface MyOrg { org: OrgSummary; about: string | null; website: string | null; contactAccountId: string | null; people: OrgPerson[]; placesLeft: number }
 export interface SaveMyOrg { about: string | null; website: string | null; contactAccountId: string | null }
 export interface MapSuggested { needId: number; offerId: number; fromEin: string; toEin: string }
-export interface MapData { members: OrgSummary[]; threads: MapThread[]; suggested: MapSuggested[] }
+/** How many open needs and offers an organization has: its pin's ring (S-129). */
+export interface MapOpen { ein: string; needs: number; offers: number }
+export interface MapData { members: OrgSummary[]; threads: MapThread[]; suggested: MapSuggested[]; open: MapOpen[] }
 export type MapPoint = [ein: string, lat: number, lon: number]
 
 /** A thread stalled on someone (Admin, "Waiting on someone"): unanswered for 2 days, or accepted and quiet for 7. */
