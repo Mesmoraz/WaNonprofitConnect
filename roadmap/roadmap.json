@@ -2165,6 +2165,14 @@
       "tasks": [],
       "source": "Polish walk, Oct 20: editing a seeded post from 1 to 2 read \"2 unit\" (only posts with a unit: the seed and the CLI)",
       "lane": "app"
+    },
+    {
+      "id": "S-137",
+      "epic": "E-26",
+      "title": "CI keeps a build only when it goes to staging, so pull requests don't fill the artifact storage",
+      "status": "review",
+      "added": "2026-10-22",
+      "tasks": []
     }
   ]
 }
