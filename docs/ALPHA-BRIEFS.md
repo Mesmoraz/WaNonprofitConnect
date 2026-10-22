@@ -310,11 +310,12 @@ Checked against the mission: Need → Match → Golden Thread → Action → Imp
 - **Goes:** started, in-progress and "Could fit" lines on the shared map; the four-line legend.
 - **Stays:** clusters, faint dots, your amber-ringed pin, golden glow, sparks, numbers, confetti. Home's small map gets the same pins.
 
-## S-131: What's open in view (map lane and backend), after S-129
+## S-131: What's open in view (map lane and backend). Approved Oct 21 (Taylor: "Start S-131")
 
 - **A strip at the top:** "14 needs · 9 offers in view". Tap it and a list slides up: one row per open post in view, nearest first. Each row: kind of help chip, title, organization · city. Tap a row to open the post.
 - **Kind of help filter:** chips under the strip: All, Time, Skills, Things, Partnership, For schools, Jobs and mentoring. One at a time. Pins, the strip and the list follow it.
 - **Backend:** `GET /api/v1/map/open` returns the open posts with each one's place and kind of help, for the strip, the list and the chips.
+- **Decided while building:** each row's kind of help chip is amber for a need and green for an offer, like the rings. The chips follow the board's order (Things first). Tapping a picked chip again goes back to All. While the list is open, the toggles step aside. An empty list says "Nothing open in view. Move the map to see more." 
 
 ## S-130: Find what fits you (map lane and backend). Approved Oct 21 (Taylor: "Start S-130")
 

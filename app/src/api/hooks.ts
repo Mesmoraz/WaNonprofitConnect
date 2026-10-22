@@ -14,6 +14,7 @@ export const keys = {
   map: ['map'] as const,
   mapPoints: ['mapPoints'] as const,
   mapFits: (forWhat: MapFitsFor) => ['map', 'fits', forWhat] as const,
+  mapOpen: ['map', 'open'] as const,
   orgPage: (ein: string) => ['orgPage', ein] as const,
   myOrg: (ein: string) => ['myOrg', ein] as const,
   adminClaims: ['admin', 'claims'] as const,
@@ -53,6 +54,8 @@ export function useThread(id: number) {
 }
 
 export const useMapData = (enabled = true) => useQuery({ queryKey: keys.map, queryFn: api.map, enabled, staleTime: 60_000 })
+/** Every open need and offer with its place (S-131): what's open in view. Under the map's key, so it refreshes with it. */
+export const useMapOpen = (enabled = true) => useQuery({ queryKey: keys.mapOpen, queryFn: api.mapOpen, enabled, staleTime: 60_000 })
 /** The map's toggles (S-130): what fits your needs, or your offers. Off (null) fetches nothing. Under the map's key, so it refreshes with it. */
 export const useMapFits = (forWhat: MapFitsFor | null) =>
   useQuery({ queryKey: keys.mapFits(forWhat ?? 'needs'), queryFn: () => api.mapFits(forWhat!), enabled: !!forWhat, staleTime: 60_000 })

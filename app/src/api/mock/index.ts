@@ -328,6 +328,8 @@ const routes: [string, RegExp, Handler][] = [
   }],
 
   ['GET', /^\/map$/, () => { requireOrg(); return mapOf({ orgs, listings, threads }, settings.fits) satisfies MapData }],
+  // Every open post with its place (S-131), newest first.
+  ['GET', /^\/map\/open$/, () => listings.filter(l => l.status === 'Open').sort((a, b) => b.createdAt.localeCompare(a.createdAt)).map(l => toListing(l)) satisfies Listing[]],
   // What fits your organization (S-130): their open posts that fit one of yours, each once, not already in a thread with it.
   ['GET', /^\/map\/fits$/, (_m, _b, q) => {
     const ein = requireOrg(), forNeeds = q.get('for') === 'needs'

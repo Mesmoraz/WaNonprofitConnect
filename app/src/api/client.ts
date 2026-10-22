@@ -132,6 +132,7 @@ export const api = {
   // Map
   map: () => call<MapData>('GET', `${V1}/map`),
   mapPoints: () => call<MapPoint[]>('GET', `${V1}/map/points`),
+  mapOpen: () => call<Listing[]>('GET', `${V1}/map/open`),
   mapFits: (forWhat: MapFitsFor) => call<MapFit[]>('GET', `${V1}/map/fits?for=${forWhat}`),
   filters: () => call<Filters>('GET', `${V1}/filters`),
   saveFilters: (serve: string[]) => call<Filters>('PUT', `${V1}/filters`, { serve }),

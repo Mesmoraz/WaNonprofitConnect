@@ -35,6 +35,11 @@ public sealed class MapController : ControllerBase
         return await _helpbook.MapAsync(confirmed, ct);
     }
 
+    /// <summary>Every open need and offer with its place (S-131): the map's count of what's in view, its list, and its chips.</summary>
+    [HttpGet("open")]
+    [Authorize]
+    public async Task<IReadOnlyList<ListingViewDto>> Open(CancellationToken ct) => await _helpbook.MapOpenAsync(ct);
+
     /// <summary>
     /// What fits your organization (S-130): <c>for=needs</c>, offers that could fit your needs; <c>for=offers</c>, needs
     /// you could help with. Confirmed members only: it's about your own posts.
