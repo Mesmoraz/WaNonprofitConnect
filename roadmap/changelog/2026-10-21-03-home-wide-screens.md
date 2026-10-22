@@ -1,6 +1,6 @@
-## 2026-10-21 · Home on a wide monitor: wider, no holes under short sections, larger type (S-132)
+## 2026-10-21 · Home on a wide monitor: wider, no holes under short sections, larger type (S-136)
 
-**Story S-132.** Taylor, looking at Home on a desktop monitor: "way too much empty space". Of the two options offered, Taylor chose to keep the two columns and asked: "Just fold the empty sections, widen to about 1200px, and bump the type on wide screens." No words change.
+**Story S-136.** Taylor, looking at Home on a desktop monitor: "way too much empty space". Of the two options offered, Taylor chose to keep the two columns and asked: "Just fold the empty sections, widen to about 1200px, and bump the type on wide screens." No words change.
 
 ### What changed
 
