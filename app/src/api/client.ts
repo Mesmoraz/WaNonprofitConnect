@@ -2,7 +2,7 @@ import { noteFailedCall } from '../lib/telemetry'
 import { ORG_NAMES } from './mock/names'
 import { loadSettings, saveSettings, SETTINGS_KEY, type DemoSettings } from './mock/settings'
 import type {
-  BoardQuery, Claim, FeedbackItem, Filters, Invite, Listing, ListingDetail, ListingEdit, MapData, MapPoint, Me, Message, NewListing, NewThread,
+  BoardQuery, Claim, FeedbackItem, Filters, Invite, Listing, ListingDetail, ListingEdit, MapData, MapFit, MapFitsFor, MapPoint, Me, Message, NewListing, NewThread,
   MyOrg, OrgPage, OrgSummary, SaveMyOrg, Thread, ThreadAction, ThreadDetail, WaitingThread,
 } from './types'
 
@@ -132,6 +132,8 @@ export const api = {
   // Map
   map: () => call<MapData>('GET', `${V1}/map`),
   mapPoints: () => call<MapPoint[]>('GET', `${V1}/map/points`),
+  mapOpen: () => call<Listing[]>('GET', `${V1}/map/open`),
+  mapFits: (forWhat: MapFitsFor) => call<MapFit[]>('GET', `${V1}/map/fits?for=${forWhat}`),
   filters: () => call<Filters>('GET', `${V1}/filters`),
   saveFilters: (serve: string[]) => call<Filters>('PUT', `${V1}/filters`, { serve }),
   orgPage: (ein: string) => call<OrgPage>('GET', `${V1}/orgs/${encodeURIComponent(ein)}/page`),

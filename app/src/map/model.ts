@@ -1,7 +1,7 @@
 import Supercluster, { type ClusterProperties, type PointFeature } from 'supercluster'
 import { curve, pointAt, type Arc, type LonLat } from './geometry'
 import { withAlpha, type MapTheme, type RGBA } from './theme'
-import type { MapData, MapSelection, MapSuggested, MapThread, OrgSummary } from './types'
+import type { MapData, MapFits, MapSelection, MapSuggested, MapThread, OrgSummary } from './types'
 
 // Everything here is plain data in, plain data out: no map, no deck. ThreadMap memoizes each step.
 
@@ -55,6 +55,12 @@ export function scopeOf(sel: MapSelection | null | undefined, threads: MapThread
     if (t) { ids.add(t.id); orgs.add(t.fromEin); orgs.add(t.toEin); return { active: true, orgs, threads: ids, selectedOrg: null } }
   }
   return { active: false, orgs, threads: ids, selectedOrg: null }
+}
+
+/** While a toggle is on (S-130): you and every organization that fits stay bright and unclustered; everything else dims. */
+export function fitScope(fits: MapFits | null | undefined, me: string | undefined): Scope | null {
+  if (!fits || !me) return null
+  return { active: true, orgs: new Set([me, ...fits.eins]), threads: new Set(), selectedOrg: null }
 }
 
 // ---- Clustering ----------------------------------------------------------------------------------
@@ -200,6 +206,8 @@ export interface ThreadArc extends Arc {
   pair: [string, string] | null
   /** Otherwise the end that is a cluster: tapping the line opens it, as tapping the cluster would. */
   cluster: { position: LonLat; clusterId: number } | null
+  /** A toggle's line (S-130): the organization at the far end from you. */
+  fit?: string
 }
 
 // Started and in progress are only ever your own now (S-129), and drawn faint.
@@ -240,7 +248,7 @@ export function buildArcs(suggested: MapSuggested[], threads: MapThread[], nodeO
     const count = items.length
     const fuller = Math.min(count, FULLEST) - 1
     const dim = scope.active && !related
-    const alpha = dim ? (state === 'Completed' ? 0.12 : 0.06) : scope.active ? (state === 'Completed' ? 1 : 0.75) : BASE_A[state]
+    const alpha = dim ? (state === 'Completed' ? 0.12 : state === 'suggested' ? 0.06 : 0.18) : scope.active ? (state === 'Completed' ? 1 : 0.75) : BASE_A[state]
     // Sparks are for golden threads: help that was given, running the way it went.
     const sparks = items.filter(i => i.state === 'Completed').slice(0, FULLEST).map(i => (i.from === lead.from ? 1 : -1) as 1 | -1)
     out.push({
@@ -257,6 +265,27 @@ export function buildArcs(suggested: MapSuggested[], threads: MapThread[], nodeO
     })
   }
   out.sort((x, y) => (+x.related - +y.related) || (RANK[x.state] - RANK[y.state]))
+  return out
+}
+
+const FIT_DASH: [number, number] = [6, 6]
+
+/** A toggle's lines (S-130): from your pin to each organization that fits, the way the help would go. */
+export function buildFitArcs(fits: MapFits | null | undefined, me: string | undefined, nodeOf: Map<string, MapNode>, theme: MapTheme): ThreadArc[] {
+  const mine = me ? nodeOf.get(me) : undefined
+  if (!fits || !mine) return []
+  const color = fits.kind === 'offers' ? theme.offer : theme.need
+  const out: ThreadArc[] = []
+  for (const ein of new Set(fits.eins)) {
+    const them = nodeOf.get(ein)
+    if (!them || them === mine) continue
+    const [from, to] = fits.kind === 'offers' ? [them, mine] : [mine, them]   // an offer comes to you; your help goes to their need
+    out.push({
+      ...curve(from.position, to.position, 0.16),
+      key: `f:${ein}`, id: null, state: 'suggested', fromEin: from.members[0].ein, toEin: to.members[0].ein, title: '', related: true,
+      color: withAlpha(color, 0.95), width: 2.5, dash: FIT_DASH, count: 1, golden: 0, sparks: [], pair: null, cluster: null, fit: ein,
+    })
+  }
   return out
 }
 

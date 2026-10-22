@@ -11,7 +11,7 @@ import { FlowExtension, RingExtension, SoftGlowExtension, type RingExtensionProp
 import { MAX_BOUNDS, STYLE_DARK, STYLE_LIGHT, WA_BOUNDS, firstSymbolId, quietStyle } from './basemap'
 import { jitter, pointAt, type LonLat } from './geometry'
 import {
-  DASH_WRAP, buildArcs, buildBadges, buildGlows, buildIndex, buildNodes, degrees, openCounts, placeLabels, scopeOf, shownThreads,
+  DASH_WRAP, buildArcs, buildBadges, buildFitArcs, fitScope, buildGlows, buildIndex, buildNodes, degrees, openCounts, placeLabels, scopeOf, shownThreads,
   type Badge, type GlowArc, type LabelDatum, type MapNode, type ThreadArc,
 } from './model'
 import { useMapTheme, useReducedMotion, withAlpha, type MapTheme, type RGBA } from './theme'
@@ -23,6 +23,7 @@ const MOVER_MS = 1700             // one trip along a selected thread, like the 
 const SPARK_MS = 2600             // one trip along any other line: calmer, since every line has its sparks (S-127)
 const CONFETTI_MS = 1400          // a burst at both pins when a thread turns golden while you look (S-127)
 const CONFETTI_PER_PIN = 26
+const PULSE_MS = 1600             // your pin's pulse while a toggle is on (S-130)
 const PICK_PIN_PX = 6
 const HOVER_GROW = 1.45          // a pin under the mouse eases up to this size
 const PICK_THREAD_PX = 7          // + the stroke itself ≈ a 16 px wide target
@@ -43,6 +44,8 @@ interface Frame {
   movers: ThreadArc[]
   badges: Badge[]
   confetti: Confetto[]
+  /** Your pin while a toggle is on (S-130): a ring swells out from it and fades. */
+  pulse: { position: LonLat; radius: number; color: RGBA } | null
   labels: LabelDatum[]
   counts: { position: LonLat; text: string; color: RGBA }[]
   fontsReady: boolean
@@ -101,6 +104,13 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
       getDashArray: d => d.dash, dashUnits: 'pixels', dashGapPickable: true,
       flowShift: shift,
       extensions: [dashExt, flowExt],
+    }),
+    f.pulse && animate && new ScatterplotLayer<NonNullable<Frame['pulse']>>({
+      id: 'wm-pulse', data: [f.pulse], pickable: false,
+      radiusUnits: 'pixels', getPosition: d => d.position, filled: false, stroked: true, lineWidthUnits: 'pixels',
+      getRadius: d => d.radius + 18 * ((now % PULSE_MS) / PULSE_MS), getLineWidth: 2.5,
+      getLineColor: d => withAlpha(d.color, 0.9 * (1 - (now % PULSE_MS) / PULSE_MS)),
+      updateTriggers: { getRadius: now, getLineColor: now },
     }),
     movers.length > 0 && new ScatterplotLayer<Mover>({
       id: 'wm-movers', data: movers, pickable: false,
@@ -162,13 +172,17 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
   return layers
 }
 
-export function ThreadMap({ data, points, me, selected, onSelect, initialView, still, className, style }: ThreadMapProps) {
+export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap, onViewChange, initialView, still, className, style }: ThreadMapProps) {
   const boxRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MlMap | null>(null)
   const overlayRef = useRef<MapboxOverlay | null>(null)
   const frameRef = useRef<Frame | null>(null)
   const onSelectRef = useRef(onSelect)
   onSelectRef.current = onSelect
+  const onFitTapRef = useRef(onFitTap)
+  onFitTapRef.current = onFitTap
+  const onViewRef = useRef(onViewChange)
+  onViewRef.current = onViewChange
   const indexRef = useRef<ReturnType<typeof buildIndex> | null>(null)
   const underRef = useRef<string | undefined>(undefined)
   const swappingRef = useRef(true)   // true until a real style has loaded
@@ -215,7 +229,12 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, s
     setZoomLevel(Math.floor(map.getZoom()))
 
     map.on('zoom', () => { const z = Math.floor(map.getZoom()); setZoomLevel(prev => (prev === z ? prev : z)) })
-    map.on('moveend', () => setViewTick(v => v + 1))
+    const tellView = () => {
+      const b = map.getBounds(), c = map.getCenter()
+      onViewRef.current?.({ west: b.getWest(), south: b.getSouth(), east: b.getEast(), north: b.getNorth(), center: [c.lng, c.lat] })
+    }
+    map.on('load', tellView)
+    map.on('moveend', () => { setViewTick(v => v + 1); tellView() })
     map.on('style.load', () => { swappingRef.current = false; setViewTick(v => v + 1) })   // re-seat our layers under the new labels
 
     const pick = (x: number, y: number, radius: number, layerId: string): PickingInfo | null =>
@@ -234,6 +253,7 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, s
         return
       }
       const arc = pick(x, y, PICK_THREAD_PX, 'wm-threads')?.object as ThreadArc | undefined
+      if (arc?.fit) { onFitTapRef.current?.(arc.fit); return }
       if (arc && arc.id != null) { onSelectRef.current({ kind: 'thread', id: arc.id }); return }
       if (arc && arc.count > 1) {
         // A line that carries several: between two organizations, their card lists them; to a cluster, open the cluster.
@@ -259,7 +279,7 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, s
         const { x, y } = e.point
         const pin = pick(x, y, PICK_PIN_PX, 'wm-pins')?.object as MapNode | undefined
         const line = pick(x, y, PICK_THREAD_PX, 'wm-threads')?.object as ThreadArc | undefined
-        const hit = !!pin || (!!line && (line.id != null || line.count > 1))
+        const hit = !!pin || (!!line && (line.id != null || line.count > 1 || !!line.fit))
         const was = hoverRef.current.pin
         hoverRef.current = { pin: pin?.id, hit }
         if (was !== pin?.id && frameRef.current) {
@@ -309,20 +329,30 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, s
   const threads = useMemo(() => shownThreads(data.threads, me), [data.threads, me])
   const deg = useMemo(() => degrees(threads.filter(t => t.status === 'Completed')), [threads])
   const open = useMemo(() => openCounts(data), [data])
-  const scope = useMemo(() => scopeOf(selected, threads), [selected?.kind, selected?.id, threads])
+  // A toggle's fits (S-130), by value: the screen hands a new object each render.
+  const fitKey = fits ? `${fits.kind}:${fits.eins.join(',')}` : ''
+  const fitsNow = useMemo(() => fits ?? null, [fitKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Something selected wins; otherwise a toggle's fits; otherwise nothing.
+  const scope = useMemo(() => (selected ? scopeOf(selected, threads) : fitScope(fitsNow, me) ?? scopeOf(null, threads)),
+    [selected?.kind, selected?.id, threads, fitsNow, me]) // eslint-disable-line react-hooks/exhaustive-deps
   const standaloneKey = [...scope.orgs].sort().join(',')
   const index = useMemo(() => buildIndex(data.members, scope.orgs), [data.members, standaloneKey])
   indexRef.current = index
   const { nodes, nodeOf } = useMemo(() => buildNodes(index, zoomLevel, deg, open, scope, me, theme), [index, zoomLevel, deg, open, scope, me, theme])
   // No "Could fit" lines for everyone (S-129); S-130's toggles will draw them for you alone.
-  const arcs = useMemo(() => buildArcs([], threads, nodeOf, scope, theme), [threads, nodeOf, scope, theme])
+  const arcs = useMemo(() => [...buildArcs([], threads, nodeOf, scope, theme), ...(selected ? [] : buildFitArcs(fitsNow, me, nodeOf, theme))],
+    [threads, nodeOf, scope, theme, fitsNow, me, selected])
+  const pulse = useMemo(() => {
+    const n = fitsNow && !selected && me ? nodeOf.get(me) : undefined
+    return n ? { position: n.position, radius: n.radius, color: fitsNow!.kind === 'offers' ? theme.offer : theme.need } : null
+  }, [fitsNow, selected, me, nodeOf, theme])
   const glows = useMemo(() => buildGlows(arcs, scope, theme), [arcs, scope, theme])
   const movers = useMemo(() => (reduced ? [] : arcs.filter(a => a.sparks.length > 0)), [arcs, reduced])
   const badges = useMemo(() => buildBadges(arcs, scope, theme), [arcs, scope, theme])
   // For the acceptance tests (app/e2e/map-threads.spec.ts): where each line's middle is, so a test can tap it like a person.
   useEffect(() => {
     const box = boxRef.current as (HTMLDivElement & { __lines?: unknown; __linesZoom?: number }) | null
-    if (box) { box.__lines = arcs.map(a => ({ pair: a.pair, count: a.count, middle: pointAt(a, 0.5) })); box.__linesZoom = zoomLevel }
+    if (box) { box.__lines = arcs.map(a => ({ pair: a.pair, count: a.count, fit: a.fit ?? null, middle: pointAt(a, 0.5) })); box.__linesZoom = zoomLevel }
   }, [arcs]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---- Confetti when a thread turns golden while you're looking (S-127) ----------------------------
@@ -390,7 +420,7 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, s
     const id = underRef.current, map = mapRef.current
     return !swappingRef.current && id && map?.getLayer(id) ? id : undefined
   }
-  frameRef.current = { theme, dots, nodes, arcs, glows, movers, badges, confetti: [], labels, counts, fontsReady, under: under(), hover: hoverRef.current.pin }
+  frameRef.current = { theme, dots, nodes, arcs, glows, movers, badges, confetti: [], pulse: reduced ? null : pulse, labels, counts, fontsReady, under: under(), hover: hoverRef.current.pin }
 
   // ---- Drawing: static redraw on change, plus a light animation loop when motion is allowed --------
   useEffect(() => {
@@ -411,7 +441,7 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, s
       last = now
       const overlay = overlayRef.current, f = frameRef.current
       if (f) f.confetti = confettiNow(now)
-      if (overlay && f && (f.arcs.length || f.movers.length || f.confetti.length)) { f.under = under(); overlay.setProps({ layers: buildLayers(f, now, true) }) }
+      if (overlay && f && (f.arcs.length || f.movers.length || f.confetti.length || f.pulse)) { f.under = under(); overlay.setProps({ layers: buildLayers(f, now, true) }) }
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
@@ -423,11 +453,14 @@ export function ThreadMap({ data, points, me, selected, onSelect, initialView, s
     if (!map || !scope.active) return
     const pts = [...scope.orgs].map(e => index.byEin.get(e)).filter(Boolean).map(o => [o!.lon, o!.lat] as LonLat)
     if (!pts.length) return
+    // A toggle turned on (S-130) always frames you and what fits, above its card; a selection only moves the map if it must.
+    const framing = !selected && !!fitsNow?.eins.length
     const b = map.getBounds()
-    if (pts.every(p => b.contains(p))) return
+    if (!framing && pts.every(p => b.contains(p))) return
     const lons = pts.map(p => p[0]), lats = pts.map(p => p[1])
-    map.fitBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], { padding: { top: 80, bottom: 200, left: 60, right: 60 }, maxZoom: 12 })
-  }, [selected?.kind, selected?.id])
+    map.fitBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]],
+      { padding: { top: 80, bottom: framing ? 340 : 200, left: 60, right: 60 }, maxZoom: framing ? 13 : 12 })
+  }, [selected?.kind, selected?.id, fitKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return <div ref={boxRef} className={className ? `wm-root ${className}` : 'wm-root'} style={{ position: 'relative', width: '100%', height: '100%', ...style }} />
 }

@@ -35,6 +35,24 @@ public sealed class MapController : ControllerBase
         return await _helpbook.MapAsync(confirmed, ct);
     }
 
+    /// <summary>Every open need and offer with its place (S-131): the map's count of what's in view, its list, and its chips.</summary>
+    [HttpGet("open")]
+    [Authorize]
+    public async Task<IReadOnlyList<ListingViewDto>> Open(CancellationToken ct) => await _helpbook.MapOpenAsync(ct);
+
+    /// <summary>
+    /// What fits your organization (S-130): <c>for=needs</c>, offers that could fit your needs; <c>for=offers</c>, needs
+    /// you could help with. Confirmed members only: it's about your own posts.
+    /// </summary>
+    [HttpGet("fits")]
+    [Authorize]
+    public async Task<ActionResult<IReadOnlyList<MapFitDto>>> Fits([FromQuery(Name = "for")] string? forWhat, [FromServices] AccountService accounts, CancellationToken ct)
+    {
+        if (forWhat is not ("needs" or "offers")) return BadRequest(new ProblemDetails { Status = 400, Title = "Say for=needs or for=offers." });
+        var ein = await accounts.RequireActingEinAsync(User.RequireAccountId(), ct);
+        return Ok(await _helpbook.MapFitsAsync(ein, forWhat == "needs", ct));
+    }
+
     /// <summary>
     /// <c>[ein, lat, lon][]</c> for every Washington 501(c)(3) with a ZIP centroid: the faint dots.
     /// Public IRS and Census data, so no sign-in; cached an hour by the browser and in memory here.

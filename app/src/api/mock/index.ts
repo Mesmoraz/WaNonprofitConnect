@@ -2,7 +2,7 @@
 // The signed-in person survives a reload (localStorage); everything else is built from the seed and the demo's settings.
 import { ApiError, DEMO, DEMO_STATE_KEY, httpTransport, type Transport } from '../client'
 import type {
-  Claim, Invite, Listing, ListingDetail, ListingEdit, MapData, MapPoint, Me, Message, MyOrg, NewListing, NewThread, OrgPage, OrgSummary, SaveMyOrg,
+  Claim, Invite, Listing, ListingDetail, ListingEdit, MapData, MapFit, MapPoint, Me, Message, MyOrg, NewListing, NewThread, OrgPage, OrgSummary, SaveMyOrg,
   Thread, ThreadAction, ThreadDetail, ThreadStatus,
 } from '../types'
 import { SEED_PEOPLE } from './data'
@@ -328,6 +328,19 @@ const routes: [string, RegExp, Handler][] = [
   }],
 
   ['GET', /^\/map$/, () => { requireOrg(); return mapOf({ orgs, listings, threads }, settings.fits) satisfies MapData }],
+  // Every open post with its place (S-131), newest first.
+  ['GET', /^\/map\/open$/, () => listings.filter(l => l.status === 'Open').sort((a, b) => b.createdAt.localeCompare(a.createdAt)).map(l => toListing(l)) satisfies Listing[]],
+  // What fits your organization (S-130): their open posts that fit one of yours, each once, not already in a thread with it.
+  ['GET', /^\/map\/fits$/, (_m, _b, q) => {
+    const ein = requireOrg(), forNeeds = q.get('for') === 'needs'
+    const mineKind = forNeeds ? 'Need' : 'Offer'
+    const mine = listings.filter(l => l.ein === ein && l.status === 'Open' && l.kind === mineKind)
+    const paired = new Set(threads.map(t => `${t.needId}:${t.offerId}`))
+    return listings.filter(l => l.ein !== ein && l.status === 'Open' && l.kind !== mineKind).flatMap(t => {
+      const m = mine.find(x => fits(x, t) && !paired.has(forNeeds ? `${x.id}:${t.id}` : `${t.id}:${x.id}`))
+      return m ? [{ myId: m.id, myTitle: m.title, post: toListing(t) }] : []
+    }).slice(0, 12) satisfies MapFit[]
+  }],
   // An admin changes the demo's settings (Admin, Demo; or the demo bar's Settings). The demo starts over with them.
   ['POST', /^\/demo\/settings$/, (_m, b: DemoSettings) => {
     requireMe()

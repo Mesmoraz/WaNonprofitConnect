@@ -55,6 +55,9 @@ export interface MapSuggested { needId: number; offerId: number; fromEin: string
 /** How many open needs and offers an organization has: its pin's ring (S-129). */
 export interface MapOpen { ein: string; needs: number; offers: number }
 export interface MapData { members: OrgSummary[]; threads: MapThread[]; suggested: MapSuggested[]; open: MapOpen[] }
+/** What fits your organization (S-130): another organization's open post, and which of yours it fits best. */
+export interface MapFit { myId: number; myTitle: string; post: Listing }
+export type MapFitsFor = 'needs' | 'offers'
 export type MapPoint = [ein: string, lat: number, lon: number]
 
 /** A thread stalled on someone (Admin, "Waiting on someone"): unanswered for 2 days, or accepted and quiet for 7. */

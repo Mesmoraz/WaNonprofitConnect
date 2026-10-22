@@ -30,6 +30,10 @@ export type MapPoint = [string, number, number];
 /** pair: two organizations' EINs as "a|b", from tapping a line that carries more than one thread (S-127). */
 export type MapSelection = { kind: 'org'; id: string } | { kind: 'thread'; id: number } | { kind: 'pair'; id: string };
 
+export interface MapView { west: number; south: number; east: number; north: number; center: [number, number] }
+
+export interface MapFits { kind: 'offers' | 'needs'; eins: string[] }
+
 export interface ThreadMapProps {
   data: MapData;
   points?: MapPoint[];
@@ -37,6 +41,15 @@ export interface ThreadMapProps {
   me?: string;
   selected?: MapSelection | null;
   onSelect: (sel: MapSelection | null) => void;
+  /**
+   * The map's toggles (S-130): a dashed line from your pin to each organization that fits, only while on and only for you.
+   * offers: offers that could fit your needs (green, running to you); needs: needs you could help with (amber, running from you).
+   */
+  fits?: MapFits | null;
+  /** A fit line tapped: that organization's EIN. */
+  onFitTap?: (ein: string) => void;
+  /** Where the map is looking, once it has loaded and after every move (S-131: what's open in view). */
+  onViewChange?: (view: MapView) => void;
   /** Where to open. Default: the whole state. Read once, on mount. */
   initialView?: { center: [number, number]; zoom: number };
   /** A small map that doesn't move (Home's "Near you", S-126): no pan, zoom or taps; the page around it handles the tap. */

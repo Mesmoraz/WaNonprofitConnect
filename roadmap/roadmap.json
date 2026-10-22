@@ -2079,7 +2079,7 @@
       "id": "S-129",
       "epic": "E-25",
       "title": "Map: pins show open needs and offers, and only golden threads are drawn",
-      "status": "review",
+      "status": "done",
       "added": "2026-10-20",
       "source": "Taylor, 2026-10-20: the map should show where needs and offers are open, draw a thread only once it is met, and offer toggles that show what fits you",
       "lane": "map",
@@ -2089,7 +2089,7 @@
       "id": "S-130",
       "epic": "E-25",
       "title": "Map: toggles that show the offers for your needs and the needs you can help with",
-      "status": "backlog",
+      "status": "done",
       "added": "2026-10-20",
       "source": "Taylor, 2026-10-20: the map should show where needs and offers are open, draw a thread only once it is met, and offer toggles that show what fits you",
       "lane": "map",
@@ -2099,11 +2099,42 @@
       "id": "S-131",
       "epic": "E-25",
       "title": "Map: a strip that counts what's open in view, a list of it, and kind of help chips",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-10-20",
       "tasks": [],
       "source": "Taylor, 2026-10-20: the strip and filter are their own story",
       "lane": "map"
+    },
+    {
+      "id": "S-132",
+      "epic": "E-24",
+      "title": "Home asks what brings you here, and each answer is one step from what you came to do",
+      "status": "ready",
+      "added": "2026-10-20",
+      "tasks": [
+        {
+          "id": "T-247",
+          "title": "Brief Home's question card, approved line by line",
+          "status": "done"
+        },
+        {
+          "id": "T-248",
+          "title": "Build the question card and the states after it",
+          "status": "ready"
+        },
+        {
+          "id": "T-249",
+          "title": "Acceptance tests from the brief",
+          "status": "ready"
+        },
+        {
+          "id": "T-250",
+          "title": "Check at phone size across the demo presets",
+          "status": "ready"
+        }
+      ],
+      "source": "Taylor, 2026-10-20, on Home for a just-joined organization: a new user won’t understand what to do; make it question oriented, or a Get started here with a flow chart of options Brief approved Oct 21 (\"merge\", PR #43).",
+      "lane": "app"
     },
     {
       "id": "S-133",

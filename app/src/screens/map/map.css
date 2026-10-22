@@ -45,3 +45,46 @@
 }
 .map-card-row .r-title { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .map-card-row .r-state { flex: none; color: var(--ink-2); font-size: 13px; }
+
+/* The toggles (S-130): two pills above the bottom edge, or above the card while one is open. */
+.map-toggles { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.map-toggle {
+  min-height: var(--tap); padding: 0 12px; border-radius: 999px; border: 1px solid var(--line-2);
+  background: var(--paper); color: var(--ink); font-size: 13px; font-weight: 600; box-shadow: var(--shadow);
+}
+.map-toggle[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.map-fits .t { display: block; margin-bottom: 4px; }
+.map-fit-row {
+  display: grid; gap: 2px; padding: 8px 2px; min-height: var(--tap); border-bottom: 1px solid var(--line-2);
+  color: var(--ink); text-decoration: none; font-size: 14px;
+}
+.map-fit-row .r-title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.map-fit-row .r-meta, .map-fit-row .r-for { color: var(--ink-2); font-size: 13px; }
+
+/* What's open in view (S-131): a count at the top left, chips under it, and a list in the dock. */
+.map-top {
+  position: absolute; top: 12px; left: var(--gutter); right: calc(var(--gutter) + var(--tap) + 8px); z-index: 2;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 8px; pointer-events: none;
+}
+.map-top > * { pointer-events: auto; }
+.map-strip {
+  min-height: var(--tap); padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-2);
+  background: var(--paper); color: var(--ink); font-size: 14px; font-weight: 600; box-shadow: var(--shadow);
+}
+.map-chips { display: flex; gap: 6px; overflow-x: auto; max-width: 100%; padding-bottom: 2px; scrollbar-width: none; }
+.map-chips::-webkit-scrollbar { display: none; }
+.map-chip {
+  flex: none; min-height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line-2);
+  background: var(--paper); color: var(--ink-2); font-size: 13px; font-weight: 600;
+}
+.map-chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.map-open .t { display: block; margin-bottom: 4px; }
+.map-open-row {
+  display: grid; grid-template-columns: auto 1fr; column-gap: 8px; row-gap: 2px; align-items: center; padding: 8px 2px;
+  min-height: var(--tap); border-bottom: 1px solid var(--line-2); color: var(--ink); text-decoration: none; font-size: 14px;
+}
+.map-open-row .r-title { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.map-open-row .r-meta { grid-column: 2; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); font-size: 13px; }
+.map-help-chip { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; border: 1.5px solid; }
+.map-help-chip.need { color: var(--need); border-color: var(--need); }
+.map-help-chip.offer { color: var(--offer); border-color: var(--offer); }
