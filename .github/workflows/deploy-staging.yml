@@ -79,9 +79,13 @@ jobs:
         run: dotnet test tests/WaNonprofitConnect.Tests/WaNonprofitConnect.Tests.csproj -c Release
       - name: Publish the API with the app inside
         run: dotnet publish src/WaNonprofitConnect.Api -c Release -o publish
+      # Only a build that goes to staging keeps site.zip (staging deploys it; production ships main's from the last
+      # staging deploy). Saving one for every pull request filled the repo's 2 GB artifact storage on Oct 22.
       - name: Zip
+        if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'staging')
         run: cd publish && zip -qr ../site.zip .
-      - uses: actions/upload-artifact@v7
+      - if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'staging')
+        uses: actions/upload-artifact@v7
         with:
           name: site
           path: site.zip

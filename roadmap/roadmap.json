@@ -2167,6 +2167,14 @@
       "lane": "app"
     },
     {
+      "id": "S-137",
+      "epic": "E-26",
+      "title": "CI keeps a build only when it goes to staging, so pull requests don't fill the artifact storage",
+      "status": "review",
+      "added": "2026-10-22",
+      "tasks": []
+    },
+    {
       "id": "S-136",
       "epic": "E-24",
       "title": "Home on a wide monitor: wider, no holes under short sections, larger type",
