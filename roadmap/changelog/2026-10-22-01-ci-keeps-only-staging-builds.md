@@ -12,5 +12,5 @@ This stops the storage filling up again. It doesn't clear what's there now: the 
 
 ### Test cases
 
-1. **[needs a check of this PR's CI run]** This pull request has no `staging` label: its build job should run every check and skip "Zip" and the upload.
+1. **[verified]** This pull request has no `staging` label. Its build ran lint, the app build and the API tests, and skipped "Zip" and the upload; acceptance passed.
 2. **[needs your phone]** After the old artifacts are cleared and this merges, the run on `main` saves `site.zip` and deploys to staging. Open https://helpbook-staging.azurewebsites.net and the staging banner names this pull request.
