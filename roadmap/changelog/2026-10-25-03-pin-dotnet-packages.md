@@ -1,6 +1,6 @@
-## 2026-10-25 · Builds use one pinned .NET package version (S-141)
+## 2026-10-25 · Builds use one pinned .NET package version (S-142)
 
-**Story S-141.** On Oct 25 every build and acceptance run failed to restore: "Unable to find a stable package Microsoft.Extensions.Hosting.Abstractions with version (>= 10.0.14)." The project files asked for any 10.0 version (`10.0.*`), so the build took `Microsoft.Extensions.Hosting` 10.0.14 as soon as it appeared, before the package it depends on was out. Taylor asked to fix the NuGet restore error in its own PR.
+**Story S-142.** On Oct 25 every build and acceptance run failed to restore: "Unable to find a stable package Microsoft.Extensions.Hosting.Abstractions with version (>= 10.0.14)." The project files asked for any 10.0 version (`10.0.*`), so the build took `Microsoft.Extensions.Hosting` 10.0.14 as soon as it appeared, before the package it depends on was out. Taylor asked to fix the NuGet restore error in its own PR.
 
 ### What changed
 
