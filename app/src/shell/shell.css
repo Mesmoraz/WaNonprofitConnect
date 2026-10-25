@@ -132,8 +132,10 @@
   .page-cta { border: 1px solid var(--line-2); border-bottom: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
 }
 
-/* The demo's one grey line (VOICE.md rule 5), across the top of the content. */
+/* The demo's one grey line (VOICE.md rule 5), across the top of the content. It stays put while the page scrolls under
+   it, so Settings and Leave the demo are always one tap away (Taylor, Oct 25: "I do not see that on my phone"). */
 .demo-bar {
+  position: sticky; top: 0; z-index: 6;
   margin: 0; padding: 0 var(--gutter); height: 34px; display: flex; align-items: center; justify-content: center; gap: 6px;
   border-bottom: 1px solid var(--line-2); background: var(--paper-2); white-space: nowrap; overflow: hidden;
 }

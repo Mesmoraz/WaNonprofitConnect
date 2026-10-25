@@ -1,0 +1,58 @@
+# Deletes saved build files nobody will read again, so the repo's artifact storage never fills and fails the build
+# ("Artifact storage quota has been hit", Oct 22 and Oct 25). Runs after every "Deploy to staging", once a day, and
+# by hand from the Actions tab.
+#
+# Kept: the site.zip that "Deploy to production" would ship (the last successful staging deploy of main, found the
+# same way it finds it), anything from a run still going, and failed-test reports for 3 days. Everything else goes.
+# GitHub recounts storage only every 6 to 12 hours, so space freed here shows up in uploads a few hours later.
+name: Clean saved build files
+
+on:
+  workflow_run:
+    workflows: [Deploy to staging]
+    types: [completed]
+  schedule:
+    - cron: '17 11 * * *'   # 4:17 am Pacific
+  workflow_dispatch:
+
+permissions:
+  actions: write   # list and delete artifacts
+
+concurrency:
+  group: clean-artifacts
+  cancel-in-progress: false
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete what isn't needed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # The run production would ship from: the same query as deploy-production.yml.
+          keep_run=$(gh run list -R "$GITHUB_REPOSITORY" --workflow deploy-staging.yml --event push --branch main --status success --limit 1 --json databaseId --jq '.[0].databaseId // empty')
+          echo "Keeping the site.zip of run ${keep_run:-none} for production."
+          # Runs still going may need their own files in a later job.
+          live=$(gh run list -R "$GITHUB_REPOSITORY" --status in_progress --limit 100 --json databaseId --jq '.[].databaseId')
+          reports_after=$(date -u -d '3 days ago' +%Y-%m-%dT%H:%M:%SZ)
+
+          gh api --paginate "repos/$GITHUB_REPOSITORY/actions/artifacts?per_page=100" \
+            --jq '.artifacts[] | select(.expired | not) | [.id, .name, .workflow_run.id, .created_at, .size_in_bytes] | @tsv' > artifacts.tsv
+
+          deleted=0; freed=0; kept=0
+          while IFS=$'\t' read -r id name run created size; do
+            if [ "$name" = site ] && [ "$run" = "$keep_run" ]; then why="production's build"
+            elif grep -qx "$run" <<< "$live"; then why="run still going"
+            elif [ "$name" = acceptance-report ] && [[ "$created" > "$reports_after" ]]; then why="report under 3 days old"
+            else why=""
+            fi
+            if [ -n "$why" ]; then
+              echo "keep    $name (run $run, $created): $why"; kept=$((kept + 1))
+            else
+              gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/artifacts/$id" > /dev/null
+              echo "delete  $name (run $run, $created, $((size / 1048576)) MB)"; deleted=$((deleted + 1)); freed=$((freed + size))
+            fi
+          done < artifacts.tsv
+
+          echo "Deleted $deleted saved files ($((freed / 1048576)) MB), kept $kept." | tee -a "$GITHUB_STEP_SUMMARY"

@@ -186,7 +186,7 @@ jobs:
             app/playwright-report
             app/test-results
             api.log
-          retention-days: 14
+          retention-days: 3    # clean-artifacts.yml deletes it after 3 days anyway
 
   staging:
     needs: [build, acceptance]
