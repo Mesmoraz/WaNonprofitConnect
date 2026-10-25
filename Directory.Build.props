@@ -1,0 +1,8 @@
+<Project>
+  <!-- One version for every Microsoft .NET 10 package. It was "10.0.*", which takes a new patch the moment its first
+       packages reach NuGet; on Oct 25 that picked Hosting 10.0.14 before Hosting.Abstractions 10.0.14 was there,
+       and every build failed to restore. Move it by hand when a patch is fully out (docs/OPERATIONS.md). -->
+  <PropertyGroup>
+    <DotNetPackagesVersion>10.0.13</DotNetPackagesVersion>
+  </PropertyGroup>
+</Project>
