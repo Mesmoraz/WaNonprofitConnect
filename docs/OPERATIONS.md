@@ -95,3 +95,9 @@ az sql db restore -g helpbook-alpha -s helpbookalpha0923 -n helpbook-alpha-db --
 Then either copy the rows you need across, or change the connection string's `Database=` in App Service settings to the restored database and restart. The app's identity needs the same roles on the new database (`db_datareader`, `db_datawriter`, `db_ddladmin`); grant them in the Query editor as for the original.
 
 Restoring creates a second database, which may not fall under the free offer. Delete it when done.
+
+## Updating the .NET packages
+
+Every Microsoft .NET 10 package uses one version, `DotNetPackagesVersion` in `Directory.Build.props` at the repo root. It is pinned, not `10.0.*`: a floating version takes a new patch the moment its first packages reach NuGet, and on Oct 25 every build failed to restore because `Microsoft.Extensions.Hosting` 10.0.14 was out before `Microsoft.Extensions.Hosting.Abstractions` 10.0.14.
+
+Microsoft ships a patch on the second Tuesday of each month (security fixes among them). A day or so later, change the number, run `dotnet test tests/WaNonprofitConnect.Tests`, and open a pull request; its CI restores everything fresh.
