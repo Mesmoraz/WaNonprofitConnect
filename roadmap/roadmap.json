@@ -2109,7 +2109,7 @@
       "id": "S-132",
       "epic": "E-24",
       "title": "Home asks what brings you here, and each answer is one step from what you came to do",
-      "status": "ready",
+      "status": "backlog",
       "added": "2026-10-20",
       "tasks": [
         {
@@ -2133,7 +2133,7 @@
           "status": "ready"
         }
       ],
-      "source": "Taylor, 2026-10-20, on Home for a just-joined organization: a new user won’t understand what to do; make it question oriented, or a Get started here with a flow chart of options Brief approved Oct 21 (\"merge\", PR #43).",
+      "source": "Taylor, 2026-10-20, on Home for a just-joined organization: a new user won’t understand what to do; make it question oriented, or a Get started here with a flow chart of options Brief approved Oct 21 (\"merge\", PR #43). Set aside Oct 25: Taylor chose the map-first Home (S-140) in its place",
       "lane": "app"
     },
     {
@@ -2183,6 +2183,16 @@
       "tasks": [],
       "source": "Taylor, Oct 25: the map is too dark",
       "lane": "map"
+    },
+    {
+      "id": "S-140",
+      "epic": "E-24",
+      "title": "Home puts the map first and says less: map at the top, a short welcome card, 2-line posts",
+      "status": "ready",
+      "added": "2026-10-25",
+      "tasks": [],
+      "lane": "app",
+      "source": "Taylor, Oct 25: \"it feels too wordy on the phone, too cluttered\"; \"We want the map to be one of the more prominent features of the home page\""
     }
   ]
 }

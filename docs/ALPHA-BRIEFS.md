@@ -336,7 +336,7 @@ Checked against the mission: Need → Match → Golden Thread → Action → Imp
 
 ---
 
-# Home asks what brings you here (S-132, approved Oct 21)
+# Home asks what brings you here (S-132, approved Oct 21, set aside Oct 25 for S-140)
 
 Approved by Taylor 2026-10-21 in chat ("merge"), as written. Built in its own pull request afterwards.
 
@@ -423,3 +423,39 @@ Taylor, Oct 25: "let's redesign the color scheme the map is too dark". Taylor pi
 - **VOICE.md:** no copy changes.
 - **SDLC.md, keeping designs uncoupled:** colors live in `:root` tokens; the map reads them, never raw values.
 - **Tests (when built):** `[S-139]` acceptance test: with the phone in dark mode, the map's background is the light land color and a golden thread is drawn in its light-mode gold.
+
+---
+
+# Home puts the map first (S-140, approved Oct 25)
+
+Approved by Taylor 2026-10-25 in chat ("Approved as written"). Replaces the S-132 question card, which is set aside. Built in its own pull request afterwards.
+
+Taylor, Oct 25: "it feels too wordy on the phone, too cluttered" and "We want the map to be one of the more prominent features of the home page."
+
+**What's wrong now** (a phone, 375 wide): 6 sections stacked, about 95 words before the first post, the organization's name twice (the header pill and the heading), a "Nothing waiting on you." block, a small map below the fold, and 5 rows of counts that repeat the Board's tabs.
+
+## Home
+
+- **For:** the same calm place to land (S-126), with the map as the first thing you see.
+- **Your organization:** your name, then "Seattle · Food". Stays.
+- **The map:** right under your name, about a third of a phone screen tall. The still picture of your pin, organizations around you, and their golden threads, as S-126 drew it, only larger. No "Near you" heading. On the map, bottom corner, a small label: "14 organizations · 3 golden threads". With organizations but no golden threads: "3 organizations". With no one near: "No other organizations within 25 mi yet". Tap anywhere on the map opens the Map. Under it, one grey line: "Tap the map to open it." "Open the map" goes.
+- **Waiting on you:** shows only when a thread is waiting on you, then under the map, as S-126 built it. "Nothing waiting on you." goes.
+- **Welcome card:** shows when it does now (until your organization has an open need and an open offer). Headline "Post one need, one offer" (was "Start with one need, one offer", 7 words). Line: "Each one can become a golden thread." The two buttons stay. "Not now" moves up beside the headline, small and grey.
+- **Your standing line** (when the welcome card doesn't show): stays, "2 needs, 1 offer open · 3 golden threads · Your page".
+- **New this week:** heading stays. 2 posts, not 3. Each card is 2 lines: the title, then "Offer · Northwest Harvest · 8h". The NEED or OFFER tag and the "Seattle · 6 pallets" line go from these cards (the Board keeps them). "See the whole board" stays. With none: "Nothing new this week. See the whole board?" as now.
+- **On the board:** goes. Its rows repeated the Board's tabs, one tap away.
+
+## Every tab
+
+- **The header pill on a phone:** your initial only (was "Test Person · Rainier Valley Food B…", cut off). Tap does what it does now. A screen reader still reads your name and organization. Wider screens keep the name.
+
+## Stays and goes
+
+- **Stays:** the tabs, the "You're in. Welcome, {org}." toast, the Board, Map, Post, and Inbox as they are.
+- **Goes:** the S-132 question card (set aside, never built), "Near you" as a heading, "Nothing waiting on you.", "On the board", the third New this week post.
+
+## Checked against
+
+- **MISSION.md:** the map is where golden threads show; putting it first puts the threads in front of everyone who opens the app.
+- **VOICE.md:** headlines 6 words or fewer ("Post one need, one offer" is 5); one line under it; golden thread, never connection; digits; sentence case; no em-dashes or exclamation marks.
+- **Tests (when built):** `[S-140]` the map comes first and opens the Map, its label, the welcome card's words, Waiting on you hidden with nothing waiting, 2 two-line posts, no On the board, the initial-only pill on a phone.
