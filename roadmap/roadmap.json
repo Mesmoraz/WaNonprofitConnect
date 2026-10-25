@@ -2195,6 +2195,22 @@
       "source": "Taylor, Oct 25: \"it feels too wordy on the phone, too cluttered\"; \"We want the map to be one of the more prominent features of the home page\""
     },
     {
+      "id": "S-136",
+      "epic": "E-24",
+      "title": "Home on a wide monitor: wider, and larger type",
+      "status": "review",
+      "added": "2026-10-21",
+      "tasks": []
+    },
+    {
+      "id": "S-141",
+      "epic": "E-26",
+      "title": "Saved build files clean themselves up, so the storage never fills and fails the build",
+      "status": "review",
+      "added": "2026-10-25",
+      "tasks": []
+    },
+    {
       "id": "S-138",
       "epic": "E-26",
       "title": "The demo strip stays at the top while you scroll, so Settings and Leave the demo are always in reach",
