@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { ORG, signIn } from './helpers'
 
-// Welcome card (docs/ALPHA-BRIEFS.md, approved in PR #6): on Home (S-126) until your organization has a need and an offer.
+// Welcome card (docs/ALPHA-BRIEFS.md, approved in PR #6, shortened in S-140): on Home (S-126) until your organization has a need and an offer.
 
 /** Start from nothing: close whatever Tacoma-Pierce Habitat has open from earlier runs. */
 async function closeOpenPosts(page: Page) {
@@ -14,10 +14,10 @@ test('[S-96] a new organization is asked for one need and one offer, and the car
   await closeOpenPosts(page)
   await page.goto('/')
 
-  const card = page.getByRole('region', { name: 'Start with one need, one offer' })
+  const card = page.getByRole('region', { name: 'Post one need, one offer' })
   await expect(card).toBeVisible()
-  await expect(card).toContainText('Post one thing you need and one thing you could give. When another organization helps, it becomes a golden thread on the map.')
-  await expect(card.getByRole('link', { name: 'the map' })).toHaveAttribute('href', '/map')
+  await expect(card).toContainText('Each one can become a golden thread.')
+  await expect(card.getByRole('button', { name: 'Not now' })).toBeVisible()
   // Home has no green button (S-126): both are plain.
   await expect(card.getByRole('link', { name: 'Post a need' })).not.toHaveClass(/primary/)
   await expect(card.getByRole('link', { name: 'Post an offer' })).not.toHaveClass(/primary/)
@@ -42,7 +42,7 @@ test('[S-96] a new organization is asked for one need and one offer, and the car
   await page.getByRole('button', { name: 'Post offer' }).click()
   await expect(page.getByText('Posted. It’s on the board now.')).toBeVisible()
   await page.getByRole('link', { name: 'Home', exact: true }).click()
-  await expect(page.getByRole('heading', { name: 'Waiting on you' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'New this week' })).toBeVisible()
   await expect(card).toHaveCount(0)
 })
 
@@ -50,11 +50,11 @@ test('[S-96] "Not now" hides the welcome card on this device', async ({ page }) 
   await signIn(page, { name: 'Drew', org: ORG.habitat })
   await closeOpenPosts(page)
   await page.goto('/')
-  const card = page.getByRole('region', { name: 'Start with one need, one offer' })
+  const card = page.getByRole('region', { name: 'Post one need, one offer' })
   await expect(card).toBeVisible()
   await card.getByRole('button', { name: 'Not now' }).click()
   await expect(card).toHaveCount(0)
   await page.reload()
-  await expect(page.getByRole('heading', { name: 'Waiting on you' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'New this week' })).toBeVisible()
   await expect(card).toHaveCount(0)
 })

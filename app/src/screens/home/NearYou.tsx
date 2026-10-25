@@ -2,14 +2,15 @@ import { lazy, Suspense, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { MapData, OrgSummary } from '../../api'
 
-// "Near you" (S-126, Taylor Oct 19: "truly a live map, small, around your organization"). The live map is MapLibre and
+// "Near you" (S-126, Taylor Oct 19: "truly a live map, small, around your organization"; S-140: first on Home, and larger,
+// Taylor Oct 25: "one of the more prominent features of the home page"). The live map is MapLibre and
 // deck.gl, about 2 MB, so it loads once the rest of Home is up. Until then a plain drawing of the same place stands in.
 const NearMap = lazy(() => import('./NearMap'))
 
 const RADIUS_MI = 25
-const FRAME_PX = 200                  // the map's height on Home
+const FRAME_PX = 270                  // the map's height on Home, about a third of a phone screen
 const RING_PX = FRAME_PX / 2 - 16     // the 25 mi circle, in pixels
-const W = 320, H = 160
+const W = 320, H = 216
 const PX_PER_MI = (H / 2 - 12) / RADIUS_MI
 const MI_PER_DEG_LAT = 69
 const WA = { lat: 47.4, lon: -120.5 }        // the middle of Washington, when your organization has no place yet
@@ -28,7 +29,7 @@ const zoomFor = (lat: number) => Math.log2(78271.5 * Math.cos(lat * Math.PI / 18
 type At = { lat: number; lon: number }
 const at = (o: OrgSummary | undefined): At | null => o && o.lat != null && o.lon != null ? { lat: o.lat, lon: o.lon } : null
 
-/** Your pin, the organizations around you, and their golden threads, on a small live map. Tap opens the Map there. */
+/** Your pin, the organizations around you, and their golden threads, on a live map that doesn't move. Tap opens the Map there. */
 export function NearYou({ data, me }: { data: MapData; me: OrgSummary | undefined }) {
   const byEin = new Map(data.members.map(o => [o.ein, o]))
   const here = at(me) ?? at(me && byEin.get(me.ein))
@@ -51,19 +52,21 @@ export function NearYou({ data, me }: { data: MapData; me: OrgSummary | undefine
     return () => clearTimeout(t)
   }, [])
 
+  // The label on the map (S-140): "14 organizations · 3 golden threads", "3 organizations", or no one near yet.
+  const label = !here ? '' : !near.length ? `No other organizations within ${RADIUS_MI} mi yet`
+    : [plural(near.length, 'organization'), goldenNear.length ? plural(goldenNear.length, 'golden thread') : ''].filter(Boolean).join(' · ')
+
   const picture = <Picture data={data} me={me} here={here} byEin={byEin} others={others} />
-  return (
-    <Link to={to} className="card tap near-card">
+  return <>
+    <Link to={to} className="card tap near-card" aria-label={label ? `${label}. Open the map` : 'Open the map'}>
       <span className="near-frame" style={{ height: FRAME_PX }}>
         {live ? <Suspense fallback={picture}><NearMap data={data} me={me?.ein} view={view} /></Suspense> : picture}
         {here && <span className="near-ring" style={{ width: RING_PX * 2, height: RING_PX * 2 }} aria-hidden="true" />}
-      </span>
-      <span className="near-line">
-        {here && <>{plural(near.length, 'organization')}, {plural(goldenNear.length, 'golden thread')} within {RADIUS_MI} mi. </>}
-        <span className="near-open">Open the map</span>
+        {label && <span className="near-label">{label}</span>}
       </span>
     </Link>
-  )
+    <p className="near-hint">Tap the map to open it.</p>
+  </>
 }
 
 /** The stand-in while the map loads: the same place, drawn plainly. */
