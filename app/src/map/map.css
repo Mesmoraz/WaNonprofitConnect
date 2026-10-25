@@ -2,7 +2,5 @@
 .wm-root .maplibregl-ctrl-attrib { background: color-mix(in srgb, var(--paper) 82%, transparent); color: var(--ink-2); font-size: 11px; }
 .wm-root .maplibregl-ctrl-attrib a { color: var(--ink-2); }
 .wm-root .maplibregl-ctrl-attrib.maplibregl-compact { background: var(--paper); }
-.wm-root .maplibregl-ctrl-attrib-button { filter: var(--wm-attrib-filter, none); }
-:root[data-theme="dark"] .wm-root { --wm-attrib-filter: invert(1); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .wm-root { --wm-attrib-filter: invert(1); } }
+.wm-root { background: var(--map-land); }   /* no dark flash before the base map draws (S-139) */
 .wm-root .maplibregl-canvas { outline: none; }

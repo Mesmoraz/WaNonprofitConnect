@@ -7,6 +7,8 @@ export interface MapTheme {
   dark: boolean
   ground: RGBA; paper: RGBA; ink: RGBA; ink2: RGBA; ink3: RGBA
   need: RGBA; offer: RGBA; golden: RGBA; goldenGlow: RGBA
+  /** The base map's own colors: land, water, parks and woods, region dots. */
+  land: RGBA; water: RGBA; park: RGBA; dot: RGBA
   /** Stable string, handy as a memo key. */
   key: string
 }
@@ -14,6 +16,7 @@ export interface MapTheme {
 const FALLBACK: Record<string, string> = {
   '--ground': '#E9ECE6', '--paper': '#FFFFFF', '--ink': '#1B2430', '--ink-2': '#4B5563', '--ink-3': '#7C8794',
   '--need': '#B8741A', '--offer': '#2E6B4E', '--thread-golden': '#D9A12B', '--thread-golden-glow': '#F2C14E',
+  '--map-land': '#F4F1EA', '--map-water': '#CFE0E3', '--map-park': '#E3EBDD', '--map-dot': '#5E6B78',
 }
 
 export function parseColor(input: string): RGBA | null {
@@ -43,8 +46,9 @@ export function readTheme(el: Element = document.documentElement): MapTheme {
   const t = {
     ground: get('--ground'), paper: get('--paper'), ink: get('--ink'), ink2: get('--ink-2'), ink3: get('--ink-3'),
     need: get('--need'), offer: get('--offer'), golden: get('--thread-golden'), goldenGlow: get('--thread-golden-glow'),
+    land: get('--map-land'), water: get('--map-water'), park: get('--map-park'), dot: get('--map-dot'),
   }
-  const dark = luminance(t.ground) < 0.35
+  const dark = luminance(t.land) < 0.35
   return { ...t, dark, key: JSON.stringify(t) }
 }
 
