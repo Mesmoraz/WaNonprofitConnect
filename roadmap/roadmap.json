@@ -2173,6 +2173,14 @@
       "status": "review",
       "added": "2026-10-22",
       "tasks": []
+    },
+    {
+      "id": "S-138",
+      "epic": "E-26",
+      "title": "The demo strip stays at the top while you scroll, so Settings and Leave the demo are always in reach",
+      "status": "review",
+      "added": "2026-10-25",
+      "tasks": []
     }
   ]
 }
