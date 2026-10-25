@@ -23,11 +23,18 @@
 }
 :root {
   --thread-golden: #D9A12B; --thread-golden-glow: #F2C14E;
+  --map-land: #F4F1EA; --map-water: #CFE0E3; --map-park: #E3EBDD; --map-dot: #5E6B78;
   --radius: 10px; --radius-lg: 14px; --gutter: 16px; --tap: 44px;
   --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: "Bricolage Grotesque", var(--font-body);
   --staging-h: 0px;   /* the staging strip's height; 0 on the real site (app.css) */
   --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* The map is always light (S-139): its box keeps the light set the map reads, whatever the phone's mode. */
+.wm-root {
+  --ground: #E9ECE6; --paper: #FFFFFF; --ink: #1B2430; --ink-2: #4B5563; --ink-3: #7C8794;
+  --need: #B8741A; --offer: #2E6B4E;
 }
 
 * { box-sizing: border-box; }

@@ -82,7 +82,7 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
       // Points are street addresses now (a ZIP center only when the geocoder missed), so the spread is ~50 m:
       // enough to part two at one address, not the old 1.3 km cloud.
       radiusUnits: 'meters', getRadius: 60, radiusMinPixels: 1, radiusMaxPixels: 3,
-      getFillColor: withAlpha(t.ink3, t.dark ? 0.3 : 0.36),
+      getFillColor: withAlpha(t.dot, t.dark ? 0.45 : 0.4),
       updateTriggers: { getFillColor: t.key },
     }),
     new ScatterplotLayer<MapNode, Seat>({
@@ -201,7 +201,7 @@ export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap
     const map = new MlMap({
       container: box,
       // A plain ground until the real style arrives (the theme effect below sets it).
-      style: { version: 8, sources: {}, layers: [{ id: 'background', type: 'background', paint: { 'background-color': `rgb(${theme.ground.slice(0, 3).join(',')})` } }] },
+      style: { version: 8, sources: {}, layers: [{ id: 'background', type: 'background', paint: { 'background-color': `rgb(${theme.land.slice(0, 3).join(',')})` } }] },
       ...(initialView ? { center: initialView.center, zoom: initialView.zoom } : { bounds: WA_BOUNDS, fitBoundsOptions: { padding: 24 } }),
       maxBounds: MAX_BOUNDS,
       minZoom: 4, maxZoom: 16,
