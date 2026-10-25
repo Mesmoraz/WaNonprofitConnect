@@ -393,3 +393,33 @@ Taylor, Oct 20, on Home for a just-joined organization: "the home page doesn't f
 - **MISSION.md:** each answer is a start on Need → Match → Golden Thread. "We need something" and "We have something to give" are the two ends of a thread; "Who's near us?" is the map of the threads; "Just looking" is how a curious organization finds its way in.
 - **VOICE.md:** headlines 6 words or fewer ("What brings you here today?" is 5, "Two ways to start" is 4); one line under each; "We'll" only as a promise; thread and golden thread, never connection or match; sentence case; digits; no exclamation marks or em-dashes. The answers are written as the organization talking ("We need something"), since it's their answer to a question.
 - **Tests (when built):** `[S-132]` acceptance tests for a new organization: the four answers, each second step, the search, "Not now" and "Start here", the one line after a first post, and the S-126 line after both.
+
+---
+
+# The map, always light (S-139, proposed Oct 25)
+
+Taylor, Oct 25: "let's redesign the color scheme the map is too dark". Taylor picked "always light" from 2 prototypes (always light, or light plus a lifted dark version), in chat the same day. Approving this pull request approves the brief. It gets built in its own pull request afterwards.
+
+**What's wrong now:** a phone in dark mode gets a near-black map, and the threads and pins sit in the dark. A phone in light mode gets a flat grey map: land, water and woods are almost the same grey, so Puget Sound and the coast disappear.
+
+## The map's colors
+
+- **For:** see Washington, and the threads on it, at a glance on any phone.
+- **The one action:** none new. The map's taps stay as they are.
+- **Always light.** The map is light on every phone, in dark mode too. Dark mode still darkens the tabs, cards and sheets around and over the map.
+- **Land** is a warm cream (#F4F1EA). **Water** is a soft blue (#CFE0E3), so the Sound, the lakes and the coast show again. **Parks and woods** are a pale green (#E3EBDD).
+- **Faint dots** (every Washington nonprofit) are a slate grey (#5E6B78), a little darker than now.
+- **Pins, threads, glow, sparks and confetti** use their light-mode colors on every phone: amber needs, green offers, golden threads. They aren't changed, only no longer swapped for the dark-mode set.
+- **Town names and roads** stay as quiet as now, with the town names on the cream.
+- **Home's small map** ("Near you") gets the same colors.
+- **No new words.** Nothing a person reads changes.
+- **Built as tokens:** `--map-land`, `--map-water`, `--map-park`, `--map-dot` in `tokens.css`, the same in light and dark, so a later change touches one block.
+- **Goes:** the dark base map, and the grey ground under the map.
+- **Stays:** everything on the map and over it, as S-127, S-129, S-130 and S-131 left it.
+
+## Checked against
+
+- **MISSION.md:** the map is where golden threads are seen. A light map lets them be the brightest thing on screen on every phone.
+- **VOICE.md:** no copy changes.
+- **SDLC.md, keeping designs uncoupled:** colors live in `:root` tokens; the map reads them, never raw values.
+- **Tests (when built):** `[S-139]` acceptance test: with the phone in dark mode, the map's background is the light land color and a golden thread is drawn in its light-mode gold.
