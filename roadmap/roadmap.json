@@ -2193,6 +2193,14 @@
       "tasks": [],
       "lane": "app",
       "source": "Taylor, Oct 25: \"it feels too wordy on the phone, too cluttered\"; \"We want the map to be one of the more prominent features of the home page\""
+    },
+    {
+      "id": "S-136",
+      "epic": "E-24",
+      "title": "Home on a wide monitor: wider, and larger type",
+      "status": "review",
+      "added": "2026-10-21",
+      "tasks": []
     }
   ]
 }
