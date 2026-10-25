@@ -2188,7 +2188,7 @@
       "id": "S-140",
       "epic": "E-24",
       "title": "Home puts the map first and says less: map at the top, a short welcome card, 2-line posts",
-      "status": "ready",
+      "status": "review",
       "added": "2026-10-25",
       "tasks": [],
       "lane": "app",

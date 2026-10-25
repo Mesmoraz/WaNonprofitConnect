@@ -447,7 +447,7 @@ Taylor, Oct 25: "it feels too wordy on the phone, too cluttered" and "We want th
 
 ## Every tab
 
-- **The header pill on a phone:** your initial only (was "Test Person · Rainier Valley Food B…", cut off). Tap does what it does now. A screen reader still reads your name and organization. Wider screens keep the name.
+- **The header pill on a phone:** your initial only (was "Test Person · Rainier Valley Food B…", cut off). Tap does what it does now. A screen reader still reads your name and organization. Wider screens (the side rail, from 900 wide) keep the name.
 
 ## Stays and goes
 
