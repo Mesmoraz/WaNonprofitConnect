@@ -2175,6 +2175,16 @@
       "tasks": []
     },
     {
+      "id": "S-139",
+      "epic": "E-25",
+      "title": "The map is always light: warm land, blue water, on every phone",
+      "status": "ready",
+      "added": "2026-10-25",
+      "tasks": [],
+      "source": "Taylor, Oct 25: the map is too dark",
+      "lane": "map"
+    },
+    {
       "id": "S-140",
       "epic": "E-24",
       "title": "Home puts the map first and says less: map at the top, a short welcome card, 2-line posts",
