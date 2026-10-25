@@ -4,7 +4,7 @@ import { DEMO, leaveDemo, startDemo, useMe, useSignOut } from '../api'
 import { presetById } from '../api/mock/settings'
 import { openFeedback } from './Feedback'
 
-/** Your name, with your organization behind it. Opens a small menu: Your organization, Admin, feedback, sign out. */
+/** Your name, with your organization behind it (on a phone, your initial only: S-140). Opens a small menu: Your organization, Admin, feedback, sign out. */
 export function WhoButton() {
   const { data: me } = useMe()
   const signOut = useSignOut()
@@ -23,11 +23,12 @@ export function WhoButton() {
 
   if (!me) return null
   const org = me.membership?.orgName
+  const who = org ? `${me.account.name} · ${org}` : me.account.name
   return (
     <div className="who-wrap" ref={ref}>
-      <button className="who" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(o => !o)}>
+      <button className="who" aria-haspopup="menu" aria-expanded={open} aria-label={who} onClick={() => setOpen(o => !o)}>
         <span className="dot" aria-hidden>{me.account.name.charAt(0).toUpperCase()}</span>
-        <span className="name">{org ? `${me.account.name} · ${org}` : me.account.name}</span>
+        <span className="name">{who}</span>
       </button>
       {open && (
         <div className="who-menu" role="menu">
