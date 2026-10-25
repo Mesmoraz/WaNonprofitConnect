@@ -15,7 +15,7 @@
 .home-sec { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .home-h { font-size: 17px; }
 .home-cards { display: flex; flex-direction: column; gap: 8px; }
-.home-none { font-size: 14px; color: var(--ink-3); }
+.home .home-none { font-size: 14px; color: var(--ink-3); }   /* .home first: the shared .hint (12px) loads after this file */
 .home-more { align-self: flex-start; font-size: 14px; }
 .home-thread, .home-post { color: var(--ink); text-decoration: none; display: flex; flex-direction: column; gap: 2px; }
 .card.near-card { padding: 0; overflow: hidden; color: var(--ink); text-decoration: none; }
@@ -39,11 +39,22 @@
 .near-hint { margin: 0; font-size: 13px; color: var(--ink-3); }
 
 @media (min-width: 1100px) {
-  .home { max-width: 1040px; }
+  .home { max-width: 1200px; }
   .home-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 28px; align-items: start; }
   /* Left: waiting, then where you stand. Right: new this week. */
   .home-grid > :not(.home-new) { grid-column: 1; }
   .home-new { grid-column: 2; grid-row: 1 / span 3; }
+}
+
+/* A wide monitor is read from further away: one step up in type. */
+@media (min-width: 1400px) {
+  .home .h { font-size: 26px; }
+  .home .sub, .home .home-standing { font-size: 16px; }
+  .home .home-h { font-size: 20px; }
+  .home .home-none, .home .home-more, .home .near-hint { font-size: 16px; }
+  .home .near-label { font-size: 15px; }
+  .home .card .t { font-size: 17px; }
+  .home .card .m { font-size: 15px; }
 }
 
 /* The small map is too small for MapLibre's credits line to start open (it does on narrow screens): keep it to the (i). */
