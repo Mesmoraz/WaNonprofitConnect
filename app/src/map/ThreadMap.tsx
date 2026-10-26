@@ -7,20 +7,17 @@ import type { LayersList, PickingInfo } from '@deck.gl/core'
 import { PathLayer, ScatterplotLayer, SolidPolygonLayer, TextLayer } from '@deck.gl/layers'
 import { PathStyleExtension } from '@deck.gl/extensions'
 import { shimTransformForDeck } from './compat'
-import { FlowExtension, RingExtension, SoftGlowExtension, type RingExtensionProps } from './extensions'
+import { SoftGlowExtension } from './extensions'
 import { MAX_BOUNDS, STYLE_DARK, STYLE_LIGHT, WA_BOUNDS, firstSymbolId, quietStyle } from './basemap'
 import { jitter, pointAt, type LonLat } from './geometry'
 import {
-  DASH_WRAP, buildArcs, buildBadges, buildFitArcs, fitScope, buildGlows, buildIndex, buildNodes, degrees, openCounts, placeLabels, scopeOf, shownThreads,
-  type Badge, type GlowArc, type LabelDatum, type MapNode, type ThreadArc,
+  buildArcs, buildFitArcs, fitScope, buildGlows, buildIndex, buildNodes, degrees, openCounts, placeLabels, scopeOf, shownThreads,
+  type GlowArc, type LabelDatum, type MapNode, type ThreadArc,
 } from './model'
 import { useMapTheme, useReducedMotion, withAlpha, type MapTheme, type RGBA } from './theme'
 import type { MapPlace, ThreadMapProps } from './types'
 
 const FONT = '"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif'
-const FLOW_PX_PER_S = 24          // dash drift speed; 48 px wrap / 24 = one seamless loop every 2 s
-const MOVER_MS = 1700             // one trip along a selected thread, like the prototype's 1.6 s
-const SPARK_MS = 2600             // one trip along any other line: calmer, since every line has its sparks (S-127)
 const CONFETTI_MS = 1400          // a burst at both pins when a thread turns golden while you look (S-127)
 const CONFETTI_PER_PIN = 26
 const PULSE_MS = 1600             // your pin's pulse while a toggle is on (S-130)
@@ -35,10 +32,8 @@ const WORLD_RING: LonLat[] = [[-140, 35], [-100, 35], [-100, 60], [-140, 60], [-
 
 // Shared extension instances: deck compares extensions by identity-ish equality, so keep them stable.
 const dashExt = new PathStyleExtension({ dash: true, dashMode: 'path' })
-const flowExt = new FlowExtension()
 const glowPathExt = new SoftGlowExtension({ shape: 'path' })
 const glowPointExt = new SoftGlowExtension({ shape: 'point' })
-const ringExt = new RingExtension()
 
 interface Frame {
   theme: MapTheme
@@ -46,8 +41,6 @@ interface Frame {
   nodes: MapNode[]
   arcs: ThreadArc[]
   glows: GlowArc[]
-  movers: ThreadArc[]
-  badges: Badge[]
   confetti: Confetto[]
   /** Your pin while a toggle is on (S-130): a ring swells out from it and fades. */
   pulse: { position: LonLat; radius: number; color: RGBA } | null
@@ -64,7 +57,6 @@ interface Frame {
   hover?: string
 }
 
-type Mover = { position: LonLat; color: RGBA }
 type Confetto = { position: LonLat; color: RGBA; size: number }
 /** One golden moment: where it pops and when. Each piece flies out on its own heading and falls. */
 type Burst = { at: LonLat[]; start: number; pieces: { angle: number; speed: number; size: number; color: RGBA }[] }
@@ -83,18 +75,6 @@ function dotLook(zoom: number): { radius: number; alpha: number } {
 
 function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
   const t = f.theme
-  const shift = animate ? ((now / 1000) * FLOW_PX_PER_S) % DASH_WRAP : 0
-  // Sparks: one per thread on each line (S-127), evenly spaced, each running the way its thread gives.
-  const movers: Mover[] = animate
-    ? f.movers.flatMap((a, i) => {
-        const color = t.goldenGlow
-        const lap = now / (a.related ? MOVER_MS : SPARK_MS) + i * 0.29
-        return a.sparks.map((dir, k) => {
-          const s = (lap + k / a.sparks.length) % 1
-          return { position: pointAt(a, dir === 1 ? s : 1 - s), color }
-        })
-      })
-    : []
   const dot = dotLook(f.zoom)
   const layers: LayersList = [
     f.dots && new ScatterplotLayer<unknown, Seat>({
@@ -127,13 +107,13 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
       widthUnits: 'pixels', getPath: d => d.path, getWidth: d => d.width, getColor: d => d.color,
       capRounded: true, jointRounded: true, extensions: [glowPathExt],
     }),
-    new PathLayer<ThreadArc, Seat & { flowShift: number; getDashArray: (d: ThreadArc) => [number, number]; dashUnits: 'pixels'; dashGapPickable: boolean }>({
+    // Still lines (S-147, Taylor Oct 25: "too many threads and moving pieces"): nothing drifts or runs along them.
+    new PathLayer<ThreadArc, Seat & { getDashArray: (d: ThreadArc) => [number, number]; dashUnits: 'pixels'; dashGapPickable: boolean }>({
       id: 'wm-threads', data: f.arcs, pickable: true,
       widthUnits: 'pixels', getPath: d => d.path, getWidth: d => d.width, getColor: d => d.color,
       capRounded: true, jointRounded: true,
       getDashArray: d => d.dash, dashUnits: 'pixels', dashGapPickable: true,
-      flowShift: shift,
-      extensions: [dashExt, flowExt],
+      extensions: [dashExt],
     }),
     f.pulse && animate && new ScatterplotLayer<NonNullable<Frame['pulse']>>({
       id: 'wm-pulse', data: [f.pulse], pickable: false,
@@ -141,16 +121,6 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
       getRadius: d => d.radius + 18 * ((now % PULSE_MS) / PULSE_MS), getLineWidth: 2.5,
       getLineColor: d => withAlpha(d.color, 0.9 * (1 - (now % PULSE_MS) / PULSE_MS)),
       updateTriggers: { getRadius: now, getLineColor: now },
-    }),
-    movers.length > 0 && new ScatterplotLayer<Mover>({
-      id: 'wm-movers', data: movers, pickable: false,
-      radiusUnits: 'pixels', getRadius: 3.6, getPosition: d => d.position, getFillColor: d => d.color,
-      stroked: true, lineWidthUnits: 'pixels', getLineWidth: 1, getLineColor: withAlpha(t.paper, 0.9),
-    }),
-    f.badges.length > 0 && new ScatterplotLayer<Badge>({
-      id: 'wm-badges', data: f.badges, pickable: false,
-      radiusUnits: 'pixels', getRadius: 9, getPosition: d => d.position, getFillColor: d => d.fill,
-      stroked: true, lineWidthUnits: 'pixels', getLineWidth: 1.5, getLineColor: d => d.line,
     }),
     f.confetti.length > 0 && new ScatterplotLayer<Confetto>({
       id: 'wm-confetti', data: f.confetti, pickable: false,
@@ -163,17 +133,6 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
       updateTriggers: { getRadius: f.hover }, transitions: { getRadius: { duration: 160 } },
       stroked: true, lineWidthUnits: 'pixels', getLineWidth: d => d.lineWidth, getLineColor: d => d.line,
     }),
-    new ScatterplotLayer<MapNode, Seat & RingExtensionProps<MapNode>>({
-      // What's open there (S-129): green offers, and the amber share of it is needs.
-      id: 'wm-rings', data: f.nodes.filter(n => n.ringWidth > 0), pickable: false,
-      radiusUnits: 'pixels', getPosition: d => d.position,
-      getRadius: d => (d.id === f.hover ? d.ringRadius * HOVER_GROW : d.ringRadius),
-      updateTriggers: { getRadius: f.hover, needColor: t.key }, transitions: { getRadius: { duration: 160 } },
-      filled: false, stroked: true, lineWidthUnits: 'pixels',
-      getLineWidth: d => (d.id === f.hover ? d.ringWidth * HOVER_GROW : d.ringWidth), getLineColor: d => d.ring,
-      getNeedShare: d => d.needShare, needColor: t.need,
-      extensions: [ringExt],
-    }),
   ]
   if (f.fontsReady) {
     layers.push(
@@ -181,12 +140,6 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
         id: 'wm-counts', data: f.counts, pickable: false,
         getPosition: d => d.position, getText: d => d.text, getSize: 11, sizeUnits: 'pixels',
         getColor: d => d.color, fontFamily: FONT, fontWeight: 700, characterSet: '0123456789+',
-        getTextAnchor: 'middle', getAlignmentBaseline: 'center',
-      }),
-      new TextLayer<Badge>({
-        id: 'wm-badge-text', data: f.badges, pickable: false,
-        getPosition: d => d.position, getText: d => d.text, getSize: 11, sizeUnits: 'pixels',
-        getColor: d => d.ink, fontFamily: FONT, fontWeight: 700, characterSet: '0123456789',
         getTextAnchor: 'middle', getAlignmentBaseline: 'center',
       }),
       new TextLayer<LabelDatum>({
@@ -399,9 +352,7 @@ export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap
     const n = fitsNow && !selected && me ? nodeOf.get(me) : undefined
     return n ? { position: n.position, radius: n.radius, color: fitsNow!.kind === 'offers' ? theme.offer : theme.need } : null
   }, [fitsNow, selected, me, nodeOf, theme])
-  const glows = useMemo(() => buildGlows(arcs, scope, theme), [arcs, scope, theme])
-  const movers = useMemo(() => (reduced ? [] : arcs.filter(a => a.sparks.length > 0)), [arcs, reduced])
-  const badges = useMemo(() => buildBadges(arcs, scope, theme), [arcs, scope, theme])
+  const glows = useMemo(() => buildGlows(arcs, theme), [arcs, theme])
   // For the acceptance tests (app/e2e/map-threads.spec.ts): where each line's middle is, so a test can tap it like a person.
   useEffect(() => {
     const box = boxRef.current as (HTMLDivElement & { __lines?: unknown; __linesZoom?: number }) | null
@@ -476,7 +427,7 @@ export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap
     const id = underRef.current, map = mapRef.current
     return !swappingRef.current && id && map?.getLayer(id) ? id : undefined
   }
-  frameRef.current = { theme, dots, nodes, arcs, glows, movers, badges, confetti: [], pulse: reduced ? null : pulse, labels, counts, place: shapes, fontsReady, zoom: zoomLevel, under: under(), hover: hoverRef.current.pin }
+  frameRef.current = { theme, dots, nodes, arcs, glows, confetti: [], pulse: reduced ? null : pulse, labels, counts, place: shapes, fontsReady, zoom: zoomLevel, under: under(), hover: hoverRef.current.pin }
 
   // ---- Drawing: static redraw on change, plus a light animation loop when motion is allowed --------
   useEffect(() => {
@@ -497,7 +448,7 @@ export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap
       last = now
       const overlay = overlayRef.current, f = frameRef.current
       if (f) f.confetti = confettiNow(now)
-      if (overlay && f && (f.arcs.length || f.movers.length || f.confetti.length || f.pulse)) { f.under = under(); overlay.setProps({ layers: buildLayers(f, now, true) }) }
+      if (overlay && f && (f.confetti.length || f.pulse)) { f.under = under(); overlay.setProps({ layers: buildLayers(f, now, true) }) }
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
