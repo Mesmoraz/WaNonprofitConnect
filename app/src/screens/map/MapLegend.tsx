@@ -17,12 +17,14 @@ function Pin({ color }: { color: string }) {
   )
 }
 
-/** Several organizations close together: a grey bubble with how many (S-147). */
+/** Several organizations close together, as the map draws it (S-129): a ring around how many; the amber share is needs. */
 function Cluster() {
+  const r = 4.6, c = 2 * Math.PI * r
   return (
     <svg className="map-legend-swatch" viewBox="0 0 40 12" aria-hidden>
-      <circle cx="20" cy="6" r="6" fill="var(--ink-3)" />
-      <text x="20" y="6" textAnchor="middle" dominantBaseline="central" fontSize="7.5" fontWeight="700" fill="#fff">3</text>
+      <circle cx="20" cy="6" r={r} fill="var(--paper)" stroke="var(--offer)" strokeWidth="2" />
+      <circle cx="20" cy="6" r={r} fill="none" stroke="var(--need)" strokeWidth="2" strokeDasharray={`${c * 0.6} ${c}`} transform="rotate(-90 20 6)" />
+      <text x="20" y="6" textAnchor="middle" dominantBaseline="central" fontSize="6" fontWeight="700" fill="var(--ink)">3</text>
     </svg>
   )
 }
@@ -46,7 +48,7 @@ export function MapLegend({ onClose }: { onClose: () => void }) {
         <li><Pin color="var(--need)" />Needs help.</li>
         <li><Pin color="var(--offer)" />Offers help.</li>
         <li><Cluster />Several organizations close together.</li>
-        <li><Swatch color="var(--thread-golden)" dash="" />Help that was given.</li>
+        <li><Swatch color="var(--thread-golden)" dash="16 8" glow />Help that was given.</li>
         <li><Swatch color="var(--ink-2)" dash="10 6" faint />Your threads that are underway.</li>
         <li><Dot />Faint dots are Washington nonprofits that haven’t joined yet.</li>
       </ul>

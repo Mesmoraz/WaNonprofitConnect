@@ -46,11 +46,7 @@ export function MapScreen() {
   const { data: fits } = useMapFits(fitsFor)
   const myEin = me?.membership?.status === 'confirmed' ? me.membership.ein : undefined
   const mine = map?.open?.find(o => o.ein === myEin)
-  const toggle = (f: MapFitsFor) => { setSel(null); setLegend(false); setList(false); setFitsMenu(false); setFitsFor(on => (on === f ? null : f)) }
-  // One button for both (S-147): What fits you opens the choice, or goes straight to it when you only have one kind open.
-  const [fitsMenu, setFitsMenu] = useState(false)
-  const fitsChoices: MapFitsFor[] = [...(mine?.needs ? ['needs' as const] : []), ...(mine?.offers ? ['offers' as const] : [])]
-  const whatFits = () => { if (fitsFor) { setFitsFor(null); return } if (fitsChoices.length === 1) toggle(fitsChoices[0]); else setFitsMenu(o => !o) }
+  const toggle = (f: MapFitsFor) => { setSel(null); setLegend(false); setList(false); setFitsFor(on => (on === f ? null : f)) }
   const fitLines = useMemo(() => (fitsFor && fits ? { kind: fitsFor === 'needs' ? 'offers' as const : 'needs' as const, eins: fits.map(f => f.post.org.ein) } : null), [fitsFor, fits])
   const navigate = useNavigate()
   // A line tapped: that organization's best fit.
@@ -135,10 +131,8 @@ export function MapScreen() {
         <div className="map-card-dock">
           {!sel && !legend && !list && (mine?.needs || mine?.offers) ? (
             <div className="map-toggles">
-              {fitsMenu && !fitsFor ? <>
-                {!!mine?.needs && <button className="map-toggle" onClick={() => toggle('needs')}>Offers for your needs</button>}
-                {!!mine?.offers && <button className="map-toggle" onClick={() => toggle('offers')}>Needs you can help with</button>}
-              </> : <button className="map-toggle" aria-expanded={fitsChoices.length > 1 ? fitsMenu : undefined} aria-pressed={!!fitsFor} onClick={whatFits}>What fits you</button>}
+              {!!mine?.needs && <button className="map-toggle" aria-pressed={fitsFor === 'needs'} onClick={() => toggle('needs')}>Offers for your needs</button>}
+              {!!mine?.offers && <button className="map-toggle" aria-pressed={fitsFor === 'offers'} onClick={() => toggle('offers')}>Needs you can help with</button>}
             </div>
           ) : null}
           {sel ? <MapDetailCard selection={sel} onClose={() => setSel(null)} onSelect={select} />
