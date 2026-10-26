@@ -37,7 +37,7 @@ export function Admin() {
   const reject = useRejectClaim()
   const n = Math.max(1, Math.min(50, Number(uses) || 0))
   const [demo, setDemo] = useState(loadSettings)
-  // A link with demo settings (Copy a link to this demo) starts that demo. This page is admins only, so no one
+  // A link with demo settings (/admin?demo=busy) starts that demo. This page is admins only, so no one
   // else gets there. In the demo itself the mock reads the link instead.
   const [search] = useSearchParams()
   useEffect(() => {
@@ -74,7 +74,7 @@ export function Admin() {
       <Suspense fallback={<p className="hint">Loading</p>}>
         <DemoSettingsPanel value={demo} onChange={setDemo} />
       </Suspense>
-      <button className="btn quiet" onClick={() => startDemo(me?.account.name ?? 'You', demo)}>Start the demo</button>
+      <button className="btn primary" onClick={() => startDemo(me?.account.name ?? 'You', demo)}>Show this demo</button>
 
       <div className="label">Invite codes</div>
       <label className="field-label" htmlFor="adminq">Find the organization</label>

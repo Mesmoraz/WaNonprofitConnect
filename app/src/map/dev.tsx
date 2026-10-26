@@ -10,7 +10,7 @@ import { samplePoints } from './sample'
 
 type Theme = 'system' | 'light' | 'dark'
 
-// Optional query: the demo's settings (?demo=busy&threads=12, as in Admin's Copy a link), and
+// Optional query: the demo's settings (?demo=busy&threads=12, as in an /admin?demo= link), and
 // ?theme=light|dark&sel=golden|progress|me&view=seattle|sound|spokane, for screenshots.
 const q = new URLSearchParams(location.search)
 const initialTheme = (['light', 'dark'].includes(q.get('theme') ?? '') ? q.get('theme') : 'system') as Theme

@@ -3,9 +3,8 @@ import { useQueryClient } from '@tanstack/react-query'
 import { api } from '../api'
 import { ORG_ROWS } from '../api/mock/names'
 import {
-  PRESETS, settingsName, settingsToQuery, THREAD_MAX, WAITING_MAX, YOURS_MAX, type Along, type DemoSettings, type Others,
+  PRESETS, settingsName, THREAD_MAX, WAITING_MAX, YOURS_MAX, type Along, type DemoSettings, type Others,
 } from '../api/mock/settings'
-import { useToast } from './Toast'
 import './confirm.css'
 import './demo.css'
 
@@ -31,13 +30,8 @@ function Pick<T extends string | number | boolean>({ id, label, hint, options, v
 
 /** The demo's settings: a preset to start from, then each setting. Admin's Demo section, and the sheet in the demo. */
 export function DemoSettingsPanel({ value, onChange }: { value: DemoSettings; onChange: (s: DemoSettings) => void }) {
-  const toast = useToast()
   const set = <K extends keyof DemoSettings>(k: K) => (v: DemoSettings[K]) => onChange({ ...value, [k]: v })
   const name = settingsName(value)
-  const copy = () => {
-    const link = `${window.location.origin}/admin?${settingsToQuery(value)}`
-    navigator.clipboard?.writeText(link).then(() => toast('Copied.'), () => {})
-  }
   return (
     <div className="demo-panel">
       <span className="field-label" id="demo-preset-label">Start from</span>
@@ -80,28 +74,36 @@ export function DemoSettingsPanel({ value, onChange }: { value: DemoSettings; on
       <Pick<boolean> id="demo-hard" label="Hard cases" hint="Long titles, a declined thread, a closed one, a long message." value={value.hard} onPick={set('hard')}
         options={[[false, 'Off'], [true, 'On']]} />
 
-      <p className="hint">Now: {name}. <button className="inline-link" onClick={copy}>Copy a link to this demo</button></p>
+      <p className="hint">Now: {name}.</p>
     </div>
   )
 }
 
-/** In the demo: the same settings over the screen. Each change starts the demo over and the screen behind redraws. */
+/** In the demo: the same settings over the screen. Nothing changes until Show this demo (S-145); then the demo starts over with them. */
 export function DemoSettingsSheet({ value, onChange, onClose }: { value: DemoSettings; onChange: (s: DemoSettings) => void; onClose: () => void }) {
   const qc = useQueryClient()
+  const [draft, setDraft] = useState(value)
+  const [busy, setBusy] = useState(false)
   const [failed, setFailed] = useState(false)
-  const apply = (s: DemoSettings) => {
+  const show = () => {
     setFailed(false)
-    onChange(s)
-    api.demoSettings(s).then(() => qc.invalidateQueries(), () => setFailed(true))
+    setBusy(true)
+    api.demoSettings(draft).then(
+      () => { onChange(draft); qc.invalidateQueries(); onClose() },
+      () => { setBusy(false); setFailed(true) },
+    )
   }
   return (
     <div className="confirm-scrim" onClick={e => { if (e.target === e.currentTarget) onClose() }}>
       <div className="confirm-box demo-sheet" role="dialog" aria-modal="true" aria-labelledby="demo-title">
         <h2 id="demo-title" className="confirm-title">Demo settings</h2>
-        <p className="hint">Changes show right away, and what you did in the demo starts over. Only you see this.</p>
-        <DemoSettingsPanel value={value} onChange={apply} />
+        <p className="hint">Pick what to show, then tap Show this demo. What you did in the demo starts over. Only you see this.</p>
+        <DemoSettingsPanel value={draft} onChange={setDraft} />
         {failed && <p className="error" role="alert">That didn’t work. Try again.</p>}
-        <div className="confirm-actions"><button className="btn" onClick={onClose}>Done</button></div>
+        <div className="confirm-actions">
+          <button className="btn" onClick={onClose}>Cancel</button>
+          <button className="btn primary" disabled={busy} onClick={show}>Show this demo</button>
+        </div>
       </div>
     </div>
   )

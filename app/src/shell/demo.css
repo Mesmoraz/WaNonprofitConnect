@@ -16,3 +16,5 @@
 
 .demo-sheet { max-width: 520px; max-height: calc(100dvh - 2 * var(--gutter)); overflow: auto; display: flex; flex-direction: column; gap: 14px; }
 .demo-sheet .confirm-title { margin: 0; }
+/* Show this demo stays in reach while you scroll the settings (S-145). */
+.demo-sheet .confirm-actions { position: sticky; bottom: -18px; margin: 0 -20px -18px; padding: 12px 20px 18px; background: inherit; border-top: 1px solid var(--line); }
