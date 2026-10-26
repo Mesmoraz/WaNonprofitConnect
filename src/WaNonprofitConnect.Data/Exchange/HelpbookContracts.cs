@@ -83,6 +83,15 @@ public sealed record MapFitDto(int MyId, string MyTitle, ListingViewDto Post);
 /// <summary>How many open needs and offers an organization has: its pin's ring on the map (S-129).</summary>
 public sealed record MapOpenDto(string Ein, int Needs, int Offers);
 
+/// <summary>One organization inside a place (S-144), with what it has open: its pin's ring.</summary>
+public sealed record PlaceOrgDto(OrgSummaryDto Org, int Needs, int Offers);
+
+/// <summary>
+/// Everyone inside a place you tapped (S-144): <see cref="Total"/> organizations, <see cref="Joined"/> of them here (a confirmed
+/// person or an open post, the same as a pin). Joined first, most open first, then everyone else A to Z; a page of them.
+/// </summary>
+public sealed record PlaceOrgsDto(string Id, string Name, int Total, int Joined, IReadOnlyList<PlaceOrgDto> Orgs);
+
 public sealed record MapDataDto(IReadOnlyList<OrgSummaryDto> Members, IReadOnlyList<MapThreadDto> Threads, IReadOnlyList<MapSuggestionDto> Suggested,
     IReadOnlyList<MapOpenDto> Open);
 
