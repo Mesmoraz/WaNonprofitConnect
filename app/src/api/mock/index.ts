@@ -2,9 +2,10 @@
 // The signed-in person survives a reload (localStorage); everything else is built from the seed and the demo's settings.
 import { ApiError, DEMO, DEMO_STATE_KEY, httpTransport, type Transport } from '../client'
 import type {
-  Claim, Invite, Listing, ListingDetail, ListingEdit, MapData, MapFit, MapPoint, Me, Message, MyOrg, NewListing, NewThread, OrgPage, OrgSummary, SaveMyOrg,
-  Thread, ThreadAction, ThreadDetail, ThreadStatus,
+  Claim, Invite, Listing, ListingDetail, ListingEdit, MapData, MapFit, MapPoint, Me, Message, MyOrg, NewListing, NewThread, OrgPage, OrgSummary, PlaceOrg, PlaceOrgs,
+  Places, SaveMyOrg, Thread, ThreadAction, ThreadDetail, ThreadStatus,
 } from '../types'
+import { contains } from '../../lib/places'
 import { SEED_PEOPLE } from './data'
 import { DEFAULT_SETTINGS, loadSettings, saveSettings, settingsFromQuery, settingsToQuery, stripSettingsFromUrl, type DemoSettings } from './settings'
 import { buildWorld, fits, mapOf, shared, type ListingRow, type ThreadRow } from './world'
@@ -387,6 +388,27 @@ const routes: [string, RegExp, Handler][] = [
     } satisfies OrgPage
   }],
   ['GET', /^\/map\/points$/, () => DEMO ? httpTransport('GET', '/api/v1/map/points') : orgs.filter(o => o.lat !== null).map(o => [o.ein, o.lat!, o.lon!] as MapPoint)],
+  // Tap a place (S-144): the outlines are public data, so they always come from the API. Who's inside is the API's
+  // list, with the demo's own organizations (the ones with pins here) put first as the ones that have joined.
+  ['GET', /^\/places$/, () => httpTransport('GET', '/api/v1/places')],
+  ['GET', /^\/places\/([^/]+)\/orgs$/, async (m, _b, q) => {
+    const skip = Number(q.get('skip') ?? 0)
+    const all = await httpTransport('GET', '/api/v1/places') as Places
+    const f = all.features.find(x => x.id === m[1]) ?? fail(404, 'No place with that id.')
+    const real = DEMO ? await httpTransport('GET', `/api/v1/places/${encodeURIComponent(m[1])}/orgs?skip=${skip}`) as PlaceOrgs : null
+    const open = (ein: string, kind: 'Need' | 'Offer') => listings.filter(l => l.ein === ein && l.status === 'Open' && l.kind === kind).length
+    const here: PlaceOrg[] = orgs
+      .filter(o => o.lat != null && o.lon != null && contains(f, o.lon, o.lat))
+      .map(o => ({ org: o, needs: open(o.ein, 'Need'), offers: open(o.ein, 'Offer') }))
+      .filter(r => r.org.isMember || r.needs + r.offers > 0)
+      .sort((a, b) => b.needs + b.offers - (a.needs + a.offers) || a.org.name.localeCompare(b.org.name))
+    const ours = new Set(here.map(r => r.org.ein))
+    const rest = (real?.orgs ?? []).filter(r => !ours.has(r.org.ein)).map(r => ({ org: { ...r.org, isMember: false }, needs: 0, offers: 0 }))
+    return {
+      id: f.id, name: f.properties.name, total: Math.max(real?.total ?? 0, here.length), joined: here.length,
+      orgs: skip === 0 ? [...here, ...rest] : rest,
+    } satisfies PlaceOrgs
+  }],
   ['POST', /^\/admin\/act-as$/, (_m, b: { ein?: string }) => {
     const me = requireMe(); if (!me.account.isAdmin) fail(403, 'Admins only.')
     const o = orgByEin(b.ein ?? '') ?? fail(404, 'Not found.')
