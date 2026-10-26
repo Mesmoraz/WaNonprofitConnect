@@ -17,18 +17,28 @@ function Ring({ color }: { color: string }) {
   )
 }
 
+/** A faint dot, as the map draws it up close (S-143). */
+function Dot() {
+  return (
+    <svg className="map-legend-swatch" viewBox="0 0 40 12" aria-hidden>
+      <circle cx="20" cy="6" r="3.5" fill="var(--map-dot)" stroke="var(--map-land)" strokeWidth="1" />
+    </svg>
+  )
+}
+
 /** What the map shows (S-105, rewritten for S-129 in docs/ALPHA-BRIEFS.md): rings for what's open, golden lines for help given. */
 export function MapLegend({ onClose }: { onClose: () => void }) {
   return (
     <div className="card map-legend" role="dialog" aria-labelledby="map-legend-h">
       <h2 className="t" id="map-legend-h">What the map shows</h2>
       <ul>
+        <li><Dot />Every Washington organization, at the address on its IRS record.</li>
         <li><Ring color="var(--need)" />Amber is open needs.</li>
         <li><Ring color="var(--offer)" />Green is open offers.</li>
         <li><Swatch color="var(--thread-golden)" dash="16 8" glow />A golden thread. Help that was given.</li>
         <li><Swatch color="var(--ink-2)" dash="10 6" faint />Your threads that are underway.</li>
       </ul>
-      <p>A bigger pin has more open. A faint dot is any Washington nonprofit.</p>
+      <p>A bigger pin has more open.</p>
       <p>A thicker line with a number is several threads between the same two places.</p>
       <button className="btn sm" onClick={onClose}>Close</button>
     </div>

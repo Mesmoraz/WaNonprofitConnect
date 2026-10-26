@@ -462,6 +462,54 @@ Taylor, Oct 25: "it feels too wordy on the phone, too cluttered" and "We want th
 
 ---
 
+# Every dot is a Washington organization (S-143, approved Oct 25)
+
+Approved by Taylor 2026-10-25 in chat ("Approved as written. Build it.").
+
+Taylor, Oct 25: "let's make it way more obvious that the spots on the map are all of the non-profits in WA with an associated address from their EIN, it just looks messy atm"
+
+**What's wrong now** (staging, a phone, 375 wide):
+
+- **The whole state:** the 25,781 dots are 1 pixel at 40%. Washington looks empty, in the one view where "every organization in the state" would land hardest.
+- **A city:** the dots turn into grey speckle, the same grey as a pin with nothing open (Solid Ground), so dots and pins blur together. Where several share an address they clump into dark blots.
+- **Nothing on the map says what they are.** The only words are the legend's fifth line, "A faint dot is any Washington nonprofit.", and the legend opens by itself just once.
+
+## On the map
+
+- **A line that says what the dots are.** Under the kind-of-help chips, a small pill: a dot, then "1,204 organizations in view · IRS addresses". The count follows the map as you pan and zoom, the way "11 needs · 6 offers in view" does. Zoomed out on the whole state it reads "25,781 organizations in view · IRS addresses". It is text, not a button.
+- **The whole state shows where they are.** Zoomed out, each dot is drawn a little larger and lighter, so they add up: Seattle, Tacoma, Spokane and the I-5 corridor read as soft shaded areas, and empty land stays clear. The state looks full, not blank.
+- **A city shows each one.** Zoomed in, each dot is a small solid dot in its own color, a quiet blue-grey (#6E7F96, was slate grey #5E6B78), with a thin cream edge, so 3 at one address read as 3 dots, not a blot. Pins are larger and white-centered, so a dot never looks like a pin.
+- **One rule: a pin has a white center, a dot is solid.** An organization here with nothing open (Solid Ground today) is a solid grey pin now, which is what a dot looks like. It becomes a white center with a grey ring, the same shape as every other pin.
+- **Dots stay under everything else:** under town names, pins, rings and threads, as now.
+
+## The legend ("What the map shows")
+
+- The dot comes first, with its own swatch: "Every Washington organization, at the address on its IRS record."
+- "A faint dot is any Washington nonprofit." goes from the paragraph under the list. "A bigger pin has more open." stays.
+- The rest stays as written.
+
+## Home's small map
+
+- The same dot look as the Map tab. No new line: its label ("14 organizations · 3 golden threads") still counts the organizations here.
+
+## Not in this round
+
+- **Tapping a dot** to see that organization's name. The dots carry only an EIN today, so it needs a names lookup first. A story of its own if you want it.
+
+## Stays and goes
+
+- **Stays:** pins (but the one with nothing open), rings, threads, the strip, chips, toggles, cards, and the map's colors from S-139 (land, water, parks).
+- **Goes:** the 1-pixel dots at state zoom, the solid grey pin, the legend's "faint dot" line.
+- **Built as tokens:** `--map-dot` in `tokens.css` changes; nothing reads a raw color.
+
+## Checked against
+
+- **MISSION.md:** the dots are the community's whole capacity, every organization that could be one end of a golden thread. Showing them plainly says "they're all here" before anyone joins.
+- **VOICE.md:** "organization", not "nonprofit" (the Words table); "IRS addresses" is the one place the record matters, in a metadata line with a middle dot; digits; sentence case; no em-dashes.
+- **Tests (when built):** `[S-143]` the pill shows a count of organizations in view that changes when the map zooms in, and the legend's first line is the dot.
+
+---
+
 # Tap a place, see who's there (S-144, approved Oct 25)
 
 Taylor, Oct 25: "can we make it so the map is interactable like you can click on a region of the map, like "Seattle" or even "Ballard" and a boundary of that place is focused and we can see what organizations are there". Taylor picked "every organization inside the place, members and all listed nonprofits, with a count" in chat the same day, and approved this brief in chat ("Approved as written. Build it in its own PR."). Built in its own pull request.

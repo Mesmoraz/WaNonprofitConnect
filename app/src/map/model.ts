@@ -130,10 +130,10 @@ export interface MapNode {
 
 export const MOST_OPEN = 6                    // past 6 open posts a pin stops growing
 
-/** A pin grows with what it has open; a cluster with how many it holds. Nothing open: a small grey pin. */
+/** A pin grows with what it has open; a cluster with how many it holds. Nothing open: a small pin with a grey ring. */
 export function pinRadius(single: boolean, open: number, count: number) {
   if (!single) return Math.min(20, 9 + 3.5 * Math.sqrt(count))
-  return open === 0 ? 4.5 : 7 + 1.1 * (Math.min(open, MOST_OPEN) - 1)
+  return open === 0 ? 5.5 : 7 + 1.1 * (Math.min(open, MOST_OPEN) - 1)
 }
 
 /** deg: golden threads per organization (their warmth). */
@@ -154,10 +154,11 @@ export function buildNodes(index: Index, zoom: number, deg: Map<string, number>,
     const ringWidth = total ? Math.max(3, radius * (single ? 0.5 : 0.3)) : 0   // a cluster keeps room for its count
     const n: MapNode = {
       id, position, members, clusterId, single, deg: d, radius, related, selected, me: isMe, needs, offers,
-      // A ring around a light middle when something is open; a plain grey pin when nothing is.
-      fill: withAlpha(total ? theme.paper : theme.ink3, a * (total ? 1 : 0.85)),
-      line: selected || isMe ? withAlpha(theme.ink, a) : withAlpha(theme.paper, dim ? 0.5 : 1),
-      lineWidth: selected ? 3 : isMe ? 2.5 : 1.25,
+      // Every pin has a light middle, so only the faint dots are solid (S-143): a colored ring when something is
+      // open, a grey edge when nothing is. A cluster with nothing open stays grey, with its count on it.
+      fill: withAlpha(total || single ? theme.paper : theme.ink3, a * (total || single ? 1 : 0.85)),
+      line: selected || isMe ? withAlpha(theme.ink, a) : !total && single ? withAlpha(theme.ink3, a) : withAlpha(theme.paper, dim ? 0.5 : 1),
+      lineWidth: selected ? 3 : isMe ? 2.5 : !total && single ? 2.5 : 1.25,
       // Warmth is golden threads: a place that has given or received glows gold.
       heat: withAlpha(theme.goldenGlow, (d >= 3 ? 0.55 : 0.4) * (dim ? 0.25 : 1) * (d > 0 ? 1 : 0)),
       heatRadius: radius + Math.min(24, 10 + 4 * Math.sqrt(d)),

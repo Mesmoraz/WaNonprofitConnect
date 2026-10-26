@@ -23,7 +23,7 @@
 }
 :root {
   --thread-golden: #D9A12B; --thread-golden-glow: #F2C14E;
-  --map-land: #F4F1EA; --map-water: #CFE0E3; --map-park: #E3EBDD; --map-dot: #5E6B78;
+  --map-land: #F4F1EA; --map-water: #CFE0E3; --map-park: #E3EBDD; --map-dot: #6E7F96;
   --map-place-line: #4F6280; --map-place-fade: rgba(255, 255, 255, 0.5);   /* a place you tapped (S-144): its outline, and the wash over the land outside */
   --radius: 10px; --radius-lg: 14px; --gutter: 16px; --tap: 44px;
   --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;

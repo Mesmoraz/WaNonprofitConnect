@@ -18,7 +18,7 @@ export interface MapTheme {
 const FALLBACK: Record<string, string> = {
   '--ground': '#E9ECE6', '--paper': '#FFFFFF', '--ink': '#1B2430', '--ink-2': '#4B5563', '--ink-3': '#7C8794',
   '--need': '#B8741A', '--offer': '#2E6B4E', '--thread-golden': '#D9A12B', '--thread-golden-glow': '#F2C14E',
-  '--map-land': '#F4F1EA', '--map-water': '#CFE0E3', '--map-park': '#E3EBDD', '--map-dot': '#5E6B78',
+  '--map-land': '#F4F1EA', '--map-water': '#CFE0E3', '--map-park': '#E3EBDD', '--map-dot': '#6E7F96',
   '--map-place-line': '#4F6280', '--map-place-fade': 'rgba(255, 255, 255, 0.5)',
 }
 

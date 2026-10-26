@@ -56,6 +56,8 @@ interface Frame {
   /** A place you tapped (S-144): the land outside it, as one polygon with the place cut out, and its edges. */
   place: { fade: LonLat[][]; edges: LonLat[][] } | null
   fontsReady: boolean
+  /** floor(zoom): how the faint dots are drawn. */
+  zoom: number
   /** Base-map layer our lower layers sit under (the first label layer), when it exists. */
   under?: string
   /** The pin under the mouse: it grows. */
@@ -68,6 +70,16 @@ type Confetto = { position: LonLat; color: RGBA; size: number }
 type Burst = { at: LonLat[]; start: number; pieces: { angle: number; speed: number; size: number; color: RGBA }[] }
 /** @deck.gl/mapbox reads `beforeId` off each layer in interleaved mode. */
 type Seat = { beforeId?: string }
+
+/**
+ * How a faint dot is drawn at a zoom (S-143). Zoomed out they're soft and light so they add up into shading where
+ * organizations are; zoomed in each one is solid with a cream edge, so 3 at one address read as 3.
+ */
+function dotLook(zoom: number): { radius: number; alpha: number; edge: number } {
+  if (zoom <= 8) return { radius: 1.8, alpha: 0.13, edge: 0 }
+  if (zoom <= 11) return { radius: 2.4, alpha: 0.38, edge: 0 }
+  return { radius: 3.6, alpha: 0.9, edge: 1 }
+}
 
 function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
   const t = f.theme
@@ -83,14 +95,16 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
         })
       })
     : []
+  const dot = dotLook(f.zoom)
   const layers: LayersList = [
     f.dots && new ScatterplotLayer<unknown, Seat>({
+      // Every WA organization at its IRS address (S-143). Points are street addresses (a ZIP center only when the
+      // geocoder missed), spread ~50 m so two at one address part; the cream edge keeps them apart up close.
       id: 'wm-dots', beforeId: f.under, data: f.dots, pickable: false,
-      // Points are street addresses now (a ZIP center only when the geocoder missed), so the spread is ~50 m:
-      // enough to part two at one address, not the old 1.3 km cloud.
-      radiusUnits: 'meters', getRadius: 60, radiusMinPixels: 1, radiusMaxPixels: 3,
-      getFillColor: withAlpha(t.dot, t.dark ? 0.45 : 0.4),
-      updateTriggers: { getFillColor: t.key },
+      radiusUnits: 'pixels', getRadius: dot.radius,
+      getFillColor: withAlpha(t.dot, dot.alpha),
+      stroked: dot.edge > 0, lineWidthUnits: 'pixels', getLineWidth: dot.edge, getLineColor: withAlpha(t.land, 0.9),
+      updateTriggers: { getFillColor: [t.key, f.zoom], getLineColor: t.key },
     }),
     new ScatterplotLayer<MapNode, Seat>({
       id: 'wm-heat', beforeId: f.under, data: f.nodes, pickable: false,
@@ -463,7 +477,7 @@ export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap
     const id = underRef.current, map = mapRef.current
     return !swappingRef.current && id && map?.getLayer(id) ? id : undefined
   }
-  frameRef.current = { theme, dots, nodes, arcs, glows, movers, badges, confetti: [], pulse: reduced ? null : pulse, labels, counts, place: shapes, fontsReady, under: under(), hover: hoverRef.current.pin }
+  frameRef.current = { theme, dots, nodes, arcs, glows, movers, badges, confetti: [], pulse: reduced ? null : pulse, labels, counts, place: shapes, fontsReady, zoom: zoomLevel, under: under(), hover: hoverRef.current.pin }
 
   // ---- Drawing: static redraw on change, plus a light animation loop when motion is allowed --------
   useEffect(() => {

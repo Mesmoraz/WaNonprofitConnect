@@ -14,7 +14,8 @@ test('[S-105] [S-129] the first time you open the map, the legend opens by itsel
     'Green is open offers.',
     'A golden thread. Help that was given.',
     'Your threads that are underway.',
-    'A bigger pin has more open. A faint dot is any Washington nonprofit.',
+    'Every Washington organization, at the address on its IRS record.',
+    'A bigger pin has more open.',
   ]) await expect(legend).toContainText(line)
   await legend.getByRole('button', { name: 'Close' }).click()
   await expect(legend).toHaveCount(0)
