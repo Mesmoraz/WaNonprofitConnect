@@ -2286,7 +2286,7 @@
       "id": "S-147",
       "epic": "E-25",
       "title": "A calmer map: solid pins, Filter in one row at the top, a shorter legend",
-      "status": "review",
+      "status": "done",
       "added": "2026-10-26",
       "tasks": [],
       "lane": "map",
