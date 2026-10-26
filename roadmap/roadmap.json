@@ -2230,7 +2230,7 @@
       "id": "S-144",
       "epic": "E-25",
       "title": "Tap a place on the map and see every organization there",
-      "status": "review",
+      "status": "done",
       "added": "2026-10-25",
       "tasks": [
         {
@@ -2246,7 +2246,7 @@
         {
           "id": "T-253",
           "title": "Check on a phone",
-          "status": "ready"
+          "status": "done"
         }
       ],
       "lane": "map",
