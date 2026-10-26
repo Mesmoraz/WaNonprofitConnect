@@ -11,7 +11,7 @@ import { Slow } from '../../shell/Slow'
 import './map.css'
 
 const LEGEND_SEEN = 'helpbook.mapLegendSeen'
-const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`
+const plural = (n: number, one: string, many = `${one}s`) => `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`
 
 /** Is a post's organization inside what the map shows? */
 const inside = (l: Listing, v: MapView) =>
@@ -59,6 +59,8 @@ export function MapScreen() {
   const inView = useMemo(() => (seen ? shown.filter(l => inside(l, seen)).sort((a, b) => far(a, seen.center) - far(b, seen.center)) : []), [shown, seen])
   const needs = inView.filter(l => l.kind === 'Need').length
   const strip = `${plural(needs, 'need')} · ${plural(inView.length - needs, 'offer')} in view`
+  // The faint dots in view (S-143): every WA organization, at its IRS address.
+  const dotsInView = useMemo(() => (seen && points ? points.filter(([, lat, lon]) => lat >= seen.south && lat <= seen.north && lon >= seen.west && lon <= seen.east).length : null), [points, seen])
   // With a kind of help picked, the pins' rings count only that kind.
   const mapData = useMemo(() => {
     if (!map || !help || !openPosts) return map
@@ -83,6 +85,7 @@ export function MapScreen() {
             <button className="map-chip" aria-pressed={!help} onClick={() => setHelp(null)}>All</button>
             {HELPS.map(h => <button key={h} className="map-chip" aria-pressed={help === h} onClick={() => setHelp(on => (on === h ? null : h))}>{HELP_LABEL[h]}</button>)}
           </div>
+          {dotsInView != null && <p className="map-dots-line"><span className="map-dot-swatch" aria-hidden />{plural(dotsInView, 'organization')} in view · IRS addresses</p>}
         </div>
       )}
       {/* Once the map is there: before, it would cover "The map didn't load. Try again?" */}

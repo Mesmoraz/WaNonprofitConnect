@@ -462,7 +462,9 @@ Taylor, Oct 25: "it feels too wordy on the phone, too cluttered" and "We want th
 
 ---
 
-# Every dot is a Washington organization (S-143, proposed Oct 25)
+# Every dot is a Washington organization (S-143, approved Oct 25)
+
+Approved by Taylor 2026-10-25 in chat ("Approved as written. Build it.").
 
 Taylor, Oct 25: "let's make it way more obvious that the spots on the map are all of the non-profits in WA with an associated address from their EIN, it just looks messy atm"
 

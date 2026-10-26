@@ -77,6 +77,13 @@
   flex: none; min-height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line-2);
   background: var(--paper); color: var(--ink-2); font-size: 13px; font-weight: 600;
 }
+/* What the faint dots are (S-143): a quiet pill under the chips. Text, not a button. */
+.map-dots-line {
+  display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 4px 10px; border-radius: 999px;
+  background: color-mix(in srgb, var(--paper) 88%, transparent); color: var(--ink-2); font-size: 12px; font-weight: 600;
+  pointer-events: none;
+}
+.map-dot-swatch { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--map-dot); box-shadow: 0 0 0 1px var(--map-land); }
 .map-chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 .map-open .t { display: block; margin-bottom: 4px; }
 .map-open-row {
