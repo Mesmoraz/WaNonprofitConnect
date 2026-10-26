@@ -476,7 +476,8 @@ Taylor, Oct 25: "let's make it way more obvious that the spots on the map are al
 
 - **A line that says what the dots are.** Under the kind-of-help chips, a small pill: a dot, then "1,204 organizations in view · IRS addresses". The count follows the map as you pan and zoom, the way "11 needs · 6 offers in view" does. Zoomed out on the whole state it reads "25,781 organizations in view · IRS addresses". It is text, not a button.
 - **The whole state shows where they are.** Zoomed out, each dot is drawn a little larger and lighter, so they add up: Seattle, Tacoma, Spokane and the I-5 corridor read as soft shaded areas, and empty land stays clear. The state looks full, not blank.
-- **A city shows each one.** Zoomed in, each dot is a small solid dot in its own color, a quiet blue-grey (#6E7F96, was slate grey #5E6B78), with a thin cream edge, so 3 at one address read as 3 dots, not a blot. Pins stay white-centered with their rings, so a dot never looks like a pin.
+- **A city shows each one.** Zoomed in, each dot is a small solid dot in its own color, a quiet blue-grey (#6E7F96, was slate grey #5E6B78), with a thin cream edge, so 3 at one address read as 3 dots, not a blot. Pins are larger and white-centered, so a dot never looks like a pin.
+- **One rule: a pin has a white center, a dot is solid.** An organization here with nothing open (Solid Ground today) is a solid grey pin now, which is what a dot looks like. It becomes a white center with a grey ring, the same shape as every other pin.
 - **Dots stay under everything else:** under town names, pins, rings and threads, as now.
 
 ## The legend ("What the map shows")
@@ -495,8 +496,8 @@ Taylor, Oct 25: "let's make it way more obvious that the spots on the map are al
 
 ## Stays and goes
 
-- **Stays:** pins, rings, threads, the strip, chips, toggles, cards, and the map's colors from S-139 (land, water, parks).
-- **Goes:** the 1-pixel dots at state zoom, the grey that matches an empty pin, the legend's "faint dot" line.
+- **Stays:** pins (but the one with nothing open), rings, threads, the strip, chips, toggles, cards, and the map's colors from S-139 (land, water, parks).
+- **Goes:** the 1-pixel dots at state zoom, the solid grey pin, the legend's "faint dot" line.
 - **Built as tokens:** `--map-dot` in `tokens.css` changes; nothing reads a raw color.
 
 ## Checked against
