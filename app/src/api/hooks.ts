@@ -1,4 +1,4 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
+import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { api } from './client'
 import type { BoardQuery, ListingEdit, MapFitsFor, Me, NewListing, NewThread, ThreadAction } from './types'
 
@@ -15,6 +15,8 @@ export const keys = {
   mapPoints: ['mapPoints'] as const,
   mapFits: (forWhat: MapFitsFor) => ['map', 'fits', forWhat] as const,
   mapOpen: ['map', 'open'] as const,
+  places: ['places'] as const,
+  placeOrgs: (id: string) => ['placeOrgs', id] as const,
   orgPage: (ein: string) => ['orgPage', ein] as const,
   myOrg: (ein: string) => ['myOrg', ein] as const,
   adminClaims: ['admin', 'claims'] as const,
@@ -90,6 +92,20 @@ export function useMakeOrgCode(ein: string) {
 }
 
 export const useMapPoints = () => useQuery({ queryKey: keys.mapPoints, queryFn: api.mapPoints, staleTime: 3600_000 })
+/** The outlines you can tap (S-144): about 220 KB, so only fetched once something asks (the first tap on a place name). */
+export const usePlaces = (enabled: boolean) => useQuery({ queryKey: keys.places, queryFn: api.places, enabled, staleTime: Infinity, gcTime: Infinity })
+/** The same outlines, for an event handler: fetched the first time, from the cache after. */
+export function useLoadPlaces() {
+  const qc = useQueryClient()
+  return () => qc.fetchQuery({ queryKey: keys.places, queryFn: api.places, staleTime: Infinity, gcTime: Infinity })
+}
+/** Everyone inside a place, 50 at a time, joined first. Off (null) fetches nothing. */
+export const usePlaceOrgs = (id: string | null) => useInfiniteQuery({
+  queryKey: keys.placeOrgs(id ?? ''), enabled: !!id, staleTime: 5 * 60_000,
+  queryFn: ({ pageParam }) => api.placeOrgs(id!, pageParam),
+  initialPageParam: 0,
+  getNextPageParam: (last, pages) => { const seen = pages.reduce((n, p) => n + p.orgs.length, 0); return seen < last.total ? seen : undefined },
+})
 
 export const useAdminWaiting = () => useQuery({ queryKey: keys.adminWaiting, queryFn: api.adminWaiting })
 export const useAdminClaims = () => useQuery({ queryKey: keys.adminClaims, queryFn: api.adminClaims })

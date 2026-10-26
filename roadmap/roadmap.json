@@ -2225,6 +2225,32 @@
       "status": "done",
       "added": "2026-10-25",
       "tasks": []
+    },
+    {
+      "id": "S-144",
+      "epic": "E-25",
+      "title": "Tap a place on the map and see every organization there",
+      "status": "review",
+      "added": "2026-10-25",
+      "tasks": [
+        {
+          "id": "T-251",
+          "title": "Brief: tap a place, see who's there (approved Oct 25)",
+          "status": "done"
+        },
+        {
+          "id": "T-252",
+          "title": "Build: outlines, places API, map taps, strip, chip and list",
+          "status": "done"
+        },
+        {
+          "id": "T-253",
+          "title": "Check on a phone",
+          "status": "ready"
+        }
+      ],
+      "lane": "map",
+      "source": "Taylor, Oct 25: click a region like Seattle or Ballard, see its boundary and the organizations there; every organization, joined or not, with a count"
     }
   ]
 }

@@ -34,6 +34,16 @@ export interface MapView { west: number; south: number; east: number; north: num
 
 export interface MapFits { kind: 'offers' | 'needs'; eins: string[] }
 
+/** A town or neighborhood name on the base map, tapped (S-144): its name, OpenStreetMap's class for it, and where the label sits. */
+export interface MapLabelTap { name: string; kind: string; lon: number; lat: number }
+
+/** A place to outline (S-144): GeoJSON polygon or multipolygon coordinates, and its [west, south, east, north] box. */
+export interface MapPlace {
+  id: string;
+  bbox: [number, number, number, number];
+  geometry: { type: 'Polygon'; coordinates: number[][][] } | { type: 'MultiPolygon'; coordinates: number[][][][] };
+}
+
 export interface ThreadMapProps {
   data: MapData;
   points?: MapPoint[];
@@ -48,6 +58,10 @@ export interface ThreadMapProps {
   fits?: MapFits | null;
   /** A fit line tapped: that organization's EIN. */
   onFitTap?: (ein: string) => void;
+  /** A place name on the base map tapped, when no pin or line was (S-144). Without it, place names do nothing. */
+  onLabelTap?: (label: MapLabelTap) => void;
+  /** The place to outline (S-144): the map frames it when it changes, fades the land outside, and keeps it as you move. */
+  place?: MapPlace | null;
   /** Where the map is looking, once it has loaded and after every move (S-131: what's open in view). */
   onViewChange?: (view: MapView) => void;
   /** Where to open. Default: the whole state. Read once, on mount. */
