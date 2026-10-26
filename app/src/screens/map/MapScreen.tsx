@@ -46,22 +46,29 @@ export function MapScreen() {
   const { data: fits } = useMapFits(fitsFor)
   const myEin = me?.membership?.status === 'confirmed' ? me.membership.ein : undefined
   const mine = map?.open?.find(o => o.ein === myEin)
-  const toggle = (f: MapFitsFor) => { setSel(null); setLegend(false); setList(false); setFitsFor(on => (on === f ? null : f)) }
+  const toggle = (f: MapFitsFor) => { setSel(null); setLegend(false); setList(false); setFitsMenu(false); setFitsFor(on => (on === f ? null : f)) }
+  // One button for both (S-147): What fits you opens the choice, or goes straight to it when you only have one kind open.
+  const [fitsMenu, setFitsMenu] = useState(false)
+  const fitsChoices: MapFitsFor[] = [...(mine?.needs ? ['needs' as const] : []), ...(mine?.offers ? ['offers' as const] : [])]
+  const whatFits = () => { if (fitsFor) { setFitsFor(null); return } if (fitsChoices.length === 1) toggle(fitsChoices[0]); else setFitsMenu(o => !o) }
   const fitLines = useMemo(() => (fitsFor && fits ? { kind: fitsFor === 'needs' ? 'offers' as const : 'needs' as const, eins: fits.map(f => f.post.org.ein) } : null), [fitsFor, fits])
   const navigate = useNavigate()
   // A line tapped: that organization's best fit.
   const openFit = (ein: string) => { const f = fits?.find(x => x.post.org.ein === ein); if (f) navigate(`/listing/${f.post.id}`) }
 
-  // What's open in view (S-131): a count at the top, a list under it, and chips for one kind of help at a time.
+  // What's open in view (S-131): a count at the top, a list under it, and chips for one kind of help at a time, behind
+  // Filter (S-147) so the top of the map is one row.
   const { data: openPosts } = useMapOpen()
   const [help, setHelp] = useState<KindOfHelp | null>(null)
+  const [filters, setFilters] = useState(false)
+  const pickHelp = (h: KindOfHelp | null) => { setHelp(h); setFilters(false) }
   const [seen, setSeen] = useState<MapView | null>(null)
   const [list, setList] = useState(false)
   const shown = useMemo(() => (openPosts ?? []).filter(l => !help || l.help === help), [openPosts, help])
   const inView = useMemo(() => (seen ? shown.filter(l => inside(l, seen)).sort((a, b) => far(a, seen.center) - far(b, seen.center)) : []), [shown, seen])
   const needs = inView.filter(l => l.kind === 'Need').length
   const strip = `${plural(needs, 'need')} · ${plural(inView.length - needs, 'offer')} in view`
-  // With a kind of help picked, the pins' rings count only that kind.
+  // With a kind of help picked, the pins' colors count only that kind.
   const mapData = useMemo(() => {
     if (!map || !help || !openPosts) return map
     const counts = new Map<string, { ein: string; needs: number; offers: number }>()
@@ -108,12 +115,19 @@ export function MapScreen() {
       <button className="map-help" aria-label="What the map shows" aria-expanded={legend} onClick={() => { setSel(null); setFitsFor(null); setList(false); setLegend(o => !o) }}>?</button>
       {map && seen && openPosts && (
         <div className="map-top">
-          <button className="map-strip" aria-expanded={list} onClick={openList}>{place ? placeStrip : strip}</button>
-          <div className="map-chips" role="group" aria-label="Kind of help">
-            {place && <button className="map-chip map-place-chip" aria-label={`Clear ${place.properties.name}`} onClick={clearPlace}>{place.properties.name} ×</button>}
-            <button className="map-chip" aria-pressed={!help} onClick={() => setHelp(null)}>All</button>
-            {HELPS.map(h => <button key={h} className="map-chip" aria-pressed={help === h} onClick={() => setHelp(on => (on === h ? null : h))}>{HELP_LABEL[h]}</button>)}
+          <div className="map-top-row">
+            <button className="map-strip" aria-expanded={list} onClick={openList}>{place ? placeStrip : strip}</button>
+            <button className="map-filter" aria-expanded={filters} aria-pressed={!!help} onClick={() => setFilters(o => !o)}>{help ? `Filter: ${HELP_LABEL[help]}` : 'Filter'}</button>
           </div>
+          {(place || filters) && (
+            <div className="map-chips" role="group" aria-label="Kind of help">
+              {place && <button className="map-chip map-place-chip" aria-label={`Clear ${place.properties.name}`} onClick={clearPlace}>{place.properties.name} ×</button>}
+              {filters && <>
+                <button className="map-chip" aria-pressed={!help} onClick={() => pickHelp(null)}>All</button>
+                {HELPS.map(h => <button key={h} className="map-chip" aria-pressed={help === h} onClick={() => pickHelp(help === h ? null : h)}>{HELP_LABEL[h]}</button>)}
+              </>}
+            </div>
+          )}
         </div>
       )}
       {/* Once the map is there: before, it would cover "The map didn't load. Try again?" */}
@@ -121,8 +135,10 @@ export function MapScreen() {
         <div className="map-card-dock">
           {!sel && !legend && !list && (mine?.needs || mine?.offers) ? (
             <div className="map-toggles">
-              {!!mine?.needs && <button className="map-toggle" aria-pressed={fitsFor === 'needs'} onClick={() => toggle('needs')}>Offers for your needs</button>}
-              {!!mine?.offers && <button className="map-toggle" aria-pressed={fitsFor === 'offers'} onClick={() => toggle('offers')}>Needs you can help with</button>}
+              {fitsMenu && !fitsFor ? <>
+                {!!mine?.needs && <button className="map-toggle" onClick={() => toggle('needs')}>Offers for your needs</button>}
+                {!!mine?.offers && <button className="map-toggle" onClick={() => toggle('offers')}>Needs you can help with</button>}
+              </> : <button className="map-toggle" aria-expanded={fitsChoices.length > 1 ? fitsMenu : undefined} aria-pressed={!!fitsFor} onClick={whatFits}>What fits you</button>}
             </div>
           ) : null}
           {sel ? <MapDetailCard selection={sel} onClose={() => setSel(null)} onSelect={select} />

@@ -100,3 +100,11 @@
 .map-place-ring { width: 18px; height: 18px; display: block; }
 .map-place-sep { margin: 10px 2px 2px; font-size: 13px; color: var(--ink-3); }
 .map-place-more { margin: 10px 0 2px; align-self: flex-start; }
+
+/* One row at the top (S-147): the count, then Filter, which opens the kind-of-help chips under it. */
+.map-top-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; max-width: 100%; }   /* Filter: Food wraps under a long count */
+.map-filter {
+  flex: none; min-height: var(--tap); padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-2);
+  background: var(--paper); color: var(--ink); font-size: 14px; font-weight: 600; box-shadow: var(--shadow);
+}
+.map-filter[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
