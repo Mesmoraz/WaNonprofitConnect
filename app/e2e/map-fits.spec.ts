@@ -8,6 +8,16 @@ type MapBox = HTMLElement & {
   __lines?: { fit: string | null; middle: [number, number] }[]
 }
 
+/**
+ * One button for both (S-147): What fits you opens the choice when you have needs and offers open, or goes straight
+ * to the one you have. Either way, this turns on the one named.
+ */
+async function showFits(page: Page, choice: 'Offers for your needs' | 'Needs you can help with') {
+  await page.getByRole('button', { name: 'What fits you' }).click()
+  const option = page.getByRole('button', { name: choice })
+  if (await option.isVisible().catch(() => false)) await option.click()
+}
+
 /** Where the middle of the fit line to an organization is on screen, once the map has framed it. */
 async function fitLineMiddle(page: Page, ein: string) {
   await page.waitForFunction(ein => {
@@ -22,7 +32,7 @@ async function fitLineMiddle(page: Page, ein: string) {
   }, ein)
 }
 
-test('[S-130] "Offers for your needs" lists what fits, draws a line to it, and both open the post', async ({ page, browser }) => {
+test('[S-130] [S-147] "Offers for your needs" lists what fits, draws a line to it, and both open the post', async ({ page, browser }) => {
   const word = `Tables${run}`
   const rainier = await phone(browser)
   await signIn(rainier.page, { name: 'Robin', org: ORG.rainier })
@@ -38,9 +48,8 @@ test('[S-130] "Offers for your needs" lists what fits, draws a line to it, and b
 
   await page.addInitScript(() => localStorage.setItem('helpbook.mapLegendSeen', '1'))
   await page.goto('/map')
-  const toggle = page.getByRole('button', { name: 'Offers for your needs' })
-  await toggle.click()
-  await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+  await showFits(page, 'Offers for your needs')
+  await expect(page.getByRole('button', { name: 'What fits you' })).toHaveAttribute('aria-pressed', 'true')
   const card = page.getByRole('dialog', { name: 'What fits you' })
   await expect(card).toContainText(/\d+ offers? could fit your needs/)
   const row = card.getByRole('link', { name: new RegExp(`Folding ${word} to lend`) })
@@ -56,26 +65,26 @@ test('[S-130] "Offers for your needs" lists what fits, draws a line to it, and b
   await page.goBack()
 
   // So does the row.
-  await page.getByRole('button', { name: 'Offers for your needs' }).click()
+  await showFits(page, 'Offers for your needs')
   await card.getByRole('link', { name: new RegExp(`Folding ${word} to lend`) }).click()
   await expect(page).toHaveURL(new RegExp(`/listing/${offer.id}$`))
   await expect(page.getByText(`Folding ${word} to lend`)).toBeVisible()
 })
 
-test('[S-130] a toggle turns off when tapped again, and the ? shows the legend instead', async ({ page }) => {
+test('[S-130] [S-147] What fits you turns off when tapped again, and the ? shows the legend instead', async ({ page }) => {
   await signIn(page, { name: 'Jordan', org: ORG.ballard })
   await postListing(page, { kind: 'Offer', title: `Crates ${run}` })
   await page.addInitScript(() => localStorage.setItem('helpbook.mapLegendSeen', '1'))
   await page.goto('/map')
-  const toggle = page.getByRole('button', { name: 'Needs you can help with' })
+  const toggle = page.getByRole('button', { name: 'What fits you' })
   const card = page.getByRole('dialog', { name: 'What fits you' })
-  await toggle.click()
+  await showFits(page, 'Needs you can help with')
   await expect(card).toBeVisible()
   await toggle.click()
   await expect(card).toHaveCount(0)
   await expect(toggle).toHaveAttribute('aria-pressed', 'false')
 
-  await toggle.click()
+  await showFits(page, 'Needs you can help with')
   await page.getByRole('button', { name: 'What the map shows' }).click()
   await expect(card).toHaveCount(0)
   await expect(page.getByRole('dialog', { name: 'What the map shows' })).toBeVisible()

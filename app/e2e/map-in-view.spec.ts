@@ -39,15 +39,20 @@ test('[S-131] a kind of help chip narrows the count and the list to that kind', 
   const open = await (await page.request.get('/api/v1/map/open')).json() as { id: number; org: Member }[]
   await mapAt(page, open.find(l => l.id === time.id)!.org)
 
+  // The chips are behind Filter (S-147); picking one closes them and Filter says which.
   const chips = page.getByRole('group', { name: 'Kind of help' })
+  await expect(chips).toHaveCount(0)
+  await page.getByRole('button', { name: 'Filter' }).click()
   await chips.getByRole('button', { name: 'Things' }).click()
-  await expect(chips.getByRole('button', { name: 'Things' })).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByRole('button', { name: 'Filter: Things' })).toHaveAttribute('aria-pressed', 'true')
   await page.getByRole('button', { name: /in view$/ }).click()
   const list = page.getByRole('dialog', { name: 'Open in view' })
   await expect(list.getByRole('link', { name: new RegExp(`Milk crates ${run}`) })).toBeVisible()
   await expect(list.getByRole('link', { name: new RegExp(`Drivers ${run}`) })).toHaveCount(0)
 
+  await page.getByRole('button', { name: 'Filter: Things' }).click()
   await chips.getByRole('button', { name: 'All' }).click()
+  await expect(page.getByRole('button', { name: 'Filter', exact: true })).toHaveAttribute('aria-pressed', 'false')
   await expect(list.getByRole('link', { name: new RegExp(`Drivers ${run}`) })).toBeVisible()
   expect(things.id).toBeGreaterThan(0)
 })
