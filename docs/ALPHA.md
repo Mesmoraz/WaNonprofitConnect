@@ -94,6 +94,8 @@ interface MapData { members: OrgSummary[];                                  // o
 | `GET /api/v1/map/open` | | `Listing[]`: every open need and offer, each with its organization's place, newest first, up to 500 (S-131). Signed in. |
 | `GET /api/v1/map/fits?for=needs\|offers` | | `{ myId, myTitle, post: Listing }[]`: other organizations' open posts that fit one of yours, best first, up to 12 (S-130). Confirmed members only. |
 | `GET /api/v1/map/points` | | `[ein, lat, lon][]` for every WA 501(c)(3) with a ZIP centroid. Cached a day. |
+| `GET /api/v1/places` | | GeoJSON `FeatureCollection` of every place you can tap on the map (S-144): Washington cities, towns and census places, and Seattle's districts and neighborhoods. Each feature's `properties` are `{ id, name, kind: city\|cdp\|district\|neighborhood, bbox: [w, s, e, n] }`. Public, cached a day, gzipped when asked. From `data/geo/wa-places.geojson` (`node scripts/fetch-places.js`). |
+| `GET /api/v1/places/{id}/orgs?skip=` | | `{ id, name, total, joined, orgs: { org: OrgSummary, needs, offers }[] }`: every organization whose point is inside the place, joined first (a confirmed person or an open post, most open first), then everyone else A to Z, 50 at a time (S-144). Public. `404` for an unknown id. |
 | `GET /api/v1/admin/claims` · `POST /api/v1/admin/claims/{id}/approve` · `/reject` | | admin only |
 | `GET /api/v1/admin/invites` · `POST /api/v1/admin/invites` | `{ ein, uses }` | `{ code, ein, orgName, uses, used }` |
 | `GET /api/v1/org` · `PUT /api/v1/org` | `{ about, website, contactAccountId }` | `MyOrg` (S-99). Confirmed members only. |

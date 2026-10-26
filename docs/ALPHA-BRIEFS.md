@@ -462,9 +462,11 @@ Taylor, Oct 25: "it feels too wordy on the phone, too cluttered" and "We want th
 
 ---
 
-# Tap a place, see who's there (S-144, proposed Oct 25)
+# Tap a place, see who's there (S-144, approved Oct 25)
 
-Taylor, Oct 25: "can we make it so the map is interactable like you can click on a region of the map, like "Seattle" or even "Ballard" and a boundary of that place is focused and we can see what organizations are there". Taylor picked "every organization inside the place, members and all listed nonprofits, with a count" in chat the same day. Approving this pull request approves the brief. It gets built in its own pull request afterwards.
+Taylor, Oct 25: "can we make it so the map is interactable like you can click on a region of the map, like "Seattle" or even "Ballard" and a boundary of that place is focused and we can see what organizations are there". Taylor picked "every organization inside the place, members and all listed nonprofits, with a count" in chat the same day, and approved this brief in chat ("Approved as written. Build it in its own PR."). Built in its own pull request.
+
+**Decided while building:** a place name under a pin (Seattle's, at state zoom) goes to the pin, as every tap on a pin does; zoom in to tap the name. "Show all of Washington" clears the place and leaves the map where it is. The place's chip is the outline's blue-grey, so the two read as one thing.
 
 ## On the map
 
