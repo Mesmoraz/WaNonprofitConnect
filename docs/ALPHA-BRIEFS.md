@@ -459,3 +459,48 @@ Taylor, Oct 25: "it feels too wordy on the phone, too cluttered" and "We want th
 - **MISSION.md:** the map is where golden threads show; putting it first puts the threads in front of everyone who opens the app.
 - **VOICE.md:** headlines 6 words or fewer ("Post one need, one offer" is 5); one line under it; golden thread, never connection; digits; sentence case; no em-dashes or exclamation marks.
 - **Tests (when built):** `[S-140]` the map comes first and opens the Map, its label, the welcome card's words, Waiting on you hidden with nothing waiting, 2 two-line posts, no On the board, the initial-only pill on a phone.
+
+---
+
+# Every dot is a Washington organization (S-143, proposed Oct 25)
+
+Taylor, Oct 25: "let's make it way more obvious that the spots on the map are all of the non-profits in WA with an associated address from their EIN, it just looks messy atm"
+
+**What's wrong now** (staging, a phone, 375 wide):
+
+- **The whole state:** the 25,781 dots are 1 pixel at 40%. Washington looks empty, in the one view where "every organization in the state" would land hardest.
+- **A city:** the dots turn into grey speckle, the same grey as a pin with nothing open (Solid Ground), so dots and pins blur together. Where several share an address they clump into dark blots.
+- **Nothing on the map says what they are.** The only words are the legend's fifth line, "A faint dot is any Washington nonprofit.", and the legend opens by itself just once.
+
+## On the map
+
+- **A line that says what the dots are.** Under the kind-of-help chips, a small pill: a dot, then "1,204 organizations in view · IRS addresses". The count follows the map as you pan and zoom, the way "11 needs · 6 offers in view" does. Zoomed out on the whole state it reads "25,781 organizations in view · IRS addresses". It is text, not a button.
+- **The whole state shows where they are.** Zoomed out, each dot is drawn a little larger and lighter, so they add up: Seattle, Tacoma, Spokane and the I-5 corridor read as soft shaded areas, and empty land stays clear. The state looks full, not blank.
+- **A city shows each one.** Zoomed in, each dot is a small solid dot in its own color, a quiet blue-grey (#6E7F96, was slate grey #5E6B78), with a thin cream edge, so 3 at one address read as 3 dots, not a blot. Pins stay white-centered with their rings, so a dot never looks like a pin.
+- **Dots stay under everything else:** under town names, pins, rings and threads, as now.
+
+## The legend ("What the map shows")
+
+- The dot comes first, with its own swatch: "Every Washington organization, at the address on its IRS record."
+- "A faint dot is any Washington nonprofit." goes from the paragraph under the list. "A bigger pin has more open." stays.
+- The rest stays as written.
+
+## Home's small map
+
+- The same dot look as the Map tab. No new line: its label ("14 organizations · 3 golden threads") still counts the organizations here.
+
+## Not in this round
+
+- **Tapping a dot** to see that organization's name. The dots carry only an EIN today, so it needs a names lookup first. A story of its own if you want it.
+
+## Stays and goes
+
+- **Stays:** pins, rings, threads, the strip, chips, toggles, cards, and the map's colors from S-139 (land, water, parks).
+- **Goes:** the 1-pixel dots at state zoom, the grey that matches an empty pin, the legend's "faint dot" line.
+- **Built as tokens:** `--map-dot` in `tokens.css` changes; nothing reads a raw color.
+
+## Checked against
+
+- **MISSION.md:** the dots are the community's whole capacity, every organization that could be one end of a golden thread. Showing them plainly says "they're all here" before anyone joins.
+- **VOICE.md:** "organization", not "nonprofit" (the Words table); "IRS addresses" is the one place the record matters, in a metadata line with a middle dot; digits; sentence case; no em-dashes.
+- **Tests (when built):** `[S-143]` the pill shows a count of organizations in view that changes when the map zooms in, and the legend's first line is the dot.

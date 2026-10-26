@@ -2225,6 +2225,16 @@
       "status": "done",
       "added": "2026-10-25",
       "tasks": []
+    },
+    {
+      "id": "S-143",
+      "epic": "E-25",
+      "title": "Every dot on the map is a Washington organization, and the map says so",
+      "status": "backlog",
+      "added": "2026-10-25",
+      "tasks": [],
+      "lane": "map",
+      "source": "Taylor, Oct 25: make it way more obvious that the spots on the map are all of the nonprofits in WA at the address on their EIN; it just looks messy"
     }
   ]
 }
