@@ -2225,6 +2225,16 @@
       "status": "done",
       "added": "2026-10-25",
       "tasks": []
+    },
+    {
+      "id": "S-144",
+      "epic": "E-25",
+      "title": "Tap a place on the map and see every organization there",
+      "status": "backlog",
+      "added": "2026-10-25",
+      "tasks": [],
+      "lane": "map",
+      "source": "Taylor, Oct 25: click a region like Seattle or Ballard, see its boundary and the organizations there; every organization, joined or not, with a count"
     }
   ]
 }
