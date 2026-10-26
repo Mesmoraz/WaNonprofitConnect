@@ -2261,6 +2261,26 @@
       ],
       "lane": "map",
       "source": "Taylor, Oct 25: click a region like Seattle or Ballard, see its boundary and the organizations there; every organization, joined or not, with a count"
+    },
+    {
+      "id": "S-145",
+      "epic": "E-26",
+      "title": "Demo settings wait for Show this demo, with no link to copy",
+      "status": "review",
+      "added": "2026-10-26",
+      "tasks": [],
+      "lane": "app",
+      "source": "Taylor, Oct 25: a confirm button to change the layout based on what I selected, not a new link; the link sent me to an invite code that didn't work"
+    },
+    {
+      "id": "S-146",
+      "epic": "E-25",
+      "title": "The dots fade back so pins and golden threads lead, and the ? says they haven't joined yet",
+      "status": "review",
+      "added": "2026-10-26",
+      "tasks": [],
+      "lane": "map",
+      "source": "Taylor, Oct 25: the ? doesn't explain the dots; they're too busy and distracting, they should be more transparent, a hint there are nonprofits here not registered yet, not the focus"
     }
   ]
 }

@@ -17,11 +17,12 @@ function Ring({ color }: { color: string }) {
   )
 }
 
-/** A faint dot, as the map draws it up close (S-143). */
+/** Faint dots on a scrap of the map's land, since the map is always light and the card may not be (S-146). */
 function Dot() {
   return (
     <svg className="map-legend-swatch" viewBox="0 0 40 12" aria-hidden>
-      <circle cx="20" cy="6" r="3.5" fill="var(--map-dot)" stroke="var(--map-land)" strokeWidth="1" />
+      <rect x="6" y="0" width="28" height="12" rx="3" fill="var(--map-land)" />
+      {[[13, 4], [20, 8], [27, 5]].map(([cx, cy]) => <circle key={cx} cx={cx} cy={cy} r="2" fill="var(--map-dot)" fillOpacity="0.45" />)}
     </svg>
   )
 }
@@ -32,7 +33,7 @@ export function MapLegend({ onClose }: { onClose: () => void }) {
     <div className="card map-legend" role="dialog" aria-labelledby="map-legend-h">
       <h2 className="t" id="map-legend-h">What the map shows</h2>
       <ul>
-        <li><Dot />Every Washington organization, at the address on its IRS record.</li>
+        <li><Dot />Faint dots are Washington nonprofits that haven’t joined yet.</li>
         <li><Ring color="var(--need)" />Amber is open needs.</li>
         <li><Ring color="var(--offer)" />Green is open offers.</li>
         <li><Swatch color="var(--thread-golden)" dash="16 8" glow />A golden thread. Help that was given.</li>

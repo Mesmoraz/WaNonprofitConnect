@@ -72,13 +72,13 @@ type Burst = { at: LonLat[]; start: number; pieces: { angle: number; speed: numb
 type Seat = { beforeId?: string }
 
 /**
- * How a faint dot is drawn at a zoom (S-143). Zoomed out they're soft and light so they add up into shading where
- * organizations are; zoomed in each one is solid with a cream edge, so 3 at one address read as 3.
+ * How a faint dot is drawn at a zoom. Zoomed out they add up into a light wash where organizations are (S-143); at
+ * every zoom they stay in the background, so pins and golden threads lead (S-146: Taylor, "not the focus").
  */
-function dotLook(zoom: number): { radius: number; alpha: number; edge: number } {
-  if (zoom <= 8) return { radius: 1.8, alpha: 0.13, edge: 0 }
-  if (zoom <= 11) return { radius: 2.4, alpha: 0.38, edge: 0 }
-  return { radius: 3.6, alpha: 0.9, edge: 1 }
+function dotLook(zoom: number): { radius: number; alpha: number } {
+  if (zoom <= 8) return { radius: 1.6, alpha: 0.07 }
+  if (zoom <= 11) return { radius: 2, alpha: 0.12 }
+  return { radius: 2.6, alpha: 0.22 }
 }
 
 function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
@@ -99,12 +99,11 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
   const layers: LayersList = [
     f.dots && new ScatterplotLayer<unknown, Seat>({
       // Every WA organization at its IRS address (S-143). Points are street addresses (a ZIP center only when the
-      // geocoder missed), spread ~50 m so two at one address part; the cream edge keeps them apart up close.
+      // geocoder missed), spread ~50 m so two at one address part.
       id: 'wm-dots', beforeId: f.under, data: f.dots, pickable: false,
       radiusUnits: 'pixels', getRadius: dot.radius,
       getFillColor: withAlpha(t.dot, dot.alpha),
-      stroked: dot.edge > 0, lineWidthUnits: 'pixels', getLineWidth: dot.edge, getLineColor: withAlpha(t.land, 0.9),
-      updateTriggers: { getFillColor: [t.key, f.zoom], getLineColor: t.key },
+      updateTriggers: { getFillColor: [t.key, f.zoom] },
     }),
     new ScatterplotLayer<MapNode, Seat>({
       id: 'wm-heat', beforeId: f.under, data: f.nodes, pickable: false,

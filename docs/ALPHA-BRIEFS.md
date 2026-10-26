@@ -564,3 +564,33 @@ Taylor, Oct 25: "can we make it so the map is interactable like you can click on
 - **MISSION.md:** geographic area is one of the things golden threads are found by. A place shows the whole community's capacity there, joined or not, before anyone has to ask.
 - **VOICE.md:** "organization", never nonprofit or member (the Words table); "joined" for organizations here, as the privacy page says it; headline-length strip; digits; sentence case; no em-dashes; the empty state is a sentence and a next step.
 - **Tests (when built):** `[S-144]` tapping a city name draws its outline and the strip reads "{n} organizations in {place} · {n} joined", the list puts joined organizations first, × clears it back to "in view", and a Seattle neighborhood name works.
+
+---
+
+# Demo settings wait for Show this demo (S-145, approved Oct 25)
+
+Approved by Taylor 2026-10-25 in chat ("Yes, build both as briefed."). Taylor, Oct 25: "when I adjust the settings, I want just like a confirm button to change the layout based on what I selected, not a new link. And that link sent me to an invite code but didn't work."
+
+**What was wrong:** each setting took effect the moment you tapped it. On Admin the only way to see it was a grey "Start the demo" under a page whose pinned button says Make code, so "Copy a link to this demo" looked like the thing to press. A link (or "You are") set to A new organization starts at the invite code on purpose, and there only the sample codes work; a real code fails.
+
+- **For:** pick what the demo shows, then see it. **The one action:** Show this demo.
+- **Admin, Demo:** a primary **Show this demo** button right under the settings. "Start the demo" and "Copy a link to this demo" go. "Now: Busy, changed." stays.
+- **In the demo, Settings:** nothing changes until you choose. Hint: "Pick what to show, then tap Show this demo. What you did in the demo starts over. Only you see this." Buttons: **Cancel**, **Show this demo** (primary), pinned to the bottom of the sheet so they're always in reach. Show this demo closes the sheet and the screen behind redraws.
+- **A new organization:** the invite code box starts filled in with RAINIER, so Join just works. "Demo: try RAINIER." stays.
+- **Stays:** a link like `/admin?demo=busy` still starts that demo for an admin (the tests and the map harness use it); nothing in the app offers one.
+- **Tests:** `[S-145]` a change in the sheet waits for Show this demo, Cancel leaves the demo as it was, and the invite code is filled in.
+
+---
+
+# The dots fade back (S-146, approved Oct 25)
+
+Approved by Taylor 2026-10-25 in chat ("Yes, build both as briefed. Drop the pill."). Taylor, Oct 25: "the map "?" doesn't explain the dots on the map still, and the dots on the map are still too busy and take away. They're distracting, they should be more transparent ... to say "hey there are non-profits here just not registered yet" but it's the focus of the map page and shouldn't be." This turns back part of S-143.
+
+- **For:** pins and golden threads are the focus. The dots are a quiet hint that more nonprofits are out there.
+- **The dots:** much fainter at every zoom (about a quarter as strong up close: 22% from 90%), smaller, no cream edge. Zoomed out they're a light wash. Pins keep S-143's white center.
+- **Goes:** the pill under the chips ("1,204 organizations in view · IRS addresses").
+- **The ? first line,** next to a few faint dots on a scrap of the map's land: "Faint dots are Washington nonprofits that haven't joined yet."
+- **Stays:** pins, rings, threads, the strip, chips, the rest of the legend. Home's small map gets the same fainter dots.
+- **VOICE.md:** the Words table prefers "organization" over "nonprofit"; Taylor approved "nonprofits" here, and these are IRS-registered nonprofits, where the term matters.
+- **Tests:** `[S-146]` no dot count on the map, and the legend's first line is the new one.
+

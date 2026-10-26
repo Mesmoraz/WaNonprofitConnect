@@ -6,7 +6,8 @@ import { useToast } from '../../shell/Toast'
 
 // Copy: docs/ALPHA-BRIEFS.md, Invite code.
 export function Invite() {
-  const [code, setCode] = useState('')
+  // In the demo the sample code is already filled in (S-145): a real code doesn't work there.
+  const [code, setCode] = useState(MOCK ? 'RAINIER' : '')
   const redeem = useRedeemInvite()
   const navigate = useNavigate()
   const toast = useToast()

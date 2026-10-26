@@ -5,10 +5,10 @@ test('[S-110] [S-101] an admin can walk the front door again as a new organizati
   await signIn(page, { name: 'Taylor', email: ADMIN_EMAIL, org: ORG.ballard })
   await page.goto('/admin')
   await page.getByRole('radio', { name: /^A new organization/ }).click()
-  await page.getByRole('button', { name: 'Start the demo' }).click()
+  await page.getByRole('button', { name: 'Show this demo' }).click()
   await expect(page).toHaveURL(/\/invite$/)
   await expect(page.getByText('Demo: try RAINIER.')).toBeVisible()
-  await page.getByLabel('Invite code').fill('RAINIER')
+  await expect(page.getByLabel('Invite code')).toHaveValue('RAINIER')   // filled in: a real code doesn't work here (S-145)
   await page.getByRole('button', { name: 'Join' }).click()
   await expect(page.getByRole('button', { name: /· Rainier Valley Food Bank/ })).toBeVisible()
   await expect(page.getByText('Demo: A new organization.')).toBeVisible()
@@ -29,7 +29,7 @@ test('[S-110] [S-101] an admin can walk the front door again as a new organizati
   await expect(page.getByText(/^Demo: /)).toHaveCount(0)
 })
 
-test('[S-128] an admin picks what the demo shows, and changes it while in the demo', async ({ page }) => {
+test('[S-128] [S-145] an admin picks what the demo shows, and changes it while in the demo', async ({ page }) => {
   await signIn(page, { name: 'Taylor', email: ADMIN_EMAIL, org: ORG.ballard })
   // Only an admin's Admin page starts a demo from a link; for anyone else /admin isn't there.
   await page.goto('/admin?demo=busy')
@@ -39,18 +39,31 @@ test('[S-128] an admin picks what the demo shows, and changes it while in the de
   await expect(page.getByRole('link', { name: /Waiting on you/ })).toHaveCount(3)
   await expect(page.getByRole('link', { name: 'Inbox' })).toContainText('3')
 
-  // Settings, from the demo bar: change one thing and the screen behind redraws.
+  // Settings, from the demo bar: nothing changes until Show this demo (S-145). Cancel leaves it as it was.
   await page.getByRole('button', { name: 'Settings' }).click()
   const sheet = page.getByRole('dialog', { name: 'Demo settings' })
   await sheet.getByRole('radiogroup', { name: 'Waiting on you' }).getByRole('radio', { name: '0' }).click()
+  await expect(sheet.getByText('Now: Busy, changed.')).toBeVisible()
+  await expect(page.getByText('Demo: Busy.')).toBeVisible()
+  await expect(page.getByRole('link', { name: /Waiting on you/ })).toHaveCount(3)
+  await sheet.getByRole('button', { name: 'Cancel' }).click()
+  await expect(sheet).toHaveCount(0)
+  await expect(page.getByRole('link', { name: /Waiting on you/ })).toHaveCount(3)
+
+  // Change one thing, then Show this demo: the sheet closes and the screen behind redraws.
+  await page.getByRole('button', { name: 'Settings' }).click()
+  await sheet.getByRole('radiogroup', { name: 'Waiting on you' }).getByRole('radio', { name: '0' }).click()
+  await sheet.getByRole('button', { name: 'Show this demo' }).click()
+  await expect(sheet).toHaveCount(0)
   await expect(page.getByText('Demo: Busy, changed.')).toBeVisible()
   await expect(page.getByRole('link', { name: /Waiting on you/ })).toHaveCount(0)
 
   // A preset: nothing posted anywhere.
+  await page.getByRole('button', { name: 'Settings' }).click()
   await sheet.getByRole('radio', { name: /^Empty board/ }).click()
+  await sheet.getByRole('button', { name: 'Show this demo' }).click()
   await expect(page.getByText('Demo: Empty board.')).toBeVisible()
-  await expect(page.getByText(/^No threads yet./)).toBeVisible()   // the inbox behind the sheet, emptied
-  await sheet.getByRole('button', { name: 'Done' }).click()
+  await expect(page.getByText(/^No threads yet./)).toBeVisible()   // the inbox, emptied
   await page.goto('/board')
   await expect(page.getByText('Nothing here yet.')).toBeVisible()
 
