@@ -594,3 +594,21 @@ Approved by Taylor 2026-10-25 in chat ("Yes, build both as briefed. Drop the pil
 - **VOICE.md:** the Words table prefers "organization" over "nonprofit"; Taylor approved "nonprofits" here, and these are IRS-registered nonprofits, where the term matters.
 - **Tests:** `[S-146]` no dot count on the map, and the legend's first line is the new one.
 
+
+---
+
+# A calmer map (S-147, approved Oct 25)
+
+Approved by Taylor 2026-10-25 in chat ("Approved as briefed. Merge #63 first so I can see the dots, then build the calmer map in its own PR."). Taylor, Oct 25, from staging on a phone: "the map when busy is confusing to look at there are too many threads and moving pieces... the clutter at the top of the filters is a lot, the symbols aren't intuitive Green/Orange and white with the numbers... we need to make it a little less noisy and more clear."
+
+**What was wrong:** numbers meant two things (organizations in a bubble, threads on a line); a ring split amber and green had to be explained; in Busy every golden thread had sparks running on it; four layers of controls sat on the map (count, chips, the dots pill, two buttons at the bottom).
+
+- **For:** see at a glance who needs help, who offers it, and where help was given. **The one action:** tap a place to see what's open there.
+- **Symbols, one meaning each:** one organization is one solid dot with a white edge, amber if it has needs, green if it only has offers, a little bigger with more open, never a number. Nothing open: a small white pin with a grey edge. Several close together: one grey bubble with a number, and the number always means organizations. Lines never carry numbers; several threads between two places draw a little thicker.
+- **Threads, still until you ask:** golden threads are thin, still, solid gold lines; nothing runs along them and nothing glows. Tap a place and only its threads light up and glow; the rest fade. Your own threads underway stay faint and dashed, and still.
+- **Top of the screen, one row:** the count and the ?, with **Filter** next to the count. Filter opens the kind-of-help chips under it; picking one closes them and the button says which ("Filter: Food"). When the count is long, Filter wraps under it rather than cutting the count off.
+- **At the bottom, one button:** **What fits you**. It opens a choice between "Offers for your needs" and "Needs you can help with", or goes straight to the one you have when you only have needs or only offers open. Tapped again while on, it turns off.
+- **The ?, shorter, in this order:** amber dot "Needs help.", green dot "Offers help.", grey bubble "Several organizations close together.", gold line "Help that was given.", faint dashed line "Your threads that are underway.", faint dots "Faint dots are Washington nonprofits that haven't joined yet." "A bigger pin has more open." and the line about numbers go.
+- **Stays:** the map's colors, the faint dots (S-146), tapping a place, the open list, confetti when a thread turns golden while you watch. Home's small map and the place list use the same symbols.
+- **Goes:** sparks and the dash drift, numbers on lines and on single organizations, the split ring, the always-on chip row, the second bottom button.
+- **Tests:** `[S-147]` the chips are behind Filter and it names the one picked; What fits you turns a toggle on and off; the legend reads in this order.

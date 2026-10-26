@@ -2281,6 +2281,16 @@
       "tasks": [],
       "lane": "map",
       "source": "Taylor, Oct 25: the ? doesn't explain the dots; they're too busy and distracting, they should be more transparent, a hint there are nonprofits here not registered yet, not the focus"
+    },
+    {
+      "id": "S-147",
+      "epic": "E-25",
+      "title": "A calmer map: one meaning per symbol, still threads that light up on tap, one row of controls",
+      "status": "review",
+      "added": "2026-10-26",
+      "tasks": [],
+      "lane": "map",
+      "source": "Taylor, Oct 25: the map when busy is confusing, too many threads and moving pieces; the clutter at the top is a lot; the symbols (green/orange and white with numbers) are not intuitive; less noisy and more clear"
     }
   ]
 }
