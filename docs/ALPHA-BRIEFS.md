@@ -612,3 +612,8 @@ Approved by Taylor 2026-10-25 in chat ("Approved as briefed. Merge #63 first so 
 - **Stays:** the map's colors, the faint dots (S-146), tapping a place, the open list, confetti when a thread turns golden while you watch. Home's small map and the place list use the same symbols.
 - **Goes:** sparks and the dash drift, numbers on lines and on single organizations, the split ring, the always-on chip row, the second bottom button.
 - **Tests:** `[S-147]` the chips are behind Filter and it names the one picked; What fits you turns a toggle on and off; the legend reads in this order.
+
+**Changed after staging (Taylor, Oct 25, in chat):** "the map looks better with 64, but the animated threads really added something so let's bring that back and the grey dots are also meh". Taylor then picked what stays: the one row with Filter, the solid amber and green pins, and the shorter ?. So:
+
+- **Back as before (S-127, S-129, S-130):** the threads' drifting dashes, the sparks on golden threads and their glow; the cluster bubbles with their amber and green ring around the count; the two buttons at the bottom, "Offers for your needs" and "Needs you can help with". What fits you and the grey bubbles go.
+- **Stays from this round:** one solid dot per organization, Filter in one row at the top, the shorter ? (its cluster and gold-line swatches drawn as the map draws them again), the faint dots. Lines still carry no numbers; only clusters do.
