@@ -60,6 +60,20 @@ export interface MapFit { myId: number; myTitle: string; post: Listing }
 export type MapFitsFor = 'needs' | 'offers'
 export type MapPoint = [ein: string, lat: number, lon: number]
 
+/** A place you can tap on the map (S-144): a city or town, a census place, or a Seattle district or neighborhood. */
+export type PlaceKind = 'city' | 'cdp' | 'district' | 'neighborhood'
+export interface PlaceFeature {
+  type: 'Feature'; id: string
+  properties: { id: string; name: string; kind: PlaceKind; bbox: [west: number, south: number, east: number, north: number] }
+  geometry: { type: 'Polygon'; coordinates: number[][][] } | { type: 'MultiPolygon'; coordinates: number[][][][] }
+}
+/** `GET /api/v1/places`: every outline, as GeoJSON. */
+export interface Places { type: 'FeatureCollection'; features: PlaceFeature[] }
+/** One organization inside a place, with what it has open. */
+export interface PlaceOrg { org: OrgSummary; needs: number; offers: number }
+/** `GET /api/v1/places/{id}/orgs`: how many inside, how many joined, and a page of them, joined first. */
+export interface PlaceOrgs { id: string; name: string; total: number; joined: number; orgs: PlaceOrg[] }
+
 /** A thread stalled on someone (Admin, "Waiting on someone"): unanswered for 2 days, or accepted and quiet for 7. */
 export interface WaitingThread { id: number; title: string; why: 'unanswered' | 'quiet'; since: string; days: number; waitingOn: string[]; people: { name: string; email: string }[] }
 export interface Claim { id: number; ein: string; orgName: string; city: string | null; accountId: string; email: string; name: string; status: string; createdAt: string; decidedAt: string | null }

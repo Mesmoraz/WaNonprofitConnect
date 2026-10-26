@@ -21,6 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Outlines you can tap on the map (scripts/fetch-places.js). Read by Places. -->
+    <None Include="..\..\data\geo\wa-places.geojson" Link="geo\wa-places.geojson" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <!-- Street-address positions for WA nonprofits (scripts/geocode-orgs.js). Read by OrgLocations. -->
     <None Include="..\..\data\geo\wa-orgs-geo.csv" Link="geo\wa-orgs-geo.csv" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Condition="Exists('..\..\data\geo\wa-orgs-geo.csv')" />
   </ItemGroup>

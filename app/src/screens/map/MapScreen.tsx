@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useMapData, useMapFits, useMapOpen, useMapPoints, useMe, type KindOfHelp, type Listing, type MapFitsFor } from '../../api'
-import { ThreadMap, type MapView } from '../../map'
+import { useMapData, useMapFits, useMapOpen, useMapPoints, useLoadPlaces, useMe, usePlaceOrgs, usePlaces, type KindOfHelp, type Listing, type MapFitsFor } from '../../api'
+import { ThreadMap, type MapLabelTap, type MapView } from '../../map'
 import { HELPS, HELP_LABEL } from '../../lib/words'
+import { contains, findPlace } from '../../lib/places'
 import { MapDetailCard, type MapSelection } from './MapDetailCard'
 import { MapFitsCard } from './MapFitsCard'
 import { MapLegend } from './MapLegend'
 import { MapOpenList } from './MapOpenList'
+import { MapPlaceList } from './MapPlaceList'
 import { Slow } from '../../shell/Slow'
 import './map.css'
 
@@ -74,14 +76,43 @@ export function MapScreen() {
   }, [map, help, openPosts, shown])
   const openList = () => { setSel(null); setLegend(false); setFitsFor(null); setList(o => !o) }
 
+  // Tap a place, see who's there (S-144): a town or neighborhood name tapped outlines it, and the strip and list count
+  // everyone inside it instead of what's in view. The outlines load on the first tap.
+  const [placeId, setPlaceId] = useState<string | null>(null)
+  const { data: places } = usePlaces(!!placeId)
+  const loadPlaces = useLoadPlaces()
+  const tapLabel = (label: MapLabelTap) => {
+    setSel(null); setLegend(false)
+    loadPlaces().then(all => {
+      const f = findPlace(all.features, label)
+      if (f) { setFitsFor(null); setPlaceId(f.id) }
+    }, () => { /* no outlines: the name does nothing, as before */ })
+  }
+  const place = useMemo(() => places?.features.find(f => f.id === placeId) ?? null, [places, placeId])
+  const mapPlace = useMemo(() => (place ? { id: place.id, bbox: place.properties.bbox, geometry: place.geometry } : null), [place])
+  const placeOrgs = usePlaceOrgs(placeId)
+  const clearPlace = () => { setPlaceId(null); setList(false) }
+  const placeRows = useMemo(() => placeOrgs.data?.pages.flatMap(p => p.orgs) ?? [], [placeOrgs.data])
+  const placeCount = placeOrgs.data?.pages[0]
+  // With a kind of help picked, "joined" is the organizations here with something of that kind open.
+  const helpEins = useMemo(() => (help ? new Set(shown.map(l => l.org.ein)) : null), [help, shown])
+  const isJoined = (r: { org: { isMember: boolean }; needs: number; offers: number }) => r.org.isMember || r.needs + r.offers > 0
+  const joinedRows = placeRows.filter(r => isJoined(r) && (!helpEins || helpEins.has(r.org.ein)))
+  const restRows = placeRows.filter(r => !isJoined(r))
+  const joinedCount = !placeCount ? 0 : !help || !place ? placeCount.joined
+    : new Set(shown.filter(l => l.org.lat != null && l.org.lon != null && contains(place, l.org.lon, l.org.lat)).map(l => l.org.ein)).size
+  const placeTitle = place && placeCount ? `${plural(placeCount.total, 'organization')} in ${place.properties.name}` : place?.properties.name ?? ''
+  const placeStrip = place && placeCount ? `${placeTitle} · ${joinedCount} joined` : placeTitle
+
   return (
     <div className="map-screen">
-      {mapData && <ThreadMap data={mapData} points={points} me={me?.membership?.ein} selected={sel} onSelect={select} fits={fitLines} onFitTap={openFit} onViewChange={setSeen} initialView={view} className="map-fill" />}
+      {mapData && <ThreadMap data={mapData} points={points} me={me?.membership?.ein} selected={sel} onSelect={select} fits={fitLines} onFitTap={openFit} onLabelTap={tapLabel} place={mapPlace} onViewChange={setSeen} initialView={view} className="map-fill" />}
       <button className="map-help" aria-label="What the map shows" aria-expanded={legend} onClick={() => { setSel(null); setFitsFor(null); setList(false); setLegend(o => !o) }}>?</button>
       {map && seen && openPosts && (
         <div className="map-top">
-          <button className="map-strip" aria-expanded={list} onClick={openList}>{strip}</button>
+          <button className="map-strip" aria-expanded={list} onClick={openList}>{place ? placeStrip : strip}</button>
           <div className="map-chips" role="group" aria-label="Kind of help">
+            {place && <button className="map-chip map-place-chip" aria-label={`Clear ${place.properties.name}`} onClick={clearPlace}>{place.properties.name} ×</button>}
             <button className="map-chip" aria-pressed={!help} onClick={() => setHelp(null)}>All</button>
             {HELPS.map(h => <button key={h} className="map-chip" aria-pressed={help === h} onClick={() => setHelp(on => (on === h ? null : h))}>{HELP_LABEL[h]}</button>)}
           </div>
@@ -100,6 +131,8 @@ export function MapScreen() {
           {sel ? <MapDetailCard selection={sel} onClose={() => setSel(null)} onSelect={select} />
             : legend ? <MapLegend onClose={() => setLegend(false)} />
             : fitsFor ? <MapFitsCard forWhat={fitsFor} fits={fits} myOrg={map.members.find(o => o.ein === myEin)} onClose={() => setFitsFor(null)} />
+            : list && place ? <MapPlaceList title={placeTitle} name={place.properties.name} joined={joinedRows} rest={restRows}
+                more={!!placeOrgs.hasNextPage} onMore={() => placeOrgs.fetchNextPage()} onClear={clearPlace} onClose={() => setList(false)} />
             : list ? <MapOpenList title={strip} posts={inView} onClose={() => setList(false)} />
             : null}
         </div>

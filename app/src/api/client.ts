@@ -3,7 +3,7 @@ import { ORG_NAMES } from './mock/names'
 import { loadSettings, saveSettings, SETTINGS_KEY, type DemoSettings } from './mock/settings'
 import type {
   BoardQuery, Claim, FeedbackItem, Filters, Invite, Listing, ListingDetail, ListingEdit, MapData, MapFit, MapFitsFor, MapPoint, Me, Message, NewListing, NewThread,
-  MyOrg, OrgPage, OrgSummary, SaveMyOrg, Thread, ThreadAction, ThreadDetail, WaitingThread,
+  MyOrg, OrgPage, OrgSummary, PlaceOrgs, Places, SaveMyOrg, Thread, ThreadAction, ThreadDetail, WaitingThread,
 } from './types'
 
 const DEMO_KEY = 'helpbook.demo'
@@ -136,6 +136,8 @@ export const api = {
   mapFits: (forWhat: MapFitsFor) => call<MapFit[]>('GET', `${V1}/map/fits?for=${forWhat}`),
   filters: () => call<Filters>('GET', `${V1}/filters`),
   saveFilters: (serve: string[]) => call<Filters>('PUT', `${V1}/filters`, { serve }),
+  places: () => call<Places>('GET', `${V1}/places`),
+  placeOrgs: (id: string, skip = 0) => call<PlaceOrgs>('GET', `${V1}/places/${encodeURIComponent(id)}/orgs?skip=${skip}`),
   orgPage: (ein: string) => call<OrgPage>('GET', `${V1}/orgs/${encodeURIComponent(ein)}/page`),
   myOrg: () => call<MyOrg>('GET', `${V1}/org`),
   saveMyOrg: (v: SaveMyOrg) => call<MyOrg>('PUT', `${V1}/org`, v),

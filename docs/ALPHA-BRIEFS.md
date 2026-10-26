@@ -507,3 +507,60 @@ Taylor, Oct 25: "let's make it way more obvious that the spots on the map are al
 - **MISSION.md:** the dots are the community's whole capacity, every organization that could be one end of a golden thread. Showing them plainly says "they're all here" before anyone joins.
 - **VOICE.md:** "organization", not "nonprofit" (the Words table); "IRS addresses" is the one place the record matters, in a metadata line with a middle dot; digits; sentence case; no em-dashes.
 - **Tests (when built):** `[S-143]` the pill shows a count of organizations in view that changes when the map zooms in, and the legend's first line is the dot.
+
+---
+
+# Tap a place, see who's there (S-144, approved Oct 25)
+
+Taylor, Oct 25: "can we make it so the map is interactable like you can click on a region of the map, like "Seattle" or even "Ballard" and a boundary of that place is focused and we can see what organizations are there". Taylor picked "every organization inside the place, members and all listed nonprofits, with a count" in chat the same day, and approved this brief in chat ("Approved as written. Build it in its own PR."). Built in its own pull request.
+
+**Decided while building:** a place name under a pin (Seattle's, at state zoom) goes to the pin, as every tap on a pin does; zoom in to tap the name. "Show all of Washington" clears the place and leaves the map where it is. The place's chip is the outline's blue-grey, so the two read as one thing.
+
+## On the map
+
+- **For:** see everyone in one place you know by name, not just whatever fits on the screen.
+- **The one action:** tap a place name on the map.
+- **Which names you can tap:** every Washington city and town, and Seattle's neighborhoods (Ballard, Fremont, Rainier Valley and the rest). Other names on the map (rivers, parks, other cities' neighborhoods) do nothing, as now.
+- **Tap "Ballard":** the map moves to fit Ballard and draws its outline, a thin blue-grey line. Land outside the outline fades a little. Pins, dots and threads inside stay as they are.
+- **The strip at the top** reads "214 organizations in Ballard · 6 joined". Tap it and the list slides up, the same sheet as "in view".
+- **A chip for the place,** first in the chip row: "Ballard ×". Tap × and the outline goes, the map stays where it is, and the strip goes back to "in view".
+- **Tapping another place name** swaps the outline to it. Tapping a pin still opens its card, outline or not.
+- **Moving the map** keeps the outline and the count. The count is for the place, not the screen.
+
+## The list
+
+- **Title:** "214 organizations in Ballard".
+- **Joined first:** the organizations that have joined, each with its pin's ring (amber needs, green offers) and "2 needs · 1 offer open" under its name. Tap one to open its page.
+- **Then everyone else,** under a small grey line "Not here yet", A to Z. Each row: the name, then its NTEE area in a metadata line ("Food · Seattle"). Tap one to open its page, as from search today.
+- **Long lists** show 50 at a time, with "Show 50 more" at the bottom.
+- **The kind-of-help chips** narrow the joined part to organizations with something open of that kind. "Not here yet" stays as it is, since they have nothing posted.
+- **Empty:** "No organizations in Ballard yet. Show all of Washington?" with "Show all of Washington" as the link. It clears the place.
+
+## Where the outlines come from
+
+- **Cities and towns:** the U.S. Census Bureau's place boundaries for Washington (public domain), about 600 places, fetched by a script into a seed file like our other public data. No new service and no cost.
+- **Seattle's neighborhoods:** the City of Seattle's neighborhood map, from its open data (terms checked before it's built).
+- **Simplified** so the whole file is small enough for a phone, loaded only the first time you tap a place.
+- **Inside or not** is decided by the organization's address on its IRS record, the same point its dot sits on.
+
+## Backend
+
+- `GET /api/v1/places/{id}/orgs` returns every organization inside the outline, joined first, with a total, 50 at a time. The dots only carry an EIN today, so this is where the names come from. Public, like `/map/points`.
+
+## Not in this round
+
+- **Neighborhoods outside Seattle.** Most cities don't publish outlines for free. Tacoma, Spokane and others get added as stories when we find their data.
+- **Counties** and **searching for a place by name.** Each a story of its own if you want it.
+
+## Stays and goes
+
+- **Stays:** pins, rings, threads, dots, the "in view" strip and list when no place is picked, the toggles, cards, legend, Home's small map (it stays still; tapping it opens the Map as now).
+- **Goes:** nothing.
+- **Built as tokens:** the outline and the fade are `--map-place-line` and `--map-place-fade` in `tokens.css`.
+- **Works with the dot brief (pull request 59):** if that one lands first, its "organizations in view" pill reads "in Ballard" while a place is picked, and this strip keeps the joined count.
+
+## Checked against
+
+- **MISSION.md:** geographic area is one of the things golden threads are found by. A place shows the whole community's capacity there, joined or not, before anyone has to ask.
+- **VOICE.md:** "organization", never nonprofit or member (the Words table); "joined" for organizations here, as the privacy page says it; headline-length strip; digits; sentence case; no em-dashes; the empty state is a sentence and a next step.
+- **Tests (when built):** `[S-144]` tapping a city name draws its outline and the strip reads "{n} organizations in {place} · {n} joined", the list puts joined organizations first, × clears it back to "in view", and a Seattle neighborhood name works.

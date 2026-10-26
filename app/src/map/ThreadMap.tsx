@@ -4,7 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import './map.css'
 import { MapboxOverlay } from '@deck.gl/mapbox'
 import type { LayersList, PickingInfo } from '@deck.gl/core'
-import { PathLayer, ScatterplotLayer, TextLayer } from '@deck.gl/layers'
+import { PathLayer, ScatterplotLayer, SolidPolygonLayer, TextLayer } from '@deck.gl/layers'
 import { PathStyleExtension } from '@deck.gl/extensions'
 import { shimTransformForDeck } from './compat'
 import { FlowExtension, RingExtension, SoftGlowExtension, type RingExtensionProps } from './extensions'
@@ -15,7 +15,7 @@ import {
   type Badge, type GlowArc, type LabelDatum, type MapNode, type ThreadArc,
 } from './model'
 import { useMapTheme, useReducedMotion, withAlpha, type MapTheme, type RGBA } from './theme'
-import type { ThreadMapProps } from './types'
+import type { MapPlace, ThreadMapProps } from './types'
 
 const FONT = '"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif'
 const FLOW_PX_PER_S = 24          // dash drift speed; 48 px wrap / 24 = one seamless loop every 2 s
@@ -27,6 +27,11 @@ const PULSE_MS = 1600             // your pin's pulse while a toggle is on (S-13
 const PICK_PIN_PX = 6
 const HOVER_GROW = 1.45          // a pin under the mouse eases up to this size
 const PICK_THREAD_PX = 7          // + the stroke itself ≈ a 16 px wide target
+const PICK_LABEL_PX = 8           // around a town or neighborhood name (S-144)
+/** Base-map labels that name a place you can tap (S-144); states and countries aren't places with a list. */
+const NOT_A_PLACE = new Set(['state', 'country', 'continent', 'province'])
+/** The fade's outside edge: past anywhere the map can pan to (MAX_BOUNDS). */
+const WORLD_RING: LonLat[] = [[-140, 35], [-100, 35], [-100, 60], [-140, 60], [-140, 35]]
 
 // Shared extension instances: deck compares extensions by identity-ish equality, so keep them stable.
 const dashExt = new PathStyleExtension({ dash: true, dashMode: 'path' })
@@ -48,6 +53,8 @@ interface Frame {
   pulse: { position: LonLat; radius: number; color: RGBA } | null
   labels: LabelDatum[]
   counts: { position: LonLat; text: string; color: RGBA }[]
+  /** A place you tapped (S-144): the land outside it, as one polygon with the place cut out, and its edges. */
+  place: { fade: LonLat[][]; edges: LonLat[][] } | null
   fontsReady: boolean
   /** floor(zoom): how the faint dots are drawn. */
   zoom: number
@@ -103,6 +110,16 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
       id: 'wm-heat', beforeId: f.under, data: f.nodes, pickable: false,
       radiusUnits: 'pixels', getPosition: d => d.position, getRadius: d => d.heatRadius, getFillColor: d => d.heat,
       extensions: [glowPointExt],
+    }),
+    // A place you tapped (S-144): the land outside fades a little and its edge is a thin line, both under the town names.
+    f.place && new SolidPolygonLayer<LonLat[][], Seat>({
+      id: 'wm-place-fade', beforeId: f.under, data: [f.place.fade], pickable: false,
+      getPolygon: d => d, getFillColor: t.placeFade, updateTriggers: { getFillColor: t.key },
+    }),
+    f.place && new PathLayer<LonLat[], Seat>({
+      id: 'wm-place-line', beforeId: f.under, data: f.place.edges, pickable: false,
+      widthUnits: 'pixels', getPath: d => d, getWidth: 2, getColor: withAlpha(t.placeLine, 0.9),
+      jointRounded: true, updateTriggers: { getColor: t.key },
     }),
     new PathLayer<GlowArc, Seat>({
       // Threads and their glow draw above the whole base map, labels included (Taylor, Sep 23: roads and
@@ -186,7 +203,26 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
   return layers
 }
 
-export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap, onViewChange, initialView, still, className, style }: ThreadMapProps) {
+/** The base map's place name under a tap, if there is one (S-144): its name, class, and where the label sits. */
+function labelAt(map: MlMap, x: number, y: number) {
+  const layers = (map.getStyle()?.layers ?? []).filter(l => 'source-layer' in l && l['source-layer'] === 'place').map(l => l.id)
+  if (!layers.length) return null
+  const hit = map.queryRenderedFeatures([[x - PICK_LABEL_PX, y - PICK_LABEL_PX], [x + PICK_LABEL_PX, y + PICK_LABEL_PX]], { layers })
+    .find(f => f.geometry.type === 'Point' && !NOT_A_PLACE.has(String(f.properties?.class)))
+  if (!hit || hit.geometry.type !== 'Point') return null
+  const name = String(hit.properties?.['name:latin'] ?? hit.properties?.name ?? '')
+  const [lon, lat] = hit.geometry.coordinates
+  return name ? { name, kind: String(hit.properties?.class ?? ''), lon, lat } : null
+}
+
+/** A place's fade (the world with the place cut out) and its edges, for deck. */
+function placeShapes(place: MapPlace): NonNullable<Frame['place']> {
+  const polygons = place.geometry.type === 'Polygon' ? [place.geometry.coordinates] : place.geometry.coordinates
+  const ring = (r: number[][]) => r.map(([x, y]) => [x, y] as LonLat)
+  return { fade: [WORLD_RING, ...polygons.map(p => ring(p[0]))], edges: polygons.flatMap(p => p.map(ring)) }
+}
+
+export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap, onLabelTap, place, onViewChange, initialView, still, className, style }: ThreadMapProps) {
   const boxRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MlMap | null>(null)
   const overlayRef = useRef<MapboxOverlay | null>(null)
@@ -195,6 +231,8 @@ export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap
   onSelectRef.current = onSelect
   const onFitTapRef = useRef(onFitTap)
   onFitTapRef.current = onFitTap
+  const onLabelTapRef = useRef(onLabelTap)
+  onLabelTapRef.current = onLabelTap
   const onViewRef = useRef(onViewChange)
   onViewRef.current = onViewChange
   const indexRef = useRef<ReturnType<typeof buildIndex> | null>(null)
@@ -279,6 +317,8 @@ export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap
         }
         return
       }
+      const label = onLabelTapRef.current && labelAt(map, x, y)
+      if (label) { onLabelTapRef.current!(label); return }
       onSelectRef.current(null)
     })
 
@@ -293,7 +333,7 @@ export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap
         const { x, y } = e.point
         const pin = pick(x, y, PICK_PIN_PX, 'wm-pins')?.object as MapNode | undefined
         const line = pick(x, y, PICK_THREAD_PX, 'wm-threads')?.object as ThreadArc | undefined
-        const hit = !!pin || (!!line && (line.id != null || line.count > 1 || !!line.fit))
+        const hit = !!pin || (!!line && (line.id != null || line.count > 1 || !!line.fit)) || (!!onLabelTapRef.current && !!labelAt(map, x, y))
         const was = hoverRef.current.pin
         hoverRef.current = { pin: pin?.id, hit }
         if (was !== pin?.id && frameRef.current) {
@@ -430,11 +470,14 @@ export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap
     return placeLabels(nodes, map.getZoom(), p => map.project(p), c.clientWidth, c.clientHeight, scope, theme)
   }, [nodes, scope, theme, viewTick])
 
+  const placeKey = place?.id ?? ''
+  const shapes = useMemo(() => (place ? placeShapes(place) : null), [placeKey]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const under = () => {
     const id = underRef.current, map = mapRef.current
     return !swappingRef.current && id && map?.getLayer(id) ? id : undefined
   }
-  frameRef.current = { theme, dots, nodes, arcs, glows, movers, badges, confetti: [], pulse: reduced ? null : pulse, labels, counts, fontsReady, zoom: zoomLevel, under: under(), hover: hoverRef.current.pin }
+  frameRef.current = { theme, dots, nodes, arcs, glows, movers, badges, confetti: [], pulse: reduced ? null : pulse, labels, counts, place: shapes, fontsReady, zoom: zoomLevel, under: under(), hover: hoverRef.current.pin }
 
   // ---- Drawing: static redraw on change, plus a light animation loop when motion is allowed --------
   useEffect(() => {
@@ -475,6 +518,14 @@ export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap
     map.fitBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]],
       { padding: { top: 80, bottom: framing ? 340 : 200, left: 60, right: 60 }, maxZoom: framing ? 13 : 12 })
   }, [selected?.kind, selected?.id, fitKey]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ---- A place tapped (S-144): frame it, under the strip and chips at the top ------------------------
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !place) return
+    const [w, s, e, n] = place.bbox
+    map.fitBounds([[w, s], [e, n]], { padding: { top: 130, bottom: 40, left: 24, right: 24 }, maxZoom: 14, duration: 900 })
+  }, [placeKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return <div ref={boxRef} className={className ? `wm-root ${className}` : 'wm-root'} style={{ position: 'relative', width: '100%', height: '100%', ...style }} />
 }

@@ -95,3 +95,15 @@
 .map-help-chip { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; border: 1.5px solid; }
 .map-help-chip.need { color: var(--need); border-color: var(--need); }
 .map-help-chip.offer { color: var(--offer); border-color: var(--offer); }
+
+/* Tap a place, see who's there (S-144): the place's chip, first in the row, and its list in the dock. */
+.map-chip.map-place-chip { color: var(--paper); background: var(--map-place-line); border-color: var(--map-place-line); }
+.map-place-row {
+  display: grid; grid-template-columns: 18px 1fr; column-gap: 10px; row-gap: 2px; align-items: center; padding: 8px 2px;
+  min-height: var(--tap); border-bottom: 1px solid var(--line-2); color: var(--ink); text-decoration: none; font-size: 14px;
+}
+.map-place-row .r-title { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.map-place-row .r-meta { grid-column: 2; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); font-size: 13px; }
+.map-place-ring { width: 18px; height: 18px; display: block; }
+.map-place-sep { margin: 10px 2px 2px; font-size: 13px; color: var(--ink-3); }
+.map-place-more { margin: 10px 0 2px; align-self: flex-start; }
