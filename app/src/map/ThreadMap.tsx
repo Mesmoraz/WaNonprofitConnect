@@ -11,8 +11,8 @@ import { FlowExtension, RingExtension, SoftGlowExtension, type RingExtensionProp
 import { MAX_BOUNDS, STYLE_DARK, STYLE_LIGHT, WA_BOUNDS, firstSymbolId, quietStyle } from './basemap'
 import { jitter, pointAt, type LonLat } from './geometry'
 import {
-  DASH_WRAP, buildArcs, buildBadges, buildFitArcs, fitScope, buildGlows, buildIndex, buildNodes, degrees, openCounts, placeLabels, scopeOf, shownThreads,
-  type Badge, type GlowArc, type LabelDatum, type MapNode, type ThreadArc,
+  DASH_WRAP, buildArcs, buildFitArcs, fitScope, buildGlows, buildIndex, buildNodes, degrees, openCounts, placeLabels, scopeOf, shownThreads,
+  type GlowArc, type LabelDatum, type MapNode, type ThreadArc,
 } from './model'
 import { useMapTheme, useReducedMotion, withAlpha, type MapTheme, type RGBA } from './theme'
 import type { MapPlace, ThreadMapProps } from './types'
@@ -47,7 +47,6 @@ interface Frame {
   arcs: ThreadArc[]
   glows: GlowArc[]
   movers: ThreadArc[]
-  badges: Badge[]
   confetti: Confetto[]
   /** Your pin while a toggle is on (S-130): a ring swells out from it and fades. */
   pulse: { position: LonLat; radius: number; color: RGBA } | null
@@ -147,11 +146,6 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
       radiusUnits: 'pixels', getRadius: 3.6, getPosition: d => d.position, getFillColor: d => d.color,
       stroked: true, lineWidthUnits: 'pixels', getLineWidth: 1, getLineColor: withAlpha(t.paper, 0.9),
     }),
-    f.badges.length > 0 && new ScatterplotLayer<Badge>({
-      id: 'wm-badges', data: f.badges, pickable: false,
-      radiusUnits: 'pixels', getRadius: 9, getPosition: d => d.position, getFillColor: d => d.fill,
-      stroked: true, lineWidthUnits: 'pixels', getLineWidth: 1.5, getLineColor: d => d.line,
-    }),
     f.confetti.length > 0 && new ScatterplotLayer<Confetto>({
       id: 'wm-confetti', data: f.confetti, pickable: false,
       radiusUnits: 'pixels', getRadius: d => d.size, getPosition: d => d.position, getFillColor: d => d.color,
@@ -181,12 +175,6 @@ function buildLayers(f: Frame, now: number, animate: boolean): LayersList {
         id: 'wm-counts', data: f.counts, pickable: false,
         getPosition: d => d.position, getText: d => d.text, getSize: 11, sizeUnits: 'pixels',
         getColor: d => d.color, fontFamily: FONT, fontWeight: 700, characterSet: '0123456789+',
-        getTextAnchor: 'middle', getAlignmentBaseline: 'center',
-      }),
-      new TextLayer<Badge>({
-        id: 'wm-badge-text', data: f.badges, pickable: false,
-        getPosition: d => d.position, getText: d => d.text, getSize: 11, sizeUnits: 'pixels',
-        getColor: d => d.ink, fontFamily: FONT, fontWeight: 700, characterSet: '0123456789',
         getTextAnchor: 'middle', getAlignmentBaseline: 'center',
       }),
       new TextLayer<LabelDatum>({
@@ -401,7 +389,6 @@ export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap
   }, [fitsNow, selected, me, nodeOf, theme])
   const glows = useMemo(() => buildGlows(arcs, scope, theme), [arcs, scope, theme])
   const movers = useMemo(() => (reduced ? [] : arcs.filter(a => a.sparks.length > 0)), [arcs, reduced])
-  const badges = useMemo(() => buildBadges(arcs, scope, theme), [arcs, scope, theme])
   // For the acceptance tests (app/e2e/map-threads.spec.ts): where each line's middle is, so a test can tap it like a person.
   useEffect(() => {
     const box = boxRef.current as (HTMLDivElement & { __lines?: unknown; __linesZoom?: number }) | null
@@ -476,7 +463,7 @@ export function ThreadMap({ data, points, me, selected, onSelect, fits, onFitTap
     const id = underRef.current, map = mapRef.current
     return !swappingRef.current && id && map?.getLayer(id) ? id : undefined
   }
-  frameRef.current = { theme, dots, nodes, arcs, glows, movers, badges, confetti: [], pulse: reduced ? null : pulse, labels, counts, place: shapes, fontsReady, zoom: zoomLevel, under: under(), hover: hoverRef.current.pin }
+  frameRef.current = { theme, dots, nodes, arcs, glows, movers, confetti: [], pulse: reduced ? null : pulse, labels, counts, place: shapes, fontsReady, zoom: zoomLevel, under: under(), hover: hoverRef.current.pin }
 
   // ---- Drawing: static redraw on change, plus a light animation loop when motion is allowed --------
   useEffect(() => {

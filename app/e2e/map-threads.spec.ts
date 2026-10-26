@@ -43,7 +43,7 @@ async function lineMiddle(page: Page, a: Member, b: Member) {
   }, pair)
 }
 
-test('[S-127] several threads between two organizations are one line, and tapping it lists them', async ({ page, browser }) => {
+test('[S-127] [S-147] several threads between two organizations are one line, and tapping it lists them', async ({ page, browser }) => {
   const hope = await phone(browser)
   await signIn(hope.page, { name: 'Sam', org: ORG.hopelink })
   await signIn(page, { name: 'Pat', org: ORG.rebuilding })
@@ -72,10 +72,11 @@ test('[S-127] several threads between two organizations are one line, and tappin
   await expect(card).toContainText('→')
   await expect(card.getByRole('link', { name: 'Open thread' })).toBeVisible()
 
-  // The legend says what a number on a line means.
+  // Lines carry no numbers now (S-147): the legend's only number is on the grey bubble.
   await card.getByRole('button', { name: 'Close' }).click()
   await page.getByRole('button', { name: 'What the map shows' }).click()
-  await expect(page.getByText('A thicker line with a number is several threads between the same two places.')).toBeVisible()
+  await expect(page.getByText(/number is several threads/)).toHaveCount(0)
+  await expect(page.getByText('Several organizations close together.')).toBeVisible()
 })
 
 test('[S-127] a thread that turns golden while you look at the map pops confetti', async ({ page, browser }) => {

@@ -3,20 +3,20 @@ import { ORG, signIn } from './helpers'
 
 // What the map shows (S-105, docs/ALPHA-BRIEFS.md, Phase A).
 
-test('[S-105] [S-129] the first time you open the map, the legend opens by itself; after that, the ? opens it', async ({ page }) => {
+test('[S-105] [S-147] the first time you open the map, the legend opens by itself; after that, the ? opens it', async ({ page }) => {
   await signIn(page, { name: 'Casey', org: ORG.computers })
   await page.goto('/map')
   const legend = page.getByRole('dialog', { name: 'What the map shows' })
   await expect(legend).toBeVisible()
-  // Rewritten for S-129: rings for what's open, golden lines for help given.
-  for (const line of [
-    'Amber is open needs.',
-    'Green is open offers.',
-    'A golden thread. Help that was given.',
+  // Rewritten for S-147: one meaning per symbol, in this order.
+  await expect(legend.locator('li')).toHaveText([
+    'Needs help.',
+    'Offers help.',
+    /Several organizations close together\.$/,   // its swatch has a number in it
+    'Help that was given.',
     'Your threads that are underway.',
     'Faint dots are Washington nonprofits that haven’t joined yet.',
-    'A bigger pin has more open.',
-  ]) await expect(legend).toContainText(line)
+  ])
   await legend.getByRole('button', { name: 'Close' }).click()
   await expect(legend).toHaveCount(0)
 

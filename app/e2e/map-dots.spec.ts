@@ -12,6 +12,6 @@ test('[S-143] [S-146] the map has no dot count, and the legend says what the fai
   await expect(page.getByText(/organizations? in view/)).toHaveCount(0)
 
   await page.getByRole('button', { name: 'What the map shows' }).click()
-  await expect(page.getByRole('dialog', { name: 'What the map shows' }).locator('li').first())
+  await expect(page.getByRole('dialog', { name: 'What the map shows' }).locator('li').last())
     .toHaveText('Faint dots are Washington nonprofits that haven’t joined yet.')
 })

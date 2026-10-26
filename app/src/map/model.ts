@@ -1,5 +1,5 @@
 import Supercluster, { type ClusterProperties, type PointFeature } from 'supercluster'
-import { curve, pointAt, type Arc, type LonLat } from './geometry'
+import { curve, type Arc, type LonLat } from './geometry'
 import { withAlpha, type MapTheme, type RGBA } from './theme'
 import type { MapData, MapFits, MapSelection, MapSuggested, MapThread, OrgSummary } from './types'
 
@@ -130,10 +130,10 @@ export interface MapNode {
 
 export const MOST_OPEN = 6                    // past 6 open posts a pin stops growing
 
-/** A pin grows with what it has open; a cluster with how many it holds. Nothing open: a small pin with a grey ring. */
+/** A pin grows a little with what it has open; a cluster with how many it holds. Nothing open: a small pin. */
 export function pinRadius(single: boolean, open: number, count: number) {
   if (!single) return Math.min(20, 9 + 3.5 * Math.sqrt(count))
-  return open === 0 ? 5.5 : 7 + 1.1 * (Math.min(open, MOST_OPEN) - 1)
+  return open === 0 ? 5 : 6 + (Math.min(open, MOST_OPEN) - 1)
 }
 
 /** deg: golden threads per organization (their warmth). */
@@ -151,14 +151,15 @@ export function buildNodes(index: Index, zoom: number, deg: Map<string, number>,
     const total = needs + offers
     const radius = pinRadius(single, total, members.length)
     const a = dim ? 0.35 : 1
-    const ringWidth = total ? Math.max(3, radius * (single ? 0.5 : 0.3)) : 0   // a cluster keeps room for its count
+    // A cluster keeps its ring (S-129): the amber share is needs, around its count. One organization is a solid dot
+    // (S-147): amber when it has needs, green when it only has offers, white with a grey edge when nothing is open.
+    const ringWidth = total && !single ? Math.max(3, radius * 0.3) : 0
+    const solid = needs ? theme.need : offers ? theme.offer : theme.paper
     const n: MapNode = {
       id, position, members, clusterId, single, deg: d, radius, related, selected, me: isMe, needs, offers,
-      // Every pin has a light middle, so only the faint dots are solid (S-143): a colored ring when something is
-      // open, a grey edge when nothing is. A cluster with nothing open stays grey, with its count on it.
-      fill: withAlpha(total || single ? theme.paper : theme.ink3, a * (total || single ? 1 : 0.85)),
+      fill: withAlpha(single ? solid : total ? theme.paper : theme.ink3, a * (single || total ? 1 : 0.85)),
       line: selected || isMe ? withAlpha(theme.ink, a) : !total && single ? withAlpha(theme.ink3, a) : withAlpha(theme.paper, dim ? 0.5 : 1),
-      lineWidth: selected ? 3 : isMe ? 2.5 : !total && single ? 2.5 : 1.25,
+      lineWidth: selected ? 3 : isMe ? 2.5 : !total && single ? 2 : 1.5,
       // Warmth is golden threads: a place that has given or received glows gold.
       heat: withAlpha(theme.goldenGlow, (d >= 3 ? 0.55 : 0.4) * (dim ? 0.25 : 1) * (d > 0 ? 1 : 0)),
       heatRadius: radius + Math.min(24, 10 + 4 * Math.sqrt(d)),
@@ -305,20 +306,6 @@ export function buildGlows(arcs: ThreadArc[], scope: Scope, theme: MapTheme): Gl
     })
   }
   return out
-}
-
-/** The number in the middle of a line that carries more than one thread. */
-export interface Badge { position: LonLat; text: string; fill: RGBA; ink: RGBA; line: RGBA }
-export function buildBadges(arcs: ThreadArc[], scope: Scope, theme: MapTheme): Badge[] {
-  return arcs.filter(a => a.count > 1).map(a => {
-    const dim = scope.active && !a.related
-    return {
-      position: pointAt(a, 0.5), text: String(a.count),
-      fill: withAlpha(stateColor(a.state, theme), dim ? 0.25 : 1),
-      ink: (a.state === 'Completed' ? [27, 36, 48, dim ? 90 : 255] : [255, 255, 255, dim ? 110 : 255]) as RGBA,   // dark on gold, light on grey
-      line: withAlpha(theme.paper, dim ? 0.3 : 0.95),
-    }
-  })
 }
 
 // ---- Labels ----------------------------------------------------------------------------------------
