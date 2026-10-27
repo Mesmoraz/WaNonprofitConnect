@@ -1,5 +1,5 @@
 import { devices, expect, test } from '@playwright/test'
-import { ORG, email, run, signIn } from './helpers'
+import { BASE_URL, ORG, email, run, signIn } from './helpers'
 
 // Your organization (S-99, docs/ALPHA-BRIEFS.md "Your organization"): the About you part, and the lines everyone else
 // sees on the organization's page. People here and Invite someone come with S-95.
@@ -31,7 +31,7 @@ test('[S-99] an organization says what it does, and others see it on its page', 
   await expect(page.getByLabel('Website')).toHaveValue(`https://tools-${run}.example.org`)
 
   // Someone at another organization opens the page.
-  const other = await browser.newContext({ ...devices['Pixel 7'], baseURL: process.env.BASE_URL ?? 'http://localhost:5253' })
+  const other = await browser.newContext({ ...devices['Pixel 7'], baseURL: BASE_URL })
   const otherPage = await other.newPage()
   await signIn(otherPage, { name: 'Morgan', org: ORG.thurston })
   await otherPage.goto(`/org/${ORG.westTools.ein}`)
@@ -72,7 +72,7 @@ test('[S-95] a member makes a code and a colleague joins with it', async ({ page
   await expect(page.getByText('Copied.')).toBeVisible()
 
   // The colleague, on their own phone, signs in and enters the code.
-  const other = await browser.newContext({ ...devices['Pixel 7'], baseURL: process.env.BASE_URL ?? 'http://localhost:5253' })
+  const other = await browser.newContext({ ...devices['Pixel 7'], baseURL: BASE_URL })
   const colleague = await other.newPage()
   await signIn(colleague, { name: `Jesse${run}` })
   await colleague.goto('/invite')

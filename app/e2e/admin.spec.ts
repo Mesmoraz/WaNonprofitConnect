@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test'
-import { ADMIN_EMAIL, ORG, email, postListing, run, signIn } from './helpers'
+import { BASE_URL, ADMIN_EMAIL, ORG, email, postListing, run, signIn } from './helpers'
 
 // Admin, "Waiting on someone" (S-116, docs/ALPHA-BRIEFS.md). The 2-day and 7-day rules can't be waited out here;
 // AccountServiceTests proves them. This proves the section is on Admin and a thread started today isn't in it.
 
 test('[S-116] Admin lists threads waiting on someone, and leaves out one started today', async ({ page, browser }) => {
-  const other = await browser.newContext({ baseURL: process.env.BASE_URL ?? 'http://localhost:5253' })
+  const other = await browser.newContext({ baseURL: BASE_URL })
   const otherPage = await other.newPage()
   await signIn(otherPage, { name: 'Casey', org: ORG.computers })
   const need = await postListing(otherPage, { kind: 'Need', help: 'Things', title: `Folding tables ${run}` })
