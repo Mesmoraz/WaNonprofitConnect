@@ -82,6 +82,8 @@ public class Match
     public Listing? OfferListing { get; set; }
 
     public string ProposedByEin { get; set; } = string.Empty;
+    /// <summary>The person who started it, so Admin's numbers can leave out threads an admin started while testing (S-100). Null on threads from before Oct 27.</summary>
+    public Guid? StartedByAccountId { get; set; }
     public MatchStatus Status { get; set; } = MatchStatus.Proposed;
     public string? Note { get; set; }
     /// <summary>Score at the time of proposal, for later tuning of the matcher.</summary>
