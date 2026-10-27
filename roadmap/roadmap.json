@@ -2160,7 +2160,7 @@
       "id": "S-135",
       "epic": "E-24",
       "title": "Editing a post's count keeps an old unit as it was (\"2 unit\"): drop or pluralize the unit when the count changes",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-10-20",
       "tasks": [],
       "source": "Polish walk, Oct 20: editing a seeded post from 1 to 2 read \"2 unit\" (only posts with a unit: the seed and the CLI)",

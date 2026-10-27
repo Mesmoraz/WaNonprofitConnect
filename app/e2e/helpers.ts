@@ -49,7 +49,7 @@ export async function phone(browser: Browser): Promise<{ context: BrowserContext
 }
 
 /** Post through the API, for tests that are about something else. */
-export async function postListing(page: Page, l: { kind: 'Need' | 'Offer'; help?: string; title: string; urgency?: string; description?: string }) {
+export async function postListing(page: Page, l: { kind: 'Need' | 'Offer'; help?: string; title: string; urgency?: string; description?: string; quantity?: number; unit?: string }) {
   const res = await page.request.post('/api/v1/listings', {
     data: { help: 'Things', urgency: 'Normal', cadence: 'OneTime', ...l },
   })

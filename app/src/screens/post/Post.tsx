@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ApiError, useCreateListing, useListing, useMe, useUpdateListing, type Cadence, type KindOfHelp, type ListingDetail, type ListingEdit, type ListingKind, type Urgency } from '../../api'
-import { HELP_LABEL } from '../../lib/words'
+import { HELP_LABEL, keptUnit } from '../../lib/words'
 import { BackLink, Page } from '../../shell/Page'
 import { Slow } from '../../shell/Slow'
 import { useToast } from '../../shell/Toast'
@@ -95,9 +95,10 @@ function PostForm({ editing }: { editing?: ListingDetail }) {
     if (!help || !title) return
     setFailed(null)
     const n = parseInt(qty, 10)
+    const quantity = Number.isFinite(n) && n > 0 ? n : undefined
     const fields: ListingEdit = {
       help, title, description: details.trim() || undefined,
-      quantity: Number.isFinite(n) && n > 0 ? n : undefined, unit: editing?.unit ?? undefined,
+      quantity, unit: editing ? keptUnit(editing, quantity) : undefined,
       urgency: isNeed ? (urgency === 'Critical' && urgentOff ? 'Normal' : urgency) : 'Normal', cadence,
     }
     if (editing) {

@@ -119,3 +119,23 @@ test('[S-109] Urgent says when it comes back', async ({ page }) => {
   await expect(page.getByRole('radio', { name: 'Urgent' })).toBeDisabled()
   await expect(page.getByText(/^You’ve used Urgent twice this month\. You can use it again on [A-Z][a-z]{2} \d{1,2}\.$/)).toBeVisible()
 })
+
+test('[S-135] editing the count drops a unit written for one', async ({ page }) => {
+  await signIn(page, { name: 'Robin', org: ORG.rainier })
+  // Only older posts (the seed and the CLI) have a unit; the Post screen no longer asks for one.
+  const one = await postListing(page, { kind: 'Need', title: `Pallet jack ${run}`, quantity: 1, unit: 'unit' })
+  const many = await postListing(page, { kind: 'Need', title: `Laptops ${run}`, quantity: 12, unit: 'laptops' })
+
+  await page.goto(`/listing/${one.id}/edit`)
+  await page.getByLabel('How many').fill('2')
+  await page.getByRole('button', { name: 'Save changes' }).click()
+  await expect(page.getByText('Saved.')).toBeVisible()
+  await expect(page.getByText('2 needed')).toBeVisible()
+  await expect(page.getByText('2 unit')).toHaveCount(0)
+
+  await page.goto(`/listing/${many.id}/edit`)
+  await page.getByLabel('How many').fill('15')
+  await page.getByRole('button', { name: 'Save changes' }).click()
+  await expect(page.getByText('Saved.')).toBeVisible()
+  await expect(page.getByText('15 laptops')).toBeVisible()
+})
