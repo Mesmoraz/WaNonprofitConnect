@@ -101,3 +101,5 @@ Restoring creates a second database, which may not fall under the free offer. De
 Every Microsoft .NET 10 package uses one version, `DotNetPackagesVersion` in `Directory.Build.props` at the repo root. It is pinned, not `10.0.*`: a floating version takes a new patch the moment its first packages reach NuGet, and on Oct 25 every build failed to restore because `Microsoft.Extensions.Hosting` 10.0.14 was out before `Microsoft.Extensions.Hosting.Abstractions` 10.0.14.
 
 Microsoft ships a patch on the second Tuesday of each month (security fixes among them). A day or so later, change the number, run `dotnet test tests/WaNonprofitConnect.Tests`, and open a pull request; its CI restores everything fresh.
+
+`System.Security.Cryptography.Pkcs` is listed in the Data project on the same version, though nothing here uses it directly: SqlClient 6.1 brings 9.0.11, which has a high and a moderate advisory (Oct 27). When SqlClient brings a fixed version itself, the line can go. `dotnet list package --vulnerable --include-transitive` shows any others.
