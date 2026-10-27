@@ -173,7 +173,7 @@ Approving the pull request that adds these approves every word below. Each one i
 
 ---
 
-# Admin numbers brief (S-100, proposed Oct 7, waiting for approval)
+# Admin numbers brief (S-100, approved with PRs #26 and #28; questions answered Oct 27)
 
 Approving the pull request that adds this approves every word below. Edit any line in the review.
 
@@ -199,6 +199,8 @@ Approving the pull request that adds this approves every word below. Edit any li
 1. **Counting while it's new.** Row 2 counts a post once it's 14 days old, or sooner if it already has a thread. Row 5 counts an organization once its first week is over, or sooner if it has already posted both. Otherwise the first two weeks would show "0 of 0". OK?
 2. **Your own test threads.** Threads you make with "Test as this organization" count like anyone's. Should they be left out? Leaving them out also hides real threads at an organization you once tested as.
 3. **Which threads count in row 4.** I'd count threads that are done, plus those still open after 30 days. That way a thread started yesterday doesn't count against us. Declined and closed threads count as not golden. OK?
+
+**Taylor's answers (Oct 27):** yes to all three as proposed. 1: wait before counting young posts and organizations. 2: leave out threads an admin started (each thread now records who started it; threads from before Oct 27 still count). 3: count done, declined, cancelled, and threads open over 30 days.
 
 ---
 
