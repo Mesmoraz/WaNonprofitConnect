@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { BASE_URL, ADMIN_EMAIL, ORG, postListing, run, signIn } from './helpers'
+import { BASE_URL, ADMIN_EMAIL, ORG, email, postListing, run, signIn } from './helpers'
 
 // Screen 6, Board. Copy: docs/ALPHA-BRIEFS.md and the S-103 review fixes.
 
@@ -92,7 +92,7 @@ test('[S-108] while the board is small, Who they serve starts with nothing picke
 
 test('[S-124] every kind of help shows on a small phone, none past the edge', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 780 })
-  await signIn(page, { name: 'Robin', org: ORG.rainier })
+  await signIn(page, { name: 'Robin', email: email('s124'), org: ORG.rainier })
   const inView = async (items: import('@playwright/test').Locator) => {
     for (const item of await items.all()) {
       const box = (await item.boundingBox())!
