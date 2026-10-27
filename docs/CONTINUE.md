@@ -54,6 +54,8 @@ npm run lint; npm run build          # build writes into the API's wwwroot
 
 # acceptance tests: builds the app, starts the API from this checkout (or uses one already on 5253), runs them
 npm run test:e2e:local
+# the same on an empty test database with the 13 sample organizations, as on GitHub (stop any API on 5253 first)
+npm run test:e2e:fresh
 ```
 
 In the Claude desktop app, the `api` and `app` entries in `.claude/launch.json` start the two servers.
@@ -66,6 +68,10 @@ Notes:
   until Node was upgraded on 2026-10-02.)
 - **Acceptance tests with two checkouts**: if an API from another worktree is already on port 5253, the tests use
   it, and it serves that checkout's build of the app. Stop it first.
+- **A full local run that fails on Admin now and then**: the everyday database piles up posts, threads and test
+  accounts with every run (by Oct 27, 164 waiting threads and 52,000 elements on Admin), and tests that look for
+  one item on Admin can miss it. `npm run test:e2e:fresh` starts from an empty `WaNonprofitConnect_E2E` database
+  instead. `reset-test-db` refuses any database without E2E or Test in its name.
 - **Dev server polling**: Vite polls for file changes once a second, because Windows file events missed edits.
   `VITE_POLL=0` turns it off.
 - **LocalDB** "cannot create file ... already exists": re-attach the database (command in `README.md`).
