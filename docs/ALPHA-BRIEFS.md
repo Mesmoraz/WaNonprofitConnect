@@ -619,3 +619,39 @@ Approved by Taylor 2026-10-25 in chat ("Approved as briefed. Merge #63 first so 
 
 - **Back as before (S-127, S-129, S-130):** the threads' drifting dashes, the sparks on golden threads and their glow; the cluster bubbles with their amber and green ring around the count; the two buttons at the bottom, "Offers for your needs" and "Needs you can help with". What fits you and the grey bubbles go.
 - **Stays from this round:** one solid dot per organization, Filter in one row at the top, the shorter ? (its cluster and gold-line swatches drawn as the map draws them again), the faint dots. Lines still carry no numbers; only clusters do.
+
+---
+
+# Three small fixes from the friction list (S-120, S-125, S-134). Waiting for Taylor's approval
+
+Drafted Oct 27. Each one is a word-level change, so nothing is built until you approve it line by line. Merging this PR is the approval; edit any line in it first.
+
+## "I can help" says what it needs (S-120)
+
+- **For:** someone who opens another organization's need and taps the green button.
+- **What's wrong now:** "I can help" (or "I need this") is greyed out until you pick one of yours or type a message. It looks broken, and nothing says why.
+- **The one action:** start a thread. The button stays green the whole time.
+- **Tapped with nothing picked and no message:** the message box gets the cursor, and under it, in the error line: "Write a message first, or pick one of yours." (On an offer, the same line.)
+- **Stays:** the button's words, "Yours that fit", the placeholder "Say what you can do and when."
+- **Goes:** the greyed-out button.
+
+## "How many" says how many of what (S-125)
+
+- **For:** someone posting, at How many.
+- **What's wrong now:** "How many" sits under the title with "Just the number, if it matters." It doesn't say of what, so a post titled "Volunteers for Saturday" gets a 4 that could be shifts, hours or people.
+- **The line under How many, once there's a title:** "How many {title}, if it matters." Example: "How many folding tables, if it matters." The title is shown as typed, except its first letter drops to lower case unless it's an acronym or a name the IRS list spells in capitals (the same rule the board uses for organization names).
+- **With no title yet:** "Just the number, if it matters." (as now).
+- **On the post itself:** no change. It still reads "6 needed" or "6 to give".
+
+## The empty board says nothing's here once (S-134)
+
+- **For:** an organization on a board with no posts yet (the Empty board demo).
+- **What's wrong now:** above "Nothing here yet. Post the first one?" the count line says "0 open · 0 done", so the board says it's empty twice, once in numbers.
+- **The change:** with no open posts and none done, the count goes. Filters stays where it is, on the right. With any post open or done, the count shows as now ("0 open · 3 done" included).
+- **No new words.**
+
+## Checked against
+
+- **MISSION.md:** all three keep someone moving from a need to a thread: a button that works, a count that means something, a board that says what to do.
+- **VOICE.md:** rule 10 (an error is a sentence and a next step: "Write a message first, or pick one of yours."); rule 6 (one green button, and it stays green); rule 2 (one sentence under How many). No banned words, no em-dashes.
+- **Tests (when built):** `[S-120]` the button is enabled and the line shows when tapped with nothing; `[S-125]` the line under How many follows the title; `[S-134]` no count on an empty board, a count once something is done.
