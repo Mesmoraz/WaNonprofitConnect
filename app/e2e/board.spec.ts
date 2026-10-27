@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test'
-import { ADMIN_EMAIL, ORG, postListing, run, signIn } from './helpers'
+import { BASE_URL, ADMIN_EMAIL, ORG, postListing, run, signIn } from './helpers'
 
 // Screen 6, Board. Copy: docs/ALPHA-BRIEFS.md and the S-103 review fixes.
 
 test('[S-17] [S-45] a new post shows on the board, and the kinds of help filter it', async ({ page, browser }) => {
-  const other = await browser.newContext({ baseURL: process.env.BASE_URL ?? 'http://localhost:5173' })
+  const other = await browser.newContext({ baseURL: BASE_URL })
   const otherPage = await other.newPage()
   await signIn(otherPage, { name: 'Kim', org: ORG.harvest })
   const offer = await postListing(otherPage, { kind: 'Offer', help: 'Time', title: `Saturday drivers ${run}` })
@@ -41,7 +41,7 @@ test('[S-103] searching everyone here opens the organization', async ({ page }) 
 
 test('[S-98] organization names read in normal case, keeping acronyms', async ({ page, browser }) => {
   // The fixture has the IRS spelling, all capitals: NORTHWEST HARVEST E M M, TACOMA-PIERCE HABITAT FOR HUMANITY.
-  const other = await browser.newContext({ baseURL: process.env.BASE_URL ?? 'http://localhost:5173' })
+  const other = await browser.newContext({ baseURL: BASE_URL })
   const otherPage = await other.newPage()
   await signIn(otherPage, { name: 'Kim', org: ORG.harvest })
   const offer = await postListing(otherPage, { kind: 'Offer', help: 'Time', title: `Forklift training ${run}` })
