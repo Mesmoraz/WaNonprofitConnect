@@ -1037,8 +1037,9 @@
         },
         {
           "id": "T-254",
-          "title": "Flaky: the invite-code acceptance test failed once in a full local run on Oct 27 and passed alone; find which step and fix it",
-          "status": "ready"
+          "title": "Flaky locally: Admin tests (invite code, claim, feedback) fail now and then in a full local run, never alone and not in CI",
+          "status": "ready",
+          "source": "Oct 27, two full local runs on dev: a different Admin test failed each time. Every Admin call returned 200 within 25 ms, yet the claim or feedback was not on the page after 10 s. The local database has piled up (164 waiting threads listing thousands of test accounts, 52,000 elements on Admin, 1.4 s to draw), which CI never has. Next: reset the local database before a full run, or have the tests wait on the API answer rather than the page"
         }
       ]
     },
