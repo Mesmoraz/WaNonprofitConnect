@@ -61,6 +61,13 @@ export function quantityLine(l: Pick<Listing, 'quantity' | 'unit' | 'kind'>) {
   return l.unit ? `${l.quantity} ${l.unit}` : `${l.quantity} ${l.kind === 'Need' ? 'needed' : 'to give'}`
 }
 
+/** The unit an edited post keeps: "12 laptops" made 15 stays "15 laptops", but "1 unit" made 2 drops it ("2 needed"),
+ *  since a unit written for one doesn't read for many, or the other way round. */
+export function keptUnit(old: Pick<Listing, 'quantity' | 'unit'>, quantity: number | undefined) {
+  if (!old.unit || !quantity) return undefined
+  return (quantity === 1) === (old.quantity === 1) ? old.unit : undefined
+}
+
 /** A post that isn't open any more, in the words list's words: done, closed, or in a thread. */
 export const STATUS_WORD: Record<string, string> = { Matched: 'In a thread', Fulfilled: 'Done', Expired: 'Closed', Closed: 'Closed' }
 
