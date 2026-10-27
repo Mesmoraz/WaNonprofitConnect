@@ -74,3 +74,11 @@ export function inboxStatus(t: { status: string; startedByEin: string }, myEin: 
     default: return ''
   }
 }
+
+/** Admin's "Typical wait for a first answer" (S-100): "40 minutes", "5 hours", "2 days". */
+export function waitWords(minutes: number) {
+  const n = (v: number, unit: string) => `${v} ${unit}${v === 1 ? '' : 's'}`
+  if (minutes < 60) return n(Math.max(1, Math.round(minutes)), 'minute')
+  if (minutes < 1440) return n(Math.round(minutes / 60), 'hour')
+  return n(Math.round(minutes / 1440), 'day')
+}

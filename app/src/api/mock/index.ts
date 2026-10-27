@@ -416,6 +416,13 @@ const routes: [string, RegExp, Handler][] = [
     return meOut(session)
   }],
 
+  // The demo isn't counted: Admin's numbers are for real organizations only.
+  ['GET', /^\/admin\/numbers$/, () => {
+    if (!requireMe().account.isAdmin) fail(403, 'Admins only.')
+    const none = { got: 0, of: 0 }
+    return { posts: 0, started: 0, accepted: 0, golden: 0, goldenThisMonth: 0, month: new Date().toLocaleString('en-US', { month: 'long' }),
+      threadWithin14Days: none, firstAnswerMedianMinutes: null, becameGolden: none, bothInFirstWeek: none, givenAndReceived: none }
+  }],
   ['GET', /^\/admin\/waiting$/, () => { if (!requireMe().account.isAdmin) fail(403, 'Admins only.'); return [] }],   // the demo's threads are all moving
   ['GET', /^\/admin\/claims$/, () => { if (!requireMe().account.isAdmin) fail(403, 'Admins only.'); return claims.map(({ accountId: _a, ...c }) => c) }],
   ['POST', /^\/admin\/claims\/(\d+)\/(approve|reject)$/, m => {

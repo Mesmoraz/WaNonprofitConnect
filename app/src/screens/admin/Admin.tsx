@@ -1,14 +1,51 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { MOCK, startDemo, useActAs, useAdminClaims, useAdminFeedback, useFeedbackDone, useAdminInvites, useAdminWaiting, useApproveClaim, useCreateInvite, useMe, useOrgs, useRejectClaim, type OrgSummary } from '../../api'
+import { MOCK, startDemo, useActAs, useAdminClaims, useAdminFeedback, useFeedbackDone, useAdminInvites, useAdminNumbers, useAdminWaiting, useApproveClaim, useCreateInvite, useMe, useOrgs, useRejectClaim, type OrgSummary, type Ratio } from '../../api'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { loadSettings, settingsFromQuery } from '../../api/mock/settings'
-import { cap } from '../../lib/words'
+import { cap, waitWords } from '../../lib/words'
 import { Door } from '../../shell/Door'
 import { useToast } from '../../shell/Toast'
 import './admin.css'
 
 // The demo's settings panel loads only on this page (it carries the sample organizations' names).
 const DemoSettingsPanel = lazy(() => import('../../shell/DemoSettings').then(m => ({ default: m.DemoSettingsPanel })))
+
+const some = (r: Ratio) => (r.of ? `${r.got} of ${r.of}` : null)
+const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`
+
+/** The six alpha measures (docs/PLAN.md, section 6), approved in docs/ALPHA-BRIEFS.md, "How it's going (Admin)". */
+function HowItsGoing() {
+  const { data: n } = useAdminNumbers()
+  if (!n) return null
+  // The alpha's goal is 3 by the end of October 2026; every month after, 3 a month.
+  const alphaMonth = n.month === 'October' && new Date().getFullYear() === 2026
+  const rows: { value: string | null; what: string; goal?: string }[] = [
+    { value: n.goldenThisMonth ? String(n.goldenThisMonth) : null, what: `Golden threads in ${n.month}`, goal: alphaMonth ? 'Goal: 3 by Oct 31' : 'Goal: 3 a month' },
+    { value: some(n.threadWithin14Days), what: 'Posts that got a thread within 14 days', goal: 'Goal: 1 in 3' },
+    { value: n.firstAnswerMedianMinutes == null ? null : waitWords(n.firstAnswerMedianMinutes), what: 'Typical wait for a first answer', goal: 'Goal: under a day' },
+    { value: some(n.becameGolden), what: 'Threads that became golden', goal: 'Goal: half' },
+    { value: some(n.bothInFirstWeek), what: 'Organizations that posted a need and an offer in their first week', goal: 'Goal: 8 in 10' },
+    { value: some(n.givenAndReceived), what: 'Organizations that have both given and received' },
+  ]
+  return (
+    <>
+      <div className="label">How it’s going</div>
+      <p className="numbers-totals">
+        {[plural(n.posts, 'post', 'posts'), plural(n.started, 'thread started', 'threads started'), `${n.accepted} accepted`, `${n.golden} golden`].join(' · ')}
+      </p>
+      <div className="card numbers">
+        {rows.map(r => (
+          <div key={r.what} className="numbers-row">
+            <span className={r.value ? 'n' : 'n none'}>{r.value ?? 'None yet'}</span>
+            <span className="what">{r.what}</span>
+            {r.goal && <span className="goal">{r.goal}</span>}
+          </div>
+        ))}
+      </div>
+      <p className="hint">Counts real organizations only. The demo isn’t counted.</p>
+    </>
+  )
+}
 
 const pretty = (json: string) => { try { return JSON.stringify(JSON.parse(json), null, 2) } catch { return json } }
 const day = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
@@ -68,6 +105,8 @@ export function Admin() {
   return (
     <Door back="/" who cta={<button className="btn primary" disabled={!pick || make.isPending} onClick={makeCode}>Make code</button>}>
       <h1 className="h">Admin</h1>
+
+      <HowItsGoing />
 
       <div className="label">Demo</div>
       <p className="hint">Sample organizations that live in this browser. Nothing you do there reaches the real site.</p>
