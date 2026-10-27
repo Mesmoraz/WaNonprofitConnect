@@ -189,6 +189,10 @@ public sealed class AccountService
     /// started and not answered for 2 days (waiting on the side that didn't start it), or accepted with no message
     /// for 7 days (waiting on whoever didn't write last, or both sides if no one has). Longest waiting first.
     /// </summary>
+    /// <summary>Admin's "How it's going" (S-100): the six alpha measures, real organizations only.</summary>
+    public Task<AlphaNumbersDto> AlphaNumbersAsync(DateTime? asOf = null, CancellationToken ct = default)
+        => AlphaNumbers.ComputeAsync(_db, _options, asOf ?? DateTime.UtcNow, ct);
+
     public async Task<IReadOnlyList<WaitingThreadDto>> ListWaitingAsync(DateTime? asOf = null, CancellationToken ct = default)
     {
         var now = asOf ?? DateTime.UtcNow;

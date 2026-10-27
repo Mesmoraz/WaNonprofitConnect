@@ -146,7 +146,7 @@ public sealed class ThreadsController : AppControllerBase
     public async Task<ActionResult<ThreadDto>> Start([FromBody] StartThreadRequest request, CancellationToken ct)
     {
         // 200 with the thread you already have on that post (your message added to it); 201 when a new one was made.
-        var (dto, created) = await _helpbook.StartOrReuseThreadAsync(await ActingEinAsync(ct), request, SenderName, ct);
+        var (dto, created) = await _helpbook.StartOrReuseThreadAsync(await ActingEinAsync(ct), request, SenderName, ct, startedBy: AccountId);
         return created ? CreatedAtAction(nameof(Get), new { id = dto.Id }, dto) : Ok(dto);
     }
 

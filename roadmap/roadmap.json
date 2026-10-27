@@ -1540,7 +1540,7 @@
       "id": "S-100",
       "epic": "E-26",
       "title": "Alpha numbers on the Admin page: posts, threads started and accepted, golden threads, time to first message",
-      "status": "ready",
+      "status": "review",
       "added": "2026-09-24",
       "tasks": [
         {
@@ -1553,7 +1553,7 @@
         {
           "id": "T-237",
           "title": "Decide: leave admin test threads out of the numbers (needs each thread to record the account that started it)",
-          "status": "ready"
+          "status": "done"
         }
       ],
       "source": "Alpha review, 2026-09-24",

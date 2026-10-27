@@ -20,6 +20,7 @@ export const keys = {
   orgPage: (ein: string) => ['orgPage', ein] as const,
   myOrg: (ein: string) => ['myOrg', ein] as const,
   adminClaims: ['admin', 'claims'] as const,
+  adminNumbers: ['admin', 'numbers'] as const,
   adminWaiting: ['admin', 'waiting'] as const,
   adminInvites: ['admin', 'invites'] as const,
   filters: (ein: string) => ['filters', ein] as const,
@@ -107,6 +108,7 @@ export const usePlaceOrgs = (id: string | null) => useInfiniteQuery({
   getNextPageParam: (last, pages) => { const seen = pages.reduce((n, p) => n + p.orgs.length, 0); return seen < last.total ? seen : undefined },
 })
 
+export const useAdminNumbers = () => useQuery({ queryKey: keys.adminNumbers, queryFn: api.adminNumbers })
 export const useAdminWaiting = () => useQuery({ queryKey: keys.adminWaiting, queryFn: api.adminWaiting })
 export const useAdminClaims = () => useQuery({ queryKey: keys.adminClaims, queryFn: api.adminClaims })
 export const useAdminInvites = () => useQuery({ queryKey: keys.adminInvites, queryFn: api.adminInvites })
