@@ -1034,6 +1034,11 @@
           "id": "T-33",
           "title": "Admin emails read from one comma-separated App Service setting too",
           "status": "done"
+        },
+        {
+          "id": "T-254",
+          "title": "Flaky: the invite-code acceptance test failed once in a full local run on Oct 27 and passed alone; find which step and fix it",
+          "status": "ready"
         }
       ]
     },
