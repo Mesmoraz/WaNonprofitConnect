@@ -619,3 +619,42 @@ Approved by Taylor 2026-10-25 in chat ("Approved as briefed. Merge #63 first so 
 
 - **Back as before (S-127, S-129, S-130):** the threads' drifting dashes, the sparks on golden threads and their glow; the cluster bubbles with their amber and green ring around the count; the two buttons at the bottom, "Offers for your needs" and "Needs you can help with". What fits you and the grey bubbles go.
 - **Stays from this round:** one solid dot per organization, Filter in one row at the top, the shorter ? (its cluster and gold-line swatches drawn as the map draws them again), the faint dots. Lines still carry no numbers; only clusters do.
+
+---
+
+# Where people stop (Admin, S-148). Approved Oct 27
+
+Drafted Oct 27, iterating on "How it's going". Merging this PR is the approval; edit any line in it first.
+
+**Why:** the six numbers say how many threads turn golden. They don't say where the rest of the cohort stopped: someone who signed in and never got confirmed needs a different nudge from an organization that posted and heard nothing. This counts each step with what the app already keeps (sign-ins, confirmations, posts, threads). Nothing new is tracked and nothing is sent anywhere.
+
+## Where people stop
+
+- **For:** seeing, at a glance, the step where the alpha's people and organizations stop, so you know whom to nudge and how.
+- **Where:** on Admin, right under "How it's going". Label: "Where people stop".
+- **One card, five rows, each a number and what it counts:**
+  1. "{n}" · "People signed in"
+  2. "{n}" · "Confirmed at an organization"
+  3. "{n}" · "Organizations that posted"
+  4. "{n}" · "In a thread"
+  5. "{n}" · "With a golden thread"
+- Rows 1 and 2 count people; rows 3 to 5 count organizations ("In a thread": started one or was asked in one).
+- **Under each row after the first, in grey, only when someone stopped there:** "{n} stopped here". Example: under "Confirmed at an organization", "3 stopped here" means 3 people signed in and weren't confirmed. Row 3 counts people's organizations, so its line compares organizations with confirmed people to organizations that posted.
+- **A row below the card:** "Came back this week: {n} of {m}". Of confirmed people who joined more than 7 days ago, how many signed in during the last 7 days.
+- **With nobody signed in yet:** the card shows "None yet" in place of the numbers, as "How it's going" does.
+- Same people as "How it's going": you and other admins, "Test as this organization", and the development sign-in aren't counted.
+- **Stays:** "How it's going" and everything below it.
+- **Goes:** nothing.
+
+## Questions for you
+
+1. **Waiting claims.** Someone who asked to join and is waiting for you shows as "stopped" at Confirmed. Should row 2's line say "{n} waiting for you" for them instead, so they don't look lost? (I'd say yes: it's the same list as "Waiting for you" further down.)
+2. **"Came back this week."** Sign-in only records the last time, so this can't say how often. OK as one number, or leave it out for now?
+
+**Taylor's answers (Oct 27, in chat):** 1, yes: people waiting for you show as "{n} waiting for you" under row 2, not as stopped. 2, keep it.
+
+## Checked against
+
+- **MISSION.md:** each row is a step toward a golden thread. The card shows where the threads stop forming.
+- **VOICE.md:** "people" and "organizations", never users; "thread" and "golden thread"; digits; sentence case; no banned words. The label is 3 words.
+- **Tests (when built):** `[S-148]` API tests for each step, the test sign-ins left out, and "came back"; an acceptance test that the card is under "How it's going" and admins only.
