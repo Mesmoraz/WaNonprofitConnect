@@ -622,7 +622,6 @@ Approved by Taylor 2026-10-25 in chat ("Approved as briefed. Merge #63 first so 
 
 ---
 
-<<<<<<< HEAD
 # Three small fixes from the friction list (S-120, S-125, S-134). Approved Oct 27 (Taylor: "Approve #70")
 
 Drafted Oct 27. Each one is a word-level change, so nothing is built until you approve it line by line. Merging this PR is the approval; edit any line in it first.
@@ -656,7 +655,9 @@ Drafted Oct 27. Each one is a word-level change, so nothing is built until you a
 - **MISSION.md:** all three keep someone moving from a need to a thread: a button that works, a count that means something, a board that says what to do.
 - **VOICE.md:** rule 10 (an error is a sentence and a next step: "Write a message first, or pick one of yours."); rule 6 (one green button, and it stays green); rule 2 (one sentence under How many). No banned words, no em-dashes.
 - **Tests (when built):** `[S-120]` the button is enabled and the line shows when tapped with nothing; `[S-125]` the line under How many follows the title; `[S-134]` no count on an empty board, a count once something is done.
-=======
+
+---
+
 # Where people stop (Admin, S-148). Approved Oct 27
 
 Drafted Oct 27, iterating on "How it's going". Merging this PR is the approval; edit any line in it first.
@@ -693,4 +694,3 @@ Drafted Oct 27, iterating on "How it's going". Merging this PR is the approval; 
 - **MISSION.md:** each row is a step toward a golden thread. The card shows where the threads stop forming.
 - **VOICE.md:** "people" and "organizations", never users; "thread" and "golden thread"; digits; sentence case; no banned words. The label is 3 words.
 - **Tests (when built):** `[S-148]` API tests for each step, the test sign-ins left out, and "came back"; an acceptance test that the card is under "How it's going" and admins only.
->>>>>>> dev
