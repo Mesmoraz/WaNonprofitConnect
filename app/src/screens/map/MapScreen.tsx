@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useMapData, useMapFits, useMapOpen, useMapPoints, useLoadPlaces, useMe, usePlaceOrgs, usePlaces, type KindOfHelp, type Listing, type MapFitsFor } from '../../api'
+import { useMapData, useMapFits, useMapOpen, useMapPoints, useLoadPlaces, useMe, usePlaceOrgs, usePlaces, type KindOfHelp, type Listing, type MapData, type MapFitsFor } from '../../api'
 import { ThreadMap, type MapLabelTap, type MapView } from '../../map'
 import { HELPS, HELP_LABEL } from '../../lib/words'
 import { contains, findPlace } from '../../lib/places'
@@ -28,6 +28,17 @@ function viewFrom(at: string | null): { center: [number, number]; zoom: number }
   return { center: [lon, lat], zoom }
 }
 
+/** "?thread={id}" (S-149, from a golden thread): the view that holds both of its organizations, nearer for a short line. */
+function threadView(map: MapData | undefined, id: number): { center: [number, number]; zoom: number } | undefined {
+  const t = map?.threads.find(x => x.id === id)
+  const a = map?.members.find(o => o.ein === t?.fromEin), b = map?.members.find(o => o.ein === t?.toEin)
+  if (a?.lat == null || a.lon == null || b?.lat == null || b.lon == null) return undefined
+  const lat = (a.lat + b.lat) / 2, lon = (a.lon + b.lon) / 2
+  const span = Math.max(Math.abs(a.lat - b.lat), Math.abs(a.lon - b.lon) * Math.cos((lat * Math.PI) / 180), 0.005)
+  // The thread's card covers the bottom third, so the line sits above the middle, with room around it.
+  return { center: [lon, lat - span * 0.45], zoom: Math.min(13, Math.max(6, Math.round(Math.log2(180 / span) - 2))) }
+}
+
 /** The Map tab: every WA nonprofit as a faint dot, member orgs as pins, threads as strings. Tap one for its card. */
 export function MapScreen() {
   const { data: map, isError, refetch } = useMapData()
@@ -40,6 +51,13 @@ export function MapScreen() {
   const [legend, setLegend] = useState(() => { try { return !localStorage.getItem(LEGEND_SEEN) } catch { return false } })
   useEffect(() => { if (legend) try { localStorage.setItem(LEGEND_SEEN, '1') } catch { /* private window */ } }, [legend])
   const select = (s: MapSelection | null) => { setSel(s); if (s) setLegend(false) }
+
+  // Opened from a golden thread (S-149): on its two organizations, with its card open. The map reads its view once,
+  // when the data first arrives, so the view is worked out from that same data.
+  const linkedId = Number(params.get('thread')) || 0
+  const linkedView = useMemo(() => threadView(map, linkedId), [map, linkedId])
+  const [linkOpened, setLinkOpened] = useState(false)
+  if (linkedView && !linkOpened) { setLinkOpened(true); setSel({ kind: 'thread', id: linkedId }); setLegend(false) }
 
   // The toggles (S-130): what fits your needs, or what your offers could help with. One on at a time, only for you.
   const [fitsFor, setFitsFor] = useState<MapFitsFor | null>(null)
@@ -107,7 +125,7 @@ export function MapScreen() {
 
   return (
     <div className="map-screen">
-      {mapData && <ThreadMap data={mapData} points={points} me={me?.membership?.ein} selected={sel} onSelect={select} fits={fitLines} onFitTap={openFit} onLabelTap={tapLabel} place={mapPlace} onViewChange={setSeen} initialView={view} className="map-fill" />}
+      {mapData && <ThreadMap data={mapData} points={points} me={me?.membership?.ein} selected={sel} onSelect={select} fits={fitLines} onFitTap={openFit} onLabelTap={tapLabel} place={mapPlace} onViewChange={setSeen} initialView={view ?? linkedView} className="map-fill" />}
       <button className="map-help" aria-label="What the map shows" aria-expanded={legend} onClick={() => { setSel(null); setFitsFor(null); setList(false); setLegend(o => !o) }}>?</button>
       {map && seen && openPosts && (
         <div className="map-top">
