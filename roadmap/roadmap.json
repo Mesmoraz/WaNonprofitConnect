@@ -2323,6 +2323,14 @@
       "tasks": [],
       "source": "Taylor, Oct 28, on a golden thread: \"this should be a link back to the map to see the golden thread\". Brief approved in chat (\"and approve\")",
       "lane": "app"
+    },
+    {
+      "id": "S-150",
+      "epic": "E-24",
+      "title": "Golden thread art on the empty board, the empty inbox and the golden thread",
+      "status": "review",
+      "added": "2026-10-28",
+      "tasks": []
     }
   ]
 }

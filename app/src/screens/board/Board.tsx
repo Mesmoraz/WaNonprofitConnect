@@ -4,6 +4,7 @@ import { useBoard, useMapData, useMe, useOrgPage, useOrgs, type KindOfHelp, type
 import { BRAND } from '../../brand'
 import { SERVE_GROUPS, SMALL_BOARD, passes, useServeFilter, type ServeGroup } from '../../lib/serve'
 import { cap, causeOf, HELPS, HELP_LABEL } from '../../lib/words'
+import { EmptyArt } from '../../shell/Art'
 import { Slow } from '../../shell/Slow'
 import { ListingCard } from './ListingCard'
 import './board.css'
@@ -121,7 +122,7 @@ export function Board() {
           // posts (those show as "{n} more outside your filters"), so with no posts at all, say so.
           : kind || urgent || fits
             ? <p className="empty">Nothing here with those filters. <button className="inline-link" onClick={clearFilters}>Clear them?</button></p>
-            : <p className="empty">Nothing here yet. <Link className="inline-link" to="/post">Post the first one?</Link></p>)}
+            : <><EmptyArt /><p className="empty">Nothing here yet. <Link className="inline-link" to="/post">Post the first one?</Link></p></>)}
 
         {hidden > 0 && <p className="hint board-hidden">{hidden} more outside your filters. <button className="inline-link" onClick={() => setShowAll(true)}>Show them</button></p>}
 

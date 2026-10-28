@@ -49,6 +49,9 @@ test('[S-18] [S-20] [S-72] one organization helps another, start to golden threa
   await expect(ballard.page.getByText('Done. This is a golden thread.')).toBeVisible()
   await page.reload()
   await expect(page.getByText('Done. This is a golden thread.')).toBeVisible()
+  // [S-150] the two houses, as decoration: screen readers skip it
+  await expect(page.locator('img.art-golden')).toBeVisible()
+  await expect(page.locator('img.art-golden')).toHaveAttribute('alt', '')
 
   // [S-149] See it on the map: the map opens on this thread, its card open.
   await page.getByRole('link', { name: 'See it on the map' }).click()
