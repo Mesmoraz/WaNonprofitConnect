@@ -1034,6 +1034,12 @@
           "id": "T-33",
           "title": "Admin emails read from one comma-separated App Service setting too",
           "status": "done"
+        },
+        {
+          "id": "T-254",
+          "title": "Flaky locally: Admin tests (invite code, claim, feedback) fail now and then in a full local run, never alone and not in CI",
+          "status": "done",
+          "source": "Oct 27, two full local runs on dev: a different Admin test failed each time. Every Admin call returned 200 within 25 ms, yet the claim or feedback was not on the page after 10 s. The local database has piled up (164 waiting threads listing thousands of test accounts, 52,000 elements on Admin, 1.4 s to draw), which CI never has. Next: reset the local database before a full run, or have the tests wait on the API answer rather than the page"
         }
       ]
     },
@@ -2291,6 +2297,22 @@
       "tasks": [],
       "lane": "map",
       "source": "Taylor, Oct 25: the map when busy is confusing, too many threads and moving pieces; the clutter at the top is a lot; the symbols (green/orange and white with numbers) are not intuitive; less noisy and more clear"
+    },
+    {
+      "id": "S-148",
+      "epic": "E-26",
+      "title": "Where people stop: the alpha from sign-in to golden thread, on Admin",
+      "status": "review",
+      "added": "2026-10-27",
+      "tasks": [
+        {
+          "id": "T-255",
+          "title": "Brief Where people stop for approval",
+          "status": "done"
+        }
+      ],
+      "source": "Claude, Oct 27, iterating on the alpha numbers (Taylor: \"continue iterating on this\")",
+      "lane": "app"
     }
   ]
 }

@@ -423,6 +423,10 @@ const routes: [string, RegExp, Handler][] = [
     return { posts: 0, started: 0, accepted: 0, golden: 0, goldenThisMonth: 0, month: new Date().toLocaleString('en-US', { month: 'long' }),
       threadWithin14Days: none, firstAnswerMedianMinutes: null, becameGolden: none, bothInFirstWeek: none, givenAndReceived: none }
   }],
+  ['GET', /^\/admin\/stops$/, () => {
+    if (!requireMe().account.isAdmin) fail(403, 'Admins only.')
+    return { signedIn: 0, confirmed: 0, waiting: 0, orgs: 0, posted: 0, inThread: 0, golden: 0, cameBack: { got: 0, of: 0 } }
+  }],
   ['GET', /^\/admin\/waiting$/, () => { if (!requireMe().account.isAdmin) fail(403, 'Admins only.'); return [] }],   // the demo's threads are all moving
   ['GET', /^\/admin\/claims$/, () => { if (!requireMe().account.isAdmin) fail(403, 'Admins only.'); return claims.map(({ accountId: _a, ...c }) => c) }],
   ['POST', /^\/admin\/claims\/(\d+)\/(approve|reject)$/, m => {
