@@ -114,3 +114,10 @@ test('[S-124] every kind of help shows on a small phone, none past the edge', as
   await page.goto('/board')
   await page.screenshot({ path: 'test-results/s124-board.png' })
 })
+
+test('[S-134] once anything is posted, the board says how many are open', async ({ page }) => {
+  await signIn(page, { name: 'Robin', email: email('s134'), org: ORG.rainier })
+  await postListing(page, { kind: 'Need', title: `Coolers ${run}` })
+  await page.goto('/board')
+  await expect(page.locator('.flt-head')).toContainText(/^\d+ open( · \d+ done)?Filters/)
+})
