@@ -622,7 +622,7 @@ Approved by Taylor 2026-10-25 in chat ("Approved as briefed. Merge #63 first so 
 
 ---
 
-# Where people stop (Admin, S-148). Waiting for Taylor's approval
+# Where people stop (Admin, S-148). Approved Oct 27
 
 Drafted Oct 27, iterating on "How it's going". Merging this PR is the approval; edit any line in it first.
 
@@ -650,6 +650,8 @@ Drafted Oct 27, iterating on "How it's going". Merging this PR is the approval; 
 
 1. **Waiting claims.** Someone who asked to join and is waiting for you shows as "stopped" at Confirmed. Should row 2's line say "{n} waiting for you" for them instead, so they don't look lost? (I'd say yes: it's the same list as "Waiting for you" further down.)
 2. **"Came back this week."** Sign-in only records the last time, so this can't say how often. OK as one number, or leave it out for now?
+
+**Taylor's answers (Oct 27, in chat):** 1, yes: people waiting for you show as "{n} waiting for you" under row 2, not as stopped. 2, keep it.
 
 ## Checked against
 
