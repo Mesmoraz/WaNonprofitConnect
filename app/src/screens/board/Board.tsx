@@ -83,7 +83,8 @@ export function Board() {
         </div>
 
         <div className="flt-head">
-          <span>{board.data ? `${listings.length} open${done !== undefined ? ` · ${done} done` : ''}` : ''}</span>
+          {/* An empty board says so once, below (S-134): no "0 open · 0 done" above it. The span keeps Filters on the right. */}
+          <span>{board.data && (listings.length > 0 || !!done) ? `${listings.length} open${done !== undefined ? ` · ${done} done` : ''}` : ''}</span>
           <button className="flt-toggle" aria-expanded={filtersOpen} onClick={() => setFiltersOpen(o => !o)}>Filters{filterCount ? ` · ${filterCount}` : ''}</button>
         </div>
 

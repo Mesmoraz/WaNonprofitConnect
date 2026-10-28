@@ -15,6 +15,7 @@ using WaNonprofitConnect.Cli;
 //   wanc import-zips [--url <gazetteer zip>] [--file <local .zip/.txt>] [--force]
 //   wanc stats [--state WA]
 //   wanc imports
+//   wanc reset-test-db        (empties a database named for tests: scripts/e2e-fresh.js)
 //
 // Kept deliberately tiny: a few commands, a handful of flags, no CLI framework.
 
@@ -62,6 +63,22 @@ builder.Services.AddHttpClient<SchoolsImporter>(c =>
 using var host = builder.Build();
 using var scope = host.Services.CreateScope();
 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+// Starts the acceptance tests on an empty database, as on GitHub. Refuses any database not named for tests.
+if (argv.Positional[0].Equals("reset-test-db", StringComparison.OrdinalIgnoreCase))
+{
+    var name = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(connection).InitialCatalog;
+    if (!name.Contains("E2E", StringComparison.OrdinalIgnoreCase) && !name.Contains("Test", StringComparison.OrdinalIgnoreCase))
+    {
+        Console.Error.WriteLine($"Not resetting {name}: only a database with E2E or Test in its name.");
+        return 1;
+    }
+    await db.Database.EnsureDeletedAsync();
+    await db.Database.MigrateAsync();
+    Console.WriteLine($"{name} is empty, with every table.");
+    return 0;
+}
+
 await db.Database.MigrateAsync();
 
 var repoRoot = FindRepoRoot() ?? Directory.GetCurrentDirectory();

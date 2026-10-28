@@ -71,8 +71,7 @@
   min-height: var(--tap); padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-2);
   background: var(--paper); color: var(--ink); font-size: 14px; font-weight: 600; box-shadow: var(--shadow);
 }
-.map-chips { display: flex; gap: 6px; overflow-x: auto; max-width: 100%; padding-bottom: 2px; scrollbar-width: none; }
-.map-chips::-webkit-scrollbar { display: none; }
+.map-chips { display: flex; flex-wrap: wrap; gap: 6px; max-width: 100%; padding-bottom: 2px; }   /* none past the edge (S-124) */
 .map-chip {
   flex: none; min-height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line-2);
   background: var(--paper); color: var(--ink-2); font-size: 13px; font-weight: 600;

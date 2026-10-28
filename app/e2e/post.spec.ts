@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { ORG, phone, postListing, run, signIn } from './helpers'
+import { ORG, email, phone, postListing, run, signIn } from './helpers'
 
 // B7 Post, with the pick-a-title change (S-111). Copy: docs/ALPHA-BRIEFS.md.
 
@@ -118,4 +118,38 @@ test('[S-109] Urgent says when it comes back', async ({ page }) => {
   await page.goto('/post')
   await expect(page.getByRole('radio', { name: 'Urgent' })).toBeDisabled()
   await expect(page.getByText(/^You’ve used Urgent twice this month\. You can use it again on [A-Z][a-z]{2} \d{1,2}\.$/)).toBeVisible()
+})
+
+test('[S-135] editing the count drops a unit written for one', async ({ page }) => {
+  await signIn(page, { name: 'Robin', org: ORG.rainier })
+  // Only older posts (the seed and the CLI) have a unit; the Post screen no longer asks for one.
+  const one = await postListing(page, { kind: 'Need', title: `Pallet jack ${run}`, quantity: 1, unit: 'unit' })
+  const many = await postListing(page, { kind: 'Need', title: `Laptops ${run}`, quantity: 12, unit: 'laptops' })
+
+  await page.goto(`/listing/${one.id}/edit`)
+  await page.getByLabel('How many').fill('2')
+  await page.getByRole('button', { name: 'Save changes' }).click()
+  await expect(page.getByText('Saved.')).toBeVisible()
+  await expect(page.getByText('2 needed')).toBeVisible()
+  await expect(page.getByText('2 unit')).toHaveCount(0)
+
+  await page.goto(`/listing/${many.id}/edit`)
+  await page.getByLabel('How many').fill('15')
+  await page.getByRole('button', { name: 'Save changes' }).click()
+  await expect(page.getByText('Saved.')).toBeVisible()
+  await expect(page.getByText('15 laptops')).toBeVisible()
+})
+
+test('[S-125] How many says how many of what', async ({ page }) => {
+  await signIn(page, { name: 'Robin', email: email('s125'), org: ORG.rainier })
+  await page.goto('/post')
+  const line = page.locator('#p-qty-hint')
+  await expect(line).toHaveText('Just the number, if it matters.')        // no title yet
+  await page.getByRole('radio', { name: 'Things' }).click()
+  await page.getByRole('radio', { name: 'Something else' }).click()
+  const what = page.getByRole('textbox', { name: 'What is it?' })
+  await what.fill('Folding tables')
+  await expect(line).toHaveText('How many folding tables, if it matters.')
+  await what.fill('PPE kits')
+  await expect(line).toHaveText('How many PPE kits, if it matters.')     // an acronym keeps its capitals
 })

@@ -1,6 +1,9 @@
 import { expect, type Browser, type BrowserContext, type Page } from '@playwright/test'
 import { devices } from '@playwright/test'
 
+/** Where the app is served: the same default as playwright.config.ts, so a second person lands on the same app. */
+export const BASE_URL = process.env.BASE_URL ?? 'http://localhost:5253'
+
 /**
  * Real Washington 501(c)(3)s from tests/acceptance/fixtures/eo_wa_sample.csv. Each test signs in as its own
  * organizations so tests don't step on each other's posts and threads. Names are as the API shows them (S-98):
@@ -41,12 +44,12 @@ export async function signIn(page: Page, who: { name: string; email?: string; or
 
 /** A second person on their own phone: a fresh browser context with its own cookies. */
 export async function phone(browser: Browser): Promise<{ context: BrowserContext; page: Page }> {
-  const context = await browser.newContext({ ...devices['Pixel 7'], baseURL: process.env.BASE_URL ?? 'http://localhost:5173' })
+  const context = await browser.newContext({ ...devices['Pixel 7'], baseURL: BASE_URL })
   return { context, page: await context.newPage() }
 }
 
 /** Post through the API, for tests that are about something else. */
-export async function postListing(page: Page, l: { kind: 'Need' | 'Offer'; help?: string; title: string; urgency?: string; description?: string }) {
+export async function postListing(page: Page, l: { kind: 'Need' | 'Offer'; help?: string; title: string; urgency?: string; description?: string; quantity?: number; unit?: string }) {
   const res = await page.request.post('/api/v1/listings', {
     data: { help: 'Things', urgency: 'Normal', cadence: 'OneTime', ...l },
   })

@@ -140,6 +140,14 @@ public sealed class AdminController : AppControllerBase
     [HttpGet("waiting")]
     public Task<IReadOnlyList<WaitingThreadDto>> Waiting(CancellationToken ct) => _accounts.ListWaitingAsync(ct: ct);
 
+    /// <summary>The six alpha measures for "How it's going" (S-100).</summary>
+    [HttpGet("numbers")]
+    public Task<AlphaNumbersDto> Numbers(CancellationToken ct) => _accounts.AlphaNumbersAsync(ct: ct);
+
+    /// <summary>Each step from sign-in to golden thread, for "Where people stop" (S-148).</summary>
+    [HttpGet("stops")]
+    public Task<WherePeopleStopDto> Stops(CancellationToken ct) => _accounts.WherePeopleStopAsync(ct: ct);
+
     [HttpGet("invites")]
     public Task<IReadOnlyList<InviteDto>> Invites(CancellationToken ct) => _accounts.ListInvitesAsync(ct);
 

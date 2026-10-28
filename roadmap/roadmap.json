@@ -1034,6 +1034,12 @@
           "id": "T-33",
           "title": "Admin emails read from one comma-separated App Service setting too",
           "status": "done"
+        },
+        {
+          "id": "T-254",
+          "title": "Flaky locally: Admin tests (invite code, claim, feedback) fail now and then in a full local run, never alone and not in CI",
+          "status": "done",
+          "source": "Oct 27, two full local runs on dev: a different Admin test failed each time. Every Admin call returned 200 within 25 ms, yet the claim or feedback was not on the page after 10 s. The local database has piled up (164 waiting threads listing thousands of test accounts, 52,000 elements on Admin, 1.4 s to draw), which CI never has. Next: reset the local database before a full run, or have the tests wait on the API answer rather than the page"
         }
       ]
     },
@@ -1540,7 +1546,7 @@
       "id": "S-100",
       "epic": "E-26",
       "title": "Alpha numbers on the Admin page: posts, threads started and accepted, golden threads, time to first message",
-      "status": "ready",
+      "status": "review",
       "added": "2026-09-24",
       "tasks": [
         {
@@ -1553,7 +1559,7 @@
         {
           "id": "T-237",
           "title": "Decide: leave admin test threads out of the numbers (needs each thread to record the account that started it)",
-          "status": "ready"
+          "status": "done"
         }
       ],
       "source": "Alpha review, 2026-09-24",
@@ -1829,7 +1835,7 @@
         {
           "id": "T-223",
           "title": "Second browsers in the acceptance tests default to port 5173 while the config uses 5253, so local runs need BASE_URL set",
-          "status": "ready",
+          "status": "done",
           "added": "2026-10-07",
           "source": "Found running the tests locally for S-108 and S-116"
         },
@@ -1843,7 +1849,7 @@
         {
           "id": "T-243",
           "title": "Local e2e: the second-phone helper defaults to port 5173, so tests with two people fail unless BASE_URL=http://localhost:5253 is set",
-          "status": "ready"
+          "status": "done"
         }
       ]
     },
@@ -1975,7 +1981,7 @@
       "id": "S-120",
       "epic": "E-24",
       "title": "\"I can help\" says what it needs instead of looking switched off",
-      "status": "backlog",
+      "status": "review",
       "source": "UX review, Oct 14 (friction list; Taylor: \"add the friction list\")",
       "added": "2026-10-14",
       "lane": "app",
@@ -2015,7 +2021,7 @@
       "id": "S-124",
       "epic": "E-24",
       "title": "Every kind of help shows on a phone, none cut off past the edge",
-      "status": "backlog",
+      "status": "review",
       "source": "UX review, Oct 14 (friction list; Taylor: \"add the friction list\")",
       "added": "2026-10-14",
       "lane": "app",
@@ -2025,7 +2031,7 @@
       "id": "S-125",
       "epic": "E-24",
       "title": "\"How many\" says how many of what",
-      "status": "backlog",
+      "status": "review",
       "source": "UX review, Oct 14 (friction list; Taylor: \"add the friction list\")",
       "added": "2026-10-14",
       "lane": "app",
@@ -2150,7 +2156,7 @@
       "id": "S-134",
       "epic": "E-24",
       "title": "Empty board: say nothing's here without the \"0 open · 0 done\" count above it",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-10-20",
       "tasks": [],
       "source": "Polish walk, Oct 20, Empty board demo (needs a brief: changes what the board says)",
@@ -2160,7 +2166,7 @@
       "id": "S-135",
       "epic": "E-24",
       "title": "Editing a post's count keeps an old unit as it was (\"2 unit\"): drop or pluralize the unit when the count changes",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-10-20",
       "tasks": [],
       "source": "Polish walk, Oct 20: editing a seeded post from 1 to 2 read \"2 unit\" (only posts with a unit: the seed and the CLI)",
@@ -2291,6 +2297,22 @@
       "tasks": [],
       "lane": "map",
       "source": "Taylor, Oct 25: the map when busy is confusing, too many threads and moving pieces; the clutter at the top is a lot; the symbols (green/orange and white with numbers) are not intuitive; less noisy and more clear"
+    },
+    {
+      "id": "S-148",
+      "epic": "E-26",
+      "title": "Where people stop: the alpha from sign-in to golden thread, on Admin",
+      "status": "review",
+      "added": "2026-10-27",
+      "tasks": [
+        {
+          "id": "T-255",
+          "title": "Brief Where people stop for approval",
+          "status": "done"
+        }
+      ],
+      "source": "Claude, Oct 27, iterating on the alpha numbers (Taylor: \"continue iterating on this\")",
+      "lane": "app"
     }
   ]
 }

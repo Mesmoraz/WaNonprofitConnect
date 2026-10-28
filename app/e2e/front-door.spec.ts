@@ -26,7 +26,7 @@ test('[S-68] [S-69] an invite code from Admin confirms you for that organization
   await admin.context.close()
 
   // Someone from Treehouse signs in, with no organization yet.
-  await signIn(page, { name: 'Robin' })
+  await signIn(page, { name: 'Robin', email: email('s68-invite') })   // its own person: other files sign in a confirmed Robin
   await page.goto('/')
   await expect(page).toHaveURL(/\/invite$/)
   await expect(page.getByRole('heading', { name: 'Your invite code' })).toBeVisible()

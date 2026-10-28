@@ -3,7 +3,7 @@ import { ORG_NAMES } from './mock/names'
 import { loadSettings, saveSettings, SETTINGS_KEY, type DemoSettings } from './mock/settings'
 import type {
   BoardQuery, Claim, FeedbackItem, Filters, Invite, Listing, ListingDetail, ListingEdit, MapData, MapFit, MapFitsFor, MapPoint, Me, Message, NewListing, NewThread,
-  MyOrg, OrgPage, OrgSummary, PlaceOrgs, Places, SaveMyOrg, Thread, ThreadAction, ThreadDetail, WaitingThread,
+  MyOrg, OrgPage, OrgSummary, PlaceOrgs, Places, SaveMyOrg, Thread, ThreadAction, ThreadDetail, WaitingThread, AlphaNumbers, WherePeopleStop,
 } from './types'
 
 const DEMO_KEY = 'helpbook.demo'
@@ -144,6 +144,8 @@ export const api = {
   makeOrgCode: () => call<Invite>('POST', `${V1}/org/invites`),
 
   // Admin
+  adminNumbers: () => call<AlphaNumbers>('GET', `${V1}/admin/numbers`),
+  adminStops: () => call<WherePeopleStop>('GET', `${V1}/admin/stops`),
   adminWaiting: () => call<WaitingThread[]>('GET', `${V1}/admin/waiting`),
   adminClaims: () => call<Claim[]>('GET', `${V1}/admin/claims`),
   approveClaim: (id: number) => call<Claim>('POST', `${V1}/admin/claims/${id}/approve`),

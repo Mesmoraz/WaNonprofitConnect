@@ -177,7 +177,7 @@ public sealed partial class HelpbookService
     /// if you already have a live (Proposed or Accepted) thread on that post, your message goes there and you get that thread back
     /// (<c>Created</c> false) instead of a second thread and a duplicate post.
     /// </summary>
-    public async Task<(ThreadDto Thread, bool Created)> StartOrReuseThreadAsync(string actingEin, StartThreadRequest req, string? senderName, CancellationToken ct = default)
+    public async Task<(ThreadDto Thread, bool Created)> StartOrReuseThreadAsync(string actingEin, StartThreadRequest req, string? senderName, CancellationToken ct = default, Guid? startedBy = null)
     {
         var message = BmfRowParser.Clean(req.Message);
         if (message is { Length: > ExchangeService.MaxMessage }) throw ExchangeException.Invalid(ExchangeService.MessageTooLong);
@@ -247,6 +247,7 @@ public sealed partial class HelpbookService
                 await _exchange.SendMessageAsync(match.Id, actingEin, new SendMessageRequest { Body = message }, ct, senderName);
 
             var tracked = await _db.Matches.Include(m => m.NeedListing).Include(m => m.OfferListing).FirstAsync(m => m.Id == match.Id, ct);
+            tracked.StartedByAccountId = startedBy;
             MarkRead(tracked, actingEin, DateTime.UtcNow);
             await _db.SaveChangesAsync(ct);
             await tx.CommitAsync(ct);

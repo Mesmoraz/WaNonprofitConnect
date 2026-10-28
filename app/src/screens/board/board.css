@@ -12,10 +12,9 @@
 }
 
 .seg {
-  display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain;
+  display: flex; flex-wrap: wrap; gap: 0 2px;   /* every kind of help shows; on a phone they take two lines (S-124) */
   margin: 2px calc(-1 * var(--gutter)) 0; padding: 0 var(--gutter); border-bottom: 1px solid var(--line-2);
 }
-.seg::-webkit-scrollbar { display: none; }
 .seg-item {
   flex: none; min-height: var(--tap); padding: 8px 10px 9px; font-size: 14px; font-weight: 600; color: var(--ink-3);
   border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap;

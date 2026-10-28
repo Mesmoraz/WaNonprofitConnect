@@ -76,6 +76,18 @@ export interface PlaceOrgs { id: string; name: string; total: number; joined: nu
 
 /** A thread stalled on someone (Admin, "Waiting on someone"): unanswered for 2 days, or accepted and quiet for 7. */
 export interface WaitingThread { id: number; title: string; why: 'unanswered' | 'quiet'; since: string; days: number; waitingOn: string[]; people: { name: string; email: string }[] }
+/** Admin, "How it's going" (S-100): the six alpha measures, real organizations only. got of of: "4 of 12". */
+export interface Ratio { got: number; of: number }
+export interface AlphaNumbers {
+  posts: number; started: number; accepted: number; golden: number
+  goldenThisMonth: number; month: string
+  threadWithin14Days: Ratio; firstAnswerMedianMinutes: number | null; becameGolden: Ratio; bothInFirstWeek: Ratio; givenAndReceived: Ratio
+}
+/** Where people stop (S-148): people for the first two steps, organizations after. */
+export interface WherePeopleStop {
+  signedIn: number; confirmed: number; waiting: number
+  orgs: number; posted: number; inThread: number; golden: number; cameBack: Ratio
+}
 export interface Claim { id: number; ein: string; orgName: string; city: string | null; accountId: string; email: string; name: string; status: string; createdAt: string; decidedAt: string | null }
 export interface Invite { code: string; ein: string; orgName: string; uses: number; used: number }
 

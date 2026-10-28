@@ -61,6 +61,20 @@ export function quantityLine(l: Pick<Listing, 'quantity' | 'unit' | 'kind'>) {
   return l.unit ? `${l.quantity} ${l.unit}` : `${l.quantity} ${l.kind === 'Need' ? 'needed' : 'to give'}`
 }
 
+/** A post's title inside a sentence (S-125): "Folding tables" reads "folding tables", but an acronym stays ("PPE kits"). */
+export function inSentence(title: string) {
+  const t = title.trim()
+  const first = (t.split(/\s+/)[0] ?? '').replace(/[^A-Za-z0-9]/g, '')
+  return /^[A-Z][A-Z0-9]+$/.test(first) ? t : t.charAt(0).toLowerCase() + t.slice(1)
+}
+
+/** The unit an edited post keeps: "12 laptops" made 15 stays "15 laptops", but "1 unit" made 2 drops it ("2 needed"),
+ *  since a unit written for one doesn't read for many, or the other way round. */
+export function keptUnit(old: Pick<Listing, 'quantity' | 'unit'>, quantity: number | undefined) {
+  if (!old.unit || !quantity) return undefined
+  return (quantity === 1) === (old.quantity === 1) ? old.unit : undefined
+}
+
 /** A post that isn't open any more, in the words list's words: done, closed, or in a thread. */
 export const STATUS_WORD: Record<string, string> = { Matched: 'In a thread', Fulfilled: 'Done', Expired: 'Closed', Closed: 'Closed' }
 
@@ -73,4 +87,12 @@ export function inboxStatus(t: { status: string; startedByEin: string }, myEin: 
     case 'Declined': case 'Cancelled': return 'Closed'
     default: return ''
   }
+}
+
+/** Admin's "Typical wait for a first answer" (S-100): "40 minutes", "5 hours", "2 days". */
+export function waitWords(minutes: number) {
+  const n = (v: number, unit: string) => `${v} ${unit}${v === 1 ? '' : 's'}`
+  if (minutes < 60) return n(Math.max(1, Math.round(minutes)), 'minute')
+  if (minutes < 1440) return n(Math.round(minutes / 60), 'hour')
+  return n(Math.round(minutes / 1440), 'day')
 }

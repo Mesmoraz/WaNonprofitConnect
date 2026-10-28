@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test'
-import { ADMIN_EMAIL, ORG, postListing, run, signIn } from './helpers'
+import { BASE_URL, ADMIN_EMAIL, ORG, email, postListing, run, signIn } from './helpers'
 
 // Screen 6, Board. Copy: docs/ALPHA-BRIEFS.md and the S-103 review fixes.
 
 test('[S-17] [S-45] a new post shows on the board, and the kinds of help filter it', async ({ page, browser }) => {
-  const other = await browser.newContext({ baseURL: process.env.BASE_URL ?? 'http://localhost:5173' })
+  const other = await browser.newContext({ baseURL: BASE_URL })
   const otherPage = await other.newPage()
   await signIn(otherPage, { name: 'Kim', org: ORG.harvest })
   const offer = await postListing(otherPage, { kind: 'Offer', help: 'Time', title: `Saturday drivers ${run}` })
@@ -41,7 +41,7 @@ test('[S-103] searching everyone here opens the organization', async ({ page }) 
 
 test('[S-98] organization names read in normal case, keeping acronyms', async ({ page, browser }) => {
   // The fixture has the IRS spelling, all capitals: NORTHWEST HARVEST E M M, TACOMA-PIERCE HABITAT FOR HUMANITY.
-  const other = await browser.newContext({ baseURL: process.env.BASE_URL ?? 'http://localhost:5173' })
+  const other = await browser.newContext({ baseURL: BASE_URL })
   const otherPage = await other.newPage()
   await signIn(otherPage, { name: 'Kim', org: ORG.harvest })
   const offer = await postListing(otherPage, { kind: 'Offer', help: 'Time', title: `Forklift training ${run}` })
@@ -88,4 +88,36 @@ test('[S-108] while the board is small, Who they serve starts with nothing picke
   await expect(page.getByText('Set from your organization’s cause code. Tap to change.')).toBeVisible()
   await page.getByRole('button', { name: /· Rainier Valley Food Bank/ }).click()
   await page.getByRole('menuitem', { name: 'Leave the demo' }).click()
+})
+
+test('[S-124] every kind of help shows on a small phone, none past the edge', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 780 })
+  await signIn(page, { name: 'Robin', email: email('s124'), org: ORG.rainier })
+  const inView = async (items: import('@playwright/test').Locator) => {
+    for (const item of await items.all()) {
+      const box = (await item.boundingBox())!
+      expect(box.x + box.width, await item.textContent() ?? '').toBeLessThanOrEqual(360)
+    }
+  }
+
+  await page.goto('/board')
+  const tabs = page.getByRole('tablist', { name: 'Kind of help' }).getByRole('tab')
+  await expect(tabs).toHaveCount(7)
+  await inView(tabs)
+
+  await page.goto('/map')
+  await page.getByRole('button', { name: 'Filter' }).click()
+  const chips = page.getByRole('group', { name: 'Kind of help' }).getByRole('button')
+  await expect(chips).toHaveCount(7)   // "All", then the six kinds
+  await inView(chips)
+  await page.screenshot({ path: 'test-results/s124-map.png' })
+  await page.goto('/board')
+  await page.screenshot({ path: 'test-results/s124-board.png' })
+})
+
+test('[S-134] once anything is posted, the board says how many are open', async ({ page }) => {
+  await signIn(page, { name: 'Robin', email: email('s134'), org: ORG.rainier })
+  await postListing(page, { kind: 'Need', title: `Coolers ${run}` })
+  await page.goto('/board')
+  await expect(page.locator('.flt-head')).toContainText(/^\d+ open( · \d+ done)?Filters/)
 })

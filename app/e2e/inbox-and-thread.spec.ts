@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test'
-import { ORG, run, signIn } from './helpers'
+import { BASE_URL, ORG, run, signIn } from './helpers'
 
 // UX review, Oct 14 (S-119): an inbox row says what the thing is, with the count after it, and a thread's two posts
 // open when you tap them. Copy: docs/ALPHA-BRIEFS.md (B8 Thread, B8 Inbox). No new words.
 
 test('[S-119] the inbox says what the thing is, and a thread opens its posts', async ({ page, browser }) => {
-  const other = await browser.newContext({ baseURL: process.env.BASE_URL ?? 'http://localhost:5253' })
+  const other = await browser.newContext({ baseURL: BASE_URL })
   const habitat = await other.newPage()
   await signIn(habitat, { name: 'Riley', org: ORG.habitat })
   const title = `Laptops ${run}`

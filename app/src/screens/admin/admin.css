@@ -26,3 +26,14 @@
 .fb-details { margin-top: 8px; font-size: 13px; color: var(--ink-2); }
 .fb-details summary { cursor: pointer; min-height: var(--tap); display: flex; align-items: center; }
 .fb-details pre { margin: 0; max-height: 240px; overflow: auto; background: var(--paper-2); padding: 8px; border-radius: 6px; font-size: 12px; white-space: pre-wrap; word-break: break-word; }
+
+/* How it's going (S-100): the number large, what it counts, its goal in grey. */
+.numbers-totals { margin: 0; font-size: 14px; color: var(--ink-2); }
+/* One grid for all six rows, so every label starts at the same place whatever the widest number is. */
+.card.numbers { display: grid; grid-template-columns: auto 1fr; column-gap: 14px; align-items: baseline; margin: 0; }
+.numbers-row { display: contents; }
+.numbers-row .n { grid-column: 1; grid-row: span 2; padding-top: 10px; font-family: var(--font-display); font-size: 28px; font-weight: 600; line-height: 1.1; white-space: nowrap; }
+.numbers-row .n.none { font-size: 16px; color: var(--ink-3); font-weight: 500; }
+.numbers-row .what { grid-column: 2; padding-top: 10px; font-weight: 600; }
+.numbers-row:first-child .n, .numbers-row:first-child .what { padding-top: 0; }
+.numbers-row .goal { grid-column: 2; font-size: 13px; color: var(--ink-3); }

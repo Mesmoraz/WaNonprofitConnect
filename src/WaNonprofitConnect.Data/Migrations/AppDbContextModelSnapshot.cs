@@ -371,6 +371,9 @@ namespace WaNonprofitConnect.Data.Migrations
                     b.Property<int?>("Score")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("StartedByAccountId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(10)

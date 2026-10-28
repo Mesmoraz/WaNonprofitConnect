@@ -173,7 +173,7 @@ Approving the pull request that adds these approves every word below. Each one i
 
 ---
 
-# Admin numbers brief (S-100, proposed Oct 7, waiting for approval)
+# Admin numbers brief (S-100, approved with PRs #26 and #28; questions answered Oct 27)
 
 Approving the pull request that adds this approves every word below. Edit any line in the review.
 
@@ -199,6 +199,8 @@ Approving the pull request that adds this approves every word below. Edit any li
 1. **Counting while it's new.** Row 2 counts a post once it's 14 days old, or sooner if it already has a thread. Row 5 counts an organization once its first week is over, or sooner if it has already posted both. Otherwise the first two weeks would show "0 of 0". OK?
 2. **Your own test threads.** Threads you make with "Test as this organization" count like anyone's. Should they be left out? Leaving them out also hides real threads at an organization you once tested as.
 3. **Which threads count in row 4.** I'd count threads that are done, plus those still open after 30 days. That way a thread started yesterday doesn't count against us. Declined and closed threads count as not golden. OK?
+
+**Taylor's answers (Oct 27):** yes to all three as proposed. 1: wait before counting young posts and organizations. 2: leave out threads an admin started (each thread now records who started it; threads from before Oct 27 still count). 3: count done, declined, cancelled, and threads open over 30 days.
 
 ---
 
@@ -617,3 +619,78 @@ Approved by Taylor 2026-10-25 in chat ("Approved as briefed. Merge #63 first so 
 
 - **Back as before (S-127, S-129, S-130):** the threads' drifting dashes, the sparks on golden threads and their glow; the cluster bubbles with their amber and green ring around the count; the two buttons at the bottom, "Offers for your needs" and "Needs you can help with". What fits you and the grey bubbles go.
 - **Stays from this round:** one solid dot per organization, Filter in one row at the top, the shorter ? (its cluster and gold-line swatches drawn as the map draws them again), the faint dots. Lines still carry no numbers; only clusters do.
+
+---
+
+# Three small fixes from the friction list (S-120, S-125, S-134). Approved Oct 27 (Taylor: "Approve #70")
+
+Drafted Oct 27. Each one is a word-level change, so nothing is built until you approve it line by line. Merging this PR is the approval; edit any line in it first.
+
+## "I can help" says what it needs (S-120)
+
+- **For:** someone who opens another organization's need and taps the green button.
+- **What's wrong now:** "I can help" (or "I need this") is greyed out until you pick one of yours or type a message. It looks broken, and nothing says why.
+- **The one action:** start a thread. The button stays green the whole time.
+- **Tapped with nothing picked and no message:** the message box gets the cursor, and under it, in the error line: "Write a message first, or pick one of yours." (On an offer, the same line.)
+- **Stays:** the button's words, "Yours that fit", the placeholder "Say what you can do and when."
+- **Goes:** the greyed-out button.
+
+## "How many" says how many of what (S-125)
+
+- **For:** someone posting, at How many.
+- **What's wrong now:** "How many" sits under the title with "Just the number, if it matters." It doesn't say of what, so a post titled "Volunteers for Saturday" gets a 4 that could be shifts, hours or people.
+- **The line under How many, once there's a title:** "How many {title}, if it matters." Example: "How many folding tables, if it matters." The title is shown as typed, except its first letter drops to lower case unless its first word is an acronym ("How many PPE kits, if it matters."). Taylor, Oct 28, after seeing it built: keep this rule, so a title that starts with a name ("Spanish tutors") reads "spanish tutors" here.
+- **With no title yet:** "Just the number, if it matters." (as now).
+- **On the post itself:** no change. It still reads "6 needed" or "6 to give".
+
+## The empty board says nothing's here once (S-134)
+
+- **For:** an organization on a board with no posts yet (the Empty board demo).
+- **What's wrong now:** above "Nothing here yet. Post the first one?" the count line says "0 open · 0 done", so the board says it's empty twice, once in numbers.
+- **The change:** with no open posts and none done, the count goes. Filters stays where it is, on the right. With any post open or done, the count shows as now ("0 open · 3 done" included).
+- **No new words.**
+
+## Checked against
+
+- **MISSION.md:** all three keep someone moving from a need to a thread: a button that works, a count that means something, a board that says what to do.
+- **VOICE.md:** rule 10 (an error is a sentence and a next step: "Write a message first, or pick one of yours."); rule 6 (one green button, and it stays green); rule 2 (one sentence under How many). No banned words, no em-dashes.
+- **Tests (when built):** `[S-120]` the button is enabled and the line shows when tapped with nothing; `[S-125]` the line under How many follows the title; `[S-134]` no count on an empty board, a count once something is done.
+
+---
+
+# Where people stop (Admin, S-148). Approved Oct 27
+
+Drafted Oct 27, iterating on "How it's going". Merging this PR is the approval; edit any line in it first.
+
+**Why:** the six numbers say how many threads turn golden. They don't say where the rest of the cohort stopped: someone who signed in and never got confirmed needs a different nudge from an organization that posted and heard nothing. This counts each step with what the app already keeps (sign-ins, confirmations, posts, threads). Nothing new is tracked and nothing is sent anywhere.
+
+## Where people stop
+
+- **For:** seeing, at a glance, the step where the alpha's people and organizations stop, so you know whom to nudge and how.
+- **Where:** on Admin, right under "How it's going". Label: "Where people stop".
+- **One card, five rows, each a number and what it counts:**
+  1. "{n}" · "People signed in"
+  2. "{n}" · "Confirmed at an organization"
+  3. "{n}" · "Organizations that posted"
+  4. "{n}" · "In a thread"
+  5. "{n}" · "With a golden thread"
+- Rows 1 and 2 count people; rows 3 to 5 count organizations ("In a thread": started one or was asked in one).
+- **Under each row after the first, in grey, only when someone stopped there:** "{n} stopped here". Example: under "Confirmed at an organization", "3 stopped here" means 3 people signed in and weren't confirmed. Row 3 counts people's organizations, so its line compares organizations with confirmed people to organizations that posted.
+- **A row below the card:** "Came back this week: {n} of {m}". Of confirmed people who joined more than 7 days ago, how many signed in during the last 7 days.
+- **With nobody signed in yet:** the card shows "None yet" in place of the numbers, as "How it's going" does.
+- Same people as "How it's going": you and other admins, "Test as this organization", and the development sign-in aren't counted.
+- **Stays:** "How it's going" and everything below it.
+- **Goes:** nothing.
+
+## Questions for you
+
+1. **Waiting claims.** Someone who asked to join and is waiting for you shows as "stopped" at Confirmed. Should row 2's line say "{n} waiting for you" for them instead, so they don't look lost? (I'd say yes: it's the same list as "Waiting for you" further down.)
+2. **"Came back this week."** Sign-in only records the last time, so this can't say how often. OK as one number, or leave it out for now?
+
+**Taylor's answers (Oct 27, in chat):** 1, yes: people waiting for you show as "{n} waiting for you" under row 2, not as stopped. 2, keep it.
+
+## Checked against
+
+- **MISSION.md:** each row is a step toward a golden thread. The card shows where the threads stop forming.
+- **VOICE.md:** "people" and "organizations", never users; "thread" and "golden thread"; digits; sentence case; no banned words. The label is 3 words.
+- **Tests (when built):** `[S-148]` API tests for each step, the test sign-ins left out, and "came back"; an acceptance test that the card is under "How it's going" and admins only.
