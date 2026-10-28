@@ -694,3 +694,15 @@ Drafted Oct 27, iterating on "How it's going". Merging this PR is the approval; 
 - **MISSION.md:** each row is a step toward a golden thread. The card shows where the threads stop forming.
 - **VOICE.md:** "people" and "organizations", never users; "thread" and "golden thread"; digits; sentence case; no banned words. The label is 3 words.
 - **Tests (when built):** `[S-148]` API tests for each step, the test sign-ins left out, and "came back"; an acceptance test that the card is under "How it's going" and admins only.
+
+---
+
+# A golden thread links to the map (S-149). Approved Oct 28
+
+Taylor, Oct 28, on a golden thread's screen: "this should be a link back to the map to see the golden thread". Approved in chat ("and approve").
+
+- **For:** seeing the help you gave or got as a golden line on the map, between the two organizations.
+- **The line on a golden thread:** "Done. This is a golden thread. See it on the map". "See it on the map" is the link.
+- **Where it goes:** the Map, opened on the two organizations, with the golden line between them and the thread's card open (the card you get when you tap a line).
+- **Stays:** "Done. This is a golden thread." and its gold bar.
+- **Not in this round:** the same link on a golden thread's row in the Inbox.
