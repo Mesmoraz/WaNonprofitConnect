@@ -13,7 +13,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "test:e2e": "playwright test",
-    "test:e2e:local": "npm run build && playwright test"
+    "test:e2e:local": "npm run build && playwright test",
+    "test:e2e:fresh": "node ../scripts/e2e-fresh.js"
   },
   "dependencies": {
     "@deck.gl/core": "^9.4.0",
