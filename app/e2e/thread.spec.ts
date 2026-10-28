@@ -49,6 +49,15 @@ test('[S-18] [S-20] [S-72] one organization helps another, start to golden threa
   await expect(ballard.page.getByText('Done. This is a golden thread.')).toBeVisible()
   await page.reload()
   await expect(page.getByText('Done. This is a golden thread.')).toBeVisible()
+
+  // [S-149] See it on the map: the map opens on this thread, its card open.
+  await page.getByRole('link', { name: 'See it on the map' }).click()
+  await expect(page).toHaveURL(new RegExp(`/map\\?thread=${threadPath.split('/').pop()}$`))
+  const card = page.getByRole('dialog', { name: 'Details' })
+  await expect(card).toContainText('Golden')
+  await expect(card).toContainText(need.title)
+  await card.getByRole('link', { name: 'Open thread' }).click()
+  await expect(page).toHaveURL(new RegExp(`${threadPath}$`))
   await ballard.page.goto('/inbox')
   await expect(ballard.page.locator(`a.inbox-row[href="${threadPath}"]`)).toContainText('Golden')
   await ballard.context.close()

@@ -2313,6 +2313,16 @@
       ],
       "source": "Claude, Oct 27, iterating on the alpha numbers (Taylor: \"continue iterating on this\")",
       "lane": "app"
+    },
+    {
+      "id": "S-149",
+      "epic": "E-24",
+      "title": "A golden thread links to the map, opened on that thread",
+      "status": "review",
+      "added": "2026-10-28",
+      "tasks": [],
+      "source": "Taylor, Oct 28, on a golden thread: \"this should be a link back to the map to see the golden thread\". Brief approved in chat (\"and approve\")",
+      "lane": "app"
     }
   ]
 }
