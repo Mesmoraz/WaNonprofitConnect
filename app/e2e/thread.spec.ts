@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { ORG, phone, postListing, run, signIn } from './helpers'
+import { ORG, email, phone, postListing, run, signIn } from './helpers'
 
 // The core loop: a need, "I can help", accept, message, mark done, golden. Copy: docs/ALPHA-BRIEFS.md (B6, B8).
 
@@ -15,7 +15,7 @@ test('[S-18] [S-20] [S-72] one organization helps another, start to golden threa
   await expect(page.getByRole('heading', { name: need.title })).toBeVisible()
   await expect(page.getByText(ORG.ballard.name).first()).toBeVisible()
   const help = page.getByRole('button', { name: 'I can help' })
-  await expect(help).toBeDisabled()
+  await expect(help).toBeEnabled()   // green even before a message (S-120)
   await page.getByLabel(`Message to ${ORG.ballard.name}`).fill('We have a used one. Pick up Saturday?')
   await help.click()
   await expect(page.getByText(`Thread started. ${ORG.ballard.name} will see it in their inbox.`)).toBeVisible()
@@ -78,4 +78,24 @@ test('[S-103] times from the server are UTC, so phones show the right age', asyn
   expect(got.createdAt).toMatch(/Z$/)
   await page.goto(`/listing/${l.id}`)
   await expect(page.getByText(/Posted (just now|1 minute ago)/)).toBeVisible()
+})
+
+test('[S-120] I can help stays green, and says what it needs when there is nothing to send', async ({ page, browser }) => {
+  const poster = await phone(browser)
+  await signIn(poster.page, { name: 'Drew', email: email('s120-poster'), org: ORG.rebuilding })
+  const need = await postListing(poster.page, { kind: 'Need', title: `Ladders ${run}` })
+  await poster.context.close()
+
+  await signIn(page, { name: 'Casey', email: email('s120'), org: ORG.toolLibrary })
+  await page.goto(`/listing/${need.id}`)
+  const help = page.getByRole('button', { name: 'I can help' })
+  await expect(help).toBeEnabled()
+  await help.click()
+  await expect(page.getByRole('alert')).toHaveText('Write a message first, or pick one of yours.')
+  await expect(page.getByRole('textbox', { name: `Message to ${ORG.rebuilding.name}` })).toBeFocused()
+  await expect(page).toHaveURL(new RegExp(`/listing/${need.id}$`))   // nothing was sent
+
+  await page.getByRole('textbox', { name: `Message to ${ORG.rebuilding.name}` }).fill('We can lend two this Saturday.')
+  await help.click()
+  await expect(page).toHaveURL(/\/thread\/\d+$/)
 })
