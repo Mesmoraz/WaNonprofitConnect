@@ -639,7 +639,7 @@ Drafted Oct 27. Each one is a word-level change, so nothing is built until you a
 
 - **For:** someone posting, at How many.
 - **What's wrong now:** "How many" sits under the title with "Just the number, if it matters." It doesn't say of what, so a post titled "Volunteers for Saturday" gets a 4 that could be shifts, hours or people.
-- **The line under How many, once there's a title:** "How many {title}, if it matters." Example: "How many folding tables, if it matters." The title is shown as typed, except its first letter drops to lower case unless it's an acronym or a name the IRS list spells in capitals (the same rule the board uses for organization names).
+- **The line under How many, once there's a title:** "How many {title}, if it matters." Example: "How many folding tables, if it matters." The title is shown as typed, except its first letter drops to lower case unless its first word is an acronym ("How many PPE kits, if it matters."). Taylor, Oct 28, after seeing it built: keep this rule, so a title that starts with a name ("Spanish tutors") reads "spanish tutors" here.
 - **With no title yet:** "Just the number, if it matters." (as now).
 - **On the post itself:** no change. It still reads "6 needed" or "6 to give".
 
