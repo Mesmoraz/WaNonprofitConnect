@@ -707,7 +707,7 @@ Taylor, Oct 28, on a golden thread's screen: "this should be a link back to the 
 - **Stays:** "Done. This is a golden thread." and its gold bar.
 - **Not in this round:** the same link on a golden thread's row in the Inbox.
 
-# Golden thread art in the app (S-150). Brief, Oct 28
+# Golden thread art in the app (S-150). Approved Oct 28
 
 Taylor, Oct 28: "can we add some of the art?" The drafts are in `design/art/` (see its README). Two of them are ready enough; the rest wait.
 
@@ -722,6 +722,4 @@ Taylor, Oct 28: "can we add some of the art?" The drafts are in `design/art/` (s
 - **Weight:** each picture shrunk to the size it shows at (about 30 KB, not 400), so a slow phone doesn't wait on it.
 - **Not in this round:** the hands and crate (`02`, off palette), Puget Sound at dusk (`04`, too dark and busy under words), the app icon (`05`, needs redrawing as an SVG). The "Nothing under {kind} yet" and filter empty states stay plain, so the picture means "nothing here at all".
 
-## Question for you
-
-The two houses read dark red and the coastline is invented (README). Use `01` now and swap in a rerun later, or wait for the rerun and ship only the needle and pin?
+Taylor approved in chat ("Approve, use both"): use the two houses now, and swap in a rerun with cream houses later.

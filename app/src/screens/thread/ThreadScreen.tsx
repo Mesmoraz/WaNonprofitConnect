@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { ApiError, useMe, useSendMessage, useThread, useThreadAction, type ThreadAction } from '../../api'
 import { errorLine } from '../../lib/errors'
 import { shortAgo } from '../../lib/words'
+import { GoldenArt } from '../../shell/Art'
 import { BackLink } from '../../shell/Page'
 import { Slow } from '../../shell/Slow'
 import './thread.css'
@@ -70,7 +71,7 @@ export function ThreadScreen() {
       </div>
     ) : <button className="btn primary" onClick={() => setConfirming(true)}>Mark done</button>}
   </>
-  else if (t.status === 'Completed') status = <p className="thread-status golden">Done. This is a golden thread. <Link className="inline-link" to={`/map?thread=${t.id}`}>See it on the map</Link></p>
+  else if (t.status === 'Completed') status = <><GoldenArt /><p className="thread-status golden">Done. This is a golden thread. <Link className="inline-link" to={`/map?thread=${t.id}`}>See it on the map</Link></p></>
   else if (t.status === 'Declined' && iStarted) status = <p className="thread-status">{other.name} said not this time. Your post stays on the board.</p>
   else if (t.status === 'Declined') status = <p className="thread-status">You said not this time. Their post stays on the board.</p>
   // Cancelled: a post in it was closed, or the thread was called off (S-104).
