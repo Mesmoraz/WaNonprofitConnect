@@ -706,3 +706,22 @@ Taylor, Oct 28, on a golden thread's screen: "this should be a link back to the 
 - **Where it goes:** the Map, opened on the two organizations, with the golden line between them and the thread's card open (the card you get when you tap a line).
 - **Stays:** "Done. This is a golden thread." and its gold bar.
 - **Not in this round:** the same link on a golden thread's row in the Inbox.
+
+# Golden thread art in the app (S-150). Brief, Oct 28
+
+Taylor, Oct 28: "can we add some of the art?" The drafts are in `design/art/` (see its README). Two of them are ready enough; the rest wait.
+
+- **For:** a little warmth where the app has nothing to show yet, and a moment when help lands. The art never says anything the words don't.
+- **The needle and pin (`03`), on empty screens:**
+  - The Board, above "Nothing here yet. Post the first one?"
+  - The Inbox, above "No threads yet. Find a need on the board you can help with."
+  - Small (about 140 px square), centered, corners rounded so the cream square reads as a picture in dark mode too.
+- **The two houses (`01`), on a golden thread:** a short banner across the top of the thread, above "Done. This is a golden thread. See it on the map". Only when the thread is done.
+- **Alt text:** none (`alt=""`). The pictures are decoration; the words beside them already say it, so screen readers skip them.
+- **No new words.** Every line above stays as it is.
+- **Weight:** each picture shrunk to the size it shows at (about 30 KB, not 400), so a slow phone doesn't wait on it.
+- **Not in this round:** the hands and crate (`02`, off palette), Puget Sound at dusk (`04`, too dark and busy under words), the app icon (`05`, needs redrawing as an SVG). The "Nothing under {kind} yet" and filter empty states stay plain, so the picture means "nothing here at all".
+
+## Question for you
+
+The two houses read dark red and the coastline is invented (README). Use `01` now and swap in a rerun later, or wait for the rerun and ship only the needle and pin?
