@@ -61,6 +61,13 @@ export function quantityLine(l: Pick<Listing, 'quantity' | 'unit' | 'kind'>) {
   return l.unit ? `${l.quantity} ${l.unit}` : `${l.quantity} ${l.kind === 'Need' ? 'needed' : 'to give'}`
 }
 
+/** A post's title inside a sentence (S-125): "Folding tables" reads "folding tables", but an acronym stays ("PPE kits"). */
+export function inSentence(title: string) {
+  const t = title.trim()
+  const first = (t.split(/\s+/)[0] ?? '').replace(/[^A-Za-z0-9]/g, '')
+  return /^[A-Z][A-Z0-9]+$/.test(first) ? t : t.charAt(0).toLowerCase() + t.slice(1)
+}
+
 /** The unit an edited post keeps: "12 laptops" made 15 stays "15 laptops", but "1 unit" made 2 drops it ("2 needed"),
  *  since a unit written for one doesn't read for many, or the other way round. */
 export function keptUnit(old: Pick<Listing, 'quantity' | 'unit'>, quantity: number | undefined) {
