@@ -193,6 +193,9 @@ public sealed class AccountService
     public Task<AlphaNumbersDto> AlphaNumbersAsync(DateTime? asOf = null, CancellationToken ct = default)
         => AlphaNumbers.ComputeAsync(_db, _options, asOf ?? DateTime.UtcNow, ct);
 
+    public Task<WherePeopleStopDto> WherePeopleStopAsync(DateTime? asOf = null, CancellationToken ct = default)
+        => WherePeopleStop.ComputeAsync(_db, _options, asOf ?? DateTime.UtcNow, ct);
+
     public async Task<IReadOnlyList<WaitingThreadDto>> ListWaitingAsync(DateTime? asOf = null, CancellationToken ct = default)
     {
         var now = asOf ?? DateTime.UtcNow;

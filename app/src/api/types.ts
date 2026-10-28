@@ -83,6 +83,11 @@ export interface AlphaNumbers {
   goldenThisMonth: number; month: string
   threadWithin14Days: Ratio; firstAnswerMedianMinutes: number | null; becameGolden: Ratio; bothInFirstWeek: Ratio; givenAndReceived: Ratio
 }
+/** Where people stop (S-148): people for the first two steps, organizations after. */
+export interface WherePeopleStop {
+  signedIn: number; confirmed: number; waiting: number
+  orgs: number; posted: number; inThread: number; golden: number; cameBack: Ratio
+}
 export interface Claim { id: number; ein: string; orgName: string; city: string | null; accountId: string; email: string; name: string; status: string; createdAt: string; decidedAt: string | null }
 export interface Invite { code: string; ein: string; orgName: string; uses: number; used: number }
 

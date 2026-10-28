@@ -21,6 +21,7 @@ export const keys = {
   myOrg: (ein: string) => ['myOrg', ein] as const,
   adminClaims: ['admin', 'claims'] as const,
   adminNumbers: ['admin', 'numbers'] as const,
+  adminStops: ['admin', 'stops'] as const,
   adminWaiting: ['admin', 'waiting'] as const,
   adminInvites: ['admin', 'invites'] as const,
   filters: (ein: string) => ['filters', ein] as const,
@@ -109,6 +110,7 @@ export const usePlaceOrgs = (id: string | null) => useInfiniteQuery({
 })
 
 export const useAdminNumbers = () => useQuery({ queryKey: keys.adminNumbers, queryFn: api.adminNumbers })
+export const useAdminStops = () => useQuery({ queryKey: keys.adminStops, queryFn: api.adminStops })
 export const useAdminWaiting = () => useQuery({ queryKey: keys.adminWaiting, queryFn: api.adminWaiting })
 export const useAdminClaims = () => useQuery({ queryKey: keys.adminClaims, queryFn: api.adminClaims })
 export const useAdminInvites = () => useQuery({ queryKey: keys.adminInvites, queryFn: api.adminInvites })

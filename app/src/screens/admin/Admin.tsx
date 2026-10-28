@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { MOCK, startDemo, useActAs, useAdminClaims, useAdminFeedback, useFeedbackDone, useAdminInvites, useAdminNumbers, useAdminWaiting, useApproveClaim, useCreateInvite, useMe, useOrgs, useRejectClaim, type OrgSummary, type Ratio } from '../../api'
+import { MOCK, startDemo, useActAs, useAdminClaims, useAdminFeedback, useFeedbackDone, useAdminInvites, useAdminNumbers, useAdminStops, useAdminWaiting, useApproveClaim, useCreateInvite, useMe, useOrgs, useRejectClaim, type OrgSummary, type Ratio } from '../../api'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { loadSettings, settingsFromQuery } from '../../api/mock/settings'
 import { cap, waitWords } from '../../lib/words'
@@ -43,6 +43,40 @@ function HowItsGoing() {
         ))}
       </div>
       <p className="hint">Counts real organizations only. The demo isn’t counted.</p>
+    </>
+  )
+}
+
+/** Each step from sign-in to golden thread (S-148), approved in docs/ALPHA-BRIEFS.md, "Where people stop". */
+function WherePeopleStop() {
+  const { data: s } = useAdminStops()
+  if (!s) return null
+  const stopped = (n: number) => (n > 0 ? `${n} stopped here` : null)
+  const rows: { n: number; what: string; notes?: (string | null)[] }[] = [
+    { n: s.signedIn, what: 'People signed in' },
+    { n: s.confirmed, what: 'Confirmed at an organization',
+      notes: [stopped(s.signedIn - s.confirmed - s.waiting), s.waiting ? `${s.waiting} waiting for you` : null] },
+    { n: s.posted, what: 'Organizations that posted', notes: [stopped(s.orgs - s.posted)] },
+    { n: s.inThread, what: 'In a thread', notes: [stopped(s.posted - s.inThread)] },
+    { n: s.golden, what: 'With a golden thread', notes: [stopped(s.inThread - s.golden)] },
+  ]
+  const none = s.signedIn === 0
+  return (
+    <>
+      <div className="label">Where people stop</div>
+      <div className="card numbers">
+        {rows.map(r => {
+          const note = (r.notes ?? []).filter(Boolean).join(' · ')
+          return (
+            <div key={r.what} className="numbers-row">
+              <span className={none ? 'n none' : 'n'}>{none ? 'None yet' : r.n}</span>
+              <span className="what">{r.what}</span>
+              {note && <span className="goal">{note}</span>}
+            </div>
+          )
+        })}
+      </div>
+      <p className="hint">Came back this week: {some(s.cameBack) ?? 'None yet'}</p>
     </>
   )
 }
@@ -107,6 +141,7 @@ export function Admin() {
       <h1 className="h">Admin</h1>
 
       <HowItsGoing />
+      <WherePeopleStop />
 
       <div className="label">Demo</div>
       <p className="hint">Sample organizations that live in this browser. Nothing you do there reaches the real site.</p>
