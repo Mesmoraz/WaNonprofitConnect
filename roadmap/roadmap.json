@@ -2302,13 +2302,13 @@
       "id": "S-148",
       "epic": "E-26",
       "title": "Where people stop: the alpha from sign-in to golden thread, on Admin",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-10-27",
       "tasks": [
         {
           "id": "T-255",
           "title": "Brief Where people stop for approval",
-          "status": "in-progress"
+          "status": "done"
         }
       ],
       "source": "Claude, Oct 27, iterating on the alpha numbers (Taylor: \"continue iterating on this\")",
