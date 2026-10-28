@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { ORG, phone, postListing, run, signIn } from './helpers'
+import { ORG, email, phone, postListing, run, signIn } from './helpers'
 
 // B7 Post, with the pick-a-title change (S-111). Copy: docs/ALPHA-BRIEFS.md.
 
@@ -138,4 +138,18 @@ test('[S-135] editing the count drops a unit written for one', async ({ page }) 
   await page.getByRole('button', { name: 'Save changes' }).click()
   await expect(page.getByText('Saved.')).toBeVisible()
   await expect(page.getByText('15 laptops')).toBeVisible()
+})
+
+test('[S-125] How many says how many of what', async ({ page }) => {
+  await signIn(page, { name: 'Robin', email: email('s125'), org: ORG.rainier })
+  await page.goto('/post')
+  const line = page.locator('#p-qty-hint')
+  await expect(line).toHaveText('Just the number, if it matters.')        // no title yet
+  await page.getByRole('radio', { name: 'Things' }).click()
+  await page.getByRole('radio', { name: 'Something else' }).click()
+  const what = page.getByRole('textbox', { name: 'What is it?' })
+  await what.fill('Folding tables')
+  await expect(line).toHaveText('How many folding tables, if it matters.')
+  await what.fill('PPE kits')
+  await expect(line).toHaveText('How many PPE kits, if it matters.')     // an acronym keeps its capitals
 })
