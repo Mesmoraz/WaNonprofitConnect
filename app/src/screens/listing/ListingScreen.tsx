@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ApiError, useCloseListing, useListing, useMe, useStartThread, useThreads, type Listing } from '../../api'
 import { CADENCE_FULL, HELP_LABEL, URGENCY_MARK, cap, listingFacts, postedAgo, quantityLine } from '../../lib/words'
@@ -23,6 +23,7 @@ export function ListingScreen() {
   const [message, setMessage] = useState('')
   const [failed, setFailed] = useState<string | null>(null)
   const [confirmClose, setConfirmClose] = useState(false)
+  const msgBox = useRef<HTMLTextAreaElement>(null)
 
   if (!l) {
     return (
@@ -47,6 +48,12 @@ export function ListingScreen() {
   const open = l.status === 'Open'
 
   const startThread = () => {
+    // The button stays green (S-120); with nothing to send, it says what it needs.
+    if (!pick && !message.trim()) {
+      setFailed('Write a message first, or pick one of yours.')
+      msgBox.current?.focus()
+      return
+    }
     setFailed(null)
     start.mutate({ listingId: l.id, myListingId: pick ?? undefined, message: message.trim() }, {
       onSuccess: t => { toast(`Thread started. ${l.org.name} will see it in their inbox.`); navigate(`/thread/${t.id}`) },
@@ -68,7 +75,7 @@ export function ListingScreen() {
     </div>
     : existingId
       ? <Link className="btn primary" to={`/thread/${existingId}`}>Open your thread</Link>
-      : open && <button className="btn primary" onClick={startThread} disabled={start.isPending || (!pick && !message.trim())}>{isNeed ? 'I can help' : 'I need this'}</button>
+      : open && <button className="btn primary" onClick={startThread} disabled={start.isPending}>{isNeed ? 'I can help' : 'I need this'}</button>
 
   return (
     <Page cta={cta || undefined} className="listing">
@@ -97,7 +104,7 @@ export function ListingScreen() {
           ? l.fits.map(f => <FitCard key={f.id} l={f} selected={pick === f.id} onPick={() => setPick(p => p === f.id ? null : f.id)} />)
           : <p className="hint">{`Nothing of yours fits yet. You can still ${l.kind === 'Offer' ? 'ask' : 'help'}.`}</p>}
         <label className="field-label listing-msg-label" htmlFor="msg">Message to {l.org.name}</label>
-        <textarea id="msg" rows={3} placeholder={isNeed ? 'Say what you can do and when.' : 'Say what you’d use it for and when.'} value={message} onChange={e => setMessage(e.target.value)} />
+        <textarea id="msg" ref={msgBox} rows={3} placeholder={isNeed ? 'Say what you can do and when.' : 'Say what you’d use it for and when.'} value={message} onChange={e => setMessage(e.target.value)} />
       </>}
 
       {failed && <p className="error" role="alert">{failed}</p>}
