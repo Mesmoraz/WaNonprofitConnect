@@ -2156,7 +2156,7 @@
       "id": "S-134",
       "epic": "E-24",
       "title": "Empty board: say nothing's here without the \"0 open · 0 done\" count above it",
-      "status": "backlog",
+      "status": "review",
       "added": "2026-10-20",
       "tasks": [],
       "source": "Polish walk, Oct 20, Empty board demo (needs a brief: changes what the board says)",
