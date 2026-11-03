@@ -37,6 +37,11 @@
       "id": "I-6",
       "title": "A working alpha for invited nonprofits",
       "why": "Real organizations post real needs and offers, start threads, and make golden threads, on the map, on any phone or desktop. Target: live Sep 30."
+    },
+    {
+      "id": "I-7",
+      "title": "Open to AI tools, measured, and connected",
+      "why": "Members and the AI assistants they already use can ask the directory questions in plain words, every answer points to the public record it came from, quality is measured on every change, and other systems can hear what happens here."
     }
   ],
   "epics": [
@@ -221,6 +226,27 @@
       "order": 4,
       "title": "Live and invited",
       "goal": "Hosted, installable, with privacy and terms, and 8 to 12 organizations invited."
+    },
+    {
+      "id": "E-27",
+      "initiative": "I-7",
+      "order": 1,
+      "title": "Ask in plain words",
+      "goal": "A question about Washington nonprofits, schools or programs gets organizations back, each with the record it came from, and the answers are checked on every pull request."
+    },
+    {
+      "id": "E-28",
+      "initiative": "I-7",
+      "order": 2,
+      "title": "Other systems can connect",
+      "goal": "AI assistants and an organization's own tools can read the public directory and hear about threads, without anyone copying data by hand."
+    },
+    {
+      "id": "E-29",
+      "initiative": "I-7",
+      "order": 3,
+      "title": "Tests we can trust over time",
+      "goal": "End-to-end results are kept, flaky tests are named instead of rerun until green, and the write-up shows how quality is measured."
     }
   ],
   "stories": [
@@ -728,7 +754,7 @@
       "id": "S-39",
       "epic": "E-12",
       "title": "ASP.NET Identity replaces the X-Org-Ein header",
-      "status": "review",
+      "status": "done",
       "added": "2026-09-20",
       "tasks": [],
       "lane": "backend",
@@ -747,7 +773,7 @@
       "id": "S-41",
       "epic": "E-12",
       "title": "Admin review queue",
-      "status": "review",
+      "status": "done",
       "added": "2026-09-20",
       "tasks": [],
       "lane": "backend",
@@ -776,7 +802,7 @@
       "id": "S-44",
       "epic": "E-13",
       "title": "P0 to P3 with the monthly P0 cap",
-      "status": "review",
+      "status": "done",
       "added": "2026-09-20",
       "tasks": [],
       "lane": "backend",
@@ -786,7 +812,7 @@
       "id": "S-45",
       "epic": "E-13",
       "title": "Fair ranking: priority, then least seen, with the org cap",
-      "status": "review",
+      "status": "done",
       "added": "2026-09-20",
       "tasks": [],
       "lane": "backend",
@@ -823,7 +849,7 @@
       "id": "S-49",
       "epic": "E-15",
       "title": "Geocode IRS and OSPI addresses to street level",
-      "status": "review",
+      "status": "done",
       "added": "2026-09-20",
       "tasks": [],
       "lane": "backend",
@@ -2330,6 +2356,76 @@
       "title": "Golden thread art on the empty board, the empty inbox and the golden thread",
       "status": "review",
       "added": "2026-10-28",
+      "tasks": []
+    },
+    {
+      "id": "S-151",
+      "epic": "E-27",
+      "lane": "backend",
+      "title": "Ask the directory a question in plain words and get organizations back, each answer pointing to the public record it came from",
+      "status": "backlog",
+      "added": "2026-10-25",
+      "source": "Taylor, 2026-10-25: skills that applied-AI, forward-deployed and SDET roles keep asking for, built where they help members",
+      "tasks": []
+    },
+    {
+      "id": "S-152",
+      "epic": "E-27",
+      "lane": "backend",
+      "title": "Thirty real questions with expected answers, run on every pull request, so answer quality can't slip unnoticed (gated by Steadygate)",
+      "status": "backlog",
+      "added": "2026-10-25",
+      "source": "Taylor, 2026-10-25: skills that applied-AI, forward-deployed and SDET roles keep asking for, built where they help members",
+      "tasks": []
+    },
+    {
+      "id": "S-153",
+      "epic": "E-27",
+      "lane": "backend",
+      "title": "The assistant says when it doesn't know, instead of guessing an organization",
+      "status": "backlog",
+      "added": "2026-10-25",
+      "source": "Taylor, 2026-10-25: skills that applied-AI, forward-deployed and SDET roles keep asking for, built where they help members",
+      "tasks": []
+    },
+    {
+      "id": "S-154",
+      "epic": "E-28",
+      "lane": "backend",
+      "title": "An MCP server, so an AI assistant can look up Washington nonprofits, schools and programs from the public data",
+      "status": "backlog",
+      "added": "2026-10-25",
+      "source": "Taylor, 2026-10-25: skills that applied-AI, forward-deployed and SDET roles keep asking for, built where they help members",
+      "tasks": []
+    },
+    {
+      "id": "S-155",
+      "epic": "E-28",
+      "lane": "backend",
+      "title": "Webhooks: an organization's own system hears when a thread starts or a post is answered, with retries and no duplicates",
+      "status": "backlog",
+      "added": "2026-10-25",
+      "source": "Taylor, 2026-10-25: skills that applied-AI, forward-deployed and SDET roles keep asking for, built where they help members",
+      "tasks": []
+    },
+    {
+      "id": "S-156",
+      "epic": "E-29",
+      "lane": "app",
+      "title": "Keep end-to-end results from every run, and flag flaky tests with Steadygate instead of rerunning until green",
+      "status": "backlog",
+      "added": "2026-10-25",
+      "source": "Taylor, 2026-10-25: skills that applied-AI, forward-deployed and SDET roles keep asking for, built where they help members",
+      "tasks": []
+    },
+    {
+      "id": "S-157",
+      "epic": "E-29",
+      "lane": "site",
+      "title": "A write-up on the site: how the directory assistant was built, the questions it's checked against, and what the numbers showed",
+      "status": "backlog",
+      "added": "2026-10-25",
+      "source": "Taylor, 2026-10-25: skills that applied-AI, forward-deployed and SDET roles keep asking for, built where they help members",
       "tasks": []
     }
   ]
